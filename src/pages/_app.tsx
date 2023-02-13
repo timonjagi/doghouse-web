@@ -2,6 +2,7 @@
 import { DefaultSeo } from "next-seo";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { useRouter } from "next/router";
 
 import defaultSEOConfig from "../../next-seo.config";
 import { Chakra } from "lib/components/Chakra";
@@ -9,6 +10,8 @@ import Layout from "lib/layout";
 import "lib/styles/globals.css";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
+  const router = useRouter();
+
   return (
     <Chakra>
       <Head>
@@ -18,9 +21,13 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         />
       </Head>
       <DefaultSeo {...defaultSEOConfig} />
-      <Layout>
+      {["/signup", "/login"].includes(router.pathname) ? (
         <Component {...pageProps} />
-      </Layout>
+      ) : (
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      )}
     </Chakra>
   );
 };

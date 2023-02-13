@@ -1,6 +1,6 @@
-import { chakra, HStack, Image, Text } from "@chakra-ui/react";
+import { HStack, Image, Text, Link } from "@chakra-ui/react";
 
-export const Logo = (props: any) => (
+export const Logo = () => (
   // <chakra.svg
   //   color="on-accent"
   //   height="8"
@@ -54,7 +54,8 @@ export const Logo = (props: any) => (
   //     </linearGradient>
   //   </defs>
   // </chakra.svg>
-  <HStack>
+
+  <HStack as="a" href="/">
     <Image src="images/logo.png" height={8} />
     <Text fontWeight="semibold" fontSize="20pt">
       doghouse

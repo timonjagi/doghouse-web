@@ -8,9 +8,11 @@ import {
   HStack,
   Img,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { HiChevronRight } from "react-icons/hi";
 
 export default function CallToActionWithIllustration() {
+  const router = useRouter();
   return (
     <Box w="full" bg="gray.800" as="section" position="relative">
       <Box py="32" position="relative" zIndex={1}>
@@ -57,6 +59,7 @@ export default function CallToActionWithIllustration() {
                 size="lg"
                 fontSize="md"
                 fontWeight="bold"
+                onClick={() => router.push("/signup")}
               >
                 Get Started for Free
               </Button>

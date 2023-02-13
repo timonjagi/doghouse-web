@@ -6,7 +6,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import * as React from "react";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 
 import { Logo } from "../components/Logo";
@@ -32,7 +31,7 @@ const Footer = () => (
             />
             <IconButton
               as="a"
-              href="https://twitter.com/doghousekeny"
+              href="https://twitter.com/doghousekenya"
               aria-label="Twitter"
               icon={<FaTwitter fontSize="1.25rem" />}
             />
