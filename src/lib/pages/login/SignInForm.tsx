@@ -81,7 +81,6 @@ export const SignInForm = (props: any) => {
         isClosable: true,
       });
       appVerifier.clear();
-      setError(err.message);
     }
 
     setLoading(false);
@@ -111,7 +110,6 @@ export const SignInForm = (props: any) => {
         duration: 5000,
         isClosable: true,
       });
-      setError(err.message);
     }
 
     setLoading(false);
