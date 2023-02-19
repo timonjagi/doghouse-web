@@ -7,17 +7,17 @@ import {
   Text,
   useColorModeValue,
   VStack,
-} from '@chakra-ui/react'
-import React from 'react'
-import { FiUploadCloud } from 'react-icons/fi'
+} from "@chakra-ui/react";
+import React from "react";
+import { FiUploadCloud } from "react-icons/fi";
 
-export const Dropzone = (props) => (
+export const Dropzone = () => (
   <Center
     borderWidth="1px"
     borderRadius="lg"
     px="6"
     py="4"
-    bg={useColorModeValue('white', 'gray.800')}
+    bg={useColorModeValue("white", "gray.800")}
     {...props}
   >
     <VStack spacing="3">
@@ -39,4 +39,4 @@ export const Dropzone = (props) => (
       </VStack>
     </VStack>
   </Center>
-)
+);
