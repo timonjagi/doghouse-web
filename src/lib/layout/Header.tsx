@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   ButtonGroup,
@@ -7,23 +8,29 @@ import {
   DrawerContent,
   DrawerOverlay,
   Flex,
+  Text,
   HStack,
   IconButton,
   useBreakpointValue,
   useDisclosure,
+  Center,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-// import * as React from "react";
+import * as React from "react";
+import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { FiHelpCircle, FiBell } from "react-icons/fi";
-// import { useLocation, useNavigate } from "react-router-dom";
-
-// import { useUser } from "../hooks/useUser";
-// import { APP_ROUTES } from "../utils/constants";
 
 import { Logo } from "../components/Logo";
 import { Sidebar } from "../components/nav/Sidebar";
 import { ToggleButton } from "../components/nav/ToggleButton";
-// import { UserProfile } from "../components/nav/UserProfile";
+import { auth } from "lib/firebase/client";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 const Header = () => {
   const isDesktop = useBreakpointValue({
@@ -31,21 +38,37 @@ const Header = () => {
     lg: true,
   });
   const { isOpen, onToggle, onClose } = useDisclosure();
-  // const { user, authenticated } = useUser();
-  // const navigate = useNavigate();
   const router = useRouter();
   const { pathname } = router;
+  const toast = useToast();
 
-  // const onLogin = () => {
-  //   navigate(APP_ROUTES.LOG_IN);
-  // };
+  const [user] = useAuthState(auth);
+  const [signOut, loading, error] = useSignOut(auth);
 
-  // const onSignup = () => {
-  //   navigate(APP_ROUTES.SIGN_UP);
-  // };
+  const onLogout = async () => {
+    try {
+      const success = await signOut();
 
-  // const { pathname } = useLocation();
-  // const user, authenticated;
+      if (success) {
+        toast({
+          title: "Logged out successfully",
+          description: "",
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+
+        return await router.push("/");
+      }
+    } catch (err) {
+      toast({
+        title: error?.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Box as="nav" bg="bg-accent" color="on-accent">
@@ -61,7 +84,6 @@ const Header = () => {
             {isDesktop && (
               <ButtonGroup variant="ghost-on-accent" spacing="1">
                 <Button
-                  as="a"
                   rounded="full"
                   onClick={() => router.push("/")}
                   aria-current={pathname === "/" ? "page" : false}
@@ -103,27 +125,74 @@ const Header = () => {
                 />
               </ButtonGroup>
 
-              {/* <UserProfile user={user} isDesktop={isDesktop} /> */}
-
-              <HStack spacing="3">
-                <Button
-                  variant="secondary-on-accent"
-                  rounded="full"
-                  onClick={() => router.push("/login")}
-                >
-                  Log in
-                </Button>
-                <Button
-                  variant="primary-on-accent"
-                  rounded="full"
-                  onClick={() => router.push("/signup")}
-                >
-                  Sign up
-                </Button>
-              </HStack>
+              {user ? (
+                <Menu variant="primary-on-accent">
+                  <MenuButton
+                    as={Button}
+                    rightIcon={<ChevronDownIcon />}
+                    rounded="full"
+                    variant="link"
+                    cursor="pointer"
+                    minW={0}
+                    color="on-accent"
+                  >
+                    <Avatar
+                      name={user?.displayName || ""}
+                      src={user?.photoURL || ""}
+                      boxSize="10"
+                    />
+                  </MenuButton>
+                  <MenuList alignItems="center" color="brand.400">
+                    <br />
+                    <Center>
+                      <Avatar
+                        name={user?.displayName || ""}
+                        src={user?.photoURL || ""}
+                        size="2xl"
+                      />
+                    </Center>
+                    <br />
+                    <Center>
+                      <Box>
+                        <Text
+                          color="on-accent"
+                          fontWeight="medium"
+                          fontSize="sm"
+                        >
+                          {user?.displayName}
+                        </Text>
+                        <Text color="on-accent-muted" fontSize="sm">
+                          {user?.phoneNumber}
+                        </Text>
+                      </Box>
+                    </Center>
+                    <MenuDivider />
+                    {/* <MenuItem>Your Servers</MenuItem> */}
+                    <MenuItem>Account Settings</MenuItem>
+                    <MenuItem onClick={onLogout}>Logout</MenuItem>
+                  </MenuList>
+                </Menu>
+              ) : (
+                <HStack spacing="3">
+                  <Button
+                    variant="secondary-on-accent"
+                    rounded="full"
+                    onClick={() => router.push("/login")}
+                  >
+                    Log in
+                  </Button>
+                </HStack>
+              )}
             </HStack>
           ) : (
-            <>
+            <Flex align="center">
+              <IconButton
+                variant="ghost-on-accent"
+                fontSize="1.25rem"
+                aria-label="Notifications"
+                icon={<FiBell />}
+                mr={3}
+              />
               <ToggleButton
                 isOpen={isOpen}
                 aria-label="Open Menu"
@@ -140,10 +209,10 @@ const Header = () => {
               >
                 <DrawerOverlay />
                 <DrawerContent>
-                  <Sidebar />
+                  <Sidebar onClose={onClose} />
                 </DrawerContent>
               </Drawer>
-            </>
+            </Flex>
           )}
         </Flex>
       </Container>

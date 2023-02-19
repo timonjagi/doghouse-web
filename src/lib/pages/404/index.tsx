@@ -19,7 +19,7 @@ const Page404 = () => {
   return (
     <Flex minHeight="70vh" direction="column" justifyContent="center">
       <NextSeo title="404 Not Found" />
-      <MotionBox
+      {/* <MotionBox
         animate={{ y: 20 }}
         transition={{ repeat: Infinity, duration: 2, repeatType: "reverse" }}
         width={{ base: "100%", sm: "70%", md: "60%" }}
@@ -38,7 +38,7 @@ const Page404 = () => {
         >
           Illustration by Freepik Stories
         </ChakraLink>
-      </Text>
+      </Text> */}
 
       <Box marginY={4}>
         <Heading textAlign="center" size="lg">

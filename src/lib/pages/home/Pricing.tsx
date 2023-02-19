@@ -138,8 +138,8 @@ const PricingCard = (props: any) => {
             rowGap="4"
             pb="2"
           >
-            {product.features.map((feature) => (
-              <HStack key={feature} as="li" spacing="3">
+            {product.features.map((feature, index) => (
+              <HStack key={index} as="li" spacing="3">
                 <Circle size="6" bg={mode("blue.50", "whiteAlpha.50")}>
                   <Icon as={FiCheck} color="accent" />
                 </Circle>
