@@ -9,7 +9,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import * as React from "react";
+// import * as React from "react";
 import { BsChatFill } from "react-icons/bs";
 import { GiDogHouse } from "react-icons/gi";
 import { MdNotificationsActive } from "react-icons/md";
@@ -105,9 +105,9 @@ export default function Features() {
               }}
               maxW="3xl"
             >
-              Whether you're looking for an obedient family pet or a guard dog,
-              find your perfect match on our app by selecting the type of breed
-              that suits you best.
+              Whether you&apos;re looking for an obedient family pet or a guard
+              dog, find your perfect match on our app by selecting the type of
+              breed that suits you best.
             </Text>
           </Stack>
           <SimpleGrid

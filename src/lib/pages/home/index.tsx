@@ -4,7 +4,7 @@ import { NextSeo } from "next-seo";
 import { Cta } from "./Cta";
 import Features from "./Features";
 import Hero from "./Hero";
-import { LogoGrid } from "./LogoGrid";
+// import { LogoGrid } from "./LogoGrid";
 import { Pricing } from "./Pricing";
 import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";

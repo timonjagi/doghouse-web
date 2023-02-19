@@ -1,6 +1,6 @@
 import { IconButton, useColorMode } from "@chakra-ui/react";
+// import * as React from "react";
 import { RiMoonFill, RiSunLine } from "react-icons/ri";
-import * as React from "react";
 
 const ThemeToggle = () => {
   const { colorMode, toggleColorMode } = useColorMode();

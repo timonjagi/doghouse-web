@@ -8,10 +8,10 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
+// import React from "react";
 import { FiUploadCloud } from "react-icons/fi";
 
-export const Dropzone = () => (
+export const Dropzone = (props: object) => (
   <Center
     borderWidth="1px"
     borderRadius="lg"

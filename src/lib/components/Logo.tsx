@@ -1,4 +1,4 @@
-import { HStack, Image, Text, Link } from "@chakra-ui/react";
+import { HStack, Image, Text } from "@chakra-ui/react";
 
 export const Logo = () => (
   // <chakra.svg

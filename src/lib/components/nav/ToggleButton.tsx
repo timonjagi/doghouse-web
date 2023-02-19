@@ -1,59 +1,70 @@
-import { Box, chakra, IconButton } from '@chakra-ui/react';
-import * as React from 'react';
-const Bar = chakra('span', {
+import { Box, chakra, IconButton } from "@chakra-ui/react";
+// import * as React from "react";
+
+const Bar = chakra("span", {
   baseStyle: {
-    display: 'block',
-    pos: 'absolute',
-    w: '1.25rem',
-    h: '0.125rem',
-    rounded: 'full',
-    bg: 'currentcolor',
-    mx: 'auto',
-    insetStart: '0.125rem',
-    transition: 'all 0.12s',
+    display: "block",
+    pos: "absolute",
+    w: "1.25rem",
+    h: "0.125rem",
+    rounded: "full",
+    bg: "currentcolor",
+    mx: "auto",
+    insetStart: "0.125rem",
+    transition: "all 0.12s",
   },
 });
-const ToggleIcon = (props: any) => {
+interface ToggleIconProps {
+  active: boolean | (() => void);
+}
+
+const ToggleIcon = (props: ToggleIconProps) => {
   const { active } = props;
   return (
     <Box
-      className='group'
-      data-active={active ? '' : undefined}
-      as='span'
-      display='block'
-      w='1.5rem'
-      h='1.5rem'
-      pos='relative'
+      className="group"
+      data-active={active ? "" : undefined}
+      as="span"
+      display="block"
+      w="1.5rem"
+      h="1.5rem"
+      pos="relative"
       aria-hidden
-      pointerEvents='none'
+      pointerEvents="none"
     >
       <Bar
-        top='0.4375rem'
+        top="0.4375rem"
         _groupActive={{
-          top: '0.6875rem',
-          transform: 'rotate(45deg)',
+          top: "0.6875rem",
+          transform: "rotate(45deg)",
         }}
       />
       <Bar
-        bottom='0.4375rem'
+        bottom="0.4375rem"
         _groupActive={{
-          bottom: '0.6875rem',
-          transform: 'rotate(-45deg)',
+          bottom: "0.6875rem",
+          transform: "rotate(-45deg)",
         }}
       />
     </Box>
   );
 };
 
-export const ToggleButton = (props: any) => {
+interface ToggleButtonProps {
+  isOpen: boolean | (() => void);
+  onClick?: () => void;
+}
+
+export const ToggleButton = (props: ToggleButtonProps) => {
   const { isOpen, ...iconButtonProps } = props;
   return (
     <IconButton
-      position='relative'
-      variant='unstyled'
-      size='sm'
-      color='on-accent'
-      zIndex='skipLink'
+      aria-label=""
+      position="relative"
+      variant="unstyled"
+      size="sm"
+      color="on-accent"
+      zIndex="skipLink"
       icon={<ToggleIcon active={isOpen} />}
       {...iconButtonProps}
     />

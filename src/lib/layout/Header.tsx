@@ -1,3 +1,4 @@
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
@@ -22,7 +23,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import * as React from "react";
+// import * as React from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { FiHelpCircle, FiBell } from "react-icons/fi";
 
@@ -30,7 +31,6 @@ import { Logo } from "../components/Logo";
 import { Sidebar } from "../components/nav/Sidebar";
 import { ToggleButton } from "../components/nav/ToggleButton";
 import { auth } from "lib/firebase/client";
-import { ChevronDownIcon } from "@chakra-ui/icons";
 
 const Header = () => {
   const isDesktop = useBreakpointValue({
@@ -43,6 +43,7 @@ const Header = () => {
   const toast = useToast();
 
   const [user] = useAuthState(auth);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [signOut, loading, error] = useSignOut(auth);
 
   const onLogout = async () => {
@@ -58,8 +59,9 @@ const Header = () => {
           isClosable: true,
         });
 
-        return await router.push("/");
+        await router.push("/");
       }
+      return success;
     } catch (err) {
       toast({
         title: error?.message,
@@ -68,6 +70,7 @@ const Header = () => {
         isClosable: true,
       });
     }
+    return 0;
   };
 
   return (

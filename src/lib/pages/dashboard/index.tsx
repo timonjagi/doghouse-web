@@ -4,8 +4,8 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { auth } from "lib/firebase/client";
 import { CompleteProfileBanner } from "lib/components/auth/CompleteProfileBanner";
+import { auth } from "lib/firebase/client";
 
 const Dashboard = () => {
   const router = useRouter();

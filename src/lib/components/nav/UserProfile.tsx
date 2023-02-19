@@ -8,7 +8,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import * as React from "react";
+// import * as React from "react";
 import { useSignOut } from "react-firebase-hooks/auth";
 import { FiLogOut } from "react-icons/fi";
 
@@ -24,6 +24,7 @@ interface UserProfileProps {
 export const UserProfile = (props: UserProfileProps) => {
   const { name, image, phoneNumber, onClose } = props;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [signOut, loading, error] = useSignOut(auth);
   const toast = useToast();
   const router = useRouter();
@@ -42,7 +43,7 @@ export const UserProfile = (props: UserProfileProps) => {
           isClosable: true,
         });
 
-        return await router.push("/");
+        await router.push("/");
       }
     } catch (err) {
       toast({
@@ -52,6 +53,8 @@ export const UserProfile = (props: UserProfileProps) => {
         isClosable: true,
       });
     }
+
+    return 0;
   };
 
   return (

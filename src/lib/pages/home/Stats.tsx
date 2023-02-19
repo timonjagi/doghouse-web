@@ -7,7 +7,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import * as React from "react";
+// import * as React from "react";
 
 const stats = [
   {
@@ -23,6 +23,25 @@ const stats = [
     label: "Happy customers",
   },
 ];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Stat = (props: any) => {
+  const { label, value, ...stackProps } = props;
+  return (
+    <Stack spacing="3" textAlign="center" {...stackProps}>
+      <Heading
+        size={useBreakpointValue({
+          base: "lg",
+          md: "xl",
+        })}
+      >
+        {value}
+      </Heading>
+      <Text fontSize="lg" fontWeight="medium" color="blue.50">
+        {label}
+      </Text>
+    </Stack>
+  );
+};
 
 export const Stats = () => (
   <Container
@@ -88,6 +107,7 @@ export const Stats = () => (
           rowGap="8"
         >
           {stats.map((stat, id) => (
+            // eslint-disable-next-line react/no-array-index-key
             <Stat key={id} {...stat} />
           ))}
         </SimpleGrid>
@@ -95,22 +115,3 @@ export const Stats = () => (
     </Stack>
   </Container>
 );
-
-const Stat = (props: any) => {
-  const { label, value, ...stackProps } = props;
-  return (
-    <Stack spacing="3" textAlign="center" {...stackProps}>
-      <Heading
-        size={useBreakpointValue({
-          base: "lg",
-          md: "xl",
-        })}
-      >
-        {value}
-      </Heading>
-      <Text fontSize="lg" fontWeight="medium" color="blue.50">
-        {label}
-      </Text>
-    </Stack>
-  );
-};

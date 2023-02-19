@@ -14,7 +14,7 @@ import {
   useBreakpointValue,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
-import * as React from "react";
+// import * as React from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import { FiCheck } from "react-icons/fi";
@@ -53,7 +53,7 @@ export const product = {
     "Home delivery (where possible)",
   ],
 };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PricingCard = (props: any) => {
   return (
     <Box
@@ -122,7 +122,7 @@ const PricingCard = (props: any) => {
           }}
         >
           <Stack spacing="1">
-            <Text fontWeight="semibold">What's included</Text>
+            <Text fontWeight="semibold">What&apos;s included</Text>
             <Text color="muted">
               Personalized assistance to help you find your perfect dog breed
               and make all necessary arrangements, with a satisfaction guarantee
@@ -139,6 +139,7 @@ const PricingCard = (props: any) => {
             pb="2"
           >
             {product.features.map((feature, index) => (
+              // eslint-disable-next-line react/no-array-index-key
               <HStack key={index} as="li" spacing="3">
                 <Circle size="6" bg={mode("blue.50", "whiteAlpha.50")}>
                   <Icon as={FiCheck} color="accent" />
@@ -164,7 +165,7 @@ const PricingCard = (props: any) => {
     </Box>
   );
 };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PricingFeature = (props: any) => {
   const { feature, ...stackProps } = props;
   return (
@@ -281,6 +282,7 @@ export const Pricing = () => (
             justify="center"
           >
             {features.map((feature, id) => (
+              // eslint-disable-next-line react/no-array-index-key
               <PricingFeature key={id} feature={feature} />
             ))}
           </Stack>

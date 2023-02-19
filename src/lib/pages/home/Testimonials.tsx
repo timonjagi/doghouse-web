@@ -3,15 +3,85 @@ import {
   HStack,
   Grid,
   Heading,
-  Link,
   Text,
   Flex,
   Img,
   Stack,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
-import * as React from "react";
+// import * as React from "react";
 import { FaStar } from "react-icons/fa";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Rating = (props: any) => {
+  const { value = 5, ...rest } = props;
+  return (
+    <HStack {...rest}>
+      {Array.from({
+        length: 5,
+      }).map((_, i) => {
+        const fade = i + 1 > value;
+        return (
+          <Box
+            as={FaStar}
+            color={fade ? "whiteAlpha.500" : "yellow.400"}
+            fontSize="xl"
+            // eslint-disable-next-line react/no-array-index-key
+            key={i}
+          />
+        );
+      })}
+    </HStack>
+  );
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Testimonial = (props: any) => {
+  const { image, company, name, children, ...rest } = props;
+  return (
+    <Stack
+      spacing={6}
+      h="100%"
+      rounded="2xl"
+      shadow="sm"
+      py={{
+        base: "6",
+        md: "12",
+      }}
+      px={{
+        base: "6",
+        md: "14",
+      }}
+      bg={mode("white", "gray.900")}
+      color={mode("gray.800", "gray.300")}
+      {...rest}
+    >
+      <Box
+        fontSize={{
+          base: "md",
+          md: "lg",
+        }}
+        flex="1"
+      >
+        {children}
+      </Box>
+      <HStack
+        spacing={{
+          base: 3,
+          md: 5,
+        }}
+      >
+        <Img objectFit="cover" rounded="full" boxSize={14} src={image} />
+        <Flex direction="column">
+          <Text fontWeight="bold">{name}</Text>
+          <Text fontSize="sm" fontWeight="medium" opacity={0.7}>
+            {company}
+          </Text>
+        </Flex>
+      </HStack>
+    </Stack>
+  );
+};
 
 export const Testimonials = () => {
   return (
@@ -75,73 +145,5 @@ export const Testimonials = () => {
         </Grid>
       </Box>
     </Box>
-  );
-};
-
-const Testimonial = (props: any) => {
-  const { image, company, name, children, ...rest } = props;
-  return (
-    <Stack
-      spacing={6}
-      h="100%"
-      rounded="2xl"
-      shadow="sm"
-      py={{
-        base: "6",
-        md: "12",
-      }}
-      px={{
-        base: "6",
-        md: "14",
-      }}
-      bg={mode("white", "gray.900")}
-      color={mode("gray.800", "gray.300")}
-      {...rest}
-    >
-      <Box
-        fontSize={{
-          base: "md",
-          md: "lg",
-        }}
-        flex="1"
-      >
-        {children}
-      </Box>
-      <HStack
-        spacing={{
-          base: 3,
-          md: 5,
-        }}
-      >
-        <Img objectFit="cover" rounded="full" boxSize={14} src={image} />
-        <Flex direction="column">
-          <Text fontWeight="bold">{name}</Text>
-          <Text fontSize="sm" fontWeight="medium" opacity={0.7}>
-            {company}
-          </Text>
-        </Flex>
-      </HStack>
-    </Stack>
-  );
-};
-
-const Rating = (props: any) => {
-  const { value = 5, ...rest } = props;
-  return (
-    <HStack {...rest}>
-      {Array.from({
-        length: 5,
-      }).map((_, i) => {
-        const fade = i + 1 > value;
-        return (
-          <Box
-            as={FaStar}
-            color={fade ? "whiteAlpha.500" : "yellow.400"}
-            fontSize="xl"
-            key={i}
-          />
-        );
-      })}
-    </HStack>
   );
 };

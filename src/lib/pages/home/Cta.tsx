@@ -8,7 +8,7 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
-import * as React from "react";
+// import * as React from "react";
 
 export const Cta = () => (
   <Container
@@ -47,8 +47,8 @@ export const Cta = () => (
               lg: "xl",
             })}
           >
-            Whether you're looking for an obedient family pet or a guard dog, we
-            got you. Find your perfect match on Doghouse today!
+            Whether you&apos;re looking for an obedient family pet or a guard
+            dog, we got you. Find your perfect match on Doghouse today!
           </Text>
         </Stack>
         <Stack

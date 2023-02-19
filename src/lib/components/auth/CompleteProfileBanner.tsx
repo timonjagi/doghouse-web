@@ -9,7 +9,7 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
-import * as React from "react";
+/// import * as React from "react";
 import { CgProfile } from "react-icons/cg";
 
 export const CompleteProfileBanner = () => {
@@ -50,7 +50,7 @@ export const CompleteProfileBanner = () => {
               </Square>
             )}
             <Stack spacing="0.5" pe={{ base: "4", md: "0" }}>
-              <Text fontWeight="medium">You're almost there </Text>
+              <Text fontWeight="medium">You&apos;re almost there </Text>
               <Text color="muted">
                 Fill in some more information about yourself to get started
               </Text>

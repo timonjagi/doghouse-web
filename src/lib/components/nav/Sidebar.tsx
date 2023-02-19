@@ -11,7 +11,7 @@ import {
   useColorModeValue as mode,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import * as React from "react";
+// import * as React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import {
   FiHome,
@@ -30,7 +30,11 @@ import { auth } from "lib/firebase/client";
 import { NavButton } from "./NavButton";
 import { UserProfile } from "./UserProfile";
 
-export const Sidebar = ({ onClose }) => {
+interface SidebarProps {
+  onClose: () => void;
+}
+
+export const Sidebar = ({ onClose }: SidebarProps) => {
   const router = useRouter();
   const { pathname } = router;
   const [user] = useAuthState(auth);
@@ -124,7 +128,7 @@ export const Sidebar = ({ onClose }) => {
                 <UserProfile
                   name={user?.displayName || ""}
                   image={user?.photoURL || ""}
-                  phoneNumber={user?.phoneNumber}
+                  phoneNumber={user?.phoneNumber || ""}
                   onClose={onClose}
                 />
               </Stack>

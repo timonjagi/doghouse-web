@@ -6,7 +6,8 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import * as React from "react";
+// import * as React from "react";
+
 import * as logos from "./Logos";
 
 export const LogoGrid = () => (

@@ -29,6 +29,7 @@ import {
 import { Logo } from "../../components/Logo";
 import { auth } from "lib/firebase/client";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SignInForm = (props: any) => {
   const router = useRouter();
   const toast = useToast();
@@ -70,6 +71,7 @@ export const SignInForm = (props: any) => {
         setCodeSent(true);
         setConfirmationResult(result);
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast({
         title: err.message,
@@ -100,6 +102,7 @@ export const SignInForm = (props: any) => {
           isClosable: true,
         });
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast({
         title: err.message,

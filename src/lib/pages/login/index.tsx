@@ -47,8 +47,8 @@ const Login = () => (
                     Start making your dreams come true
                   </Heading>
                   <Text fontSize="lg" maxW="md" fontWeight="medium">
-                    Create an account and discover the worlds' best UI component
-                    framework.
+                    Create an account and discover the worlds&apos; best UI
+                    component framework.
                   </Text>
                 </Stack>
                 <HStack spacing="4">
