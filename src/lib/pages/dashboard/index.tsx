@@ -1,4 +1,13 @@
-import { Flex } from "@chakra-ui/react";
+import {
+  Button,
+  Box,
+  Container,
+  Heading,
+  Stack,
+  HStack,
+  Text,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -17,18 +26,40 @@ const Dashboard = () => {
     }
   }, [user, router]);
   return (
-    <>
+    <Box as="section" height="100vh" overflowY="auto">
       {user && !user?.displayName && <CompleteProfileBanner />}
-      <Flex
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        minHeight="70vh"
-        w="full"
+
+      <Container
+        pt={{
+          base: "8",
+          lg: "12",
+        }}
+        pb={{
+          base: "12",
+          lg: "24",
+        }}
       >
         <NextSeo title="Dashboard" />
-      </Flex>
-    </>
+
+        <HStack spacing="4" justify="space-between">
+          <Stack spacing="1">
+            <Heading
+              size={useBreakpointValue({
+                base: "xs",
+                lg: "sm",
+              })}
+              fontWeight="medium"
+            >
+              Dashboard
+            </Heading>
+            <Text color="muted">All important metrics at a glance</Text>
+          </Stack>
+          <Button variant="primary" hidden={!user?.displayName}>
+            Create
+          </Button>
+        </HStack>
+      </Container>
+    </Box>
   );
 };
 

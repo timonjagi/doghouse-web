@@ -1,76 +1,112 @@
 import {
   Box,
   Button,
+  CloseButton,
   Container,
   Icon,
+  Link,
   Square,
   Stack,
   Text,
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
-/// import * as React from "react";
-import { CgProfile } from "react-icons/cg";
+// import * as React from "react";
+import { BiCookie } from "react-icons/bi";
 
 export const CompleteProfileBanner = () => {
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const isMobile = useBreakpointValue({
+    base: true,
+    md: false,
+  });
   return (
-    <Container
-      as="section"
-      pt={{ base: "4", md: "8" }}
-      pb={{ base: "12", md: "24" }}
-    >
-      <Box
-        bg="bg-surface"
-        px={{ base: "4", md: "3" }}
-        py={{ base: "4", md: "2.5" }}
+    <Box bg="bg-surface" boxShadow={useColorModeValue("sm", "sm-dark")}>
+      <Container
+        py={{
+          base: "4",
+          md: "2.5",
+        }}
         position="relative"
-        boxShadow={useColorModeValue("sm", "sm-dark")}
-        borderRadius="xl"
       >
-        {/* <CloseButton
-          display={{ md: "none" }}
+        <CloseButton
+          display={{
+            md: "none",
+          }}
           position="absolute"
           right="2"
           top="2"
-        /> */}
+        />
         <Stack
-          direction={{ base: "column", md: "row" }}
+          direction={{
+            base: "column",
+            md: "row",
+          }}
           justify="space-between"
-          spacing={{ base: "3", md: "2" }}
+          spacing={{
+            base: "3",
+            md: "2",
+          }}
         >
           <Stack
             spacing="4"
-            direction={{ base: "column", md: "row" }}
-            align={{ base: "start", md: "center" }}
+            direction={{
+              base: "column",
+              md: "row",
+            }}
+            align={{
+              base: "start",
+              md: "center",
+            }}
           >
             {!isMobile && (
               <Square size="12" bg="bg-subtle" borderRadius="md">
-                <Icon as={CgProfile} boxSize="6" />
+                <Icon as={BiCookie} boxSize="6" />
               </Square>
             )}
-            <Stack spacing="0.5" pe={{ base: "4", md: "0" }}>
-              <Text fontWeight="medium">You&apos;re almost there </Text>
+            <Stack
+              spacing="0.5"
+              pe={{
+                base: "4",
+                md: "0",
+              }}
+            >
+              <Text fontWeight="medium">
+                We use our own and third-party cookies to personalize content.
+              </Text>
               <Text color="muted">
-                Fill in some more information about yourself to get started
+                Read our <Link>Cookie Policy</Link>
               </Text>
             </Stack>
           </Stack>
           <Stack
-            direction={{ base: "column", sm: "row" }}
-            spacing={{ base: "3", md: "2" }}
-            align={{ base: "stretch", md: "center" }}
+            direction={{
+              base: "column",
+              sm: "row",
+            }}
+            spacing={{
+              base: "3",
+              md: "2",
+            }}
+            align={{
+              base: "stretch",
+              md: "center",
+            }}
           >
-            {/* <Button variant="secondary" width="full">
+            <Button variant="secondary" width="full">
               Reject
-            </Button> */}
-            <Button variant="primary" width="full">
-              Update Profile
             </Button>
-            {/* <CloseButton display={{ base: 'none', md: 'inline-flex' }} /> */}
+            <Button variant="primary" width="full">
+              Allow
+            </Button>
+            <CloseButton
+              display={{
+                base: "none",
+                md: "inline-flex",
+              }}
+            />
           </Stack>
         </Stack>
-      </Box>
-    </Container>
+      </Container>
+    </Box>
   );
 };

@@ -46,7 +46,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
         py={{ base: "6", sm: "8" }}
         px={{ base: "4", sm: "6" }}
       >
-        <Stack justify="space-between" spacing="1" width="full" height="full">
+        <Stack justify="space-between" spacing="1" width="full">
           <Flex direction="column" height="full">
             <Logo />
             <Stack spacing="1" mt="8" mb="8">
