@@ -10,7 +10,9 @@ import {
   HStack,
   Input,
   Stack,
+  Flex,
   Text,
+  Image,
   useBreakpointValue,
   useToast,
 } from "@chakra-ui/react";
@@ -26,7 +28,6 @@ import {
   TwitterIcon,
   GitHubIcon,
 } from "../../components/auth/ProviderIcons";
-import { Logo } from "../../components/Logo";
 import { auth } from "lib/firebase/client";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +46,6 @@ export const SignInForm = (props: any) => {
     {} as ConfirmationResult
   );
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const onSendCode = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -124,7 +124,11 @@ export const SignInForm = (props: any) => {
   return (
     <Stack spacing="8" {...props}>
       <Stack spacing="6">
-        {isMobile && <Logo />}
+        {isMobile && (
+          <Flex justify="center">
+            <Image src="images/doghouse.png" width="200px" height="200px" />
+          </Flex>
+        )}
         <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
           <Heading size={useBreakpointValue({ base: "xs", md: "sm" })}>
             Log in to your account
@@ -176,12 +180,6 @@ export const SignInForm = (props: any) => {
             )}
 
             <Box id="recaptcha-container" hidden />
-
-            {error && (
-              <Text textAlign="center" color="red" fontSize="10pt">
-                {error}
-              </Text>
-            )}
 
             <Button variant="primary" type="submit" isLoading={loading}>
               {codeSent ? "Log in" : "Continue with phone"}

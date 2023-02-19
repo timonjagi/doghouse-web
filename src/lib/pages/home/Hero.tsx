@@ -59,7 +59,7 @@ export default function CallToActionWithIllustration() {
                 size="lg"
                 fontSize="md"
                 fontWeight="bold"
-                onClick={() => router.push("/signup")}
+                onClick={() => router.push("/login")}
               >
                 Get Started for Free
               </Button>

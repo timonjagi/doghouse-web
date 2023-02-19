@@ -13,15 +13,7 @@ import {
 import { useRouter } from "next/router";
 // import * as React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import {
-  FiHome,
-  FiInstagram,
-  FiTwitter,
-  FiFacebook,
-  FiHelpCircle,
-  FiSettings,
-  FiLogIn,
-} from "react-icons/fi";
+import { FiHome, FiHelpCircle, FiSettings, FiLogIn } from "react-icons/fi";
 import { RxDashboard } from "react-icons/rx";
 
 import { Logo } from "../Logo";
@@ -82,7 +74,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
                 <NavButton label="Podcasts" icon={FiMic} />
               </Stack>
             </Stack> */}
-            <Stack>
+            {/* <Stack>
               <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
                 Social
               </Text>
@@ -91,7 +83,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
                 <NavButton label="Twitter" icon={FiTwitter} />
                 <NavButton label="Instagram" icon={FiInstagram} />
               </Stack>
-            </Stack>
+            </Stack> */}
 
             <Spacer />
 
