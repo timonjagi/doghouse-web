@@ -44,7 +44,7 @@ const Login = () => (
               <Stack spacing="8">
                 <Stack spacing="6">
                   <Heading size={useBreakpointValue({ md: "lg", xl: "xl" })}>
-                    Start making your dreams come true
+                    Find your perfect match
                   </Heading>
                   <Text fontSize="lg" maxW="md" fontWeight="medium">
                     Create an account and discover the worlds&apos; best UI

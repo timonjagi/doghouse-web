@@ -3,11 +3,9 @@ import {
   AlertIcon,
   Box,
   Button,
-  Divider,
   FormControl,
   FormLabel,
   Heading,
-  HStack,
   Input,
   Stack,
   Flex,
@@ -21,13 +19,8 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { useRouter } from "next/router";
 import type * as React from "react";
 import { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
 
-import {
-  GoogleIcon,
-  TwitterIcon,
-  GitHubIcon,
-} from "../../components/auth/ProviderIcons";
 import { auth } from "lib/firebase/client";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,8 +39,10 @@ export const SignInForm = (props: any) => {
     {} as ConfirmationResult
   );
   const [loading, setLoading] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [updateProfile, updating, error] = useUpdateProfile(auth);
 
-  const onSendCode = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSendCode = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const appVerifier = new RecaptchaVerifier(
@@ -86,7 +81,7 @@ export const SignInForm = (props: any) => {
     setLoading(false);
   };
 
-  const onVerifyCode = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onVerifyCode = async (event: React.FormEvent) => {
     event.preventDefault();
 
     setLoading(true);
@@ -115,119 +110,140 @@ export const SignInForm = (props: any) => {
     setLoading(false);
   };
 
+  const onUpdateProfile = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    try {
+      const success = await updateProfile({ displayName });
+      if (success) {
+        toast({
+          title: "Profile updated successfully",
+          description: "",
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+      }
+
+      router.push("/dashboard");
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast({
+        title: error?.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
   useEffect(() => {
-    if (user) router.push("/dashboard");
+    if (user && user.displayName) {
+      router.push("/dashboard");
+    }
   }, [user, router]);
 
   return (
     <Stack spacing="8" {...props}>
-      <Stack spacing="6">
-        {isMobile && (
-          <Flex justify="center">
-            <Image src="images/doghouse.png" width="200px" height="200px" />
-          </Flex>
-        )}
-        <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
-          <Heading size={useBreakpointValue({ base: "xs", md: "sm" })}>
-            Log in to your account
-          </Heading>
-        </Stack>
-
-        {codeSent && (
-          <Alert status="success">
-            <AlertIcon />
-            Code sent to {phoneNumber}
-          </Alert>
-        )}
+      <Stack spacing="6" align="center">
+        <Flex justify="center">
+          <Image src="images/doghouse.png" width="200px" height="200px" />
+        </Flex>
       </Stack>
 
-      <form onSubmit={codeSent ? onVerifyCode : onSendCode}>
-        <Stack spacing="6">
-          <Stack spacing="5">
-            {!codeSent && (
-              <FormControl>
-                <Input
-                  data-peer
-                  required
-                  id="phone"
-                  name="phone"
-                  placeholder=" "
-                  type="tel"
-                  onChange={(event) => setPhoneNumber(event?.target.value)}
-                />
-                <FormLabel htmlFor="phone" variant="floating">
-                  Phone
-                </FormLabel>
-              </FormControl>
-            )}
-            {codeSent && (
-              <FormControl>
-                <Input
-                  data-peer
-                  required
-                  id="code"
-                  name="code"
-                  placeholder=" "
-                  type="tel"
-                  onChange={(event) => setCode(event?.target.value)}
-                />
-                <FormLabel htmlFor="code" variant="floating">
-                  Code
-                </FormLabel>
-              </FormControl>
-            )}
-
-            <Box id="recaptcha-container" hidden />
-
-            <Button variant="primary" type="submit" isLoading={loading}>
-              {codeSent ? "Log in" : "Continue with phone"}
-            </Button>
+      {!user && (
+        <Stack
+          as="form"
+          spacing="5"
+          onSubmit={codeSent ? onVerifyCode : onSendCode}
+        >
+          <Stack spacing="3" textAlign="center">
+            <Heading size={isMobile ? "xs" : "md"}>
+              Log in to your account
+            </Heading>{" "}
+            <Text color="muted">Start making your dreams come true</Text>
           </Stack>
 
-          {/* <Stack spacing="4" pt="4">
+          {codeSent && (
+            <Alert status="success">
+              <AlertIcon />
+              Code sent to {phoneNumber}
+            </Alert>
+          )}
           <FormControl>
-            <Input id="email" type="email" placeholder=" " data-peer />
-            <FormLabel htmlFor="email" variant="floating">
-              Email
-            </FormLabel>
+            <FormLabel htmlFor="phone">Phone</FormLabel>
+            <Input
+              data-peer
+              required
+              id="phone"
+              name="phone"
+              placeholder=" "
+              type="tel"
+              disabled={codeSent}
+              onChange={(event) => setPhoneNumber(event?.target.value)}
+            />
           </FormControl>
-          <Button variant="primary">Continue with email</Button>
-        </Stack> */}
 
-          <Stack spacing="6">
-            <HStack>
-              <Divider />
-              <Text fontSize="sm" color="muted">
-                OR
-              </Text>
-              <Divider />
-            </HStack>
-            <Stack spacing="3">
-              <Button
-                variant="secondary"
-                leftIcon={<GoogleIcon boxSize="5" />}
-                iconSpacing="3"
-              >
-                Continue with Google
-              </Button>
-              <Button
-                variant="secondary"
-                leftIcon={<TwitterIcon boxSize="5" />}
-                iconSpacing="3"
-              >
-                Continue with Twitter
-              </Button>
-              <Button
-                variant="secondary"
-                leftIcon={<GitHubIcon boxSize="5" />}
-                iconSpacing="3"
-              >
-                Continue with GitHub
-              </Button>
-            </Stack>
-          </Stack>
+          {codeSent && (
+            <FormControl>
+              <FormLabel htmlFor="code">Code</FormLabel>
+              <Input
+                data-peer
+                required
+                id="code"
+                name="code"
+                placeholder="Enter verification code"
+                type="tel"
+                onChange={(event) => setCode(event?.target.value)}
+              />
+            </FormControl>
+          )}
+
+          <Box id="recaptcha-container" hidden />
+
+          <Button variant="primary" type="submit" isLoading={loading}>
+            Continue with phone
+          </Button>
         </Stack>
-      </form>
+      )}
+
+      {user && !user?.displayName && (
+        <Stack as="form" spacing="4" mt="8" onSubmit={onUpdateProfile}>
+          <Heading size={isMobile ? "xs" : "md"}>Complete your profile</Heading>
+          <FormControl id="name">
+            <FormLabel srOnly>Enter your name</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your name"
+              size="lg"
+              fontSize="md"
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
+          </FormControl>
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            isLoading={updating}
+          >
+            Update Profile
+          </Button>
+        </Stack>
+      )}
+
+      <Stack spacing="0.5" align="center">
+        <Text fontSize="sm" color="muted">
+          Having trouble logging in?
+        </Text>
+        <Button variant="link" colorScheme="blue" size="sm">
+          Contact us
+        </Button>
+      </Stack>
+      <Text fontSize="xs" color="subtle" textAlign="center">
+        By continuing, you acknowledge that you have read, understood, and agree
+        to our terms and condition
+      </Text>
     </Stack>
   );
 };

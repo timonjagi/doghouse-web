@@ -1,6 +1,4 @@
-import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
-  Avatar,
   Box,
   Button,
   ButtonGroup,
@@ -9,27 +7,20 @@ import {
   DrawerContent,
   DrawerOverlay,
   Flex,
-  Text,
   HStack,
   IconButton,
   useBreakpointValue,
   useDisclosure,
-  Center,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-  useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 // import * as React from "react";
-import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { FiHelpCircle, FiBell } from "react-icons/fi";
 
 import { Logo } from "../components/Logo";
 import { Sidebar } from "../components/nav/Sidebar";
 import { ToggleButton } from "../components/nav/ToggleButton";
+import UserProfileMenu from "lib/components/nav/UserProfileMenu";
 import { auth } from "lib/firebase/client";
 
 const Header = () => {
@@ -40,38 +31,8 @@ const Header = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
   const { pathname } = router;
-  const toast = useToast();
 
   const [user] = useAuthState(auth);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [signOut, loading, error] = useSignOut(auth);
-
-  const onLogout = async () => {
-    try {
-      const success = await signOut();
-
-      if (success) {
-        toast({
-          title: "Logged out successfully",
-          description: "",
-          status: "success",
-          duration: 4000,
-          isClosable: true,
-        });
-
-        await router.push("/");
-      }
-      return success;
-    } catch (err) {
-      toast({
-        title: error?.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-    return 0;
-  };
 
   return (
     <Box as="nav" bg="bg-accent" color="on-accent">
@@ -129,52 +90,11 @@ const Header = () => {
               </ButtonGroup>
 
               {user ? (
-                <Menu variant="primary-on-accent">
-                  <MenuButton
-                    as={Button}
-                    rightIcon={<ChevronDownIcon />}
-                    rounded="full"
-                    variant="link"
-                    cursor="pointer"
-                    minW={0}
-                    color="on-accent"
-                  >
-                    <Avatar
-                      name={user?.displayName || ""}
-                      src={user?.photoURL || ""}
-                      boxSize="10"
-                    />
-                  </MenuButton>
-                  <MenuList alignItems="center" color="brand.400">
-                    <br />
-                    <Center>
-                      <Avatar
-                        name={user?.displayName || ""}
-                        src={user?.photoURL || ""}
-                        size="2xl"
-                      />
-                    </Center>
-                    <br />
-                    <Center>
-                      <Box>
-                        <Text
-                          color="on-accent"
-                          fontWeight="medium"
-                          fontSize="sm"
-                        >
-                          {user?.displayName}
-                        </Text>
-                        <Text color="on-accent-muted" fontSize="sm">
-                          {user?.phoneNumber}
-                        </Text>
-                      </Box>
-                    </Center>
-                    <MenuDivider />
-                    {/* <MenuItem>Your Servers</MenuItem> */}
-                    <MenuItem>Account Settings</MenuItem>
-                    <MenuItem onClick={onLogout}>Logout</MenuItem>
-                  </MenuList>
-                </Menu>
+                <UserProfileMenu
+                  name={user?.displayName || ""}
+                  image={user?.photoURL || ""}
+                  phoneNumber={user?.phoneNumber || ""}
+                />
               ) : (
                 <HStack spacing="3">
                   <Button

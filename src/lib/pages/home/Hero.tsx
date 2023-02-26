@@ -63,7 +63,7 @@ export default function CallToActionWithIllustration() {
               >
                 Get Started for Free
               </Button>
-              <HStack
+              {/* <HStack
                 as="a"
                 transition="background 0.2s"
                 justify={{
@@ -82,7 +82,7 @@ export default function CallToActionWithIllustration() {
               >
                 <span>Sign up as breeder</span>
                 <HiChevronRight />
-              </HStack>
+              </HStack> */}
             </Stack>
           </Box>
         </Box>

@@ -13,7 +13,6 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { CompleteProfileBanner } from "lib/components/auth/CompleteProfileBanner";
 import { auth } from "lib/firebase/client";
 
 const Dashboard = () => {
@@ -25,10 +24,9 @@ const Dashboard = () => {
       router.push("/");
     }
   }, [user, router]);
+
   return (
     <Box as="section" height="100vh" overflowY="auto">
-      {user && !user?.displayName && <CompleteProfileBanner />}
-
       <Container
         pt={{
           base: "8",
