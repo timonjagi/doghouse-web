@@ -1,12 +1,9 @@
 import {
   Flex,
-  Text,
   Stack,
   Box,
   Button,
   Divider,
-  HStack,
-  Progress,
   Spacer,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
@@ -93,7 +90,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
                   <NavButton label="Help" icon={FiHelpCircle} />
                   <NavButton label="Settings" icon={FiSettings} />
                 </Stack>
-                <Box bg="bg-accent-subtle" px="4" py="5" borderRadius="lg">
+                {/* <Box bg="bg-accent-subtle" px="4" py="5" borderRadius="lg">
                   <Stack spacing="4">
                     <Stack spacing="1">
                       <Text fontSize="sm" fontWeight="medium">
@@ -115,7 +112,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
                       </Button>
                     </HStack>
                   </Stack>
-                </Box>
+                </Box> */}
                 <Divider borderColor="bg-accent-subtle" />
                 <UserProfile
                   name={user?.displayName || ""}

@@ -17,7 +17,7 @@ import { NextSeo } from "next-seo";
 
 import { Logo } from "../../components/Logo";
 
-import { LoginForm } from "./LoginForm";
+import { BreederSignUpForm } from "./BreederSignUpForm";
 
 const Login = () => (
   <Flex
@@ -29,7 +29,7 @@ const Login = () => (
       ),
     })}
   >
-    <NextSeo title="Login" />
+    <NextSeo title="Sign-up as Breeder" />
 
     <Flex maxW="8xl" mx="auto" width="full">
       <Box flex="1" display={{ base: "none", md: "block" }}>
@@ -47,11 +47,10 @@ const Login = () => (
               <Stack spacing="8">
                 <Stack spacing="6">
                   <Heading size={useBreakpointValue({ md: "lg", xl: "xl" })}>
-                    Find your perfect match
+                    Join our network of breeders
                   </Heading>
                   <Text fontSize="lg" maxW="md" fontWeight="medium">
-                    Create an account and get connected to our network of
-                    reputable breeders.
+                    Create an account and get more customers for your breeds.
                   </Text>
                 </Stack>
                 <HStack spacing="4">
@@ -81,7 +80,7 @@ const Login = () => (
                       src="https://bit.ly/code-beast"
                     />
                   </AvatarGroup>
-                  <Text fontWeight="medium">Join 1000+ users</Text>
+                  <Text fontWeight="medium">Join 100+ breeders</Text>
                 </HStack>
               </Stack>
             </Flex>
@@ -94,7 +93,7 @@ const Login = () => (
         </DarkMode>
       </Box>
       <Center h="100vh" flex="1">
-        <LoginForm px={{ base: "4", md: "8" }} width="full" maxW="md" />
+        <BreederSignUpForm px={{ base: "4", md: "8" }} width="full" maxW="md" />
       </Center>
     </Flex>
   </Flex>

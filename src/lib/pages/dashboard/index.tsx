@@ -1,27 +1,36 @@
-import {
-  Button,
-  Box,
-  Container,
-  Heading,
-  Stack,
-  HStack,
-  Text,
-  useBreakpointValue,
-} from "@chakra-ui/react";
+import { Box, Container } from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 import { auth } from "lib/firebase/client";
 
+import BreederDashboard from "./BreederDashboard";
+import ClientDashboard from "./ClientDashboard";
+
 const Dashboard = () => {
   const router = useRouter();
   const [user] = useAuthState(auth);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [customClaims, setCustomClaims] = useState({} as any);
 
   useEffect(() => {
     if (!user) {
-      router.push("/");
+      router.push("/login");
+    }
+
+    const getClaims = async () => {
+      const tokenResult = await user?.getIdTokenResult();
+
+      if (tokenResult) {
+        const { claims } = tokenResult;
+        setCustomClaims(claims);
+      }
+    };
+
+    if (user) {
+      getClaims();
     }
   }, [user, router]);
 
@@ -39,23 +48,13 @@ const Dashboard = () => {
       >
         <NextSeo title="Dashboard" />
 
-        <HStack spacing="4" justify="space-between">
-          <Stack spacing="1">
-            <Heading
-              size={useBreakpointValue({
-                base: "xs",
-                lg: "sm",
-              })}
-              fontWeight="medium"
-            >
-              Dashboard
-            </Heading>
-            <Text color="muted">All important metrics at a glance</Text>
-          </Stack>
-          <Button variant="primary" hidden={!user?.displayName}>
-            Create
-          </Button>
-        </HStack>
+        {user && customClaims && customClaims.isBreeder && (
+          <BreederDashboard user={user} />
+        )}
+
+        {user && customClaims && !customClaims.isBreeder && (
+          <ClientDashboard user={user} />
+        )}
       </Container>
     </Box>
   );

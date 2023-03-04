@@ -17,7 +17,7 @@ import { NextSeo } from "next-seo";
 
 import { Logo } from "../../components/Logo";
 
-import { LoginForm } from "./LoginForm";
+import { SignUpForm } from "./SignUpForm";
 
 const Login = () => (
   <Flex
@@ -29,7 +29,7 @@ const Login = () => (
       ),
     })}
   >
-    <NextSeo title="Login" />
+    <NextSeo title="Sign Up" />
 
     <Flex maxW="8xl" mx="auto" width="full">
       <Box flex="1" display={{ base: "none", md: "block" }}>
@@ -94,7 +94,7 @@ const Login = () => (
         </DarkMode>
       </Box>
       <Center h="100vh" flex="1">
-        <LoginForm px={{ base: "4", md: "8" }} width="full" maxW="md" />
+        <SignUpForm px={{ base: "4", md: "8" }} width="full" maxW="md" />
       </Center>
     </Flex>
   </Flex>
