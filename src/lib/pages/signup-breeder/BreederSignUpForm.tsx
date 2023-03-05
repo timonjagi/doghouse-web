@@ -14,6 +14,7 @@ import { Step } from "../../components/Step";
 import { useStep } from "../../components/useStep";
 
 import { Step1 } from "./Step1";
+import { Step2 } from "./Step2";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const BreederSignUpForm = (props: any) => {
@@ -35,18 +36,7 @@ export const BreederSignUpForm = (props: any) => {
 
       <Stack spacing="5" mt="0px !important">
         <Stack spacing="3" textAlign="center">
-          <Heading size="sm">Create your Breeder account</Heading>
-
-          <HStack justify="center" spacing="1">
-            <Text color="muted">Already have an account?</Text>
-            <Button
-              variant="link"
-              colorScheme="brand"
-              onClick={() => router.push("/login")}
-            >
-              Log in
-            </Button>
-          </HStack>
+          <Heading size="sm">Sign up as breeder</Heading>
         </Stack>
 
         <HStack spacing="0" justify="space-evenly" flex="1">
@@ -66,7 +56,9 @@ export const BreederSignUpForm = (props: any) => {
           <Step1 currentStep={currentStep} setStep={setStep} />
         )}
 
-        {currentStep === 1 && <div>Step 2</div>}
+        {currentStep === 1 && (
+          <Step2 currentStep={currentStep} setStep={setStep} />
+        )}
 
         {currentStep === 0 && (
           <Text fontSize="xs" color="subtle" textAlign="center">
@@ -74,6 +66,17 @@ export const BreederSignUpForm = (props: any) => {
             agree to our terms and condition
           </Text>
         )}
+
+        <HStack justify="center" spacing="1">
+          <Text color="muted">Already have an account?</Text>
+          <Button
+            variant="link"
+            colorScheme="brand"
+            onClick={() => router.push("/login")}
+          >
+            Log in
+          </Button>
+        </HStack>
       </Stack>
     </Stack>
   );
