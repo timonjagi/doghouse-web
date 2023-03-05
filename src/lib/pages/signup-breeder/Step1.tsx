@@ -282,7 +282,7 @@ export const Step1 = ({ currentStep, setStep }: any) => {
         <Button
           isLoading={loading}
           type="submit"
-          isDisabled={currentStep >= 3 || !displayName || !phoneNumber}
+          isDisabled={currentStep >= 3}
           variant="primary"
         >
           Next

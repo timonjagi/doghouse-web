@@ -30,7 +30,7 @@ export const BreederSignUpForm = (props: any) => {
   return (
     <Stack spacing="8" {...props}>
       <Stack spacing="6" align="center">
-        <Flex justify="center">
+        <Flex justify="center" as="a" href="/">
           <Image src="images/doghouse.png" width="200px" height="200px" />
         </Flex>
       </Stack>
@@ -38,6 +38,16 @@ export const BreederSignUpForm = (props: any) => {
       <Stack spacing="5" mt="0px !important">
         <Stack spacing="3" textAlign="center">
           <Heading size="sm">Sign up as breeder</Heading>
+          <HStack justify="center" spacing="1">
+            <Text color="muted">Already have an account?</Text>
+            <Button
+              variant="link"
+              colorScheme="brand"
+              onClick={() => router.push("/login")}
+            >
+              Log in
+            </Button>
+          </HStack>
         </Stack>
 
         <HStack spacing="0" justify="space-evenly" flex="1">
@@ -71,17 +81,6 @@ export const BreederSignUpForm = (props: any) => {
             agree to our terms and condition
           </Text>
         )}
-
-        <HStack justify="center" spacing="1">
-          <Text color="muted">Already have an account?</Text>
-          <Button
-            variant="link"
-            colorScheme="brand"
-            onClick={() => router.push("/login")}
-          >
-            Log in
-          </Button>
-        </HStack>
       </Stack>
     </Stack>
   );

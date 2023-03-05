@@ -143,7 +143,7 @@ export const LoginForm = (props: any) => {
   return (
     <Stack spacing="8" {...props}>
       <Stack spacing="6" align="center">
-        <Flex justify="center">
+        <Flex justify="center" as="a" href="/">
           <Image src="images/doghouse.png" width="200px" height="200px" />
         </Flex>
       </Stack>

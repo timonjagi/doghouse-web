@@ -207,7 +207,7 @@ export const SignUpForm = (props: any) => {
   return (
     <Stack spacing="8" {...props}>
       <Stack spacing="6" align="center">
-        <Flex justify="center">
+        <Flex justify="center" as="a" href="/">
           <Image src="images/doghouse.png" width="200px" height="200px" />
         </Flex>
       </Stack>
@@ -305,33 +305,27 @@ export const SignUpForm = (props: any) => {
             {codeSent ? "Create Account " : "Continue"}
           </Button>
 
+          <Text fontSize="xs" color="subtle" textAlign="center">
+            By continuing, you acknowledge that you have read, understood, and
+            agree to our terms and condition
+          </Text>
+
           {!codeSent && (
             <>
-              <HStack>
-                <Divider />
-                <Text fontSize="sm" whiteSpace="nowrap" color="muted">
-                  OR
-                </Text>
-                <Divider />
-              </HStack>
+              <Divider />
 
               <Stack textAlign="center">
-                <Text color="muted">Want to sell with us?</Text>
+                <Text color="muted">Want to sell your dogs?</Text>
                 <Button
                   variant="outline"
                   onClick={() => router.push("/signup-breeder")}
                 >
-                  Join as Breeder
+                  Sign up as Breeder
                 </Button>
               </Stack>
             </>
           )}
         </Stack>
-
-        <Text fontSize="xs" color="subtle" textAlign="center">
-          By continuing, you acknowledge that you have read, understood, and
-          agree to our terms and condition
-        </Text>
       </Stack>
     </Stack>
   );
