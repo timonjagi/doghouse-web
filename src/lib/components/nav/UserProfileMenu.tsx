@@ -35,7 +35,6 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
   const toast = useToast();
 
   const onLogout = async () => {
-    console.log("logging out");
     try {
       const success = await signOut();
 
