@@ -15,6 +15,7 @@ import { useStep } from "../../components/useStep";
 
 import { Step1 } from "./Step1";
 import { Step2 } from "./Step2";
+import { Step3 } from "./Step3";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const BreederSignUpForm = (props: any) => {
@@ -23,7 +24,7 @@ export const BreederSignUpForm = (props: any) => {
   const numberOfSteps = 3;
   const [currentStep, { setStep }] = useStep({
     maxStep: numberOfSteps,
-    initialStep: 0,
+    initialStep: 2,
   });
 
   return (
@@ -58,6 +59,10 @@ export const BreederSignUpForm = (props: any) => {
 
         {currentStep === 1 && (
           <Step2 currentStep={currentStep} setStep={setStep} />
+        )}
+
+        {currentStep === 2 && (
+          <Step3 currentStep={currentStep} setStep={setStep} />
         )}
 
         {currentStep === 0 && (
