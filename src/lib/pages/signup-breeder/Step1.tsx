@@ -51,14 +51,24 @@ export const Step1 = ({ currentStep, setStep }: any) => {
 
   const [invalidCode, setInvalidCode] = useState(false);
 
+  // eslint-disable-next-line
   const userExists = async () => {
-    const userQuery = query(
-      collection(fireStore, "users"),
-      where("phoneNumber", "==", phoneNumber)
-    );
-
-    const userDocs = await getCountFromServer(userQuery);
-    return userDocs.data().count;
+    try {
+      const userQuery = query(
+        collection(fireStore, "users"),
+        where("phoneNumber", "==", phoneNumber)
+      );
+      const userDocs = await getCountFromServer(userQuery);
+      return userDocs.data().count;
+      // eslint-disable-next-line
+    } catch (err: any) {
+      toast({
+        title: err.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   const createUserDocument = async (uid: string) => {
@@ -70,7 +80,6 @@ export const Step1 = ({ currentStep, setStep }: any) => {
     } catch (err: any) {
       toast({
         title: err.message,
-        description: err.message || "",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -273,7 +282,7 @@ export const Step1 = ({ currentStep, setStep }: any) => {
         <Button
           isLoading={loading}
           type="submit"
-          isDisabled={currentStep >= 3}
+          isDisabled={currentStep >= 3 || !displayName || !phoneNumber}
           variant="primary"
         >
           Next

@@ -24,7 +24,7 @@ export const BreederSignUpForm = (props: any) => {
   const numberOfSteps = 3;
   const [currentStep, { setStep }] = useStep({
     maxStep: numberOfSteps,
-    initialStep: 2,
+    initialStep: 0,
   });
 
   return (
