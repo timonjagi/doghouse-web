@@ -169,7 +169,7 @@ export const Step3 = ({ currentStep, setStep }: any) => {
           Select your breeds ({selectedBreeds.length})
         </FormLabel>
         <AsyncSelect
-          instanceId="333"
+          instanceId="444"
           value={null}
           placeholder="Search breeds..."
           isClearable
