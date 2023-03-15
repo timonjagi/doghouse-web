@@ -46,7 +46,7 @@ export const LoginForm = (props: any) => {
   );
   const [loading, setLoading] = useState(false);
 
-  const userExists = async () => {
+  const checkIfUserExists = async () => {
     const userQuery = query(
       collection(fireStore, "users"),
       where("phoneNumber", "==", phoneNumber)
@@ -61,7 +61,8 @@ export const LoginForm = (props: any) => {
 
     setLoading(true);
 
-    if (await userExists()) {
+    const userExists = await checkIfUserExists();
+    if (userExists) {
       const appVerifier = new RecaptchaVerifier(
         "recaptcha-container",
         {

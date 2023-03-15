@@ -15,6 +15,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { MdOutlineLocationOn } from "react-icons/md";
+import Select from "react-select";
 
 import { auth, fireStore } from "lib/firebase/client";
 
@@ -22,10 +23,24 @@ import { auth, fireStore } from "lib/firebase/client";
 export const Step2 = ({ currentStep, setStep }: any) => {
   const [user] = useAuthState(auth);
   const toast = useToast();
+  const services = [
+    { label: "Adoption", value: "adoption" },
+    { label: "Stud", value: "stud" },
+    { label: "Exchange", value: "exchange" },
+    { label: "Boarding", value: "boarding" },
+  ];
 
   const [kennelName, setKennelName] = useState("");
   const [kennelLocation, setKennelLocation] = useState("");
+  const [kennelServices, setKennelServices] = useState([] as string[]);
   const [loading, setLoading] = useState(false);
+
+  // eslint-disable-next-line
+  const onSelectServices = (selectedService: any) => {
+    if (selectedService) {
+      setKennelServices((prev) => [...prev, selectedService.value]);
+    }
+  };
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -36,6 +51,7 @@ export const Step2 = ({ currentStep, setStep }: any) => {
         breederId: user?.uid,
         name: kennelName,
         location: kennelLocation,
+        services: JSON.stringify(kennelServices),
       };
 
       await addDoc(collection(fireStore, "kennels"), payload);
@@ -80,11 +96,22 @@ export const Step2 = ({ currentStep, setStep }: any) => {
               required
               id="location"
               name="location"
-              placeholder="Enter you kennel's location"
+              placeholder="Enter your kennel's location"
               type="string"
               onChange={(event) => setKennelLocation(event?.target.value)}
             />{" "}
           </InputGroup>
+        </FormControl>
+
+        <FormControl>
+          <FormLabel htmlFor="phone">Services</FormLabel>
+
+          <Select
+            required
+            isMulti
+            options={services}
+            onChange={onSelectServices}
+          />
         </FormControl>
       </Stack>
 
@@ -100,7 +127,7 @@ export const Step2 = ({ currentStep, setStep }: any) => {
         <Button
           isLoading={loading}
           type="submit"
-          isDisabled={currentStep >= 3}
+          isDisabled={currentStep >= 3 || !kennelServices.length}
           variant="primary"
         >
           Next

@@ -2,6 +2,7 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getMessaging } from "firebase/messaging";
 import { getStorage } from "firebase/storage";
 
 import { firebaseConfig } from "./config";
@@ -12,5 +13,6 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const fireStore = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+const messaging = getMessaging(app);
 
-export { fireStore, auth, storage };
+export { fireStore, auth, storage, messaging };

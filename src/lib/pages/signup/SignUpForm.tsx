@@ -56,7 +56,7 @@ export const SignUpForm = (props: any) => {
   const [invalidCode, setInvalidCode] = useState(false);
 
   // eslint-disable-next-line
-  const userExists = async () => {
+  const checkIfUserExists = async () => {
     try {
       const userQuery = query(
         collection(fireStore, "users"),
@@ -134,7 +134,8 @@ export const SignUpForm = (props: any) => {
 
     setLoading(true);
 
-    if (await userExists()) {
+    const userExists = await checkIfUserExists();
+    if (userExists) {
       toast({
         title: "Account already exists",
         description: "You are already signed up. Please log in to continue",
@@ -315,7 +316,7 @@ export const SignUpForm = (props: any) => {
               <Divider />
 
               <Stack textAlign="center">
-                <Text color="muted">Want to sell your dogs?</Text>
+                <Text color="muted">Want to sell your dogs with us?</Text>
                 <Button
                   variant="outline"
                   onClick={() => router.push("/signup-breeder")}

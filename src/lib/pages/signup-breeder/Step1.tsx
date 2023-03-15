@@ -28,7 +28,7 @@ import {
 } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
+import { useUpdateProfile } from "react-firebase-hooks/auth";
 
 import { auth, fireStore } from "lib/firebase/client";
 
@@ -36,7 +36,6 @@ import { auth, fireStore } from "lib/firebase/client";
 export const Step1 = ({ currentStep, setStep }: any) => {
   const toast = useToast();
   const router = useRouter();
-  const [user] = useAuthState(auth);
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [codeSent, setCodeSent] = useState(false);
@@ -52,30 +51,15 @@ export const Step1 = ({ currentStep, setStep }: any) => {
   const [invalidCode, setInvalidCode] = useState(false);
 
   // eslint-disable-next-line
-  const userExists = async () => {
-    try {
-      const userQuery = query(
-        collection(fireStore, "users"),
-        where("phoneNumber", "==", phoneNumber)
-      );
-      const userDocs = await getCountFromServer(userQuery);
-      return userDocs.data().count;
-      // eslint-disable-next-line
-    } catch (err: any) {
-      toast({
-        title: err.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
 
   const createUserDocument = async (uid: string) => {
     try {
-      const userPayload = JSON.parse(JSON.stringify(user));
-      delete userPayload.stsTokenManager;
-      await setDoc(doc(fireStore, "users", uid), userPayload);
+      const { currentUser } = auth;
+      if (currentUser) {
+        const userPayload = JSON.parse(JSON.stringify(currentUser));
+        delete userPayload.stsTokenManager;
+        await setDoc(doc(fireStore, "users", uid), userPayload);
+      }
       // eslint-disable-next-line
     } catch (err: any) {
       toast({
@@ -85,6 +69,8 @@ export const Step1 = ({ currentStep, setStep }: any) => {
         isClosable: true,
       });
     }
+
+    setLoading(false);
   };
 
   const completeProfile = async (uid: string) => {
@@ -97,9 +83,7 @@ export const Step1 = ({ currentStep, setStep }: any) => {
         headers: { "Content-Type": "application/json" },
       });
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (response.status === 200) {
         await createUserDocument(uid);
         setStep(currentStep + 1);
       }
@@ -115,63 +99,47 @@ export const Step1 = ({ currentStep, setStep }: any) => {
     } catch (err: any) {
       toast({
         title: err.message,
-        description: err.message || "",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
-    }
 
-    setLoading(false);
+      setLoading(false);
+    }
   };
 
-  const onSendCode = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const sendVerificationCode = async () => {
+    const appVerifier = new RecaptchaVerifier(
+      "recaptcha-container",
+      {
+        size: "invisible",
+      },
+      auth
+    );
 
-    setLoading(true);
+    try {
+      const result = await signInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        appVerifier
+      );
 
-    if (await userExists()) {
+      if (result) {
+        setCodeSent(true);
+        setConfirmationResult(result);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       toast({
-        title: "Account already exists",
-        description: "You are already signed up. Please log in to continue",
-        status: "warning",
+        title: err.message,
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
-      router.push("/login");
-    } else {
-      const appVerifier = new RecaptchaVerifier(
-        "recaptcha-container",
-        {
-          size: "invisible",
-        },
-        auth
-      );
-
-      try {
-        const result = await signInWithPhoneNumber(
-          auth,
-          phoneNumber,
-          appVerifier
-        );
-
-        if (result) {
-          setCodeSent(true);
-          setConfirmationResult(result);
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        toast({
-          title: err.message,
-          description: err.message || "",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-        appVerifier.clear();
-      }
-      setLoading(false);
+      appVerifier.clear();
     }
+
+    setLoading(false);
   };
 
   const onVerifyCode = async (event: React.FormEvent) => {
@@ -189,7 +157,6 @@ export const Step1 = ({ currentStep, setStep }: any) => {
       setInvalidCode(true);
       toast({
         title: err.message,
-        description: err.message || "",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -199,12 +166,46 @@ export const Step1 = ({ currentStep, setStep }: any) => {
     setLoading(false);
   };
 
+  const checkIfUserExists = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    setLoading(true);
+
+    try {
+      const userQuery = query(
+        collection(fireStore, "users"),
+        where("phoneNumber", "==", phoneNumber)
+      );
+      const userDocs = await getCountFromServer(userQuery);
+      if (userDocs.data().count) {
+        toast({
+          title: "Account already exists",
+          description: "You are already signed up. Please log in to continue",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+        });
+        router.push("/login");
+      } else {
+        sendVerificationCode();
+      }
+      // eslint-disable-next-line
+    } catch (err: any) {
+      toast({
+        title: err.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      setLoading(false);
+    }
+  };
   return (
     <Stack
       as="form"
       spacing="5"
       mt="5"
-      onSubmit={codeSent ? onVerifyCode : onSendCode}
+      onSubmit={codeSent ? onVerifyCode : checkIfUserExists}
     >
       {!codeSent && (
         <Stack spacing="3">

@@ -18,12 +18,22 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import type { MenuListProps } from "react-select";
 import AsyncSelect from "react-select/async";
 
-import { fireStore } from "lib/firebase/client";
+import breedData from "../../data/breeds.json";
+import { auth, fireStore } from "lib/firebase/client";
 
 interface Breed {
   id: string;
@@ -32,19 +42,20 @@ interface Breed {
   weight: string;
   height: string;
   lifeSpan: string;
+  image: string;
 }
 
 const NoOptionsMessage = () => {
   return (
-    <Flex p={2} justify="center">
+    <Flex p={2} justify="center" bg="on-accent">
       <Text color="gray.500">No breeds found</Text>
     </Flex>
   );
 };
 
-const MenuList = ({ children }: MenuListProps) => {
+const MenuList = ({ children, maxHeight }: MenuListProps) => {
   return (
-    <Box>
+    <Box maxH={maxHeight} overflowY="scroll">
       <Text casing="capitalize">{children}</Text>
     </Box>
   );
@@ -52,13 +63,14 @@ const MenuList = ({ children }: MenuListProps) => {
 
 // eslint-disable-next-line
 export const Step3 = ({ currentStep, setStep }: any) => {
+  const router = useRouter();
+  const [user] = useAuthState(auth);
   const toast = useToast();
 
   const [breeds, setBreeds] = useState([] as Breed[]);
   const [selectedBreeds, setSelectedBreeds] = useState([] as Breed[]);
 
   const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
 
   const filterBreeds = (inputValue: string) => {
     // eslint-disable-next-line
@@ -66,7 +78,7 @@ export const Step3 = ({ currentStep, setStep }: any) => {
 
     breeds.forEach((breed) => {
       if (breed.name.toLowerCase().includes(inputValue.toLowerCase())) {
-        matchingBreeds.push({ value: breed.id, label: breed.name });
+        matchingBreeds.push({ value: breed.name, label: breed.name });
       }
     });
     return matchingBreeds;
@@ -79,80 +91,117 @@ export const Step3 = ({ currentStep, setStep }: any) => {
 
   // eslint-disable-next-line
   const onSelectBreed = (selectedBreed: any) => {
-    const breedObj = breeds.find((breed) => breed.name === selectedBreed.label);
-    setSelectedBreeds((prev) => [...prev, breedObj as Breed]);
+    if (selectedBreed) {
+      const breedObj = breeds.find(
+        (breed) => breed.name === selectedBreed.label
+      );
+      setSelectedBreeds((prev) => [...prev, breedObj as Breed]);
+    }
   };
 
-  const unSelectBreed = (breed: Breed) => {
-    setSelectedBreeds((prev) =>
-      prev.filter((selectedBreed) => selectedBreed.id !== breed.id)
-    );
+  const unSelectBreed = (index: number) => {
+    const allBreeds = [...selectedBreeds];
+    allBreeds.splice(index, 1);
+    setSelectedBreeds(allBreeds);
   };
 
-  const onSubmit = () => {
-    setSubmitting(true);
-  };
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-  useEffect(() => {
-    const loadBreeds = async () => {
-      setLoading(true);
-      try {
-        const data = await getDocs(collection(fireStore, "breeds"));
-        const breedData = data.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setBreeds(breedData as Breed[]);
-        // eslint-disable-next-line
-      } catch (err: any) {
-        toast({
-          title: err.message,
-          description:
-            "Check your network connection or try refreshing the page",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
+    setLoading(true);
+
+    try {
+      let kennelId;
+
+      const kennelQuery = query(
+        collection(fireStore, "kennels"),
+        where("breederId", "==", user?.uid)
+      );
+      const kennels = await getDocs(kennelQuery);
+      kennels.forEach((kennel) => {
+        kennelId = kennel.id;
+      });
+
+      if (kennelId) {
+        const kennelDocRef = doc(fireStore, "kennels", kennelId);
+        await updateDoc(kennelDocRef, {
+          breeds: JSON.stringify(selectedBreeds.map((breed) => breed.name)),
         });
       }
 
-      setLoading(false);
-    };
+      toast({
+        title: "Profile completed",
+        description: "Your details have been saved.",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
 
-    loadBreeds();
-  }, [toast]);
+      router.push("/dashboard");
+      // eslint-disable-next-line
+    } catch (err: any) {
+      toast({
+        title: err.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+
+    setLoading(false);
+  };
+
+  const checkIfOptionIsSelected = (option: {
+    label: string;
+    value: string;
+  }) => {
+    return !!selectedBreeds.find((breed) => breed.name === option.value);
+  };
+
+  useEffect(() => {
+    setBreeds(breedData as Breed[]);
+  }, []);
 
   return (
     <Stack spacing={3} as="form" onSubmit={onSubmit}>
       <FormControl>
-        <FormLabel htmlFor="phone">Your breeds</FormLabel>
+        <FormLabel htmlFor="phone">
+          Select your breeds ({selectedBreeds.length})
+        </FormLabel>
         <AsyncSelect
           instanceId="333"
+          value={null}
           placeholder="Search breeds..."
-          isDisabled={loading}
-          isLoading={loading}
+          isClearable
+          isOptionDisabled={(option) =>
+            checkIfOptionIsSelected(option as { label: string; value: string })
+          }
           loadOptions={loadOptions}
           onChange={onSelectBreed}
+          maxMenuHeight={300}
           components={{ NoOptionsMessage, MenuList }}
         />
       </FormControl>
 
       {selectedBreeds.length ? (
         <Wrap justify="start">
-          {selectedBreeds.map((breed, i) => (
-            <Tag
-              size="lg"
-              // eslint-disable-next-line
-              key={i}
-              borderRadius="full"
-              variant="solid"
-              colorScheme="brand"
-            >
-              <TagLabel>
-                <Text casing="capitalize">{breed.name}</Text>
-              </TagLabel>
-              <TagCloseButton onClick={() => unSelectBreed(breed)} />
-            </Tag>
-          ))}
+          {selectedBreeds
+            .sort((a, b) => (a.name > b.name ? 1 : -1))
+            .map((breed, i) => (
+              <Tag
+                size="lg"
+                // eslint-disable-next-line
+                key={i}
+                borderRadius="full"
+                variant="solid"
+                colorScheme="brand"
+              >
+                <TagLabel>
+                  <Text casing="capitalize">{breed.name}</Text>
+                </TagLabel>
+                <TagCloseButton onClick={() => unSelectBreed(i)} />
+              </Tag>
+            ))}
         </Wrap>
       ) : (
         <Alert status="info">
@@ -171,7 +220,7 @@ export const Step3 = ({ currentStep, setStep }: any) => {
         </Button>
         <Spacer />
         <Button
-          isLoading={submitting}
+          isLoading={loading}
           type="submit"
           isDisabled={currentStep >= 3 || !selectedBreeds.length}
           variant="primary"
