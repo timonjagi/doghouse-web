@@ -56,10 +56,10 @@ const Header = () => {
                 </Button>
                 <Button
                   rounded="full"
-                  aria-current={pathname === "/dashboard" ? "page" : false}
-                  onClick={() => router.push("/dashboard")}
+                  aria-current={pathname === "/breeds" ? "page" : false}
+                  onClick={() => router.push("/breeds")}
                 >
-                  Dashboard
+                  Breeds
                 </Button>
                 {/* <Button>Tasks</Button>
                 <Button>Bookmarks</Button>

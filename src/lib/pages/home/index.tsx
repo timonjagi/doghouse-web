@@ -1,5 +1,7 @@
-import { Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
+
+import Footer from "lib/layout/Footer";
 
 import { Cta } from "./Cta";
 import Features from "./Features";
@@ -11,26 +13,29 @@ import { Testimonials } from "./Testimonials";
 
 const Home = () => {
   return (
-    <Flex
-      direction="column"
-      alignItems="center"
-      justifyContent="center"
-      minHeight="70vh"
-      w="full"
-    >
-      <NextSeo title="Home" />
-      <Hero />
+    <Box as="section" height="100vh" overflowY="auto">
+      <Flex
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight="70vh"
+        w="full"
+      >
+        <NextSeo title="Home" />
+        <Hero />
 
-      <Features />
-      <Stats />
+        <Features />
+        <Stats />
 
-      <Pricing />
+        <Pricing />
 
-      <Testimonials />
-      {/* <LogoGrid /> */}
+        <Testimonials />
+        {/* <LogoGrid /> */}
 
-      <Cta />
-    </Flex>
+        <Cta />
+      </Flex>
+      <Footer />
+    </Box>
   );
 };
 

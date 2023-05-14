@@ -59,7 +59,7 @@ export default function CallToActionWithIllustration() {
                 size="lg"
                 fontSize="md"
                 fontWeight="bold"
-                onClick={() => router.push("/login")}
+                onClick={() => router.push("/breeds")}
               >
                 Get Started for Free
               </Button>
@@ -70,7 +70,7 @@ export default function CallToActionWithIllustration() {
                   base: "center",
                   md: "flex-start",
                 }}
-                href="/signup-breeder"
+                href="/signup"
                 color="white"
                 rounded="full"
                 fontWeight="bold"

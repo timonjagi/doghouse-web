@@ -23,6 +23,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@ajna/pagination": "^1.4.19",
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/pro-theme": "^0.0.63",
     "@chakra-ui/react": "^2.4.9",

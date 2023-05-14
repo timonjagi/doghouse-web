@@ -14,6 +14,7 @@ import {
   useBreakpointValue,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 // import * as React from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
@@ -55,6 +56,7 @@ export const product = {
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PricingCard = (props: any) => {
+  const router = useRouter();
   return (
     <Box
       bg="bg-surface"
@@ -70,50 +72,6 @@ const PricingCard = (props: any) => {
       {...props}
     >
       <Stack spacing="8" divider={<StackDivider />}>
-        <Stack
-          spacing={{
-            base: "4",
-            lg: "8",
-          }}
-          direction={{
-            base: "column-reverse",
-            lg: "row",
-          }}
-          justify="space-between"
-          align={{
-            base: "start",
-            lg: "center",
-          }}
-          px={{
-            base: "6",
-            md: "8",
-          }}
-        >
-          <Stack spacing="1">
-            <Heading size="xs">{product.name}</Heading>
-            <Text color="muted">{product.description}</Text>
-          </Stack>
-          <Stack direction="row" spacing="0.5">
-            <Heading
-              size="md"
-              pt={{
-                base: "1.5",
-                lg: "2",
-              }}
-            >
-              Ksh.
-            </Heading>
-            <Heading
-              size={useBreakpointValue({
-                base: "lg",
-                lg: "xl",
-              })}
-            >
-              {product.price}
-            </Heading>
-          </Stack>
-        </Stack>
-
         <Stack
           spacing="6"
           px={{
@@ -157,7 +115,13 @@ const PricingCard = (props: any) => {
           }}
           pb="2"
         >
-          <Button variant="primary" size="lg" width="full" rounded="full">
+          <Button
+            variant="primary"
+            size="lg"
+            width="full"
+            rounded="full"
+            onClick={() => router.push("/breeds")}
+          >
             Get started
           </Button>
         </Box>
