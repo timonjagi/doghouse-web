@@ -19,10 +19,10 @@ import {
   Skeleton,
   Input,
   InputGroup,
-  InputLeftElement,
   SimpleGrid,
   Icon,
   Container,
+  InputLeftElement,
 } from "@chakra-ui/react";
 import algoliasearch from "algoliasearch/lite";
 import type { User } from "firebase/auth";
@@ -38,6 +38,7 @@ import {
   InstantSearchSSRProvider,
   useSearchBox,
   useHits,
+  useInstantSearch,
   usePagination as useInstantSearchPagination,
 } from "react-instantsearch-hooks-web";
 import type { InstantSearchServerState } from "react-instantsearch-hooks-web";
@@ -48,43 +49,52 @@ const client = algoliasearch(
 );
 
 // eslint-disable-next-line
-const BreedCard = ({ hit }: any) => {
+const BreedCard = ({ hit, status }: any) => {
   return (
     <Box position="relative" key={hit.name} borderRadius="xl" overflow="hidden">
-      <Link>
-        <AspectRatio ratio={1}>
-          <Image src={hit.image} alt={hit.name} fallback={<Skeleton />} />
-        </AspectRatio>
-        <Box
-          position="absolute"
-          inset="0"
-          bgGradient="linear(to-b, transparent 60%, gray.900)"
-          boxSize="full"
-        />
-        <Box
-          position="absolute"
-          bottom="6"
-          width="full"
-          textAlign="start"
-          px={4}
-        >
-          <Stack spacing="1">
-            <Text color="white" fontSize="lg" fontWeight="semibold">
-              {hit.name}
-            </Text>
+      <Skeleton
+        isLoaded={status === "idle"}
+        bg="green.500"
+        color="white"
+        fadeDuration={2}
+      >
+        <Link>
+          <AspectRatio ratio={1}>
+            <Image src={hit.image} alt={hit.name} fallback={<Skeleton />} />
+          </AspectRatio>
+          <Box
+            position="absolute"
+            inset="0"
+            bgGradient="linear(to-b, transparent 60%, gray.900)"
+            boxSize="full"
+          />
+          <Box
+            position="absolute"
+            bottom="6"
+            width="full"
+            textAlign="start"
+            px={4}
+            blur="2px"
+          >
+            <Stack spacing="1">
+              <Text color="white" fontSize="lg" fontWeight="semibold">
+                {hit.name}
+              </Text>
 
-            <Text color="white" fontSize="sm" fontWeight="light">
-              {hit.breedGroup.substring(0, hit.breedGroup.length - 1)}
-            </Text>
-          </Stack>
-        </Box>
-      </Link>
+              <Text color="white" fontSize="sm" fontWeight="light">
+                {hit.breedGroup.substring(0, hit.breedGroup.length - 1)}
+              </Text>
+            </Stack>
+          </Box>
+        </Link>
+      </Skeleton>
     </Box>
   );
 };
 
-function Hits() {
+const Hits = () => {
   const { hits } = useHits();
+  const { status } = useInstantSearch();
 
   return (
     <SimpleGrid
@@ -92,11 +102,32 @@ function Hits() {
       gap={{ base: "4", md: "6", lg: "8" }}
     >
       {hits.map((hit) => (
-        <BreedCard hit={hit} />
+        <BreedCard hit={hit} status={status} />
       ))}
     </SimpleGrid>
   );
-}
+};
+
+// const RefinementList = () => {
+//   const { items, refine } = useRefinementList({
+//     attribute: "breedGroup",
+//     sortBy: ["name:asc"],
+//   });
+//   return (
+//     <Select
+//       variant="unstyled"
+//       onChange={(e) => {
+//         refine(e.target.value);
+//       }}
+//     >
+//       {items.map((item: any) => (
+//         <option key={item.name} value={item.value}>
+//           <Text casing="capitalize">{item.label}</Text>
+//         </option>
+//       ))}
+//     </Select>
+//   );
+// };
 
 const SearchBox = () => {
   const { refine } = useSearchBox();
@@ -254,16 +285,8 @@ export default function ClientDashboard({ serverState, url }: PageProps) {
             >
               <Stack spacing="5">
                 <SearchBox />
-
-                <Hits />
-                <ListPagination />
+                <Hits /> <ListPagination />
               </Stack>
-
-              {/* <div className="Container">
-      <div>
-        <DynamicWidgets fallbackComponent={FallbackComponent} />
-      </div>
-    </div> */}
             </InstantSearch>
           </InstantSearchSSRProvider>
         </Stack>
