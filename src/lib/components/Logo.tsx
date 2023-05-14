@@ -56,7 +56,7 @@ export const Logo = () => (
   // </chakra.svg>
 
   <HStack as="a" href="/">
-    <Image src="images/logo.png" height={8} />
+    <Image src="images/logo_white.png" height={8} />
     <Text fontWeight="semibold" fontSize="20pt">
       doghouse
     </Text>

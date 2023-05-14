@@ -12,95 +12,71 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
+  PinInput,
+  PinInputField,
   Stack,
   Text,
   useToast,
 } from "@chakra-ui/react";
 import type { ConfirmationResult } from "firebase/auth";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import {
-  query,
-  collection,
-  where,
-  getCountFromServer,
-} from "firebase/firestore";
 import { useRouter } from "next/router";
 import type * as React from "react";
-import { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useState } from "react";
+import { useUpdateProfile } from "react-firebase-hooks/auth";
 
-import { auth, fireStore } from "lib/firebase/client";
+import { auth } from "lib/firebase/client";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const LoginForm = (props: any) => {
   const router = useRouter();
   const toast = useToast();
 
-  const [user] = useAuthState(auth);
-
+  const [displayName, setDisplayName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [codeSent, setCodeSent] = useState(false);
-  const [code, setCode] = useState("");
+  const [codeVerified, setCodeVerified] = useState(false);
+  const [codeVerificationFailed, setCodeVerificationFailed] = useState(false);
+  const [code, setVerificationCode] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(
     {} as ConfirmationResult
   );
-  const [loading, setLoading] = useState(false);
+  const [updateProfile, updating] = useUpdateProfile(auth);
 
-  const checkIfUserExists = async () => {
-    const userQuery = query(
-      collection(fireStore, "users"),
-      where("phoneNumber", "==", phoneNumber)
+  const [loading, setLoading] = useState(false);
+  const [userExists, setUserExists] = useState(false);
+  // const [invalidCode, setInvalidCode] = useState(false);
+
+  const sendVerificationCode = async () => {
+    const appVerifier = new RecaptchaVerifier(
+      "recaptcha-container",
+      {
+        size: "invisible",
+      },
+      auth
     );
 
-    const userDocs = await getCountFromServer(userQuery);
-    return userDocs.data().count;
-  };
-
-  const onSendCode = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    setLoading(true);
-
-    const userExists = await checkIfUserExists();
-    if (userExists) {
-      const appVerifier = new RecaptchaVerifier(
-        "recaptcha-container",
-        {
-          size: "invisible",
-        },
-        auth
+    try {
+      const result = await signInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        appVerifier
       );
 
-      try {
-        const result = await signInWithPhoneNumber(
-          auth,
-          phoneNumber,
-          appVerifier
-        );
-
-        if (result) {
-          setCodeSent(true);
-          setConfirmationResult(result);
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        toast({
-          title: err.message,
-          description: err.message || "",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-        appVerifier.clear();
+      if (result) {
+        setCodeSent(true);
+        setConfirmationResult(result);
       }
-    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       toast({
-        title: "Account not found",
-        description: "Please sign up to continue",
-        status: "warning",
+        title: err.message,
+        description: err.message || "",
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
+      appVerifier.clear();
     }
 
     setLoading(false);
@@ -108,20 +84,76 @@ export const LoginForm = (props: any) => {
 
   const onVerifyCode = async (event: React.FormEvent) => {
     event.preventDefault();
-
     setLoading(true);
     try {
       const result = await confirmationResult.confirm(code);
+
       if (result) {
-        toast({
-          title: "Logged in successfully",
-          description: "",
-          status: "success",
-          duration: 4000,
-          isClosable: true,
-        });
+        setCodeVerified(true);
+        if (userExists) {
+          toast({
+            title: "Logged in successfully",
+            description: "",
+            status: "success",
+            duration: 4000,
+            isClosable: true,
+          });
+          router.push("/dashboard");
+        } else {
+          return;
+        }
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setCodeVerificationFailed(true);
+      setVerificationCode("");
+    }
+
+    setLoading(false);
+  };
+
+  const checkIfUserExists = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/get-user?${new URLSearchParams({ phoneNumber })}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (response.status === 200) {
+        setUserExists(true);
+      }
+
+      sendVerificationCode();
+      // eslint-disable-next-line
+    } catch (err: any) {
+      toast({
+        title: err.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const completeProfile = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      await updateProfile({ displayName });
+
+      toast({
+        title: "Account created successfully",
+        description: "",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
+
+      router.push("/dashboard");
+      // eslint-disable-next-line
     } catch (err: any) {
       toast({
         title: err.message,
@@ -135,29 +167,25 @@ export const LoginForm = (props: any) => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (user && user.displayName) {
-      router.push("/dashboard");
-    }
-  }, [user, router]);
-
   return (
     <Stack spacing="8" {...props}>
-      <Stack spacing="6" align="center">
+      <Stack spacing="4" align="center">
         <Flex justify="center" as="a" href="/">
-          <Image src="images/doghouse.png" width="200px" height="200px" />
+          <Image
+            src="images/logo.png"
+            width="auto"
+            height="100px"
+            alt="Doghouse Logo"
+          />
         </Flex>
-      </Stack>
 
-      <Stack
-        mt="0px !important"
-        as="form"
-        spacing="5"
-        onSubmit={codeSent ? onVerifyCode : onSendCode}
-      >
         <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
-          <Heading size="sm">Log in to your account</Heading>
-          <HStack spacing="1" justify="center">
+          {!codeVerified && <Heading size="sm">Log in to your account</Heading>}
+          {codeVerified && !userExists && (
+            <Heading size="sm">Complete your profile</Heading>
+          )}
+
+          {/* <HStack spacing="1" justify="center">
             <Text color="muted">Don&apos;t have an account?</Text>
             <Button
               variant="link"
@@ -166,65 +194,131 @@ export const LoginForm = (props: any) => {
             >
               Sign up
             </Button>
-          </HStack>
+          </HStack> */}
         </Stack>
+      </Stack>
 
+      <Stack>
         {!codeSent && (
-          <FormControl>
-            <FormLabel htmlFor="phone">Phone</FormLabel>
-            <InputGroup>
-              <InputLeftAddon>+254</InputLeftAddon>
-              <Input
-                required
-                id="phone"
-                name="phone"
-                placeholder="Enter you mobile number"
-                type="tel"
-                disabled={codeSent}
-                onChange={(event) =>
-                  setPhoneNumber(`+254${event?.target.value}`)
-                }
-              />
-            </InputGroup>
-          </FormControl>
-        )}
-
-        {codeSent && (
-          <Stack spacing="3">
-            <Alert status="success">
-              <AlertIcon />
-              Code sent to {phoneNumber}
-            </Alert>
+          <Stack spacing="5" as="form" onSubmit={checkIfUserExists}>
             <FormControl>
-              <FormLabel htmlFor="code">Code</FormLabel>
-              <Input
-                data-peer
-                required
-                id="code"
-                name="code"
-                placeholder="Enter verification code"
-                type="tel"
-                onChange={(event) => setCode(event?.target.value)}
-              />
+              <FormLabel htmlFor="phone">Phone</FormLabel>
+              <InputGroup>
+                <InputLeftAddon>+254</InputLeftAddon>
+                <Input
+                  required
+                  id="phone"
+                  name="phone"
+                  placeholder="Enter you mobile number"
+                  type="tel"
+                  disabled={codeSent}
+                  onChange={(event) =>
+                    setPhoneNumber(`+254${event?.target.value}`)
+                  }
+                />
+              </InputGroup>
             </FormControl>
+
+            <Button variant="primary" type="submit" isLoading={loading}>
+              Continue to Doghouse
+            </Button>
           </Stack>
         )}
+        {codeSent && !codeVerified && (
+          <Stack spacing="3">
+            {!codeVerificationFailed && (
+              <Alert status="success">
+                <AlertIcon />
+                OTP sent to {phoneNumber}
+              </Alert>
+            )}
 
-        <Box id="recaptcha-container" hidden />
+            {codeVerificationFailed && (
+              <Alert status="error">
+                <AlertIcon />
+                <Text fontSize="sm">
+                  The code you entered is not valid. Try again
+                </Text>
+              </Alert>
+            )}
 
-        <Button variant="primary" type="submit" isLoading={loading}>
-          Continue to Doghouse
-        </Button>
+            <Stack as="form" spacing="5" onSubmit={onVerifyCode}>
+              <FormControl>
+                <FormLabel htmlFor="code">Enter Passcode</FormLabel>
+                <FormControl>
+                  <HStack justify="space-between">
+                    <PinInput
+                      otp
+                      onChange={(value) => setVerificationCode(value)}
+                    >
+                      <PinInputField />
+                      <PinInputField />
+                      <PinInputField />
+                      <PinInputField />
+                      <PinInputField />
+                      <PinInputField />
+                    </PinInput>
+                  </HStack>
+                </FormControl>
+              </FormControl>
+
+              <Button variant="primary" type="submit" isLoading={loading}>
+                Verify Code
+              </Button>
+            </Stack>
+          </Stack>
+        )}
+        {codeVerified && !userExists && (
+          <Stack spacing="5" as="form" onSubmit={completeProfile}>
+            <Alert status="success">
+              <AlertIcon />
+              <Text fontSize="sm">Account created successfully.</Text>
+            </Alert>
+            <FormControl>
+              <FormLabel htmlFor="name">Name</FormLabel>
+              <Input
+                required
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter your name"
+                onChange={(e) => setDisplayName(e.target.value)}
+              />
+            </FormControl>
+
+            <Button variant="primary" type="submit" isLoading={updating}>
+              Complete Profile
+            </Button>
+          </Stack>
+        )}
+        ~
       </Stack>
 
       <Stack spacing="0.5" align="center">
         <Text fontSize="sm" color="muted">
-          Having trouble logging in?
+          {!codeSent && "Having trouble logging in?"}
+          {codeSent && !codeVerified && `Did&apos;t get a code?`}
         </Text>
-        <Button variant="link" colorScheme="brand" size="sm">
-          Contact us
-        </Button>
+
+        {!codeSent && (
+          <Button variant="link" colorScheme="brand" size="sm">
+            Contact us
+          </Button>
+        )}
+
+        {codeSent && !codeVerified && (
+          <Button
+            variant="link"
+            colorScheme="brand"
+            size="sm"
+            onClick={sendVerificationCode}
+          >
+            Resend code
+          </Button>
+        )}
       </Stack>
+
+      <Box id="recaptcha-container" hidden />
     </Stack>
   );
 };

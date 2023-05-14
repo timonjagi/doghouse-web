@@ -22,7 +22,6 @@ const Dashboard = () => {
 
     const getClaims = async () => {
       const tokenResult = await user?.getIdTokenResult();
-
       if (tokenResult) {
         const { claims } = tokenResult;
         setCustomClaims(claims);

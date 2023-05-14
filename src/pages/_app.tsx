@@ -21,7 +21,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         />
       </Head>
       <DefaultSeo {...defaultSEOConfig} />
-      {["/login", "/signup", "/signup-breeder"].includes(router.pathname) ? (
+      {["/login", "/signup-breeder"].includes(router.pathname) ? (
         <Component {...pageProps} />
       ) : (
         <Layout>

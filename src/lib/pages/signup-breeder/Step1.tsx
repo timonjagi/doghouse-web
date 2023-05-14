@@ -18,24 +18,14 @@ import {
 } from "@chakra-ui/react";
 import type { ConfirmationResult } from "firebase/auth";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import {
-  collection,
-  query,
-  where,
-  getCountFromServer,
-  setDoc,
-  doc,
-} from "firebase/firestore";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { useUpdateProfile } from "react-firebase-hooks/auth";
 
-import { auth, fireStore } from "lib/firebase/client";
+import { auth } from "lib/firebase/client";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Step1 = ({ currentStep, setStep }: any) => {
   const toast = useToast();
-  const router = useRouter();
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [codeSent, setCodeSent] = useState(false);
@@ -52,26 +42,26 @@ export const Step1 = ({ currentStep, setStep }: any) => {
 
   // eslint-disable-next-line
 
-  const createUserDocument = async (uid: string) => {
-    try {
-      const { currentUser } = auth;
-      if (currentUser) {
-        const userPayload = JSON.parse(JSON.stringify(currentUser));
-        delete userPayload.stsTokenManager;
-        await setDoc(doc(fireStore, "users", uid), userPayload);
-      }
-      // eslint-disable-next-line
-    } catch (err: any) {
-      toast({
-        title: err.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+  // const createUserDocument = async (uid: string) => {
+  //   try {
+  //     const { currentUser } = auth;
+  //     if (currentUser) {
+  //       const userPayload = JSON.parse(JSON.stringify(currentUser));
+  //       delete userPayload.stsTokenManager;
+  //       await setDoc(doc(fireStore, "users", uid), userPayload);
+  //     }
+  //     // eslint-disable-next-line
+  //   } catch (err: any) {
+  //     toast({
+  //       title: err.message,
+  //       status: "error",
+  //       duration: 5000,
+  //       isClosable: true,
+  //     });
+  //   }
 
-    setLoading(false);
-  };
+  //   setLoading(false);
+  // };
 
   const completeProfile = async (uid: string) => {
     try {
@@ -84,7 +74,7 @@ export const Step1 = ({ currentStep, setStep }: any) => {
       });
 
       if (response.status === 200) {
-        await createUserDocument(uid);
+        // await createUserDocument(uid);
         setStep(currentStep + 1);
       }
 
@@ -169,24 +159,16 @@ export const Step1 = ({ currentStep, setStep }: any) => {
   const checkIfUserExists = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    setLoading(true);
-
     try {
-      const userQuery = query(
-        collection(fireStore, "users"),
-        where("phoneNumber", "==", phoneNumber)
-      );
-      const userDocs = await getCountFromServer(userQuery);
-      if (userDocs.data().count) {
-        toast({
-          title: "Account already exists",
-          description: "You are already signed up. Please log in to continue",
-          status: "warning",
-          duration: 5000,
-          isClosable: true,
-        });
-        router.push("/login");
-      } else {
+      const response = await fetch("/api/get-user", {
+        method: "POST",
+        body: JSON.stringify({ phoneNumber }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      setLoading(true);
+
+      if (response.status === 200) {
         sendVerificationCode();
       }
       // eslint-disable-next-line
@@ -200,6 +182,7 @@ export const Step1 = ({ currentStep, setStep }: any) => {
       setLoading(false);
     }
   };
+
   return (
     <Stack
       as="form"
