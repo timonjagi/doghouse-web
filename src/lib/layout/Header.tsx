@@ -12,6 +12,7 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 // import * as React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -26,14 +27,13 @@ import { auth } from "lib/firebase/client";
 const Header = () => {
   const isDesktop = useBreakpointValue({
     base: false,
-    lg: true,
+    md: true,
   });
   const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
   const { pathname } = router;
 
   const [user] = useAuthState(auth);
-
   return (
     <Box as="nav" bg="bg-accent" color="on-accent">
       <Container
@@ -47,19 +47,26 @@ const Header = () => {
             <Logo />
             {isDesktop && (
               <ButtonGroup variant="ghost-on-accent" spacing="1">
+                {user && (
+                  <Button
+                    rounded="full"
+                    as={Link}
+                    aria-current={
+                      pathname.includes("dashboard") ? "page" : false
+                    }
+                    href="/dashboard"
+                  >
+                    Dashboard
+                  </Button>
+                )}
+
                 <Button
                   rounded="full"
-                  onClick={() => router.push("/")}
-                  aria-current={pathname === "/" ? "page" : false}
-                >
-                  Home
-                </Button>
-                <Button
-                  rounded="full"
+                  as={Link}
                   aria-current={pathname.includes("breeds") ? "page" : false}
-                  onClick={() => router.push("/breeds")}
+                  href="/breeds"
                 >
-                  Breeds
+                  Search Breeds
                 </Button>
                 {/* <Button>Tasks</Button>
                 <Button>Bookmarks</Button>

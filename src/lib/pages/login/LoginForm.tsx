@@ -17,6 +17,8 @@ import {
   Stack,
   Text,
   useToast,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import type { ConfirmationResult } from "firebase/auth";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
@@ -145,10 +147,9 @@ export const LoginForm = (props: any) => {
       await updateProfile({ displayName });
 
       toast({
-        title: "Account created successfully",
-        description: "",
+        title: "Logged in successfully",
         status: "success",
-        duration: 4000,
+        duration: 2000,
         isClosable: true,
       });
 
@@ -270,9 +271,23 @@ export const LoginForm = (props: any) => {
         )}
         {codeVerified && !userExists && (
           <Stack spacing="5" as="form" onSubmit={completeProfile}>
-            <Alert status="success">
-              <AlertIcon />
-              <Text fontSize="sm">Account created successfully.</Text>
+            <Alert
+              status="success"
+              variant="subtle"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              textAlign="center"
+              height="200px"
+            >
+              <AlertIcon boxSize="40px" mr={0} />
+              <AlertTitle mt={4} mb={1} fontSize="lg">
+                You&apos;re all set!
+              </AlertTitle>
+              <AlertDescription maxWidth="sm">
+                Thanks for creating your account. Now you are ready to start
+                posting offers
+              </AlertDescription>
             </Alert>
             <FormControl>
               <FormLabel htmlFor="name">Name</FormLabel>

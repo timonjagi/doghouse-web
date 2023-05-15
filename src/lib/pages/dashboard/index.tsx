@@ -1,6 +1,8 @@
 import { Box, Container } from "@chakra-ui/react";
-// import { useRouter } from "next/router";
+import type { User } from "firebase/auth";
+import { useRouter } from "next/router";
 // import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 import { auth } from "lib/firebase/client";
@@ -8,28 +10,29 @@ import { auth } from "lib/firebase/client";
 import BreederDashboard from "./BreederDashboard";
 
 const Dashboard = () => {
-  // const router = useRouter();
-  const [user] = useAuthState(auth);
+  const router = useRouter();
+  const [user, loading, error] = useAuthState(auth);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const [customClaims, setCustomClaims] = useState({} as any);
+  const [isBreeder, setIsBreeder] = useState(false);
 
-  // useEffect(() => {
-  //   // if (!user) {
-  //   //   router.push("/login");
-  //   // }
+  useEffect(() => {
+    if (!loading && (!user || error)) {
+      router.push("/login");
+      return;
+    }
 
-  //   const getClaims = async () => {
-  //     const tokenResult = await user?.getIdTokenResult();
-  //     if (tokenResult) {
-  //       const { claims } = tokenResult;
-  //       setCustomClaims(claims);
-  //     }
-  //   };
+    const getClaims = async (authUser: User) => {
+      const tokenResult = await authUser.getIdTokenResult(true);
+      if (tokenResult) {
+        const { claims } = tokenResult;
+        setIsBreeder(claims.isBreeder);
+      }
+    };
 
-  //   if (user) {
-  //     getClaims();
-  //   }
-  // }, [user, router]);
+    if (user) {
+      getClaims(user);
+    }
+  }, [user, loading, error, router]);
 
   return (
     <Box as="section" height="100vh" overflowY="auto">
@@ -43,7 +46,7 @@ const Dashboard = () => {
           lg: "24",
         }}
       >
-        {user && <BreederDashboard user={user} />}
+        {user && isBreeder && <BreederDashboard user={user} />}
       </Container>
     </Box>
   );

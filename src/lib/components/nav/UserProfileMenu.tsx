@@ -12,7 +12,6 @@ import {
   MenuItem,
   useToast,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 import type React from "react";
 import { useSignOut } from "react-firebase-hooks/auth";
 
@@ -28,7 +27,6 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
   props: UserProfileMenuProps
 ) => {
   const { name, image, phoneNumber } = props;
-  const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [signOut, loading, error] = useSignOut(auth);
@@ -46,8 +44,6 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
           duration: 4000,
           isClosable: true,
         });
-
-        router.push("/");
       }
       return success;
     } catch (err) {
