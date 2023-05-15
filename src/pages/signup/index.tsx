@@ -1,3 +1,3 @@
-import SignUpBreeder from "lib/pages/signup-breeder";
+import SignUpBreeder from "lib/pages/signup";
 
 export default SignUpBreeder;

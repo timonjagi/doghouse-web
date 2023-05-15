@@ -4,10 +4,6 @@ import {
   Stack,
   FormControl,
   FormLabel,
-  Wrap,
-  Tag,
-  TagLabel,
-  TagCloseButton,
   Box,
   Flex,
   Text,
@@ -26,10 +22,10 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import type { MenuListProps } from "react-select";
+import Select from "react-select";
 import AsyncSelect from "react-select/async";
 
 import breedData from "../../data/breeds.json";
@@ -63,13 +59,19 @@ const MenuList = ({ children, maxHeight }: MenuListProps) => {
 
 // eslint-disable-next-line
 export const Step3 = ({ currentStep, setStep }: any) => {
-  const router = useRouter();
   const [user] = useAuthState(auth);
   const toast = useToast();
-
+  const services = [
+    { label: "Sale", value: "sale" },
+    { label: "Adoption", value: "adoption" },
+    { label: "Exchange", value: "exchange" },
+    { label: "Stud", value: "stud" },
+  ];
   const [breeds, setBreeds] = useState([] as Breed[]);
-  const [selectedBreeds, setSelectedBreeds] = useState([] as Breed[]);
 
+  // eslint-disable-next-line
+  const [selectedBreeds, setSelectedBreeds] = useState([] as any[]);
+  const [selectedServices, setSelectedServices] = useState([] as string[]);
   const [loading, setLoading] = useState(false);
 
   const filterBreeds = (inputValue: string) => {
@@ -88,21 +90,16 @@ export const Step3 = ({ currentStep, setStep }: any) => {
     new Promise<Breed[]>((resolve) => {
       resolve(filterBreeds(inputValue));
     });
-
   // eslint-disable-next-line
-  const onSelectBreed = (selectedBreed: any) => {
-    if (selectedBreed) {
-      const breedObj = breeds.find(
-        (breed) => breed.name === selectedBreed.label
-      );
-      setSelectedBreeds((prev) => [...prev, breedObj as Breed]);
+  const onSelectServices = (selectedService: any) => {
+    if (selectedService) {
+      setSelectedServices((prev) => [...prev, selectedService.value]);
     }
   };
 
-  const unSelectBreed = (index: number) => {
-    const allBreeds = [...selectedBreeds];
-    allBreeds.splice(index, 1);
-    setSelectedBreeds(allBreeds);
+  // eslint-disable-next-line
+  const onSelectBreed = (selectedBreeds: any) => {
+    setSelectedBreeds([...selectedBreeds]);
   };
 
   const onSubmit = async (event: React.FormEvent) => {
@@ -125,7 +122,8 @@ export const Step3 = ({ currentStep, setStep }: any) => {
       if (kennelId) {
         const kennelDocRef = doc(fireStore, "kennels", kennelId);
         await updateDoc(kennelDocRef, {
-          breeds: JSON.stringify(selectedBreeds.map((breed) => breed.name)),
+          breeds: JSON.stringify(selectedBreeds.map((breed) => breed.value)),
+          services: JSON.stringify(selectedServices),
         });
       }
 
@@ -137,7 +135,7 @@ export const Step3 = ({ currentStep, setStep }: any) => {
         isClosable: true,
       });
 
-      router.push("/dashboard");
+      setStep(currentStep + 1);
       // eslint-disable-next-line
     } catch (err: any) {
       toast({
@@ -155,7 +153,7 @@ export const Step3 = ({ currentStep, setStep }: any) => {
     label: string;
     value: string;
   }) => {
-    return !!selectedBreeds.find((breed) => breed.name === option.value);
+    return !!selectedBreeds.find((breed) => breed.value === option.value);
   };
 
   useEffect(() => {
@@ -166,16 +164,27 @@ export const Step3 = ({ currentStep, setStep }: any) => {
     <Stack spacing={3} as="form" onSubmit={onSubmit}>
       <FormControl>
         <FormLabel htmlFor="phone">
-          Select your breeds ({selectedBreeds.length})
+          Services ({selectedServices.length})
         </FormLabel>
+
+        <Select
+          required
+          isMulti
+          options={services}
+          onChange={onSelectServices}
+        />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel htmlFor="phone">Breeds ({selectedBreeds.length})</FormLabel>
         <AsyncSelect
           instanceId="444"
-          value={null}
           placeholder="Search breeds..."
           isClearable
           isOptionDisabled={(option) =>
             checkIfOptionIsSelected(option as { label: string; value: string })
           }
+          isMulti
           loadOptions={loadOptions}
           onChange={onSelectBreed}
           maxMenuHeight={300}
@@ -183,27 +192,7 @@ export const Step3 = ({ currentStep, setStep }: any) => {
         />
       </FormControl>
 
-      {selectedBreeds.length ? (
-        <Wrap justify="start">
-          {selectedBreeds
-            .sort((a, b) => (a.name > b.name ? 1 : -1))
-            .map((breed, i) => (
-              <Tag
-                size="lg"
-                // eslint-disable-next-line
-                key={i}
-                borderRadius="full"
-                variant="solid"
-                colorScheme="brand"
-              >
-                <TagLabel>
-                  <Text casing="capitalize">{breed.name}</Text>
-                </TagLabel>
-                <TagCloseButton onClick={() => unSelectBreed(i)} />
-              </Tag>
-            ))}
-        </Wrap>
-      ) : (
+      {!selectedBreeds.length && (
         <Alert status="info">
           <AlertIcon />
           No breeds selected.

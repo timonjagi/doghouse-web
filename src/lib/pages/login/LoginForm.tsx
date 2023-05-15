@@ -184,17 +184,6 @@ export const LoginForm = (props: any) => {
           {codeVerified && !userExists && (
             <Heading size="sm">Complete your profile</Heading>
           )}
-
-          {/* <HStack spacing="1" justify="center">
-            <Text color="muted">Don&apos;t have an account?</Text>
-            <Button
-              variant="link"
-              colorScheme="brand"
-              onClick={() => router.push("/signup")}
-            >
-              Sign up
-            </Button>
-          </HStack> */}
         </Stack>
       </Stack>
 
@@ -265,6 +254,17 @@ export const LoginForm = (props: any) => {
               <Button variant="primary" type="submit" isLoading={loading}>
                 Verify Code
               </Button>
+
+              <HStack spacing="1" justify="center">
+                <Text color="muted">Did&apos;t receive a code?</Text>
+                <Button
+                  variant="link"
+                  colorScheme="brand"
+                  onClick={() => sendVerificationCode}
+                >
+                  Resend
+                </Button>
+              </HStack>
             </Stack>
           </Stack>
         )}

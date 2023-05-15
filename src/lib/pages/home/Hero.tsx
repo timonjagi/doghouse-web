@@ -8,11 +8,10 @@ import {
   HStack,
   Img,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import NextLink from "next/link";
 import { HiChevronRight } from "react-icons/hi";
 
 export default function CallToActionWithIllustration() {
-  const router = useRouter();
   return (
     <Box w="full" bg="gray.800" as="section" position="relative">
       <Box py="32" position="relative" zIndex={1}>
@@ -51,26 +50,25 @@ export default function CallToActionWithIllustration() {
               spacing="4"
             >
               <Button
-                as="a"
-                href="#"
+                as={NextLink}
+                href="/breeds"
                 variant="primary"
                 px="8"
                 rounded="full"
                 size="lg"
                 fontSize="md"
                 fontWeight="bold"
-                onClick={() => router.push("/breeds")}
               >
                 Get Started for Free
               </Button>
               <HStack
-                as="a"
+                as={NextLink}
+                href="/signup"
                 transition="background 0.2s"
                 justify={{
                   base: "center",
                   md: "flex-start",
                 }}
-                href="/signup"
                 color="white"
                 rounded="full"
                 fontWeight="bold"

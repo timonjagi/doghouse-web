@@ -14,6 +14,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Box>
         <Header />
         <Box as="main">{children}</Box>
+
         {/* <Footer /> */}
       </Box>
     </Box>

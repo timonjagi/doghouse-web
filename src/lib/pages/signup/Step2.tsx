@@ -13,45 +13,40 @@ import {
 } from "@chakra-ui/react";
 import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
 import { MdOutlineLocationOn } from "react-icons/md";
-import Select from "react-select";
 
 import { auth, fireStore } from "lib/firebase/client";
 
-// eslint-disable-next-line
-export const Step2 = ({ currentStep, setStep }: any) => {
+type PageProps = {
+  currentStep: number;
+  // eslint-disable-next-line
+  setStep: any;
+  // eslint-disable-next-line
+  setCodeSent: any;
+};
+
+export const Step2 = ({ currentStep, setStep, setCodeSent }: PageProps) => {
   const [user] = useAuthState(auth);
   const toast = useToast();
-  const services = [
-    { label: "Adoption", value: "adoption" },
-    { label: "Stud", value: "stud" },
-    { label: "Exchange", value: "exchange" },
-    { label: "Boarding", value: "boarding" },
-  ];
 
+  const [displayName, setDisplayName] = useState("");
   const [kennelName, setKennelName] = useState("");
   const [kennelLocation, setKennelLocation] = useState("");
-  const [kennelServices, setKennelServices] = useState([] as string[]);
   const [loading, setLoading] = useState(false);
-
-  // eslint-disable-next-line
-  const onSelectServices = (selectedService: any) => {
-    if (selectedService) {
-      setKennelServices((prev) => [...prev, selectedService.value]);
-    }
-  };
+  const [updateProfile] = useUpdateProfile(auth);
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     setLoading(true);
     try {
+      await updateProfile({ displayName });
+
       const payload = {
         breederId: user?.uid,
         name: kennelName,
         location: kennelLocation,
-        services: JSON.stringify(kennelServices),
       };
 
       await addDoc(collection(fireStore, "kennels"), payload);
@@ -70,9 +65,26 @@ export const Step2 = ({ currentStep, setStep }: any) => {
     setLoading(false);
   };
 
+  const onBack = () => {
+    setStep(currentStep - 1);
+    setCodeSent(false);
+  };
+
   return (
     <Stack as="form" spacing="5" mt="5" onSubmit={(event) => onSubmit(event)}>
       <Stack spacing="3">
+        <FormControl id="name">
+          <FormLabel htmlFor="name">Your Name</FormLabel>
+          <Input
+            required
+            id="userName"
+            name="userName"
+            type="text"
+            placeholder="Enter the your name"
+            onChange={(e) => setDisplayName(e.target.value)}
+          />
+        </FormControl>
+
         <FormControl id="name">
           <FormLabel htmlFor="name">Kennel Name</FormLabel>
           <Input
@@ -102,22 +114,11 @@ export const Step2 = ({ currentStep, setStep }: any) => {
             />{" "}
           </InputGroup>
         </FormControl>
-
-        <FormControl>
-          <FormLabel htmlFor="phone">Services</FormLabel>
-
-          <Select
-            required
-            isMulti
-            options={services}
-            onChange={onSelectServices}
-          />
-        </FormControl>
       </Stack>
 
       <ButtonGroup width="100%">
         <Button
-          onClick={() => setStep(currentStep - 1)}
+          onClick={() => onBack}
           isDisabled={currentStep === 0}
           variant="ghost"
         >
@@ -127,7 +128,7 @@ export const Step2 = ({ currentStep, setStep }: any) => {
         <Button
           isLoading={loading}
           type="submit"
-          isDisabled={currentStep >= 3 || !kennelServices.length}
+          isDisabled={currentStep >= 3}
           variant="primary"
         >
           Next

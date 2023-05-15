@@ -56,7 +56,7 @@ const Header = () => {
                 </Button>
                 <Button
                   rounded="full"
-                  aria-current={pathname === "/breeds" ? "page" : false}
+                  aria-current={pathname.includes("breeds") ? "page" : false}
                   onClick={() => router.push("/breeds")}
                 >
                   Breeds
