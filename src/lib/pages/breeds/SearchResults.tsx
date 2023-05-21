@@ -16,9 +16,12 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiHeart } from "react-icons/fi";
-import { useHits, useInstantSearch } from "react-instantsearch-hooks-web";
+import {
+  useInfiniteHits,
+  useInstantSearch,
+} from "react-instantsearch-hooks-web";
 
 import BreedDetails from "../breed-details";
 import type { Breed } from "lib/models/breed";
@@ -26,7 +29,7 @@ import type { Breed } from "lib/models/breed";
 import { BreedCard } from "./BreedCard";
 
 const SearchResults = () => {
-  const { hits } = useHits();
+  // const { hits } = useHits();
   const { status } = useInstantSearch();
   const [selectedBreed, setSelectedBreed] = useState({} as Breed);
   const [loading, setLoading] = useState(false);
@@ -38,6 +41,29 @@ const SearchResults = () => {
   const handleDrawerExpand = () => {
     setIsDrawerExpanded(!isDrawerExpanded);
   };
+
+  const { hits, isLastPage, showMore } = useInfiniteHits();
+  const sentinelRef = useRef(null);
+
+  // eslint-disable-next-line
+  useEffect(() => {
+    if (sentinelRef.current !== null) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !isLastPage) {
+            // Load more hits
+            showMore();
+          }
+        });
+      });
+
+      observer.observe(sentinelRef.current);
+
+      return () => {
+        observer.disconnect();
+      };
+    }
+  }, [hits, isLastPage, showMore]);
 
   return (
     <>
@@ -70,6 +96,7 @@ const SearchResults = () => {
           {hits.map((hit) => (
             <BreedCard hit={hit} status={status} />
           ))}
+          <div ref={sentinelRef} aria-hidden="true" />
         </SimpleGrid>
       )}
 

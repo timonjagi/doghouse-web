@@ -13,7 +13,6 @@ import {
 } from "react-instantsearch-hooks-web";
 import type { InstantSearchServerState } from "react-instantsearch-hooks-web";
 
-import ListPagination from "./Pagination";
 import SearchBox from "./SearchBox";
 import SearchResults from "./SearchResults";
 
@@ -68,7 +67,6 @@ export default function Breeds({ serverState, url }: PageProps) {
                 <Stack spacing="5">
                   <SearchBox />
                   <SearchResults />
-                  <ListPagination />
                 </Stack>
               </InstantSearch>
             </InstantSearchSSRProvider>
