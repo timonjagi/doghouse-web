@@ -30,7 +30,7 @@ export const BreedCard = ({ hit, status }: any) => {
           <Box
             position="absolute"
             inset="0"
-            bgGradient="linear(to-b, transparent 60%, gray.900)"
+            bgGradient="linear(to-b, transparent 40%, gray.900)"
             boxSize="full"
           />
           <Box
@@ -42,11 +42,11 @@ export const BreedCard = ({ hit, status }: any) => {
             blur="2px"
           >
             <Stack spacing="1">
-              <Text color="white" fontSize="lg" fontWeight="semibold">
+              <Text color="white" fontSize="lg" fontWeight="semibold" pb={0}>
                 {hit.name}
               </Text>
 
-              <Text color="white" fontSize="sm" fontWeight="light">
+              <Text color="white" fontSize="sm" fontWeight="light" pt={0}>
                 {hit.breedGroup.substring(0, hit.breedGroup.length - 1)}
               </Text>
             </Stack>
