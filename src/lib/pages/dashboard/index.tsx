@@ -1,4 +1,13 @@
-import { Box, Container } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Container,
+  HStack,
+  Heading,
+  Stack,
+  Text,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import type { User } from "firebase/auth";
 import { useRouter } from "next/router";
 // import { useEffect, useState } from "react";
@@ -8,6 +17,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 
 import BreederDashboard from "./BreederDashboard";
+import ClientDashboard from "./ClientDashboard";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -46,7 +56,23 @@ const Dashboard = () => {
           lg: "24",
         }}
       >
+        <HStack spacing="4" justify="space-between">
+          <Stack spacing="1">
+            <Heading
+              size={useBreakpointValue({
+                base: "xs",
+                lg: "sm",
+              })}
+              fontWeight="medium"
+            >
+              Hi, {user?.displayName?.split(" ")[0]}
+            </Heading>
+            <Text color="muted">All important metrics at a glance</Text>
+          </Stack>
+          <Button variant="primary">Create</Button>
+        </HStack>
         {user && isBreeder && <BreederDashboard user={user} />}
+        {user && !isBreeder && <ClientDashboard user={user} />}
       </Container>
     </Box>
   );

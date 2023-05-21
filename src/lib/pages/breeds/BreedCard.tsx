@@ -7,18 +7,23 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Link from "next/link";
+// import { useRouter } from "next/router";
 
 // eslint-disable-next-line
 export const BreedCard = ({ hit, status }: any) => {
+  // const router = useRouter();
   return (
     <Box position="relative" key={hit.name} borderRadius="xl" overflow="hidden">
       <Skeleton
         isLoaded={status === "idle"}
-        bg="green.500"
+        bg="brand.500"
         color="white"
         fadeDuration={2}
       >
-        <Link href={`/breeds/${hit.name.replaceAll(" ", "-")}`}>
+        <Link
+          href={`/breeds?breedName=${hit.name}`}
+          as={`/breeds/${hit.name.replaceAll(" ", "-")}`}
+        >
           <AspectRatio ratio={1}>
             <Image src={hit.image} alt={hit.name} fallback={<Skeleton />} />
           </AspectRatio>

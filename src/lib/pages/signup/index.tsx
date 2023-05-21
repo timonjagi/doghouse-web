@@ -14,6 +14,8 @@ import {
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
+// eslint-disable-next-line
+import React from "react";
 
 import { Logo } from "../../components/Logo";
 

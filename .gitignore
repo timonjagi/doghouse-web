@@ -46,3 +46,5 @@ sitemap*.xml
 
 # Turbo
 .turbo
+
+src/lib/data/

@@ -24,7 +24,7 @@ import type { ConfirmationResult } from "firebase/auth";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { useRouter } from "next/router";
 import type * as React from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useUpdateProfile } from "react-firebase-hooks/auth";
 
 import { auth } from "lib/firebase/client";
@@ -48,6 +48,7 @@ export const LoginForm = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [userExists, setUserExists] = useState(false);
   // const [invalidCode, setInvalidCode] = useState(false);
+  const captchaRef = useRef<HTMLInputElement>(null);
 
   const sendVerificationCode = async () => {
     const appVerifier = new RecaptchaVerifier(
@@ -59,6 +60,7 @@ export const LoginForm = (props: any) => {
     );
 
     try {
+      setLoading(true);
       const result = await signInWithPhoneNumber(
         auth,
         phoneNumber,
@@ -71,6 +73,7 @@ export const LoginForm = (props: any) => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
+      setCodeSent(false);
       toast({
         title: err.message,
         description: err.message || "",
@@ -132,6 +135,7 @@ export const LoginForm = (props: any) => {
       sendVerificationCode();
       // eslint-disable-next-line
     } catch (err: any) {
+      setUserExists(false);
       toast({
         title: err.message,
         status: "error",
@@ -181,7 +185,9 @@ export const LoginForm = (props: any) => {
         </Flex>
 
         <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
-          {!codeVerified && <Heading size="sm">Log in to your account</Heading>}
+          {(!codeVerified || (codeVerified && userExists)) && (
+            <Heading size="sm">Log in to your account</Heading>
+          )}
           {codeVerified && !userExists && (
             <Heading size="sm">Complete your profile</Heading>
           )}
@@ -214,16 +220,18 @@ export const LoginForm = (props: any) => {
             </Button>
           </Stack>
         )}
-        {codeSent && !codeVerified && (
+        {codeSent && (!codeVerified || userExists) && (
           <Stack spacing="3">
-            {!codeVerificationFailed && (
+            {!loading && !codeVerificationFailed && (
               <Alert status="success">
                 <AlertIcon />
-                OTP sent to {phoneNumber}
+                <Text fontSize="sm">
+                  One-time password sent to {phoneNumber}
+                </Text>
               </Alert>
             )}
 
-            {codeVerificationFailed && (
+            {!loading && codeVerificationFailed && (
               <Alert status="error">
                 <AlertIcon />
                 <Text fontSize="sm">
@@ -234,7 +242,7 @@ export const LoginForm = (props: any) => {
 
             <Stack as="form" spacing="5" onSubmit={onVerifyCode}>
               <FormControl>
-                <FormLabel htmlFor="code">Enter Passcode</FormLabel>
+                {/* <FormLabel htmlFor="code">Enter Passcode</FormLabel> */}
                 <FormControl>
                   <HStack justify="space-between">
                     <PinInput
@@ -255,13 +263,15 @@ export const LoginForm = (props: any) => {
               <Button variant="primary" type="submit" isLoading={loading}>
                 Verify Code
               </Button>
-
               <HStack spacing="1" justify="center">
-                <Text color="muted">Did&apos;t receive a code?</Text>
+                <Text fontSize="sm" color="muted">
+                  Did&apos;t get a code?
+                </Text>
                 <Button
+                  size="sm"
                   variant="link"
                   colorScheme="brand"
-                  onClick={() => sendVerificationCode}
+                  onClick={sendVerificationCode}
                 >
                   Resend
                 </Button>
@@ -311,29 +321,15 @@ export const LoginForm = (props: any) => {
 
       <Stack spacing="0.5" align="center">
         <Text fontSize="sm" color="muted">
-          {!codeSent && "Having trouble logging in?"}
-          {codeSent && !codeVerified && `Did&apos;t get a code?`}
+          Having trouble logging in?
         </Text>
 
-        {!codeSent && (
-          <Button variant="link" colorScheme="brand" size="sm">
-            Contact us
-          </Button>
-        )}
-
-        {codeSent && !codeVerified && (
-          <Button
-            variant="link"
-            colorScheme="brand"
-            size="sm"
-            onClick={sendVerificationCode}
-          >
-            Resend code
-          </Button>
-        )}
+        <Button variant="link" colorScheme="brand" size="sm">
+          Contact us
+        </Button>
       </Stack>
 
-      <Box id="recaptcha-container" hidden />
+      <Box id="recaptcha-container" hidden ref={captchaRef} />
     </Stack>
   );
 };
