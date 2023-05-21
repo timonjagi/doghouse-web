@@ -8,7 +8,6 @@ import {
   DrawerContent,
   DrawerFooter,
   DrawerOverlay,
-  Icon,
   SimpleGrid,
   Skeleton,
   Stack,
@@ -17,7 +16,6 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { FiHeart } from "react-icons/fi";
 import {
   useInfiniteHits,
   useInstantSearch,
@@ -121,7 +119,8 @@ const SearchResults = () => {
 
           <DrawerBody>
             <Box
-              h={isDrawerExpanded ? "100vh" : "auto"}
+              h={isMobile ? "auto" : "100vh"}
+              maxH="70vh"
               transition="height 0.3s, width 0.3s"
             >
               <BreedDetails
@@ -148,17 +147,8 @@ const SearchResults = () => {
               width="full"
             >
               <Button
-                variant="outline"
-                fontSize="md"
-                width="full"
-                leftIcon={<Icon as={FiHeart} boxSize="4" />}
                 isDisabled={loading}
-              >
-                Favorite
-              </Button>
-              <Button
-                isDisabled={loading}
-                colorScheme="blue"
+                colorScheme="brand"
                 size="lg"
                 width="full"
                 as={Link}

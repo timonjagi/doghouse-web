@@ -1,6 +1,12 @@
-import { Box, Container, useBreakpointValue } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  IconButton,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { IoChevronBackOutline } from "react-icons/io5";
 
 import type { Breed } from "lib/models/breed";
 import BreedDetails from "lib/pages/breed-details";
@@ -19,8 +25,9 @@ const BreedDetailPage = () => {
   }, [router]);
 
   return (
-    <Box as="section" height="100vh" overflowY="auto">
+    <Box as="section" h="100vh" overflowY="auto">
       <Container
+        h="100vh"
         pt={{
           base: "4",
           lg: "8",
@@ -31,15 +38,25 @@ const BreedDetailPage = () => {
         }}
       >
         {breedName && (
-          <BreedDetails
-            breedName={breedName}
-            selectedBreed={selectedBreed}
-            setSelectedBreed={setSelectedBreed}
-            loading={loading}
-            setLoading={setLoading}
-            isMobile={isMobile}
-            isDrawer={false}
-          />
+          <>
+            <IconButton
+              aria-label="Back to breeds"
+              variant="ghost"
+              size="xs"
+              onClick={() => router.back()}
+              as={IoChevronBackOutline}
+              px={0}
+            />
+            <BreedDetails
+              breedName={breedName}
+              selectedBreed={selectedBreed}
+              setSelectedBreed={setSelectedBreed}
+              loading={loading}
+              setLoading={setLoading}
+              isMobile={isMobile}
+              isDrawer={false}
+            />
+          </>
         )}
       </Container>
     </Box>

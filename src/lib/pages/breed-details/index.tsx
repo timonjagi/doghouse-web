@@ -8,9 +8,12 @@ import {
   Flex,
   Spinner,
   Center,
+  IconButton,
+  Icon,
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useEffect } from "react";
+import { FiHeart } from "react-icons/fi";
 
 // import { Gallery } from "./Gallery";
 
@@ -62,17 +65,29 @@ any) {
       <Head>
         <title>{breedName.replace(/-/g, " ")} - Doghouse</title>
       </Head>
-      {selectedBreed.name && (
+      {!loading && (
         <Stack
           direction={isDrawer || isMobile ? "column-reverse" : "row"}
           spacing={{ base: "6", lg: "12", xl: "16" }}
         >
           <Stack spacing={{ base: "6", lg: "8" }} justify="center">
-            <Stack spacing={{ base: "3", md: "4" }}>
+            <Stack spacing={{ base: "3", md: "4" }} overflow="scroll">
               <Stack spacing="3">
-                <Heading size="md" fontWeight="medium">
-                  {selectedBreed.name}
-                </Heading>
+                <Flex justify="space-between">
+                  <Heading size="md" fontWeight="medium" mr="4">
+                    {selectedBreed.name}
+                  </Heading>
+
+                  <IconButton
+                    aria-label="Add to favorites"
+                    variant="outline"
+                    fontSize="md"
+                    icon={<Icon as={FiHeart} boxSize="4" />}
+                    isDisabled={loading}
+                  >
+                    Favorite
+                  </IconButton>
+                </Flex>
               </Stack>
               <Text // eslint-disable-next-line
                 color={useColorModeValue("gray.600", "gray.400")}
@@ -88,7 +103,7 @@ any) {
             images={[{ src: selectedBreed.image, alt: selectedBreed.name }]}
           /> */}
 
-          <Flex width="full">
+          <Flex width="full" paddingY={3}>
             <Image
               height={isDrawer || isMobile ? "300px" : "200px"}
               width="700px"
@@ -102,7 +117,7 @@ any) {
       )}
 
       {loading && (
-        <Center height="full">
+        <Center height="full" paddingY={6}>
           <Spinner size="lg" />
         </Center>
       )}
