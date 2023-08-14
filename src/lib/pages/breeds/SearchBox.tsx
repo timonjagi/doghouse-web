@@ -12,7 +12,7 @@ const SearchBox = () => {
   const { refine } = useSearchBox();
 
   return (
-    <Box position="sticky" top="4" zIndex={200}>
+    <Box position="sticky" top="4" zIndex={200} w="full">
       <InputGroup>
         <InputLeftElement>
           <Icon as={FiSearch} color="muted" boxSize="5" />

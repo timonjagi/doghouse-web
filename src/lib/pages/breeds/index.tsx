@@ -1,4 +1,4 @@
-import { Stack, Heading, Text, Box, Container } from "@chakra-ui/react";
+import { Stack, Heading, Text, Box, Container, Grid } from "@chakra-ui/react";
 import algoliasearch from "algoliasearch/lite";
 import type { User } from "firebase/auth";
 import type { GetServerSideProps } from "next";
@@ -13,8 +13,10 @@ import {
 } from "react-instantsearch-hooks-web";
 import type { InstantSearchServerState } from "react-instantsearch-hooks-web";
 
+import { Filter } from "./Filter";
 import SearchBox from "./SearchBox";
 import SearchResults from "./SearchResults";
+import { SortbySelect } from "./SortBySelect";
 
 const client = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
@@ -55,7 +57,7 @@ export default function Breeds({ serverState, url }: PageProps) {
             <InstantSearchSSRProvider {...serverState}>
               <InstantSearch
                 searchClient={client}
-                indexName="breeds"
+                indexName="breeds_2"
                 routing={{
                   router: createInstantSearchRouterNext({
                     serverUrl: url,
@@ -64,10 +66,31 @@ export default function Breeds({ serverState, url }: PageProps) {
                 }}
                 insights
               >
-                <Stack spacing="5">
+                <Stack
+                  spacing={{ base: "6", md: "4" }}
+                  direction={{ base: "column", md: "row" }}
+                  justify="space-between"
+                  align="flex-start"
+                  width="full"
+                >
                   <SearchBox />
-                  <SearchResults />
+
+                  <SortbySelect
+                    display={{ base: "none", md: "flex" }}
+                    placeholder="Sort"
+                    width="200px"
+                    size="md"
+                    colorScheme="brand"
+                  />
                 </Stack>
+
+                <Grid
+                  templateColumns={{ base: "1fr", md: "240px 1fr" }}
+                  gap={4}
+                >
+                  <Filter />
+                  <SearchResults />
+                </Grid>
               </InstantSearch>
             </InstantSearchSSRProvider>
           </Stack>
