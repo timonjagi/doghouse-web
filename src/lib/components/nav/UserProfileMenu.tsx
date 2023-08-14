@@ -12,6 +12,7 @@ import {
   MenuItem,
   useToast,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import type React from "react";
 import { useSignOut } from "react-firebase-hooks/auth";
 
@@ -58,7 +59,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
   };
 
   return (
-    <Menu variant="primary-on-accent">
+    <Menu variant="primary">
       <MenuButton
         as={Button}
         rightIcon={<ChevronDownIcon />}
@@ -88,7 +89,9 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
         </Center>
         <MenuDivider />
         {/* <MenuItem>Your Servers</MenuItem> */}
-        <MenuItem cursor="pointer">Account Settings</MenuItem>
+        <MenuItem cursor="pointer" as={Link} href="/account">
+          Account
+        </MenuItem>
         <MenuItem as="button" cursor="pointer" onClick={onLogout}>
           Logout
         </MenuItem>
