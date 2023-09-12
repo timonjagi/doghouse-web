@@ -29,7 +29,7 @@ export default function CallToActionWithIllustration() {
         >
           <Box maxW="xl">
             <Heading as="h1" size="3xl" fontWeight="extrabold">
-              Quality breeds from the most reputable breeders
+              Find Your Perfect Furry Companion
             </Heading>
             <Text
               fontSize={{
@@ -38,8 +38,8 @@ export default function CallToActionWithIllustration() {
               mt="4"
               maxW="lg"
             >
-              Search for your favorite breeds and get a list of qualified
-              breeders that will contact you for offers.
+              Discover your ideal furry companion and start a journey of love
+              and companionship.
             </Text>
             <Stack
               direction={{
@@ -59,7 +59,7 @@ export default function CallToActionWithIllustration() {
                 fontSize="md"
                 fontWeight="bold"
               >
-                Get Started for Free
+                Start Your Journey
               </Button>
               <HStack
                 as={NextLink}
@@ -78,7 +78,7 @@ export default function CallToActionWithIllustration() {
                   bg: "whiteAlpha.300",
                 }}
               >
-                <span>Sign up as breeder</span>
+                <span>Continue as breeder</span>
                 <HiChevronRight />
               </HStack>
             </Stack>
