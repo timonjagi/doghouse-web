@@ -2,7 +2,7 @@ import type { DeepPartial, Theme } from "@chakra-ui/react";
 
 /** extend additional color here */
 const extendedColors: DeepPartial<
-  Record<string, Theme["colors"]["blackAlpha"]>
+  Record<string, Theme["colors"]["whiteAlpha"]>
 > = {
   brand: {
     100: "#DFBD99",
