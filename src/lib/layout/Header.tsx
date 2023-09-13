@@ -12,7 +12,7 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import Link from "next/link";
+
 import { useRouter } from "next/router";
 // import * as React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -31,7 +31,7 @@ const Header = () => {
   });
   const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
-  const { pathname } = router;
+  // const { pathname } = router;
 
   const [user] = useAuthState(auth);
   return (
@@ -45,7 +45,7 @@ const Header = () => {
         <Flex justify="space-between">
           <HStack spacing="4">
             <Logo />
-            {isDesktop && (
+            {/* {isDesktop && (
               <ButtonGroup variant="ghost-on-accent" spacing="1">
                 {user && (
                   <Button
@@ -68,11 +68,11 @@ const Header = () => {
                 >
                   Search Breeds
                 </Button>
-                {/* <Button>Tasks</Button>
+                <Button>Tasks</Button>
                 <Button>Bookmarks</Button>
-                <Button>Users</Button> */}
+                <Button>Users</Button>
               </ButtonGroup>
-            )}
+            )} */}
           </HStack>
           {isDesktop ? (
             <HStack spacing="4">
@@ -89,11 +89,13 @@ const Header = () => {
                   icon={<FiHelpCircle fontSize="1.25rem" />}
                   aria-label="Help Center"
                 />
-                <IconButton
-                  fontSize="1.25rem"
-                  aria-label="Notifications"
-                  icon={<FiBell />}
-                />
+                {user && (
+                  <IconButton
+                    fontSize="1.25rem"
+                    aria-label="Notifications"
+                    icon={<FiBell />}
+                  />
+                )}
               </ButtonGroup>
 
               {user ? (
@@ -107,6 +109,7 @@ const Header = () => {
                   <Button
                     variant="secondary-on-accent"
                     rounded="full"
+                    borderColor="white"
                     onClick={() => router.push("/login")}
                   >
                     Log in
