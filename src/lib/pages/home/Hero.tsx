@@ -53,13 +53,16 @@ export default function CallToActionWithIllustration() {
                 as={NextLink}
                 href="/breeds"
                 variant="primary"
+                color="brand.500"
+                backgroundColor="brand.500"
+                colorScheme="brand"
                 px="8"
                 rounded="full"
                 size="lg"
                 fontSize="md"
                 fontWeight="bold"
               >
-                Start Your Journey
+                <Text color="white"> Start Your Journey</Text>
               </Button>
               <HStack
                 as={NextLink}
