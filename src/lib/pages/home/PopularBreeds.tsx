@@ -103,11 +103,13 @@ export const PopularBreeds = () => (
                   <AspectRatio
                     // eslint-disable-next-line
                     ratio={1 / 1}
+                    p="64px"
                   >
                     <Image
                       src={group.imageUrl}
                       alt={group.name}
                       fallback={<Skeleton />}
+                      backgroundColor="brand.100"
                     />
                   </AspectRatio>
                   <Box

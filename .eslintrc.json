@@ -2,6 +2,11 @@
   "extends": [
     "sznm/react",
     "plugin:react/jsx-runtime",
-    "plugin:@next/next/recommended"
+    "plugin:@next/next/recommended",
+    {
+      "parserOptions": {
+        "project": "tsconfig.json"
+      }
+    }
   ]
 }
