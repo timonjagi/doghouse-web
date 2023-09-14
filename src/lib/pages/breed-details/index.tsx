@@ -43,7 +43,6 @@ any) {
         );
 
         const breedInfo = await data.json();
-
         if (breedInfo) {
           setSelectedBreed({
             name: breedInfo.name,
@@ -91,7 +90,7 @@ any) {
               </Stack>
               <Text // eslint-disable-next-line
                 color={useColorModeValue("gray.600", "gray.400")}
-                noOfLines={[6, 10]}
+                noOfLines={isDrawer && isMobile ? [6, 10] : []}
               >
                 {selectedBreed.description}
               </Text>

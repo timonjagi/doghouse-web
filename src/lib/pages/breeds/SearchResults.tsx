@@ -2,6 +2,7 @@ import {
   AspectRatio,
   Box,
   Button,
+  Center,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -10,6 +11,7 @@ import {
   DrawerOverlay,
   SimpleGrid,
   Skeleton,
+  Spinner,
   Stack,
   useBreakpointValue,
 } from "@chakra-ui/react";
@@ -65,7 +67,7 @@ const SearchResults = () => {
 
   return (
     <>
-      {status !== "idle" && (
+      {status !== "idle" && !hits.length && (
         <SimpleGrid
           columns={{ base: 2, md: 3, lg: 4 }}
           gap={{ base: "4", md: "6", lg: "8" }}
@@ -86,17 +88,21 @@ const SearchResults = () => {
         </SimpleGrid>
       )}
 
-      {status === "idle" && (
-        <SimpleGrid
-          columns={{ base: 2, md: 3, lg: 4 }}
-          gap={{ base: "4", md: "6", lg: "8" }}
-        >
-          {hits.map((hit) => (
-            <BreedCard hit={hit} status={status} />
-          ))}
-          <div ref={sentinelRef} aria-hidden="true" />
-        </SimpleGrid>
-      )}
+      <SimpleGrid
+        columns={{ base: 2, md: 3, lg: 4 }}
+        gap={{ base: "4", md: "6", lg: "8" }}
+      >
+        {hits.map((hit) => (
+          <BreedCard hit={hit} />
+        ))}
+
+        <div ref={sentinelRef} aria-hidden="true" />
+        {status !== "idle" && hits.length && (
+          <Center>
+            <Spinner size="lg" />
+          </Center>
+        )}
+      </SimpleGrid>
 
       {status === "error" && <div>Error Loading Breeds</div>}
 
@@ -131,6 +137,7 @@ const SearchResults = () => {
                 loading={loading}
                 setLoading={setLoading}
                 isDrawer
+                isMobile
               />
             </Box>
           </DrawerBody>
@@ -148,7 +155,7 @@ const SearchResults = () => {
             >
               <Button
                 isDisabled={loading}
-                colorScheme="brand"
+                color="on-accent-subtle"
                 size="lg"
                 width="full"
                 as={Link}
