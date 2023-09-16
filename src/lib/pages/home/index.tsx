@@ -8,7 +8,7 @@ import Footer from "lib/layout/Footer";
 import Hero from "./Hero";
 // import { LogoGrid } from "./LogoGrid";
 import { PopularBreeds } from "./PopularBreeds";
-import { Pricing } from "./Pricing";
+import { Process } from "./Process";
 // import { Stats } from "./Stats";
 // import { Testimonials } from "./Testimonials";
 
@@ -28,7 +28,7 @@ const Home = () => {
         {/* <Features /> */}
         {/* <Stats /> */}
 
-        <Pricing />
+        <Process />
 
         <PopularBreeds />
 
