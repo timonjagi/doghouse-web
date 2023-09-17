@@ -7,6 +7,7 @@ import {
   Box,
   HStack,
   Img,
+  Link,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { HiChevronRight } from "react-icons/hi";
@@ -51,7 +52,7 @@ export default function CallToActionWithIllustration() {
             >
               <Button
                 as={NextLink}
-                href="/breeds"
+                href="/get-started"
                 variant="primary"
                 color="brand.500"
                 backgroundColor="brand.500"
@@ -65,7 +66,7 @@ export default function CallToActionWithIllustration() {
                 <Text color="white"> Start Your Journey</Text>
               </Button>
               <HStack
-                as={NextLink}
+                as={Link}
                 href="/signup"
                 transition="background 0.2s"
                 justify={{

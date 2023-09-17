@@ -21,7 +21,8 @@
     "**/*.ts",
     "**/*.tsx",
     "src",
-    "commitlint.config.js"
+    "commitlint.config.js",
+    "globals.d.ts"
   ],
   "exclude": ["node_modules"]
 }
