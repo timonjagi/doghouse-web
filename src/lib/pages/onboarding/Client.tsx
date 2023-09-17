@@ -52,6 +52,7 @@ export default function ContactUs() {
 
           <Modal isCentered isOpen={loading ? true : false} onClose={() => {}}>
             <ModalOverlay
+              marginTop={{ base: "64px", lg: "72px" }}
               bg="none"
               backdropFilter="auto"
               backdropBlur="2px"

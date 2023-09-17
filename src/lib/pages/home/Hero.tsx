@@ -51,7 +51,7 @@ export default function CallToActionWithIllustration() {
               spacing="4"
             >
               <Button
-                as={NextLink}
+                as={Link}
                 href="/get-started"
                 variant="primary"
                 color="brand.500"
