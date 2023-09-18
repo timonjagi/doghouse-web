@@ -11,6 +11,7 @@ import {
   SimpleGrid,
   StackDivider,
   Center,
+  Link,
   useBreakpointValue,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
@@ -207,7 +208,8 @@ const FeatureCard = (props: any) => {
               size="lg"
               width="full"
               rounded="full"
-              onClick={() => router.push("/breeds")}
+              as={Link}
+              href="/get-started"
             >
               Get started
             </Button>

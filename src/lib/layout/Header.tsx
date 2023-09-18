@@ -35,7 +35,7 @@ const Header = () => {
 
   const [user] = useAuthState(auth);
   return (
-    <Box as="nav" bg="bg-accent" color="on-accent">
+    <Box as="nav" bg="bg-accent" color="on-accent" zIndex={3}>
       <Container
         py={{
           base: "3",

@@ -7,6 +7,7 @@ import {
   Text,
   useBreakpointValue,
   useColorModeValue,
+  Link,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 // import * as React from "react";
@@ -71,7 +72,8 @@ export const Cta = () => {
               variant="primary"
               size="lg"
               rounded="full"
-              onClick={() => router.push("breeds")}
+              as={Link}
+              href="/get-started"
             >
               Start for Free
             </Button>
