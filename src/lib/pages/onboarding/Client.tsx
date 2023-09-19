@@ -14,25 +14,9 @@ import { NextSeo } from "next-seo";
 export default function ContactUs() {
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   // Load Tally embeds after the page has mounted
-  //   const loadTallyEmbeds = () => {
-  //     if (window.Tally) {
-  //       window.Tally.loadEmbeds();
-  //     }
-  //   };
-
-  //   // Add an event listener for the "load" event to ensure Tally is loaded
-  //   window.addEventListener("load", loadTallyEmbeds);
-
-  //   // Clean up the event listener when the component unmounts
-  //   return () => {
-  //     window.removeEventListener("load", loadTallyEmbeds);
-  //   };
-  // }, []);
-
   const loadTallyEmbeds = () => {
     setLoading(false);
+    // eslint-disable-next-line
     if (window.Tally) {
       window.Tally.loadEmbeds();
     }
