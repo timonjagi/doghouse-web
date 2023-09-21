@@ -1,7 +1,14 @@
 // pages/contact.jsx
 import { useEffect, useState } from "react"; // Import useEffect
 import Script from "next/script";
-import { Flex, Box, Modal, ModalOverlay, Spinner } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Spinner,
+  ModalOverlay,
+  Modal,
+  ModalContent,
+} from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
 
 export default function ContactUs() {
@@ -9,6 +16,7 @@ export default function ContactUs() {
 
   const loadTallyEmbeds = () => {
     setLoading(false);
+    // eslint-disable-next-line
     if (window.Tally) {
       window.Tally.loadEmbeds();
     }
@@ -24,16 +32,17 @@ export default function ContactUs() {
           h="full"
           w="full"
         >
-          <NextSeo title="Adoption Contract" />
+          <NextSeo title="Welcome" />
 
           <Modal isCentered isOpen={loading ? true : false} onClose={() => {}}>
             <ModalOverlay
+              marginTop={{ base: "64px", lg: "72px" }}
               bg="none"
               backdropFilter="auto"
               backdropBlur="2px"
               alignItems="center"
               justifyContent="center"
-              zIndex={modal}
+              zIndex={1}
             ></ModalOverlay>
           </Modal>
 
@@ -52,6 +61,7 @@ export default function ContactUs() {
             width="100%"
             height="100%"
             title="Contact form"
+            onLoad={() => loadTallyEmbeds()}
           ></iframe>
         </Flex>
       </Box>
