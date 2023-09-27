@@ -44,7 +44,7 @@ export const Cta = () => {
           justify="space-between"
         >
           <Stack spacing="4" maxW="2xl">
-            <Heading size="sm">Ready to start your search?</Heading>
+            <Heading size="sm">We're getting ready to launch soon!</Heading>
             <Text
               color="muted"
               fontSize={useBreakpointValue({
@@ -52,7 +52,10 @@ export const Cta = () => {
                 lg: "xl",
               })}
             >
-              Find your perfect match on Doghouse today!
+              Be among the first to experience the future of responsible pet
+              adoption and ethical breeding. Join our waitlist and stay informed
+              about our latest updates, early access opportunities, and
+              exclusive benefits.
             </Text>
           </Stack>
           <Stack
@@ -70,12 +73,15 @@ export const Cta = () => {
           </Button> */}
             <Button
               variant="primary"
+              color="brand.500"
+              backgroundColor="brand.500"
+              colorScheme="brand"
               size="lg"
               rounded="full"
               as={Link}
-              href="/get-started"
+              href="/waitlist"
             >
-              Start for Free
+              <Text color="white"> Join the waitlist</Text>
             </Button>
           </Stack>
         </Stack>

@@ -209,7 +209,7 @@ const FeatureCard = (props: any) => {
               width="full"
               rounded="full"
               as={Link}
-              href="/get-started"
+              href="/waitlist"
             >
               Get started
             </Button>
