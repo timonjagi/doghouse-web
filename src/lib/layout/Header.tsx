@@ -89,16 +89,16 @@ const Header = () => {
                   icon={<FiHelpCircle fontSize="1.25rem" />}
                   aria-label="Help Center"
                 />
-                {user && (
+                {/* {user && (
                   <IconButton
                     fontSize="1.25rem"
                     aria-label="Notifications"
                     icon={<FiBell />}
                   />
-                )}
+                )} */}
               </ButtonGroup>
 
-              {user ? (
+              {/* {user ? (
                 <UserProfileMenu
                   name={user?.displayName || ""}
                   image={user?.photoURL || ""}
@@ -115,22 +115,22 @@ const Header = () => {
                     Log in
                   </Button>
                 </HStack>
-              )}
+              )} */}
             </HStack>
           ) : (
             <Flex align="center">
-              <IconButton
+              {/* <IconButton
                 variant="ghost-on-accent"
                 fontSize="1.25rem"
                 aria-label="Notifications"
                 icon={<FiBell />}
                 mr={3}
-              />
-              <ToggleButton
+              /> */}
+              {/* <ToggleButton
                 isOpen={isOpen}
                 aria-label="Open Menu"
                 onClick={onToggle}
-              />
+              /> */}
               <Drawer
                 isOpen={isOpen}
                 placement="left"

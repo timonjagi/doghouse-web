@@ -3,7 +3,7 @@ import { NextSeo } from "next-seo";
 
 import Footer from "lib/layout/Footer";
 
-// import { Cta } from "./Cta";
+import { Cta } from "./Cta";
 // import Features from "./Features";
 import Hero from "./Hero";
 // import { LogoGrid } from "./LogoGrid";
@@ -30,12 +30,12 @@ const Home = () => {
 
         <Process />
 
-        <PopularBreeds />
+        {/* <PopularBreeds /> */}
 
         {/* <Testimonials /> */}
         {/* <LogoGrid /> */}
 
-        {/* <Cta />  */}
+        <Cta />
       </Flex>
       <Footer />
     </Box>
