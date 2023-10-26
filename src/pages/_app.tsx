@@ -21,13 +21,10 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         />
       </Head>
       <DefaultSeo {...defaultSEOConfig} />
-      {["/login", "/signup"].includes(router.pathname) ? (
-        <Component key={router.asPath} {...pageProps} />
-      ) : (
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      )}
+
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </Chakra>
   );
 };

@@ -10,17 +10,18 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-import { Step } from "../../components/Step";
-import { useStep } from "../../components/useStep";
+import { Step } from "../../../components/Step";
+import { useStep } from "../../../components/useStep";
 
 import { Step1 } from "./Step1";
 import { Step2 } from "./Step2";
-import { Step3 } from "./Step3";
+import { Step3 } from "../04-confirm/Step3";
 
 type User = {
   // eslint-disable-next-line
@@ -36,7 +37,7 @@ type User = {
   uid: string;
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const BreederSignUpForm = (props: any) => {
+export const HumanProfile = (props: any) => {
   const router = useRouter();
   const [existingUser, setExistingUser] = useState({} as User);
   const [codeSent, setCodeSent] = useState(false);
@@ -50,8 +51,12 @@ export const BreederSignUpForm = (props: any) => {
   });
 
   return (
-    <Stack spacing="5" {...props}>
-      <Flex justify="center" as="a" href="/">
+    <Stack
+      spacing="9"
+      {...props}
+      px={useBreakpointValue({ base: "8", lg: "16", xl: "32" })}
+    >
+      {/* <Flex justify="center" as="a" href="/">
         <Image src="images/logo.png" height="100px" />
       </Flex>
 
@@ -69,28 +74,20 @@ export const BreederSignUpForm = (props: any) => {
             </Button>
           </HStack>
         </Stack>
-      )}
+      )} */}
 
-      {existingUser.uid && (
-        <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
-          {!codeVerified && (
-            <Stack spacing="1" textAlign="center">
-              <Heading size="sm">Hi, {existingUser.displayName}</Heading>
-              {existingUser.customClaims?.isBreeder && (
-                <Text color="muted" fontSize="sm">
-                  Welcome back! Login to your account to continue
-                </Text>
-              )}
-              {!existingUser.customClaims?.isBreeder && (
-                <Text color="muted">
-                  Let&apos;s create your breeder account
-                </Text>
-              )}
-            </Stack>
-          )}
-        </Stack>
-      )}
-      {(!existingUser || !existingUser.customClaims?.isBreeder) && (
+      <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
+        {!codeVerified && (
+          <Stack spacing="1" textAlign="center">
+            <Heading size={useBreakpointValue({ base: "md", lg: "lg" })}>
+              Good news! We care for pets in Winter Park. Let's create your
+              account.
+            </Heading>
+          </Stack>
+        )}
+      </Stack>
+
+      {/* {(!existingUser || !existingUser.customClaims?.isBreeder) && (
         <HStack spacing="0" justify="space-evenly" flex="1">
           {[...Array(numberOfSteps)].map((_, id) => (
             <Step
@@ -102,8 +99,9 @@ export const BreederSignUpForm = (props: any) => {
               isLastStep={numberOfSteps === id + 1}
             />
           ))}
-        </HStack>
-      )}
+        </HStack> 
+      )}*/}
+
       {currentStep === 0 && (
         <Step1
           currentStep={currentStep}
@@ -151,12 +149,6 @@ export const BreederSignUpForm = (props: any) => {
             Continue to Dashboard
           </Button>
         </Stack>
-      )}
-      {currentStep === 0 && !codeSent && (
-        <Text fontSize="xs" color="subtle" textAlign="center">
-          By continuing, you acknowledge that you have read, understood, and
-          agree to our terms and condition
-        </Text>
       )}
     </Stack>
   );

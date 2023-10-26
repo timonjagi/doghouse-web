@@ -241,9 +241,9 @@ export const Step1 = ({
   };
 
   return (
-    <Stack spacing="5" mt="5">
+    <Stack spacing="9">
       {!codeSent && (
-        <Stack spacing="3" as="form" onSubmit={checkIfUserExists}>
+        <Stack spacing="6" as="form" onSubmit={checkIfUserExists}>
           {/* <FormControl id="name">
             <FormLabel htmlFor="name">Name</FormLabel>
             <Input
@@ -258,7 +258,7 @@ export const Step1 = ({
           </FormControl> */}
 
           <FormControl>
-            <FormLabel htmlFor="phone">Phone</FormLabel>
+            <FormLabel htmlFor="phone">Mobile number</FormLabel>
 
             <InputGroup>
               <InputLeftAddon>+254</InputLeftAddon>
@@ -278,6 +278,11 @@ export const Step1 = ({
               />
             </InputGroup>
           </FormControl>
+
+          <Text fontSize="xs" color="subtle" textAlign="center">
+            By continuing, you acknowledge that you have read, understood, and
+            agree to our terms and condition
+          </Text>
 
           <ButtonGroup width="100%">
             <Spacer />

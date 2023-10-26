@@ -28,7 +28,7 @@ import type { MenuListProps } from "react-select";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 
-import breedData from "../../data/breeds.json";
+import breedData from "../../../data/breeds.json";
 import { auth, fireStore } from "lib/firebase/client";
 
 interface Breed {

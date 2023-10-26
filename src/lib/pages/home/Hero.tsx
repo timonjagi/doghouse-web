@@ -52,7 +52,7 @@ export default function CallToActionWithIllustration() {
             >
               <Button
                 as={Link}
-                href="/waitlist"
+                href="/signup"
                 variant="primary"
                 color="brand.500"
                 backgroundColor="brand.500"
@@ -63,11 +63,11 @@ export default function CallToActionWithIllustration() {
                 fontSize="md"
                 fontWeight="bold"
               >
-                <Text color="white"> Start Your Journey</Text>
+                <Text color="white">Get Started</Text>
               </Button>
               <HStack
                 as={Link}
-                href="/waitlist"
+                href="/signup"
                 transition="background 0.2s"
                 justify={{
                   base: "center",
