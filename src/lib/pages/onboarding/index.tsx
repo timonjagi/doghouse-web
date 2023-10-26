@@ -33,10 +33,12 @@ import { Step } from "../../components/Step";
 import { useStep } from "../../components/useStep";
 import { useRouter } from "next/router";
 
-import { LocationCheck } from "./LocationCheck";
-import { LoginForm } from "../../components/auth/LoginForm";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
+import { Confirm } from "./04-confirm";
+import { PetBasics } from "./02-pet-basics";
+import { PetDetails } from "./03-pet-details";
+import { HumanProfile } from "./01-human-profile";
 
 type User = {
   // eslint-disable-next-line
@@ -50,52 +52,6 @@ type User = {
   // eslint-disable-next-line
   providerData: any;
   uid: string;
-};
-
-const Features = () => {
-  return (
-    <Stack spacing="8">
-      <Heading size={useBreakpointValue({ base: "md", lg: "lg" })}>
-        Why our service?
-      </Heading>
-
-      <Stack spacing="8">
-        <HStack>
-          <Avatar as={Icon} />
-
-          <Text fontSize="lg" maxW="md" fontWeight="medium">
-            Create an account and get connected to our network of reputable
-            breeders.
-          </Text>
-        </HStack>
-
-        <HStack>
-          <Avatar as={Icon} />
-
-          <Text fontSize="lg" maxW="md" fontWeight="medium">
-            Create an account and get connected to our network of reputable
-            breeders.
-          </Text>
-        </HStack>
-        <HStack>
-          <Avatar as={Icon} />
-
-          <Text fontSize="lg" maxW="md" fontWeight="medium">
-            Create an account and get connected to our network of reputable
-            breeders.
-          </Text>
-        </HStack>
-        <HStack>
-          <Avatar as={Icon} />
-
-          <Text fontSize="lg" maxW="md" fontWeight="medium">
-            Create an account and get connected to our network of reputable
-            breeders.
-          </Text>
-        </HStack>
-      </Stack>
-    </Stack>
-  );
 };
 
 const SignUp = () => {
@@ -123,16 +79,6 @@ const SignUp = () => {
     setModalOpen(isMobile);
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      if (!user.displayName) {
-        router.push("/profile");
-      } else {
-        router.push("/dashboard");
-      }
-    }
-  }, [user]);
-
   return (
     <Flex
       bgGradient={useBreakpointValue({
@@ -144,36 +90,6 @@ const SignUp = () => {
       h="100%"
     >
       <NextSeo title="Get Started" />
-
-      <Modal
-        isCentered
-        isOpen={isMobile && !currentStep && modalOpen ? true : false}
-        onClose={() => {}}
-        size="sm"
-      >
-        <ModalOverlay></ModalOverlay>
-
-        <ModalContent>
-          <DarkMode>
-            <ModalBody>
-              <Flex align="center" h="full" pt="8" px="2">
-                <Features />
-              </Flex>
-            </ModalBody>
-          </DarkMode>
-
-          <ModalFooter>
-            <Button
-              size="lg"
-              variant="primary"
-              w="full"
-              onClick={() => setModalOpen(false)}
-            >
-              Get Started
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
 
       <Flex maxW="8xl" mx="auto" width="full">
         <Box flex="1" display={{ base: "none", md: "flex" }}>
@@ -193,7 +109,18 @@ const SignUp = () => {
                 h="full"
                 px={useBreakpointValue({ base: "0", xl: "16" })}
               >
-                {!currentStep && <Features />}
+                <Stack spacing="0" justify="space-evenly" flex="1">
+                  {[...Array(numberOfSteps)].map((_, id) => (
+                    <Step
+                      // eslint-disable-next-line
+                      key={id}
+                      cursor="pointer"
+                      isActive={currentStep === id}
+                      isCompleted={currentStep > id}
+                      isLastStep={numberOfSteps === id + 1}
+                    />
+                  ))}
+                </Stack>
               </Flex>
 
               <Flex align="center" h="24">
@@ -213,15 +140,7 @@ const SignUp = () => {
           justify="center"
           direction="column"
         >
-          {!location && (
-            <LocationCheck
-              loading={loading}
-              location={location}
-              setLocation={setLocation}
-            />
-          )}
-
-          {isMobile && currentStep && (
+          {isMobile && (
             <HStack spacing="0" justify="space-evenly" flex="1">
               {[...Array(numberOfSteps)].map((_, id) => (
                 <Step
@@ -236,30 +155,18 @@ const SignUp = () => {
             </HStack>
           )}
 
-          {location && !user?.uid && (
-            <Stack
-              spacing={{ base: "6", md: "9" }}
-              textAlign="center"
-              px={{ base: "8", lg: "16", xl: "32" }}
-            >
-              <Heading size="lg">
-                Good news! We care for pets in {location}. Let's create your
-                account.
-              </Heading>
+          {currentStep === 0 && (
+            <HumanProfile currentStep={currentStep} setStep={setStep} />
+          )}
 
-              <LoginForm />
-
-              <HStack justify="center" spacing="1">
-                <Text color="muted">Already have an account?</Text>
-                <Button
-                  variant="link"
-                  colorScheme="brand"
-                  onClick={() => router.push("/login")}
-                >
-                  Log in
-                </Button>
-              </HStack>
-            </Stack>
+          {currentStep === 1 && (
+            <PetBasics currentStep={currentStep} setStep={setStep} />
+          )}
+          {currentStep === 2 && (
+            <PetDetails currentStep={currentStep} setStep={setStep} />
+          )}
+          {currentStep === 3 && (
+            <Confirm currentStep={currentStep} setStep={setStep} />
           )}
         </Flex>
       </Flex>

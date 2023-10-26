@@ -13,13 +13,21 @@ import {
 import { MdLocationPin, MdOutlineChevronRight } from "react-icons/md";
 
 export const LocationCheck = (props) => {
-  const { loading, setLocation, onSubmit } = props;
+  const { loading, setLocation } = props;
+
+  const onSubmit = (event) => {
+    // check location
+    // navigate to next step if location accepted
+    // show error modal if not with option to add phone number to get notified when we expand to the area
+    event.preventDefault();
+    return false;
+  };
 
   return (
     <Stack
       spacing="12"
       as="form"
-      px={useBreakpointValue({ base: "8", md: "16", xl: "32" })}
+      px={useBreakpointValue({ base: "8", lg: "16", xl: "32" })}
       onSubmit={onSubmit}
     >
       <Heading size={useBreakpointValue({ base: "lg", lg: "xl" })}>
@@ -34,6 +42,7 @@ export const LocationCheck = (props) => {
           <Input
             placeholder="Enter your location"
             onChange={(event) => setLocation(event?.target.value)}
+            required
           />
           {/* <InputRightAddon children=".com" /> */}
         </InputGroup>

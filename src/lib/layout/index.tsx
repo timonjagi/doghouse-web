@@ -20,7 +20,8 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">
       <Box h="full">
-        {!["/login", "/signup"].includes(router.pathname) || isMobile ? (
+        {!["/login", "/signup", "/profile"].includes(router.pathname) ||
+        isMobile ? (
           <Header />
         ) : (
           <></>

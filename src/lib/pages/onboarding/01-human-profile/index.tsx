@@ -22,11 +22,9 @@ type PageProps = {
   currentStep: number;
   // eslint-disable-next-line
   setStep: any;
-  // eslint-disable-next-line
-  setCodeSent: any;
 };
 
-export const Step2 = ({ currentStep, setStep, setCodeSent }: PageProps) => {
+export const HumanProfile = ({ currentStep, setStep }: PageProps) => {
   const [user] = useAuthState(auth);
   const toast = useToast();
 
@@ -35,6 +33,31 @@ export const Step2 = ({ currentStep, setStep, setCodeSent }: PageProps) => {
   const [kennelLocation, setKennelLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [updateProfile] = useUpdateProfile(auth);
+
+  const assignBreederRole = async (uid: string) => {
+    try {
+      const response = await fetch("/api/set-custom-claims", {
+        method: "POST",
+        body: JSON.stringify({ uid, isBreeder: true }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.status === 200) {
+        // await createUserDocument(uid);
+        setStep(currentStep + 1);
+      }
+      // eslint-disable-next-line
+    } catch (err: any) {
+      toast({
+        title: err.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+
+      setLoading(false);
+    }
+  };
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -67,7 +90,6 @@ export const Step2 = ({ currentStep, setStep, setCodeSent }: PageProps) => {
 
   const onBack = () => {
     setStep(currentStep - 1);
-    setCodeSent(false);
   };
 
   return (

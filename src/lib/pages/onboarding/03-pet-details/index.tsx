@@ -58,7 +58,7 @@ const MenuList = ({ children, maxHeight }: MenuListProps) => {
 };
 
 // eslint-disable-next-line
-export const Step3 = ({ currentStep, setStep }: any) => {
+export const PetDetails = ({ currentStep, setStep }: any) => {
   const [user] = useAuthState(auth);
   const toast = useToast();
   const services = [
