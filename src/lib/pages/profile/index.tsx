@@ -186,21 +186,16 @@ const SignUp = () => {
         </Box>
         {/* end sidebar */}
 
-        <Flex flex="1" w="full" h="full">
+        <Flex flex="1" w="full" h="full" align="center">
           {!loadingUser && !loadingUserProfile && (
-            <Stack
-              spacing="9"
-              w="full"
-              px={{ base: "8", lg: "16", xl: "32" }}
-              pt={{ base: "16", md: "32" }}
-            >
+            <Stack spacing="9" w="full" px={{ base: "8", lg: "16", xl: "32" }}>
               {isMobile && (
                 <Stack>
                   <Stepper
                     size="sm"
                     index={activeStep}
                     gap="0"
-                    colorScheme="brand-on-accent"
+                    colorScheme="brand"
                   >
                     {steps.map((step, index) => (
                       <Step key={index}>
