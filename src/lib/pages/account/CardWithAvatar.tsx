@@ -36,6 +36,7 @@ export const CardWithAvatar = (props: any) => {
         borderWidth="6px"
         borderColor={useColorModeValue("white", "brand.700")}
         size="xl"
+        zIndex={3}
         {...avatarProps}
       />
       <Box

@@ -32,7 +32,7 @@ export const LoginForm = (props: PageProps) => {
 
   const [loading, setLoading] = useState(false);
   const [existingUser, setExistingUser] = useState({} as User);
-  const [codeSent, setCodeSent] = useState(false);
+  const [openOTPModal, setOpenOTPModal] = useState(false);
   const [codeVerified, setCodeVerified] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [code, setCode] = useState("");
@@ -61,9 +61,10 @@ export const LoginForm = (props: PageProps) => {
         phoneNumber,
         appVerifier
       );
-
+      console.log(result);
       if (result) {
-        setCodeSent(true);
+        setOpenOTPModal(true);
+        console.log("set open otp modal", openOTPModal);
         setConfirmationResult(result);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -95,7 +96,8 @@ export const LoginForm = (props: PageProps) => {
       const result = await confirmationResult.confirm(code);
       if (result) {
         setCodeVerified(true);
-        if (existingUser.uid) {
+
+        if (existingUser) {
           if (
             existingUser.customClaims &&
             existingUser.customClaims.isBreeder
@@ -108,6 +110,8 @@ export const LoginForm = (props: PageProps) => {
             });
             // } else {
             //   assignBreederRole(existingUser.uid);
+          } else {
+            await router.push("/profile");
           }
           // } else {
           //   await assignBreederRole(result.user.uid);
@@ -185,7 +189,6 @@ export const LoginForm = (props: PageProps) => {
               name="phone"
               placeholder="Enter you mobile number"
               type="tel"
-              disabled={codeSent}
               onChange={(event) => setPhoneNumber(`+254${event?.target.value}`)}
               pattern="^([7]{1}|[1]{1})[0-9]{8}$"
               maxLength={9}
@@ -193,15 +196,17 @@ export const LoginForm = (props: PageProps) => {
           </InputGroup>
         </FormControl>
 
-        <Text fontSize="xs" color="subtle" textAlign="center">
-          By continuing, you acknowledge that you have read, understood, and
-          agree to our terms and condition
-        </Text>
+        {router.pathname.includes("signup") && (
+          <Text fontSize="xs" color="subtle" textAlign="center">
+            By continuing, you acknowledge that you have read, understood, and
+            agree to our terms and condition
+          </Text>
+        )}
 
         <ButtonGroup width="100%">
           <Spacer />
           <Button isLoading={loading} type="submit" variant="primary">
-            Next
+            {router.pathname.includes("signup") ? "Next" : "Continue"}
           </Button>
         </ButtonGroup>
       </Stack>
@@ -212,7 +217,7 @@ export const LoginForm = (props: PageProps) => {
         phoneNumber={phoneNumber}
         onSubmit={onVerifyCode}
         setCode={setCode}
-        codeSent={codeSent}
+        openOTPModal={openOTPModal}
         sendVerificationCode={sendVerificationCode}
       />
 

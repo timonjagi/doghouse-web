@@ -1,3 +1,3 @@
-import Profile from '../../lib/pages/onboarding'
+import Profile from '../../lib/pages/profile'
 
 export default Profile;

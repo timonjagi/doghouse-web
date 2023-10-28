@@ -24,6 +24,7 @@ import {
   InputRightAddon,
   useBreakpointValue,
   useColorModeValue as mode,
+  useToast,
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
@@ -101,12 +102,9 @@ const Features = () => {
 const SignUp = () => {
   const [location, setLocation] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  // const [locationChecked, setLocationChecked] = useState(false);
   const router = useRouter();
-  const [existingUser, setExistingUser] = useState({} as User);
-  const [loading, setLoading] = useState(false);
 
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
 
   const numberOfSteps = 3;
   const [currentStep, { setStep }] = useStep({
@@ -119,19 +117,26 @@ const SignUp = () => {
     md: false,
   });
 
-  useEffect(() => {
-    setModalOpen(isMobile);
-  }, []);
+  const toast = useToast();
 
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {
+      // toast({
+      //   title: "Already logged in",
+      //   status: "info",
+      //   duration: 5000,
+      //   isClosable: true,
+      //   position: isMobile ? "bottom" : "bottom-right",
+      // });
       if (!user.displayName) {
         router.push("/profile");
       } else {
         router.push("/dashboard");
       }
     }
-  }, [user]);
+
+    setModalOpen(isMobile);
+  }, [user, loading]);
 
   return (
     <Flex

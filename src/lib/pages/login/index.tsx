@@ -12,16 +12,31 @@ import {
   Text,
   useBreakpointValue,
   useColorModeValue as mode,
+  useToast,
 } from "@chakra-ui/react";
 import { LoginForm } from "lib/components/auth/LoginForm";
+import { auth } from "lib/firebase/client";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 import { Logo } from "../../components/Logo";
 
 const Login = () => {
   const router = useRouter();
+  const [user] = useAuthState(auth);
+
+  useEffect(() => {
+    if (user) {
+      if (user.displayName) {
+        router.push("/dashboard");
+      } else {
+        router.push("/profile");
+      }
+    }
+  }, [user]);
 
   return (
     <Flex
@@ -105,7 +120,7 @@ const Login = () => {
           >
             <Heading size="lg">Log in to your account</Heading>
 
-            <LoginForm px={{ base: "4", md: "8" }} width="full" maxW="md" />
+            <LoginForm />
 
             <HStack justify="center" spacing="1">
               <Text color="muted">Don&apos;t have an account?</Text>

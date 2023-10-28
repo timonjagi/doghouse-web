@@ -27,25 +27,20 @@ export const VerifyOTPModal = (props) => {
     phoneNumber,
     onSubmit,
     setCode,
-    codeSent,
+    openOTPModal,
     sendVerificationCode,
   } = props;
 
   return (
-    <Modal
-      isOpen={codeSent}
-      onClose={() => {}}
-      size={useBreakpointValue({ base: "sm", sm: "md" })}
-      isCentered
-    >
+    <Modal isOpen={openOTPModal} onClose={() => {}} size="sm" isCentered>
       <ModalOverlay></ModalOverlay>
 
       <ModalContent p="8">
         <ModalBody>
           <Stack spacing="9" as="form" onSubmit={onSubmit}>
             {existingUser && existingUser.displayName && (
-              <Heading size={useBreakpointValue({ base: "md", md: "lg" })}>
-                Hey {existingUser.displayName}! Welcome back!
+              <Heading size="md">
+                Hey {existingUser.displayName}. Welcome back!
               </Heading>
             )}
 

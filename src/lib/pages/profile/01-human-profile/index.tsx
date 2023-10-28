@@ -10,8 +10,9 @@ import {
   InputGroup,
   InputLeftElement,
   Icon,
+  Heading,
 } from "@chakra-ui/react";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
 import { MdOutlineLocationOn } from "react-icons/md";
@@ -29,21 +30,20 @@ export const HumanProfile = ({ currentStep, setStep }: PageProps) => {
   const toast = useToast();
 
   const [displayName, setDisplayName] = useState("");
-  const [kennelName, setKennelName] = useState("");
-  const [kennelLocation, setKennelLocation] = useState("");
+  const [email, setEmail] = useState("");
+  const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [updateProfile] = useUpdateProfile(auth);
 
   const assignBreederRole = async (uid: string) => {
     try {
-      const response = await fetch("/api/set-custom-claims", {
+      const response = await fetch("/api/users/set-custom-claims", {
         method: "POST",
         body: JSON.stringify({ uid, isBreeder: true }),
         headers: { "Content-Type": "application/json" },
       });
 
       if (response.status === 200) {
-        // await createUserDocument(uid);
         setStep(currentStep + 1);
       }
       // eslint-disable-next-line
@@ -63,18 +63,25 @@ export const HumanProfile = ({ currentStep, setStep }: PageProps) => {
     event.preventDefault();
 
     setLoading(true);
+
     try {
       await updateProfile({ displayName });
 
       const payload = {
-        breederId: user?.uid,
-        name: kennelName,
-        location: kennelLocation,
+        userId: user?.uid,
+        name: displayName,
+        location: location,
       };
 
-      await addDoc(collection(fireStore, "kennels"), payload);
-      setStep(currentStep + 1);
+      const response = await fetch("/api/users/create-user", {
+        method: "POST",
+        body: JSON.stringify({ payload }),
+        headers: { "Content-Type": "application/json" },
+      });
 
+      if (response.status === 200) {
+        setStep(currentStep + 1);
+      }
       // eslint-disable-next-line
     } catch (err: any) {
       toast({
@@ -88,16 +95,19 @@ export const HumanProfile = ({ currentStep, setStep }: PageProps) => {
     setLoading(false);
   };
 
-  const onBack = () => {
-    setStep(currentStep - 1);
-  };
+  // const onBack = () => {
+  //   setStep(currentStep - 1);
+  // };
 
   return (
-    <Stack as="form" spacing="5" mt="5" onSubmit={(event) => onSubmit(event)}>
-      <Stack spacing="3">
+    <Stack as="form" spacing="9" onSubmit={(event) => onSubmit(event)}>
+      <Heading size="md">Hi there! Please tell us a bit about yourself</Heading>
+
+      <Stack spacing="6">
         <FormControl id="name">
           <FormLabel htmlFor="name">Your Name</FormLabel>
           <Input
+            size="lg"
             required
             id="userName"
             name="userName"
@@ -107,22 +117,10 @@ export const HumanProfile = ({ currentStep, setStep }: PageProps) => {
           />
         </FormControl>
 
-        <FormControl id="name">
-          <FormLabel htmlFor="name">Kennel Name</FormLabel>
-          <Input
-            required
-            id="kennelName"
-            name="kennelName"
-            type="text"
-            placeholder="Enter the name of your kennel"
-            onChange={(e) => setKennelName(e.target.value)}
-          />
-        </FormControl>
-
         <FormControl>
-          <FormLabel htmlFor="phone">Location</FormLabel>
+          <FormLabel htmlFor="phone">Your Location</FormLabel>
 
-          <InputGroup>
+          <InputGroup size="lg">
             <InputLeftElement pointerEvents="none">
               <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
             </InputLeftElement>
@@ -130,22 +128,40 @@ export const HumanProfile = ({ currentStep, setStep }: PageProps) => {
               required
               id="location"
               name="location"
-              placeholder="Enter your kennel's location"
-              type="string"
-              onChange={(event) => setKennelLocation(event?.target.value)}
+              placeholder="Enter your location"
+              type="text"
+              onChange={(event) => setLocation(event?.target.value)}
             />{" "}
           </InputGroup>
         </FormControl>
+
+        {/* <FormControl>
+          <FormLabel htmlFor="phone">Your Email (optional)</FormLabel>
+
+          <InputGroup size="lg">
+            <InputLeftElement pointerEvents="none">
+              <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
+            </InputLeftElement>
+            <Input
+              required
+              id="location"
+              name="location"
+              placeholder="Enter your email"
+              type="email"
+              onChange={(event) => setEmail(event?.target.value)}
+            />{" "}
+          </InputGroup>
+        </FormControl> */}
       </Stack>
 
       <ButtonGroup width="100%">
-        <Button
+        {/* <Button
           onClick={() => onBack}
           isDisabled={currentStep === 0}
           variant="ghost"
         >
           Back
-        </Button>
+        </Button> */}
         <Spacer />
         <Button
           isLoading={loading}
