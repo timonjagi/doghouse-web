@@ -12,7 +12,7 @@ import {
 import NextLink from "next/link";
 import { HiChevronRight } from "react-icons/hi";
 
-export default function CallToActionWithIllustration() {
+export default function Hero({ user }) {
   return (
     <Box w="full" bg="gray.800" as="section" position="relative">
       <Box py="32" position="relative" zIndex={1}>
@@ -52,7 +52,7 @@ export default function CallToActionWithIllustration() {
             >
               <Button
                 as={Link}
-                href="/signup"
+                href={user ? "/profile" : "/signup"}
                 variant="primary"
                 color="brand.500"
                 backgroundColor="brand.500"
@@ -67,7 +67,7 @@ export default function CallToActionWithIllustration() {
               </Button>
               <HStack
                 as={Link}
-                href="/signup"
+                href={user ? "/profile" : "/signup"}
                 transition="background 0.2s"
                 justify={{
                   base: "center",

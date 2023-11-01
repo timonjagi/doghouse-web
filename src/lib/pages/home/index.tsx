@@ -9,10 +9,14 @@ import Hero from "./Hero";
 // import { LogoGrid } from "./LogoGrid";
 import { PopularBreeds } from "./PopularBreeds";
 import { Process } from "./Process";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "lib/firebase/client";
 // import { Stats } from "./Stats";
 // import { Testimonials } from "./Testimonials";
 
 const Home = () => {
+  const [user] = useAuthState(auth);
+
   return (
     <Box as="section" height="100vh" overflowY="auto">
       <Flex
@@ -23,7 +27,7 @@ const Home = () => {
         w="full"
       >
         <NextSeo title="Home" />
-        <Hero />
+        <Hero user={user} />
 
         {/* <Features /> */}
         {/* <Stats /> */}

@@ -39,20 +39,6 @@ import { LoginForm } from "../../components/auth/LoginForm";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 
-type User = {
-  // eslint-disable-next-line
-  customClaims: any;
-  disabled: boolean;
-  displayName: string;
-  emailVerified: boolean;
-  // eslint-disable-next-line
-  metadata: any;
-  phoneNumber: string;
-  // eslint-disable-next-line
-  providerData: any;
-  uid: string;
-};
-
 const Features = () => {
   return (
     <Stack spacing="8">
@@ -120,21 +106,6 @@ const SignUp = () => {
   const toast = useToast();
 
   useEffect(() => {
-    if (!loading && user) {
-      // toast({
-      //   title: "Already logged in",
-      //   status: "info",
-      //   duration: 5000,
-      //   isClosable: true,
-      //   position: isMobile ? "bottom" : "bottom-right",
-      // });
-      if (!user.displayName) {
-        router.push("/profile");
-      } else {
-        router.push("/dashboard");
-      }
-    }
-
     setModalOpen(isMobile);
   }, [user, loading]);
 

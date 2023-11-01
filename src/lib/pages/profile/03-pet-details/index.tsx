@@ -11,25 +11,23 @@ import {
   Button,
   ButtonGroup,
   Spacer,
-  Alert,
-  AlertIcon,
+  Heading,
+  ButtonGroupProps,
+  ButtonProps,
+  useRadio,
+  useRadioGroup,
+  UseRadioProps,
+  HStack,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { Dropzone } from "lib/components/Dropzone";
+import React from "react";
 import { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import type { MenuListProps } from "react-select";
-import Select from "react-select";
-import AsyncSelect from "react-select/async";
+import { Select } from "chakra-react-select";
 
 import breedData from "../../../data/breeds.json";
-import { auth, fireStore } from "lib/firebase/client";
+import { transform } from "next/dist/build/swc";
 
 interface Breed {
   id: string;
@@ -41,65 +39,160 @@ interface Breed {
   image: string;
 }
 
-const NoOptionsMessage = () => {
+interface RadioButtonGroupProps<T>
+  extends Omit<ButtonGroupProps, "onChange" | "variant" | "isAttached"> {
+  name?: string;
+  value?: T;
+  defaultValue?: string;
+  onChange?: (value: T) => void;
+}
+
+export const RadioButtonGroup = <T extends string>(
+  props: RadioButtonGroupProps<T>
+) => {
+  const { children, name, defaultValue, value, onChange, ...rest } = props;
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    name,
+    defaultValue,
+    value,
+    onChange,
+  });
+
+  const buttons = React.useMemo(
+    () =>
+      React.Children.toArray(children)
+        .filter<React.ReactElement<RadioButtonProps>>(React.isValidElement)
+        .map((button, index, array) => {
+          const isFirstItem = index === 0;
+          const isLastItem = array.length === index + 1;
+
+          const styleProps = Object.assign({
+            ...(isFirstItem && !isLastItem ? { borderRightRadius: 0 } : {}),
+            ...(!isFirstItem && isLastItem ? { borderLeftRadius: 0 } : {}),
+            ...(!isFirstItem && !isLastItem ? { borderRadius: 0 } : {}),
+            ...(!isLastItem ? { mr: "-px" } : {}),
+          });
+
+          return React.cloneElement(button, {
+            ...styleProps,
+            radioProps: getRadioProps({
+              value: button.props.value,
+              disabled: props.isDisabled || button.props.isDisabled,
+            }),
+          });
+        }),
+    [children, getRadioProps, props.isDisabled]
+  );
   return (
-    <Flex p={2} justify="center" bg="on-accent">
-      <Text color="gray.500">No breeds found</Text>
-    </Flex>
+    <ButtonGroup isAttached variant="outline" {...getRootProps(rest)}>
+      {buttons}
+    </ButtonGroup>
   );
 };
 
-const MenuList = ({ children, maxHeight }: MenuListProps) => {
+interface RadioButtonProps extends ButtonProps {
+  value: string;
+  radioProps?: UseRadioProps;
+}
+
+export const RadioButton = (props: RadioButtonProps) => {
+  const { radioProps, ...rest } = props;
+  const { getInputProps, getLabelProps } = useRadio(radioProps);
+
+  const inputProps = getInputProps();
+  const labelProps = getLabelProps();
+
   return (
-    <Box maxH={maxHeight} overflowY="scroll">
-      <Text casing="capitalize">{children}</Text>
+    <Box
+      as="label"
+      cursor="pointer"
+      {...labelProps}
+      sx={{
+        ".focus-visible + [data-focus]": {
+          boxShadow: "outline",
+          zIndex: 1,
+        },
+      }}
+    >
+      <input {...inputProps} aria-labelledby="radion-button" />
+      <Button
+        id="radio-button"
+        as="div"
+        _focus={{ boxShadow: "none" }}
+        {...rest}
+      />
     </Box>
   );
 };
 
 // eslint-disable-next-line
 export const PetDetails = ({ currentStep, setStep }: any) => {
-  const [user] = useAuthState(auth);
+  const [userProfile, setUserProfile] = useState({} as any);
+
+  const [breeds, setBreeds] = useState([] as any[]);
+  const [selectedBreed, setSelectedBreed] = useState<string>("");
+  const [selectedFiles, setSelectedFile] = useState<any[]>([]);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedSex, setSelectedSex] = useState("");
+  const [selectedAge, setSelectedAge] = useState("");
+
+  const [loading, setLoading] = useState(true);
+
   const toast = useToast();
-  const services = [
-    { label: "Sale", value: "sale" },
-    { label: "Adoption", value: "adoption" },
-    { label: "Exchange", value: "exchange" },
-    { label: "Stud", value: "stud" },
-  ];
-  const [breeds, setBreeds] = useState([] as Breed[]);
+
+  useEffect(() => {
+    setLoading(true);
+
+    setBreeds(
+      breedData.map((breed) => ({
+        label: breed.name,
+        value: breed.name,
+      }))
+    );
+
+    const profile = JSON.parse(localStorage.getItem("profile"));
+
+    if (profile) {
+      setLoading(false);
+      setUserProfile(profile);
+      setSelectedRole(profile.roles[0]);
+    }
+  }, []);
 
   // eslint-disable-next-line
-  const [selectedBreeds, setSelectedBreeds] = useState([] as any[]);
-  const [selectedServices, setSelectedServices] = useState([] as string[]);
-  const [loading, setLoading] = useState(false);
-
-  const filterBreeds = (inputValue: string) => {
-    // eslint-disable-next-line
-    const matchingBreeds: any[] = [];
-
-    breeds.forEach((breed) => {
-      if (breed.name.toLowerCase().includes(inputValue.toLowerCase())) {
-        matchingBreeds.push({ value: breed.name, label: breed.name });
-      }
-    });
-    return matchingBreeds;
+  const onSelectBreed = (selectedBreed: any) => {
+    setSelectedBreed(selectedBreed.value);
   };
 
-  const loadOptions = (inputValue: string) =>
-    new Promise<Breed[]>((resolve) => {
-      resolve(filterBreeds(inputValue));
-    });
-  // eslint-disable-next-line
-  const onSelectServices = (selectedService: any) => {
-    if (selectedService) {
-      setSelectedServices((prev) => [...prev, selectedService.value]);
+  const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { files },
+    } = event;
+    const reader = new FileReader();
+
+    if (files?.length) {
+      reader.readAsDataURL(files[0]);
+
+      reader.onload = (readerEvent) => {
+        const newFile = readerEvent.target?.result;
+        if (newFile) {
+          if (selectedFiles.includes(newFile)) {
+            return toast({
+              title: "Image already selected",
+              description: "Please select a different image",
+              status: "error",
+              duration: 4000,
+            });
+          }
+          setSelectedFile([...selectedFiles, newFile]);
+        }
+      };
     }
   };
 
-  // eslint-disable-next-line
-  const onSelectBreed = (selectedBreeds: any) => {
-    setSelectedBreeds([...selectedBreeds]);
+  const onRemoveImage = (file) => {
+    const files = selectedFiles.filter((selectedFile) => selectedFile !== file);
+    setSelectedFile(files);
   };
 
   const onSubmit = async (event: React.FormEvent) => {
@@ -108,32 +201,23 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
     setLoading(true);
 
     try {
-      let kennelId;
+      const payload = {
+        ...userProfile,
+        pet_profiles: [
+          selectedRole.includes("dog_owner")
+            ? {
+                breed: selectedBreed,
+                images: selectedFiles,
+              }
+            : {
+                breed: selectedBreed,
+                sex: selectedSex,
+                age: selectedAge,
+              },
+        ],
+      };
 
-      const kennelQuery = query(
-        collection(fireStore, "kennels"),
-        where("breederId", "==", user?.uid)
-      );
-      const kennels = await getDocs(kennelQuery);
-      kennels.forEach((kennel) => {
-        kennelId = kennel.id;
-      });
-
-      if (kennelId) {
-        const kennelDocRef = doc(fireStore, "kennels", kennelId);
-        await updateDoc(kennelDocRef, {
-          breeds: JSON.stringify(selectedBreeds.map((breed) => breed.value)),
-          services: JSON.stringify(selectedServices),
-        });
-      }
-
-      toast({
-        title: "Profile completed",
-        description: "Your details have been saved.",
-        status: "success",
-        duration: 4000,
-        isClosable: true,
-      });
+      localStorage.setItem("profile", JSON.stringify(payload));
 
       setStep(currentStep + 1);
       // eslint-disable-next-line
@@ -149,74 +233,129 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
     setLoading(false);
   };
 
-  const checkIfOptionIsSelected = (option: {
-    label: string;
-    value: string;
-  }) => {
-    return !!selectedBreeds.find((breed) => breed.value === option.value);
-  };
-
-  useEffect(() => {
-    setBreeds(breedData as Breed[]);
-  }, []);
-
   return (
-    <Stack spacing={3} as="form" onSubmit={onSubmit}>
-      <FormControl>
-        <FormLabel htmlFor="phone">
-          Services ({selectedServices.length})
-        </FormLabel>
+    <>
+      {!loading && (
+        <Stack
+          as="form"
+          spacing={{ base: 6, md: 9 }}
+          onSubmit={(event) => onSubmit(event)}
+        >
+          <Heading size="md">
+            Awesome! Tell us about your
+            {selectedRole.includes("dog_seeker") ? " ideal " : ""} furry friend.
+          </Heading>
 
-        <Select
-          required
-          isMulti
-          options={services}
-          onChange={onSelectServices}
-        />
-      </FormControl>
+          <Stack spacing={{ base: 6, md: 9 }}>
+            <FormControl>
+              <FormLabel htmlFor="breeds">Breed</FormLabel>
+              <Select
+                colorScheme="brand"
+                options={breeds}
+                onChange={onSelectBreed}
+              />
+            </FormControl>
 
-      <FormControl>
-        <FormLabel htmlFor="phone">Breeds ({selectedBreeds.length})</FormLabel>
-        <AsyncSelect
-          instanceId="444"
-          placeholder="Search breeds..."
-          isClearable
-          isOptionDisabled={(option) =>
-            checkIfOptionIsSelected(option as { label: string; value: string })
-          }
-          isMulti
-          loadOptions={loadOptions}
-          onChange={onSelectBreed}
-          maxMenuHeight={300}
-          components={{ NoOptionsMessage, MenuList }}
-        />
-      </FormControl>
+            {selectedRole.includes("dog_seeker") && (
+              <>
+                <FormControl>
+                  <FormLabel htmlFor="breeds">Age</FormLabel>
 
-      {!selectedBreeds.length && (
-        <Alert status="info">
-          <AlertIcon />
-          No breeds selected.
-        </Alert>
+                  <RadioButtonGroup key="md" defaultValue="left" size="md">
+                    <RadioButton value="left">
+                      <Text fontWeight="normal">Puppy</Text>
+                    </RadioButton>
+                    <RadioButton value="center">
+                      <Text fontWeight="normal">Adolescent</Text>
+                    </RadioButton>
+                    <RadioButton value="right">
+                      <Text fontWeight="normal">Adult</Text>
+                    </RadioButton>
+                  </RadioButtonGroup>
+                </FormControl>
+
+                <Wrap align="baseline" spacing={{ base: 6, md: 9 }}>
+                  <WrapItem>
+                    <FormControl>
+                      <FormLabel htmlFor="breeds">Sex</FormLabel>
+
+                      <RadioButtonGroup key="md" defaultValue="left" size="md">
+                        <RadioButton value="male">
+                          <Text fontWeight="normal">Male</Text>
+                        </RadioButton>
+                        <RadioButton value="female">
+                          <Text fontWeight="normal">Female</Text>
+                        </RadioButton>
+                      </RadioButtonGroup>
+                    </FormControl>
+                  </WrapItem>
+
+                  <WrapItem>
+                    <FormControl>
+                      <FormLabel htmlFor="breeds">
+                        Spayed or Neutered?
+                      </FormLabel>
+
+                      <RadioButtonGroup key="md" defaultValue="left" size="md">
+                        <RadioButton value="male">
+                          <Text fontWeight="normal">Yes</Text>
+                        </RadioButton>
+                        <RadioButton value="female">
+                          <Text fontWeight="normal">No</Text>
+                        </RadioButton>
+                      </RadioButtonGroup>
+                    </FormControl>
+                  </WrapItem>
+                </Wrap>
+              </>
+            )}
+
+            {selectedRole.includes("dog_owner") && (
+              <FormControl id="file">
+                <FormLabel>Upload photo(s)</FormLabel>
+                <Dropzone
+                  selectedFiles={selectedFiles}
+                  onRemove={onRemoveImage}
+                  onChange={onSelectImage}
+                  maxUploads={4}
+                />
+              </FormControl>
+            )}
+
+            <Text fontSize="sm" color="subtle" textAlign="center">
+              {userProfile.roles?.includes("dog_owner") ? "Have" : "Want"}{" "}
+              multiple breeds? That's awesome. You can create additional{" "}
+              {userProfile.roles?.includes("dog_owner")
+                ? "pet profiles"
+                : "listings"}{" "}
+              later.
+            </Text>
+          </Stack>
+
+          <ButtonGroup width="100%">
+            <Button
+              onClick={() => setStep(currentStep - 1)}
+              isDisabled={currentStep === 0}
+              variant="ghost"
+            >
+              Back
+            </Button>
+            <Spacer />
+            <Button
+              isLoading={loading}
+              type="submit"
+              isDisabled={
+                selectedRole.includes("dog_owner")
+                  ? !selectedBreed || !selectedFiles.length
+                  : !selectedBreed || !selectedSex || !selectedAge
+              }
+              variant="primary"
+            >
+              Finish
+            </Button>
+          </ButtonGroup>
+        </Stack>
       )}
-
-      <ButtonGroup width="100%">
-        <Button
-          onClick={() => setStep(currentStep - 1)}
-          isDisabled={currentStep === 0}
-          variant="ghost"
-        >
-          Back
-        </Button>
-        <Spacer />
-        <Button
-          isLoading={loading}
-          type="submit"
-          isDisabled={currentStep >= 3 || !selectedBreeds.length}
-          variant="primary"
-        >
-          Finish
-        </Button>
-      </ButtonGroup>
-    </Stack>
+    </>
   );
 };

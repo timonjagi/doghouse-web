@@ -16,9 +16,10 @@ import {
   Button,
   ButtonGroup,
   Spacer,
+  useToast,
 } from "@chakra-ui/react";
 import { auth } from "lib/firebase/client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 interface RadioCardGroupProps<T> extends Omit<StackProps, "onChange"> {
@@ -30,6 +31,7 @@ interface RadioCardGroupProps<T> extends Omit<StackProps, "onChange"> {
 
 const RadioCardGroup = <T extends string>(props: RadioCardGroupProps<T>) => {
   const { children, name, defaultValue, value, onChange, ...rest } = props;
+  console.log(defaultValue);
   const { getRootProps, getRadioProps } = useRadioGroup({
     name,
     defaultValue,
@@ -61,13 +63,10 @@ interface RadioCardProps extends BoxProps {
 
 const RadioCard = (props: RadioCardProps) => {
   const { radioProps, children, ...rest } = props;
-  const { getInputProps, getCheckboxProps, getLabelProps, state } =
-    useRadio(radioProps);
+  const { getInputProps, getLabelProps, state } = useRadio(radioProps);
   const id = useId(undefined, "radio-button");
-
   const styles = useStyleConfig("RadioCard", props);
   const inputProps = getInputProps();
-  const checkboxProps = getCheckboxProps();
   const labelProps = getLabelProps();
   return (
     <Box
@@ -82,7 +81,7 @@ const RadioCard = (props: RadioCardProps) => {
       }}
     >
       <input {...inputProps} aria-labelledby={id} />
-      <Box sx={styles} {...checkboxProps} {...rest}>
+      <Box sx={styles} {...rest}>
         <Stack direction="row">
           <Box flex="1">{children}</Box>
           {state.isChecked ? (
@@ -113,41 +112,75 @@ const CheckIcon = createIcon({
 });
 
 // eslint-disable-next-line
-export const PetBasics = ({ currentStep, setStep }: any) => {
-  const [user] = useAuthState(auth);
+export const SelectPath = ({ currentStep, setStep, user }: any) => {
+  const [userProfile, setUserProfile] = useState({} as any);
+
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("");
 
   const options = [
     {
-      label: "Adoption ❤️",
-      description: "I'm a dog lover looking to give a dog a forever home",
+      label: "Dog Seeker",
+      description: "I'm looking to adopt a dog",
+      slug: "dog_seeker",
     },
     {
-      label: "Rehoming 🐶",
-      description: "I'm a dog-owner looking to rehome my dogs",
+      label: "Dog Owner",
+      description: "I'm looking to rehome my dogs",
+      slug: "dog_owner",
     },
-    {
-      label: "Services 🐾",
-      description: "I'm a dog professional looking to provide care for dogs",
-    },
+    // {
+    //   label: "Dog Professional ",
+    //   description: "I'm looking to provide care for dogs 🐾",
+    //   slug: "dog_professional",
+    // },
   ];
 
-  // const onBack = () => {
-  //   setStep(currentStep - 1);
-  // };
+  const onBack = () => {
+    setStep(currentStep - 1);
+  };
 
-  const onSubmit = (event) => {
+  useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem("profile"));
+    setUserProfile(profile);
+  }, []);
+
+  const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    setLoading(true);
+
+    try {
+      const profile = { ...userProfile, roles: [selectedRole] };
+      localStorage.setItem("profile", JSON.stringify(profile));
+
+      setStep(currentStep + 1);
+      // eslint-disable-next-line
+    } catch (err: any) {
+      toast({
+        title: err.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+
+    setLoading(false);
   };
 
   return (
     <Stack as="form" spacing="9" onSubmit={(event) => onSubmit(event)}>
       <Heading size="md">
-        Nice to meet you, {user.displayName}. What brings you to Doghouse?
+        Nice to meet you, {user?.displayName}. Choose your path.
       </Heading>
-      <RadioCardGroup defaultValue="one" spacing="3">
+      <RadioCardGroup
+        defaultValue={selectedRole}
+        spacing="3"
+        onChange={setSelectedRole}
+      >
         {options.map((option) => (
-          <RadioCard key={option.label} value={option.label}>
+          <RadioCard key={option.label} value={option.slug}>
             <Text color="emphasized" fontWeight="medium" fontSize="sm">
               {option.label}
             </Text>
@@ -159,18 +192,14 @@ export const PetBasics = ({ currentStep, setStep }: any) => {
       </RadioCardGroup>
 
       <ButtonGroup width="100%">
-        {/* <Button
-          onClick={() => onBack}
-          isDisabled={currentStep === 0}
-          variant="ghost"
-        >
+        <Button onClick={onBack} variant="ghost">
           Back
-        </Button> */}
+        </Button>
         <Spacer />
         <Button
           isLoading={loading}
           type="submit"
-          isDisabled={currentStep >= 3}
+          isDisabled={!selectedRole}
           variant="primary"
         >
           Next

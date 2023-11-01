@@ -25,10 +25,9 @@ type PageProps = {
   setStep: any;
 };
 
-export const HumanProfile = ({ currentStep, setStep }: PageProps) => {
+export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
   const [user] = useAuthState(auth);
   const toast = useToast();
-
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
@@ -73,15 +72,10 @@ export const HumanProfile = ({ currentStep, setStep }: PageProps) => {
         location: location,
       };
 
-      const response = await fetch("/api/users/create-user", {
-        method: "POST",
-        body: JSON.stringify({ payload }),
-        headers: { "Content-Type": "application/json" },
-      });
+      await localStorage.setItem("profile", JSON.stringify(payload));
 
-      if (response.status === 200) {
-        setStep(currentStep + 1);
-      }
+      setStep(currentStep + 1);
+
       // eslint-disable-next-line
     } catch (err: any) {
       toast({
@@ -112,7 +106,7 @@ export const HumanProfile = ({ currentStep, setStep }: PageProps) => {
             id="userName"
             name="userName"
             type="text"
-            placeholder="Enter the your name"
+            placeholder="Enter your name"
             onChange={(e) => setDisplayName(e.target.value)}
           />
         </FormControl>
