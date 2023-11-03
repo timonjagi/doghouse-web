@@ -18,6 +18,7 @@ import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
 import { MdOutlineLocationOn } from "react-icons/md";
 
 import { auth, fireStore } from "lib/firebase/client";
+import { Dropzone } from "lib/components/Dropzone";
 
 type PageProps = {
   currentStep: number;
@@ -129,6 +130,9 @@ export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
           </InputGroup>
         </FormControl>
 
+        <FormControl id="file">
+          <FormLabel>Upload profile photo</FormLabel>
+        </FormControl>
         {/* <FormControl>
           <FormLabel htmlFor="phone">Your Email (optional)</FormLabel>
 

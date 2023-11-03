@@ -178,7 +178,7 @@ const SignUp = () => {
             <Stack
               spacing="9"
               w="full"
-              px={{ base: "4", sm: "8", lg: "16", xl: "32" }}
+              px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
             >
               {isMobile && (
                 <Stack mt="8">

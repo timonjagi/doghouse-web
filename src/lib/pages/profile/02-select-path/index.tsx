@@ -172,7 +172,7 @@ export const SelectPath = ({ currentStep, setStep, user }: any) => {
   return (
     <Stack as="form" spacing="9" onSubmit={(event) => onSubmit(event)}>
       <Heading size="md">
-        Nice to meet you, {user?.displayName}. Choose your path.
+        Nice to meet you, {userProfile?.name}. Choose your path.
       </Heading>
       <RadioCardGroup
         defaultValue={selectedRole}

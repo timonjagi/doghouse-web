@@ -26,19 +26,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { Select } from "chakra-react-select";
 
-import breedData from "../../../data/breeds.json";
-import { transform } from "next/dist/build/swc";
-
-interface Breed {
-  id: string;
-  name: string;
-  description: string;
-  weight: string;
-  height: string;
-  lifeSpan: string;
-  image: string;
-}
-
+import breedData from "../../../data/breeds_with_group.json";
 interface RadioButtonGroupProps<T>
   extends Omit<ButtonGroupProps, "onChange" | "variant" | "isAttached"> {
   name?: string;
@@ -47,7 +35,7 @@ interface RadioButtonGroupProps<T>
   onChange?: (value: T) => void;
 }
 
-export const RadioButtonGroup = <T extends string>(
+const RadioButtonGroup = <T extends string>(
   props: RadioButtonGroupProps<T>
 ) => {
   const { children, name, defaultValue, value, onChange, ...rest } = props;
@@ -95,7 +83,7 @@ interface RadioButtonProps extends ButtonProps {
   radioProps?: UseRadioProps;
 }
 
-export const RadioButton = (props: RadioButtonProps) => {
+const RadioButton = (props: RadioButtonProps) => {
   const { radioProps, ...rest } = props;
   const { getInputProps, getLabelProps } = useRadio(radioProps);
 
@@ -114,7 +102,7 @@ export const RadioButton = (props: RadioButtonProps) => {
         },
       }}
     >
-      <input {...inputProps} aria-labelledby="radion-button" />
+      <input {...inputProps} aria-labelledby="radio-button" />
       <Button
         id="radio-button"
         as="div"
@@ -128,13 +116,13 @@ export const RadioButton = (props: RadioButtonProps) => {
 // eslint-disable-next-line
 export const PetDetails = ({ currentStep, setStep }: any) => {
   const [userProfile, setUserProfile] = useState({} as any);
-
   const [breeds, setBreeds] = useState([] as any[]);
-  const [selectedBreed, setSelectedBreed] = useState<string>("");
+
+  const [selectedBreed, setSelectedBreed] = useState<any>({} as any);
   const [selectedFiles, setSelectedFile] = useState<any[]>([]);
-  const [selectedRole, setSelectedRole] = useState("");
-  const [selectedSex, setSelectedSex] = useState("");
-  const [selectedAge, setSelectedAge] = useState("");
+  const [selectedRole, setSelectedRole] = useState<string>("");
+  const [selectedSex, setSelectedSex] = useState<string>("");
+  const [selectedAge, setSelectedAge] = useState<string>("");
 
   const [loading, setLoading] = useState(true);
 
@@ -156,12 +144,23 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
       setLoading(false);
       setUserProfile(profile);
       setSelectedRole(profile.roles[0]);
+
+      if (profile.pet_profiles) {
+        const petProfile = profile.pet_profiles[0];
+        setSelectedBreed(petProfile.breed);
+        setSelectedAge(petProfile.age);
+        setSelectedSex(petProfile.sex);
+        setSelectedFile(petProfile.images);
+      }
     }
   }, []);
 
   // eslint-disable-next-line
   const onSelectBreed = (selectedBreed: any) => {
-    setSelectedBreed(selectedBreed.value);
+    const breed = breedData.find((breed) => breed.name === selectedBreed.value);
+    if (breed) {
+      setSelectedBreed(breed);
+    }
   };
 
   const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,12 +245,14 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
             {selectedRole.includes("dog_seeker") ? " ideal " : ""} furry friend.
           </Heading>
 
-          <Stack spacing={{ base: 6, md: 9 }}>
+          <Stack spacing={{ base: 3, md: 9 }}>
             <FormControl>
               <FormLabel htmlFor="breeds">Breed</FormLabel>
               <Select
+                placeholder="Select breed..."
                 colorScheme="brand"
                 options={breeds}
+                value={{ label: selectedBreed.name, value: selectedBreed.name }}
                 onChange={onSelectBreed}
               />
             </FormControl>
@@ -261,52 +262,70 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
                 <FormControl>
                   <FormLabel htmlFor="breeds">Age</FormLabel>
 
-                  <RadioButtonGroup key="md" defaultValue="left" size="md">
-                    <RadioButton value="left">
-                      <Text fontWeight="normal">Puppy</Text>
+                  <RadioButtonGroup
+                    key="age"
+                    size="md"
+                    value={selectedAge}
+                    onChange={setSelectedAge}
+                  >
+                    <RadioButton value="puppy">
+                      <Text
+                        fontWeight={
+                          selectedAge === "puppy" ? "semibold" : "normal"
+                        }
+                      >
+                        Puppy
+                      </Text>
                     </RadioButton>
-                    <RadioButton value="center">
-                      <Text fontWeight="normal">Adolescent</Text>
+                    <RadioButton value="adolescent">
+                      <Text
+                        fontWeight={
+                          selectedAge === "adolescent" ? "semibold" : "normal"
+                        }
+                      >
+                        Adolescent
+                      </Text>
                     </RadioButton>
-                    <RadioButton value="right">
-                      <Text fontWeight="normal">Adult</Text>
+                    <RadioButton value="adult">
+                      <Text
+                        fontWeight={
+                          selectedAge === "adult" ? "semibold" : "normal"
+                        }
+                      >
+                        Adult
+                      </Text>
                     </RadioButton>
                   </RadioButtonGroup>
                 </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="breeds">Sex</FormLabel>
 
-                <Wrap align="baseline" spacing={{ base: 6, md: 9 }}>
-                  <WrapItem>
-                    <FormControl>
-                      <FormLabel htmlFor="breeds">Sex</FormLabel>
-
-                      <RadioButtonGroup key="md" defaultValue="left" size="md">
-                        <RadioButton value="male">
-                          <Text fontWeight="normal">Male</Text>
-                        </RadioButton>
-                        <RadioButton value="female">
-                          <Text fontWeight="normal">Female</Text>
-                        </RadioButton>
-                      </RadioButtonGroup>
-                    </FormControl>
-                  </WrapItem>
-
-                  <WrapItem>
-                    <FormControl>
-                      <FormLabel htmlFor="breeds">
-                        Spayed or Neutered?
-                      </FormLabel>
-
-                      <RadioButtonGroup key="md" defaultValue="left" size="md">
-                        <RadioButton value="male">
-                          <Text fontWeight="normal">Yes</Text>
-                        </RadioButton>
-                        <RadioButton value="female">
-                          <Text fontWeight="normal">No</Text>
-                        </RadioButton>
-                      </RadioButtonGroup>
-                    </FormControl>
-                  </WrapItem>
-                </Wrap>
+                  <RadioButtonGroup
+                    key="sex"
+                    size="md"
+                    value={selectedSex}
+                    onChange={setSelectedSex}
+                  >
+                    <RadioButton value="male">
+                      <Text
+                        fontWeight={
+                          selectedSex === "male" ? "semibold" : "normal"
+                        }
+                      >
+                        Male
+                      </Text>
+                    </RadioButton>
+                    <RadioButton value="female">
+                      <Text
+                        fontWeight={
+                          selectedSex === "female" ? "semibold" : "normal"
+                        }
+                      >
+                        Female
+                      </Text>
+                    </RadioButton>
+                  </RadioButtonGroup>
+                </FormControl>
               </>
             )}
 
@@ -321,18 +340,9 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
                 />
               </FormControl>
             )}
-
-            <Text fontSize="sm" color="subtle" textAlign="center">
-              {userProfile.roles?.includes("dog_owner") ? "Have" : "Want"}{" "}
-              multiple breeds? That's awesome. You can create additional{" "}
-              {userProfile.roles?.includes("dog_owner")
-                ? "pet profiles"
-                : "listings"}{" "}
-              later.
-            </Text>
           </Stack>
 
-          <ButtonGroup width="100%">
+          <ButtonGroup width="100%" mb="4">
             <Button
               onClick={() => setStep(currentStep - 1)}
               isDisabled={currentStep === 0}
@@ -351,7 +361,7 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
               }
               variant="primary"
             >
-              Finish
+              Next
             </Button>
           </ButtonGroup>
         </Stack>
