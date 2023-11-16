@@ -26,11 +26,12 @@
     "@ajna/pagination": "^1.4.19",
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/pro-theme": "^0.0.63",
-    "@chakra-ui/react": "2.4.9",
+    "@chakra-ui/react": "^2.8.1",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@types/react-dom": "^18.2.4",
     "algoliasearch": "^4.17.0",
+    "chakra-react-select": "^4.7.6",
     "firebase": "^9.17.1",
     "firebase-admin": "^11.5.0",
     "framer-motion": "^8.5.2",
@@ -65,7 +66,7 @@
     "prettier": "^2.8.3",
     "standard-version": "^9.5.0",
     "turbo": "^1.7.0",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.5"
   },
   "engines": {
     "node": ">=16.x.x"

@@ -34,8 +34,16 @@ const Header = () => {
   // const { pathname } = router;
 
   const [user] = useAuthState(auth);
+
   return (
-    <Box as="nav" bg="bg-accent" color="on-accent" zIndex={3}>
+    <Box
+      as="nav"
+      bg="bg-accent"
+      color="on-accent"
+      zIndex={3}
+      position="sticky"
+      top="0"
+    >
       <Container
         py={{
           base: "3",
@@ -98,7 +106,7 @@ const Header = () => {
                 )} */}
               </ButtonGroup>
 
-              {/* {user ? (
+              {user ? (
                 <UserProfileMenu
                   name={user?.displayName || ""}
                   image={user?.photoURL || ""}
@@ -115,7 +123,7 @@ const Header = () => {
                     Log in
                   </Button>
                 </HStack>
-              )} */}
+              )}
             </HStack>
           ) : (
             <Flex align="center">
