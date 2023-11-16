@@ -70,7 +70,7 @@ export const PopularBreeds = () => (
             direction={{ base: "column", md: "row" }}
           >
             <Heading size="lg" mb={{ base: "3", md: "0" }}>
-              Explore breeds
+              Explore groups
             </Heading>
             <HStack spacing={{ base: "2", md: "3" }}>
               <Link
@@ -79,7 +79,7 @@ export const PopularBreeds = () => (
                 color={useColorModeValue("brand.500", "brand.300")}
                 href="/breeds"
               >
-                See all breeds
+                See all groups
               </Link>
               <Icon
                 as={FaArrowRight}

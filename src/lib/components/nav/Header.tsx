@@ -18,9 +18,9 @@ import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { FiHelpCircle, FiBell } from "react-icons/fi";
 
-import { Logo } from "../components/Logo";
-import { Sidebar } from "../components/nav/Sidebar";
-import { ToggleButton } from "../components/nav/ToggleButton";
+import { Logo } from "./Logo";
+import { Sidebar } from "./Sidebar";
+import { ToggleButton } from "./ToggleButton";
 import UserProfileMenu from "lib/components/nav/UserProfileMenu";
 import { auth } from "lib/firebase/client";
 

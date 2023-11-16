@@ -30,17 +30,17 @@ export default function Hero({ user }) {
         >
           <Box maxW="xl">
             <Heading as="h1" size="3xl" fontWeight="extrabold">
-              Find Your Perfect Furry Companion
+              Welcome to Doghouse 🐶
             </Heading>
             <Text
               fontSize={{
+                base: "xl",
                 md: "2xl",
               }}
               mt="4"
               maxW="lg"
             >
-              Discover your ideal furry companion and start a journey of love
-              and companionship.
+              Fostering Responsible Pet Adoption and Ethical Breeding
             </Text>
             <Stack
               direction={{
@@ -48,7 +48,7 @@ export default function Hero({ user }) {
                 md: "row",
               }}
               mt="10"
-              spacing="4"
+              spacing={{ base: 4, md: 2 }}
             >
               <Button
                 as={Link}
@@ -63,7 +63,7 @@ export default function Hero({ user }) {
                 fontSize="md"
                 fontWeight="bold"
               >
-                <Text color="white">Get Started</Text>
+                <Text color="white">Join Our Community</Text>
               </Button>
               <HStack
                 as={Link}
@@ -82,7 +82,7 @@ export default function Hero({ user }) {
                   bg: "whiteAlpha.300",
                 }}
               >
-                <span>Continue as breeder</span>
+                <span>Already a member? Login</span>
                 <HiChevronRight />
               </HStack>
             </Stack>
@@ -101,15 +101,15 @@ export default function Hero({ user }) {
       >
         <Box position="relative" w="full" h="full">
           <Img
-            src="images/hero.jpg"
+            src="images/hero_2_2.png"
             alt="Main Image"
             w="full"
             h="full"
             objectFit="cover"
-            objectPosition="top bottom"
+            objectPosition="90% center"
             position="absolute"
           />
-          <Box position="absolute" w="full" h="full" bg="blackAlpha.600" />
+          <Box position="absolute" w="full" h="full" bg="blackAlpha.700" />
         </Box>
       </Flex>
     </Box>

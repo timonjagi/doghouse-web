@@ -21,7 +21,7 @@ import {
 // import * as React from "react";
 import { NextSeo } from "next-seo";
 import { useEffect, useState } from "react";
-import { Logo } from "../../components/Logo";
+import { Logo } from "../../components/nav/Logo";
 
 import { Confirm } from "./04-confirm";
 import { SelectPath } from "./02-select-path";

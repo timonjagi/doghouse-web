@@ -22,7 +22,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { Logo } from "../../components/Logo";
+import { Logo } from "../../components/nav/Logo";
 
 const Login = () => {
   const router = useRouter();

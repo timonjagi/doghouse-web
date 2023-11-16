@@ -2,7 +2,7 @@ import { Box, useBreakpointValue, useToast } from "@chakra-ui/react";
 import { ReactNode, useEffect, useRef } from "react";
 
 // import Footer from "./Footer";
-import Header from "./Header";
+import Header from "../components/nav/Header";
 import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";

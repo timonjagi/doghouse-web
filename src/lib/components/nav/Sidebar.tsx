@@ -13,7 +13,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { FiHome, FiHelpCircle, FiSettings, FiLogIn } from "react-icons/fi";
 import { RxDashboard } from "react-icons/rx";
 
-import { Logo } from "../Logo";
+import { Logo } from "./Logo";
 import { auth } from "lib/firebase/client";
 
 import { NavButton } from "./NavButton";

@@ -1,10 +1,10 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
 
-import Footer from "lib/layout/Footer";
+import Footer from "lib/components/nav/Footer";
 
 import { Cta } from "./Cta";
-// import Features from "./Features";
+import Features from "./Features";
 import Hero from "./Hero";
 // import { LogoGrid } from "./LogoGrid";
 import { PopularBreeds } from "./PopularBreeds";
@@ -29,12 +29,12 @@ const Home = () => {
         <NextSeo title="Home" />
         <Hero user={user} />
 
-        {/* <Features /> */}
+        <Features />
         {/* <Stats /> */}
 
-        <Process />
+        {/* <Process /> */}
 
-        {/* <PopularBreeds /> */}
+        <PopularBreeds />
 
         {/* <Testimonials /> */}
         {/* <LogoGrid /> */}

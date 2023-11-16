@@ -29,7 +29,7 @@ import {
 // import * as React from "react";
 import { NextSeo } from "next-seo";
 import { useEffect, useState } from "react";
-import { Logo } from "../../components/Logo";
+import { Logo } from "../../components/nav/Logo";
 import { Step } from "../../components/Step";
 import { useStep } from "../../components/useStep";
 import { useRouter } from "next/router";
