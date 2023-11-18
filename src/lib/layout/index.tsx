@@ -33,7 +33,11 @@ const Layout = ({ children }: LayoutProps) => {
           as="main"
           h={useBreakpointValue({ base: "calc(100vh - 64px)", md: "100vh" })}
         >
-          <RouteGuard>{children}</RouteGuard>
+          {!["/login", "/signup", "/profile"].includes(router.pathname) ? (
+            <RouteGuard>{children}</RouteGuard>
+          ) : (
+            <>{children}</>
+          )}
         </Box>
         {/* <Footer /> */}
       </Box>
