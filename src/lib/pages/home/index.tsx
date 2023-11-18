@@ -6,13 +6,13 @@ import Footer from "lib/components/nav/Footer";
 import { Cta } from "./Cta";
 import Features from "./Features";
 import Hero from "./Hero";
-// import { LogoGrid } from "./LogoGrid";
-import { PopularBreeds } from "./PopularBreeds";
+import { BreedGroups } from "./BreedGroups";
 import { Process } from "./Process";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 // import { Stats } from "./Stats";
-// import { Testimonials } from "./Testimonials";
+import { Testimonials } from "./Testimonials";
+import { LogoGrid } from "./LogoGrid";
 
 const Home = () => {
   const [user] = useAuthState(auth);
@@ -29,17 +29,18 @@ const Home = () => {
         <NextSeo title="Home" />
         <Hero user={user} />
 
-        <Features />
+        {/* <Features /> */}
         {/* <Stats /> */}
 
         {/* <Process /> */}
 
-        <PopularBreeds />
+        <BreedGroups />
 
         {/* <Testimonials /> */}
-        {/* <LogoGrid /> */}
 
         <Cta />
+
+        <LogoGrid />
       </Flex>
       <Footer />
     </Box>

@@ -19,7 +19,7 @@ export const LogoGrid = () => (
           fontWeight="medium"
           textAlign="center"
         >
-          These and other companies trust us
+          In partnership with these and other animal welfare associations
         </Text>
         <SimpleGrid
           gap={{ base: "4", md: "8" }}

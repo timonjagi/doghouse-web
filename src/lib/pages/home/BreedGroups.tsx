@@ -59,8 +59,8 @@ import { breedGroups } from "./_breed_groups";
 //   );
 // };
 
-export const PopularBreeds = () => (
-  <Box as="section" w="full">
+export const BreedGroups = () => (
+  <Box as="section" w="full" bg="brand.100">
     <Container>
       <Box mx="auto" py={{ base: "6", md: "8", lg: "12" }}>
         <Stack spacing={{ base: "6", md: "8", lg: "12" }}>
@@ -69,7 +69,11 @@ export const PopularBreeds = () => (
             align={{ base: "start", md: "center" }}
             direction={{ base: "column", md: "row" }}
           >
-            <Heading size="lg" mb={{ base: "3", md: "0" }}>
+            <Heading
+              size="lg"
+              mb={{ base: "3", md: "0" }}
+              color="secondary.100"
+            >
               Explore groups
             </Heading>
             <HStack spacing={{ base: "2", md: "3" }}>
@@ -109,14 +113,17 @@ export const PopularBreeds = () => (
                       src={group.imageUrl}
                       alt={group.name}
                       fallback={<Skeleton />}
-                      backgroundColor="brand.100"
+                      border="4px solid"
+                      borderColor="brand.500"
+                      borderRadius="xl"
                     />
                   </AspectRatio>
                   <Box
                     position="absolute"
                     inset="0"
-                    bgGradient="linear(to-b, transparent 60%, gray.900)"
                     boxSize="full"
+                    bg="blackAlpha.200"
+                    _hover={{ bg: "blackAlpha.400" }}
                   />
                   {/* <Box position="absolute" bottom="6" width="full" textAlign="center">
                       <Text color="white" fontSize="lg" fontWeight="semibold">

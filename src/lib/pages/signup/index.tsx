@@ -41,9 +41,14 @@ import { auth } from "lib/firebase/client";
 
 const Features = () => {
   return (
-    <Stack spacing="8">
+    <Stack
+      spacing="8"
+      display="flex"
+      flexDirection="column"
+      alignContent="center"
+    >
       <Heading size={useBreakpointValue({ base: "md", lg: "lg" })}>
-        Why our service?
+        Why Doghouse?
       </Heading>
 
       <Stack spacing="8">
@@ -125,7 +130,7 @@ const SignUp = () => {
         isCentered
         isOpen={isMobile && !currentStep && modalOpen ? true : false}
         onClose={() => {}}
-        size="sm"
+        size="full"
       >
         <ModalOverlay></ModalOverlay>
 

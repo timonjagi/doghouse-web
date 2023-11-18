@@ -44,7 +44,7 @@ export const Cta = () => {
           justify="space-between"
         >
           <Stack spacing="4" maxW="2xl">
-            <Heading size="sm">We're getting ready to launch soon!</Heading>
+            <Heading size="sm">Is Your Home Pet-Ready?</Heading>
             <Text
               color="muted"
               fontSize={useBreakpointValue({
@@ -52,10 +52,10 @@ export const Cta = () => {
                 lg: "xl",
               })}
             >
-              Be among the first to experience the future of responsible pet
-              adoption and ethical breeding. Join our waitlist and stay informed
-              about our latest updates, early access opportunities, and
-              exclusive benefits.
+              Take our Ethical Adoption Questionnaire to ensure you're prepared
+              for the joy, commitment, and love a furry friend brings. Ready to
+              embark on the journey of ethical adoption and responsible pet
+              ownership?
             </Text>
           </Stack>
           <Stack
@@ -81,7 +81,7 @@ export const Cta = () => {
               as={Link}
               href="/waitlist"
             >
-              <Text color="white"> Join the waitlist</Text>
+              <Text color="white">Begin Now</Text>
             </Button>
           </Stack>
         </Stack>

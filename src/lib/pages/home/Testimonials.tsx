@@ -115,10 +115,10 @@ export const Testimonials = () => {
               color="yellow.400"
               letterSpacing="wide"
             >
-              Trusted by 1500+ dog lovers
+              Trusted by 1000+ dog lovers
             </Text>
             <Heading as="h3" size="3xl" mt="7" lineHeight="shorter">
-              Hear from our customers
+              Hear from our members
             </Heading>
             <Rating mt="10" value={4} />
             {/* <Text mt="4">

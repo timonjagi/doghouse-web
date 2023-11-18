@@ -15,7 +15,7 @@ import { HiChevronRight } from "react-icons/hi";
 export default function Hero({ user }) {
   return (
     <Box w="full" bg="gray.800" as="section" position="relative">
-      <Box py="32" position="relative" zIndex={1}>
+      <Box pt="16" py="32" position="relative" zIndex={1}>
         <Box
           maxW={{
             base: "xl",
@@ -29,7 +29,7 @@ export default function Hero({ user }) {
           color="white"
         >
           <Box maxW="xl">
-            <Heading as="h1" size="3xl" fontWeight="extrabold">
+            <Heading as="h1" size="3xl" fontWeight="bold">
               Welcome to Doghouse 🐶
             </Heading>
             <Text
