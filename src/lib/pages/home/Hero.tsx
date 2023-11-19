@@ -101,12 +101,12 @@ export default function Hero({ user }) {
       >
         <Box position="relative" w="full" h="full">
           <Img
-            src="images/hero_2_2.png"
+            src="images/hero_2_3.png"
             alt="Main Image"
             w="full"
             h="full"
             objectFit="cover"
-            objectPosition="90% center"
+            objectPosition="50% center"
             position="absolute"
           />
           <Box position="absolute" w="full" h="full" bg="blackAlpha.700" />
