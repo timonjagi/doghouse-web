@@ -19,6 +19,7 @@ import { auth } from "lib/firebase/client";
 import BreederDashboard from "./BreederDashboard";
 import ClientDashboard from "./ClientDashboard";
 import { NextSeo } from "next-seo";
+import { BreedGroups } from "../home/BreedGroups";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -74,8 +75,8 @@ const Dashboard = () => {
           </Stack>
           <Button variant="primary">Create</Button>
         </HStack>
-        {user && isBreeder && <BreederDashboard user={user} />}
-        {user && !isBreeder && <ClientDashboard user={user} />}
+
+        <BreedGroups />
       </Container>
     </Box>
   );

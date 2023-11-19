@@ -14,6 +14,7 @@ import {
   Heading,
   Badge,
   Avatar,
+  Checkbox,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { IoImagesOutline, IoLocationOutline } from "react-icons/io5";
@@ -61,47 +62,39 @@ export const Confirm = ({ currentStep, setStep }) => {
             py="6"
             bg={useColorModeValue("white", "gray.800")}
           >
-            <Wrap>
-              <WrapItem></WrapItem>
-
-              <WrapItem>
-                <Stack pb="4">
-                  <HStack align="center">
-                    <Stack spacing="1">
-                      <HStack>
-                        <Heading size="xs">{userProfile.name}</Heading>
-                        <Badge
-                          textTransform="none"
-                          fontSize="sm"
-                          fontWeight="semibold"
-                          lineHeight="1rem"
-                          borderRadius="base"
-                        >
-                          {userProfile.roles[0].replace("_", " ")}
-                        </Badge>
-                      </HStack>
-
-                      <HStack spacing="3">
-                        <Icon
-                          fontSize="lg"
-                          as={IoLocationOutline}
-                          color="muted"
-                        />
-                        <Text textTransform="capitalize" color="muted">
-                          {userProfile.location}
-                        </Text>
-                      </HStack>
-                    </Stack>
+            <Stack pb="4">
+              <HStack align="center">
+                <Stack spacing="1">
+                  <HStack>
+                    <Heading size="xs">{userProfile.name}</Heading>
+                    <Badge
+                      textTransform="none"
+                      fontSize="sm"
+                      fontWeight="semibold"
+                      lineHeight="1rem"
+                      borderRadius="base"
+                    >
+                      {userProfile.roles[0].replace("_", " ")}
+                    </Badge>
                   </HStack>
 
-                  <Stack
-                    w="100%"
-                    p="4"
-                    spacing="4"
-                    bg={useColorModeValue("gray.50", "gray.700")}
-                  >
-                    <HStack>
-                      {/* <Image
+                  <HStack spacing="3">
+                    <Icon fontSize="lg" as={IoLocationOutline} color="muted" />
+                    <Text textTransform="capitalize" color="muted">
+                      {userProfile.location}
+                    </Text>
+                  </HStack>
+                </Stack>
+              </HStack>
+
+              <Stack
+                w="100%"
+                p="4"
+                spacing="4"
+                bg={useColorModeValue("gray.50", "gray.700")}
+              >
+                <HStack>
+                  {/* <Image
                         src={`images/breed_groups/${petProfile.breed.breedGroup.replace(
                           " dogs",
                           ""
@@ -112,39 +105,37 @@ export const Confirm = ({ currentStep, setStep }) => {
                         w="50%"
                       /> */}
 
-                      <Stack>
+                  <Stack>
+                    <HStack spacing="3">
+                      <Icon fontSize="xl" as={PiDog} />
+                      <Text textTransform="capitalize" fontSize="sm">
+                        {petProfile.breed.name} {petProfile.age || ""}
+                      </Text>
+                    </HStack>
+
+                    {userProfile.roles.includes("dog_owner") && (
+                      <HStack spacing="3">
+                        <Icon fontSize="xl" as={IoImagesOutline} />
+                        <Text textTransform="capitalize" fontSize="sm">
+                          {petProfile.images.length} photo
+                          {petProfile.images.length > 1 ? "s" : ""}{" "}
+                        </Text>
+                      </HStack>
+                    )}
+                    {userProfile.roles.includes("dog_seeker") && (
+                      <>
                         <HStack spacing="3">
-                          <Icon fontSize="xl" as={PiDog} />
+                          <Icon fontSize="xl" as={PiGenderIntersex} />
                           <Text textTransform="capitalize" fontSize="sm">
-                            {petProfile.breed.name} {petProfile.age || ""}
+                            {petProfile.sex}
                           </Text>
                         </HStack>
-
-                        {userProfile.roles.includes("dog_owner") && (
-                          <HStack spacing="3">
-                            <Icon fontSize="xl" as={IoImagesOutline} />
-                            <Text textTransform="capitalize" fontSize="sm">
-                              {petProfile.images.length} photo
-                              {petProfile.images.length > 1 ? "s" : ""}{" "}
-                            </Text>
-                          </HStack>
-                        )}
-                        {userProfile.roles.includes("dog_seeker") && (
-                          <>
-                            <HStack spacing="3">
-                              <Icon fontSize="xl" as={PiGenderIntersex} />
-                              <Text textTransform="capitalize" fontSize="sm">
-                                {petProfile.sex}
-                              </Text>
-                            </HStack>
-                          </>
-                        )}
-                      </Stack>
-                    </HStack>
+                      </>
+                    )}
                   </Stack>
-                </Stack>
-              </WrapItem>
-            </Wrap>
+                </HStack>
+              </Stack>
+            </Stack>
           </Box>
 
           <Text fontSize="sm" color="subtle" textAlign="center">
@@ -155,6 +146,10 @@ export const Confirm = ({ currentStep, setStep }) => {
               : "listings"}{" "}
             later.
           </Text>
+
+          <Checkbox colorScheme="red" defaultChecked>
+            Checkbox
+          </Checkbox>
 
           <ButtonGroup width="100%" mb="4">
             <Button

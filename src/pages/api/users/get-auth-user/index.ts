@@ -8,6 +8,7 @@ export default async function handler(
 ) {
   try {
     const { phoneNumber } = req.query;
+    console.log(phoneNumber);
 
     if (phoneNumber) {
       const user = await auth.getUserByPhoneNumber(phoneNumber as string);
