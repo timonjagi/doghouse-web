@@ -20,6 +20,7 @@ import {
   Avatar,
   Heading,
   Icon,
+  AvatarGroup,
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
@@ -60,52 +61,56 @@ type UserProfile = {
 };
 const Features = () => {
   return (
-    <Stack
-      spacing="8"
-      display="flex"
-      flexDirection="column"
-      alignContent="center"
-    >
-      <Heading size={useBreakpointValue({ base: "md", lg: "lg" })}>
-        Why Doghouse?
-      </Heading>
-
-      <Stack spacing="8">
-        <HStack>
-          <Avatar as={Icon} />
-
-          <Text fontSize="lg" maxW="md" fontWeight="medium">
-            Create an account and get connected to our network of reputable
-            breeders.
-          </Text>
-        </HStack>
-
-        <HStack>
-          <Avatar as={Icon} />
-
-          <Text fontSize="lg" maxW="md" fontWeight="medium">
-            Create an account and get connected to our network of reputable
-            breeders.
-          </Text>
-        </HStack>
-        <HStack>
-          <Avatar as={Icon} />
-
-          <Text fontSize="lg" maxW="md" fontWeight="medium">
-            Create an account and get connected to our network of reputable
-            breeders.
-          </Text>
-        </HStack>
-        <HStack>
-          <Avatar as={Icon} />
-
-          <Text fontSize="lg" maxW="md" fontWeight="medium">
-            Create an account and get connected to our network of reputable
-            breeders.
-          </Text>
-        </HStack>
-      </Stack>
-    </Stack>
+    <Box display={{ base: "none", md: "flex" }}>
+      <DarkMode>
+        <Flex direction="column" height="full" color="on-accent">
+          <Flex flex="1" align="center">
+            <Stack spacing="8">
+              <Stack spacing="6">
+                <Heading size={useBreakpointValue({ md: "lg", xl: "xl" })}>
+                  Find your perfect match
+                </Heading>
+                <Text fontSize="lg" maxW="md" fontWeight="medium">
+                  Create an account and get connected to our network of
+                  reputable breeders.
+                </Text>
+              </Stack>
+              <HStack spacing="4">
+                <AvatarGroup
+                  size="md"
+                  max={useBreakpointValue({ base: 2, lg: 5 })}
+                  borderColor="on-accent"
+                >
+                  <Avatar
+                    name="Ryan Florence"
+                    src="https://bit.ly/ryan-florence"
+                  />
+                  <Avatar
+                    name="Segun Adebayo"
+                    src="https://bit.ly/sage-adebayo"
+                  />
+                  <Avatar name="Kent Dodds" src="https://bit.ly/kent-c-dodds" />
+                  <Avatar
+                    name="Prosper Otemuyiwa"
+                    src="https://bit.ly/prosper-baba"
+                  />
+                  <Avatar
+                    name="Christian Nwamba"
+                    src="https://bit.ly/code-beast"
+                  />
+                </AvatarGroup>
+                <Text fontWeight="medium">Join 1000+ users</Text>
+              </HStack>
+            </Stack>
+          </Flex>
+          {/* <Flex align="center" h="24">
+            <Text color="on-accent-subtle" fontSize="sm">
+              © 2022 Doghouse Kenya. All rights reserved.
+            </Text>
+          </Flex> */}
+        </Flex>
+      </DarkMode>
+    </Box>
   );
 };
 
@@ -161,12 +166,13 @@ const SignUp = () => {
     <Flex h="100%">
       <NextSeo title="Create Profile" />
 
-      <Flex maxW="8xl" w="full">
+      <Flex w="full">
         {/* side bar */}
         <Box
           display={{ base: "none", md: "flex" }}
           backgroundColor="brand.700"
           minW={{ md: "sm", lg: "lg" }}
+          maxW="xl"
         >
           <Flex
             direction="column"
