@@ -4,7 +4,7 @@ export const breedGroups = [
     "slug": "gun_dog",
     "short_desc": "Dogs bred to work in the field, such as retrieving game birds.",
     "long_desc": "Gun dogs are bred to work in the field, such as retrieving game birds. They are typically energetic and have a strong prey drive. Some popular Sporting breeds include the Labrador Retriever, Golden Retriever, English Springer Spaniel, and Vizsla.",
-    "imageUrl": "images/breed_groups/gundog.png",
+    "imageUrl": "images/breed_groups/gun_dog.png",
     "breeds": [
       "Labrador Retriever",
       "Golden Retriever",
