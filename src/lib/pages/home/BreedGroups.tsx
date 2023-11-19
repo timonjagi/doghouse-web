@@ -104,7 +104,7 @@ export const BreedGroups = () => (
                 borderRadius="xl"
                 overflow="hidden"
               >
-                <Link>
+                <Link href={`/group/${group.slug}`}>
                   <AspectRatio
                     // eslint-disable-next-line
                     ratio={1 / 1}

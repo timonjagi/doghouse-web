@@ -15,7 +15,7 @@ import {
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
-import { MdOutlineLocationOn } from "react-icons/md";
+import { MdOutlineLocationOn, MdPerson, MdPersonOutline } from "react-icons/md";
 
 import { auth, fireStore } from "lib/firebase/client";
 import { Dropzone } from "lib/components/Dropzone";
@@ -101,15 +101,21 @@ export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
       <Stack spacing="6">
         <FormControl id="name">
           <FormLabel htmlFor="name">Your Name</FormLabel>
-          <Input
-            size="lg"
-            required
-            id="userName"
-            name="userName"
-            type="text"
-            placeholder="Enter your name"
-            onChange={(e) => setDisplayName(e.target.value)}
-          />
+
+          <InputGroup size="lg">
+            <InputLeftElement pointerEvents="none">
+              <Icon as={MdPersonOutline} color="gray.300" boxSize={5} />
+            </InputLeftElement>
+            <Input
+              size="lg"
+              required
+              id="userName"
+              name="userName"
+              type="text"
+              placeholder="Enter your name"
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
+          </InputGroup>
         </FormControl>
 
         <FormControl>
@@ -130,9 +136,9 @@ export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
           </InputGroup>
         </FormControl>
 
-        <FormControl id="file">
+        {/* <FormControl id="file">
           <FormLabel>Upload profile photo</FormLabel>
-        </FormControl>
+        </FormControl> */}
         {/* <FormControl>
           <FormLabel htmlFor="phone">Your Email (optional)</FormLabel>
 

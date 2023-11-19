@@ -101,7 +101,7 @@ export const Confirm = ({ currentStep, setStep }) => {
                     bg={useColorModeValue("gray.50", "gray.700")}
                   >
                     <HStack>
-                      <Image
+                      {/* <Image
                         src={`images/breed_groups/${petProfile.breed.breedGroup.replace(
                           " dogs",
                           ""
@@ -110,7 +110,7 @@ export const Confirm = ({ currentStep, setStep }) => {
                         fallbackStrategy="beforeLoadOrError"
                         bg="bg-subtle"
                         w="50%"
-                      />
+                      /> */}
 
                       <Stack>
                         <HStack spacing="3">
@@ -149,7 +149,7 @@ export const Confirm = ({ currentStep, setStep }) => {
 
           <Text fontSize="sm" color="subtle" textAlign="center">
             {userProfile.roles?.includes("dog_owner") ? "Have" : "Want"}{" "}
-            multiple breeds? That's awesome. You can create additional{" "}
+            multiple breeds? That's awesome! You can create additional{" "}
             {userProfile.roles?.includes("dog_owner")
               ? "pet profiles"
               : "listings"}{" "}

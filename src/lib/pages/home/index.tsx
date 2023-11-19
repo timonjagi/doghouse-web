@@ -10,7 +10,7 @@ import { BreedGroups } from "./BreedGroups";
 import { Process } from "./Process";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
-// import { Stats } from "./Stats";
+import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
 import { LogoGrid } from "./LogoGrid";
 
@@ -28,9 +28,9 @@ const Home = () => {
       >
         <NextSeo title="Home" />
         <Hero user={user} />
-
-        {/* <Features /> */}
-        {/* <Stats /> */}
+        {/* 
+        <Features />
+        <Stats /> */}
 
         {/* <Process /> */}
 
