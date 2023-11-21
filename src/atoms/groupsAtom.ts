@@ -6,10 +6,6 @@ export interface Group {
   name: string;
   slug: string;
   description: string;
-  creatorId: string;
-  numberOfMembers: number;
-  privacyType: 'public' | 'restricted' | 'private'
-  createdAt?: Timestamp;
   imageURL?: string
 }
 export interface UserGroup {

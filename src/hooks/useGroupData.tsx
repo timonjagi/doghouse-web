@@ -12,7 +12,7 @@ import { authModalState } from "../atoms/authModalAtoms";
 import { Group, groupState, UserGroup } from "../atoms/groupsAtom";
 import { auth, fireStore } from "../lib/firebase/client";
 
-const usegroupData = () => {
+const useGroupData = () => {
   const [groupStateValue, setGroupStateValue] = useRecoilState(groupState);
   const [user] = useAuthState(auth);
   const setAuthModalState = useSetRecoilState(authModalState);
@@ -40,7 +40,7 @@ const usegroupData = () => {
     setLoading(true);
 
     try {
-      const path = `users/${user?.uid}/communities`;
+      const path = `users/${user?.uid}/groups`;
       const data = await getDocs(collection(fireStore, path));
 
       const userGroups = data.docs.map((doc) => ({
@@ -52,7 +52,7 @@ const usegroupData = () => {
         userGroups: userGroups as UserGroup[],
       }));
     } catch (error: any) {
-      console.log("getUserCommunities error", error);
+      console.log("getUserGroups error", error);
       setError(error.message);
     }
     setLoading(false);
@@ -70,13 +70,13 @@ const usegroupData = () => {
       const batch = writeBatch(fireStore);
       const usergroupDocRef = doc(
         fireStore,
-        `users/${user?.uid}/communities`,
+        `users/${user?.uid}/groups`,
         group.id
       );
       batch.set(usergroupDocRef, newUsergroup);
 
       // update number of members of group
-      const groupDocRef = doc(fireStore, "communities", group.id);
+      const groupDocRef = doc(fireStore, "groups", group.id);
       batch.update(groupDocRef, { numberOfMembers: increment(1) });
 
       // batch write
@@ -104,12 +104,12 @@ const usegroupData = () => {
       // remove group from userCommunities for user
       const usergroupDocRef = doc(
         fireStore,
-        `users/${user?.uid}/communities`,
+        `users/${user?.uid}/groups`,
         groupId
       );
       batch.delete(usergroupDocRef);
 
-      const groupDocRef = doc(fireStore, "communities", groupId);
+      const groupDocRef = doc(fireStore, "groups", groupId);
       batch.update(groupDocRef, { numberOfMembers: increment(-1) });
 
       // batch write
@@ -123,7 +123,7 @@ const usegroupData = () => {
         ),
       }));
     } catch (error: any) {
-      console.log("Leave communities error", error);
+      console.log("Leave group error", error);
       setError(error.message);
     }
 
@@ -138,4 +138,4 @@ const usegroupData = () => {
   return { groupStateValue, onJoinOrLeaveGroup, loading };
 };
 
-export default usegroupData;
+export default useGroupData;

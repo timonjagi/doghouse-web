@@ -28,22 +28,22 @@ const Dashboard = () => {
   const [isBreeder, setIsBreeder] = useState(false);
 
   useEffect(() => {
-    if (!loading && (!user || error)) {
-      router.push("/login");
+    if (!loading && !user?.uid) {
+      router.push("/");
       return;
     }
 
-    const getClaims = async (authUser: User) => {
-      const tokenResult = await authUser.getIdTokenResult(true);
-      if (tokenResult) {
-        const { claims } = tokenResult;
-        setIsBreeder(claims.isBreeder);
-      }
-    };
+    // const getClaims = async (authUser: User) => {
+    //   const tokenResult = await authUser.getIdTokenResult(true);
+    //   if (tokenResult) {
+    //     const { claims } = tokenResult;
+    //     setIsBreeder(claims.isBreeder);
+    //   }
+    // };
 
-    if (user) {
-      getClaims(user);
-    }
+    // if (user) {
+    //   getClaims(user);
+    // }
   }, [user, loading, error, router]);
 
   return (

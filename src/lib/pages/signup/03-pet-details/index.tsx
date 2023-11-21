@@ -242,12 +242,15 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
         >
           <Heading size="md">
             Awesome! Tell us about your
-            {selectedRole.includes("dog_seeker") ? " ideal " : ""} furry friend.
+            {selectedRole.includes("dog_seeker") ? " ideal " : ""} furry friend
+            🐶
           </Heading>
 
           <Stack spacing={{ base: 3, md: 9 }}>
             <FormControl>
-              <FormLabel htmlFor="breeds">Breed</FormLabel>
+              <FormLabel htmlFor="breeds" fontWeight="semibold">
+                Breed
+              </FormLabel>
               <Select
                 placeholder="Select breed..."
                 colorScheme="brand"
@@ -260,7 +263,9 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
             {selectedRole.includes("dog_seeker") && (
               <>
                 <FormControl>
-                  <FormLabel htmlFor="breeds">Age</FormLabel>
+                  <FormLabel htmlFor="breeds" fontWeight="semibold">
+                    Age
+                  </FormLabel>
 
                   <RadioButtonGroup
                     key="age"
@@ -298,7 +303,9 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
                   </RadioButtonGroup>
                 </FormControl>
                 <FormControl>
-                  <FormLabel htmlFor="breeds">Sex</FormLabel>
+                  <FormLabel htmlFor="sex" fontWeight="semibold">
+                    Sex
+                  </FormLabel>
 
                   <RadioButtonGroup
                     key="sex"
@@ -331,7 +338,7 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
 
             {selectedRole.includes("dog_owner") && (
               <FormControl id="file">
-                <FormLabel>Upload photo(s)</FormLabel>
+                <FormLabel fontWeight="semibold">Upload photo(s)</FormLabel>
                 <Dropzone
                   selectedFiles={selectedFiles}
                   onRemove={onRemoveImage}
