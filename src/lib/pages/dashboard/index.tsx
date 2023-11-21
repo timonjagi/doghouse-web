@@ -29,7 +29,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!loading && !user?.uid) {
-      router.push("/");
+      router.push("/~");
       return;
     }
 

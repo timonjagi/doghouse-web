@@ -20,23 +20,19 @@ const Header: React.FC<HeaderProps> = ({ groupData }) => {
       <Box height="50%" bg="brand.600" />
       <Flex justify="center" bg="white" flexGrow={1}>
         <Flex width="95%" maxWidth="860px">
-          {groupData.imageURL ? (
-            <Image src={groupData.imageURL} alt={groupData.id} />
-          ) : (
-            <Icon
-              as={Image}
-              src="/images/logo_white.png"
-              boxSize={16}
-              p={1}
-              bg="brand.500"
-              fontSize={64}
-              position="relative"
-              top={-3}
-              color="blue.500"
-              border="4px solid white"
-              borderRadius="50%"
-            />
-          )}
+          <Icon
+            as={Image}
+            src="/images/logo_white.png"
+            boxSize={16}
+            p={1}
+            bg="brand.500"
+            fontSize={64}
+            position="relative"
+            top={-3}
+            color="blue.500"
+            border="4px solid white"
+            borderRadius="50%"
+          />
 
           <Flex padding="10px 16px">
             <Flex direction="column" mr={6}>
@@ -44,7 +40,7 @@ const Header: React.FC<HeaderProps> = ({ groupData }) => {
                 {groupData.name} Group
               </Text>
               <Text fontWeight={600} fontSize="10pt" color="gray.400">
-                {groupData.description}
+                {groupData.shortDesc}
               </Text>
             </Flex>
 

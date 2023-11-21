@@ -6,12 +6,14 @@ import { fireStore } from "../../../lib/firebase/client";
 import safeJsonStringify from "safe-json-stringify";
 // import Communities from "../../../components/Navbar/Directory/Communities";
 import GroupNotFound from "../../../lib/pages/group/GroupNotFound";
-import Header from "../../../lib/pages/group/Header";
+import Header from "../../../lib/pages/group/GroupHeader";
 import PageContent from "../../../lib/layout/PageContent";
 import CreatePostLink from "../../../lib/pages/group/Posts/CreatePostLink";
 import Posts from "../../../lib/pages/group/Posts/PostsList";
 import PostsList from "../../../lib/pages/group/Posts/PostsList";
 import { Group } from "atoms/groupsAtom";
+import GroupSidebar from "lib/pages/group/GroupSidebar";
+import { Box } from "@chakra-ui/react";
 
 type groupPageProps = {
   groupData: Group;
@@ -52,14 +54,14 @@ const groupPage: React.FC<groupPageProps> = ({ groupData }) => {
       <Header groupData={groupData} />
 
       <PageContent>
-        <>
+        <Box minW="60vw">
           <CreatePostLink />
 
           <PostsList groupData={groupData} />
-        </>
-        <>
-          <div>Right hand side</div>
-        </>
+        </Box>
+        <Box minW="30wv">
+          <GroupSidebar groupData={groupData} />
+        </Box>
       </PageContent>
     </>
   );

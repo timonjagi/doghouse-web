@@ -75,7 +75,7 @@ export const BreedGroups = () => (
               mb={{ base: "3", md: "0" }}
               color="secondary.100"
             >
-              Explore groups
+              Join a group
             </Heading>
             <HStack spacing={{ base: "2", md: "3" }}>
               <Link
@@ -84,7 +84,7 @@ export const BreedGroups = () => (
                 color={useColorModeValue("brand.500", "brand.300")}
                 href="/breeds"
               >
-                See all groups
+                Explore breeds
               </Link>
               <Icon
                 as={FaArrowRight}
@@ -104,7 +104,7 @@ export const BreedGroups = () => (
                 borderRadius="xl"
                 overflow="hidden"
               >
-                <Link href={`/group/${group.slug}`}>
+                <Link href={`/groups/${group.slug}`}>
                   <AspectRatio
                     // eslint-disable-next-line
                     ratio={1 / 1}

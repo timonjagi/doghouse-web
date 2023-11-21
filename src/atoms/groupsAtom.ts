@@ -5,13 +5,14 @@ export interface Group {
   id: string;
   name: string;
   slug: string;
-  description: string;
-  imageURL?: string
+  shortDesc: string;
+  longDesc: string;
+  imageUrl?: string
 }
 export interface UserGroup {
   groupId: string;
   isModerator?: string;
-  imageURL?: string
+  imageUrl?: string
 }
 
 interface GroupState {
