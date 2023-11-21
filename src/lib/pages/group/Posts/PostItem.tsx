@@ -85,10 +85,10 @@ const PostItem: React.FC<PostItemProps> = ({
 
           <Text fontSize="10pt">{post.body}</Text>
 
-          {post.imageURL && (
+          {post.imageUrl && (
             <Flex justify="center" align="center" padding={2}>
               <Image
-                src={post.imageURL}
+                src={post.imageUrl}
                 alt={post.title}
                 maxHeight="460px"
                 width="100%"

@@ -65,7 +65,7 @@ const useGroupData = () => {
       // add group to userCommunities for user
       const newUsergroup: UserGroup = {
         groupId: group.id,
-        imageURL: group.imageURL || "",
+        imageUrl: group.imageUrl || "",
       };
       const batch = writeBatch(fireStore);
       const usergroupDocRef = doc(
