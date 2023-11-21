@@ -65,25 +65,7 @@ export const Confirm = ({ currentStep, setStep }) => {
             <Stack pb="4">
               <HStack align="center">
                 <Stack spacing="1">
-                  <HStack>
-                    <Heading size="xs">{userProfile.name}</Heading>
-                    <Badge
-                      textTransform="none"
-                      fontSize="sm"
-                      fontWeight="semibold"
-                      lineHeight="1rem"
-                      borderRadius="base"
-                    >
-                      {userProfile.roles[0].replace("_", " ")}
-                    </Badge>
-                  </HStack>
-
-                  <HStack spacing="3">
-                    <Icon fontSize="lg" as={IoLocationOutline} color="muted" />
-                    <Text textTransform="capitalize" color="muted">
-                      {userProfile.location}
-                    </Text>
-                  </HStack>
+                  <HStack></HStack>
                 </Stack>
               </HStack>
 
@@ -106,10 +88,32 @@ export const Confirm = ({ currentStep, setStep }) => {
                       /> */}
 
                   <Stack>
+                    <Heading size="xs">{userProfile.name}</Heading>
+                    <Text
+                      textTransform="capitalize"
+                      fontSize="sm"
+                      fontWeight="semibold"
+                      lineHeight="1rem"
+                      borderRadius="base"
+                    >
+                      {userProfile.roles[0].replace("_", " ")}
+                    </Text>
+                    <HStack spacing="3">
+                      <Icon
+                        fontSize="xl"
+                        as={IoLocationOutline}
+                        color="muted"
+                      />
+                      <Text textTransform="capitalize" fontSize="sm">
+                        {userProfile.location}
+                      </Text>
+                    </HStack>
+
                     <HStack spacing="3">
                       <Icon fontSize="xl" as={PiDog} />
                       <Text textTransform="capitalize" fontSize="sm">
-                        {petProfile.breed.name} {petProfile.age || ""}
+                        {petProfile.breed.name}{" "}
+                        {petProfile.age.toLowerCase() || ""}
                       </Text>
                     </HStack>
 
@@ -135,6 +139,17 @@ export const Confirm = ({ currentStep, setStep }) => {
                   </Stack>
                 </HStack>
               </Stack>
+
+              <Text fontSize="xs" color="subtle" textAlign="start">
+                {userProfile.roles.includes("dog_owner")
+                  ? "An announcement will be made on "
+                  : "A listing will be added on the "}{" "}
+                {petProfile.breed.breedGroup} group to notify members about your{" "}
+                {userProfile.roles.includes("dog_owner")
+                  ? "membership"
+                  : "request"}
+                .
+              </Text>
             </Stack>
           </Box>
 
@@ -146,10 +161,6 @@ export const Confirm = ({ currentStep, setStep }) => {
               : "listings"}{" "}
             later.
           </Text>
-
-          <Checkbox colorScheme="red" defaultChecked>
-            Checkbox
-          </Checkbox>
 
           <ButtonGroup width="100%" mb="4">
             <Button

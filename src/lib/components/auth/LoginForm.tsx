@@ -67,7 +67,7 @@ export const LoginForm = (props: PageProps) => {
     try {
       const result = await signInWithPhoneNumber(
         auth,
-        phoneNumber,
+        `+254${phoneNumber}`,
         appVerifier
       );
       console.log(result);
