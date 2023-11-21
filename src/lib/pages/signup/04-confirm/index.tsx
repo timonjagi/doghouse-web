@@ -35,6 +35,8 @@ export const Confirm = ({ currentStep, setStep }) => {
   const { groupStateValue, onJoinOrLeaveGroup } = useGroupData();
 
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
   const toast = useToast();
   const router = useRouter();
 
@@ -79,7 +81,7 @@ export const Confirm = ({ currentStep, setStep }) => {
     // create post
 
     try {
-      setLoading(true);
+      setSaving(true);
 
       await Promise.allSettled([
         createUserProfile(),
@@ -87,7 +89,9 @@ export const Confirm = ({ currentStep, setStep }) => {
         createPost(),
       ]);
 
-      setLoading(false);
+      setSaving(false);
+
+      localStorage.removeItem("profile");
       toast({
         title: "Profile created successfully",
         status: "success",
@@ -124,7 +128,6 @@ export const Confirm = ({ currentStep, setStep }) => {
       name: breedGroup.name,
       id: breedGroup.slug,
       slug: breedGroup.slug,
-      description: breedGroup.description,
     };
 
     onJoinOrLeaveGroup(groupData, false);
@@ -256,7 +259,7 @@ export const Confirm = ({ currentStep, setStep }) => {
               Back
             </Button>
             <Spacer />
-            <Button isLoading={loading} type="submit" variant="primary">
+            <Button isLoading={saving} type="submit" variant="primary">
               Confirm
             </Button>
           </ButtonGroup>

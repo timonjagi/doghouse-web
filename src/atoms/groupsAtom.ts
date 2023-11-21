@@ -5,8 +5,8 @@ export interface Group {
   id: string;
   name: string;
   slug: string;
-  shortDesc: string;
-  longDesc: string;
+  shortDesc?: string;
+  longDesc?: string;
   imageUrl?: string
 }
 export interface UserGroup {
