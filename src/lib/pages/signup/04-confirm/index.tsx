@@ -18,7 +18,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { auth } from "firebase-admin";
-import { setDoc, doc, addDoc, getDoc } from "firebase/firestore";
+import { setDoc, doc, addDoc, getDoc, collection } from "firebase/firestore";
 import useGroupData from "hooks/useGroupData";
 import { fireStore } from "lib/firebase/client";
 import { useEffect, useState } from "react";
@@ -32,21 +32,21 @@ import { useRouter } from "next/router.js";
 export const Confirm = ({ currentStep, setStep }) => {
   const [userProfile, setUserProfile] = useState({} as any);
   const [petProfile, setPetProfile] = useState({} as any);
-  const { groupStateValue, onJoinOrLeaveGroup } = useGroupData();
+  const { groupStateValue, onJoinOrLeaveGroup, loading } = useGroupData();
 
-  const [loading, setLoading] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const toast = useToast();
   const router = useRouter();
 
   useEffect(() => {
-    setLoading(true);
+    setLoadingProfile(true);
 
     const profile = JSON.parse(localStorage.getItem("profile"));
 
     if (profile) {
-      setLoading(false);
+      setLoadingProfile(false);
       setUserProfile(profile);
       setPetProfile(profile.pet_profiles[0]);
     }
@@ -85,7 +85,7 @@ export const Confirm = ({ currentStep, setStep }) => {
 
       await Promise.allSettled([
         createUserProfile(),
-        joinBreedGroup(),
+        createPetProfile(),
         createPost(),
       ]);
 
@@ -98,12 +98,18 @@ export const Confirm = ({ currentStep, setStep }) => {
       });
 
       router.push("/dashboard");
-    } catch (error) {}
+    } catch (error) {
+      throw error;
+    }
   };
 
   const createUserProfile = async () => {
     try {
-      const userPayload = { ...userProfile };
+      const userPayload = {
+        ...userProfile,
+        groups: [petProfile.breed.breedGroup],
+      };
+
       delete userPayload.pet_profiles;
 
       await setDoc(doc(fireStore, "users", userProfile.userId), userPayload);
@@ -119,25 +125,47 @@ export const Confirm = ({ currentStep, setStep }) => {
     }
   };
 
-  const joinBreedGroup = () => {
-    const breedGroup = breedGroups.find(
-      (group) => group.slug === petProfile?.breed?.breedGroup
-    );
-    console.log(breedGroup);
-    const groupData = {
-      name: breedGroup.name,
-      id: breedGroup.slug,
-      slug: breedGroup.slug,
-    };
+  const createPetProfile = async () => {
+    try {
+      const petPayload = {
+        breed: petProfile.breed.name,
+        age: petProfile.age || "",
+        sex: petProfile.breed.sex || "",
+        [userProfile.roles.includes("dog_owner") ? "ownerId" : "seekerId"]:
+          userProfile.userId,
+      };
 
-    onJoinOrLeaveGroup(groupData, false);
+      await addDoc(collection(fireStore, "pets"), petPayload);
+    } catch (error) {
+      toast({
+        title: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
+
+  // const joinBreedGroup = () => {
+  //   const breedGroup = breedGroups.find(
+  //     (group) => group.slug === petProfile?.breed?.breedGroup
+  //   );
+
+  //   const groupData = {
+  //     name: breedGroup.name,
+  //     id: breedGroup.slug,
+  //     slug: breedGroup.slug,
+  //     userId: userProfile.userId,
+  //   };
+
+  //   onJoinOrLeaveGroup(groupData, false);
+  // };
 
   const createPost = () => {};
 
   return (
     <>
-      {!loading && (
+      {!loadingProfile && (
         <Stack as="form" spacing="4" onSubmit={(event) => onSubmit(event)}>
           <Heading size="md">
             Almost there! Let's confirm your details ⌛
@@ -202,7 +230,7 @@ export const Confirm = ({ currentStep, setStep }) => {
                       <Icon fontSize="xl" as={PiDog} />
                       <Text textTransform="capitalize" fontSize="sm">
                         {petProfile.breed.name}{" "}
-                        {petProfile.age.toLowerCase() || ""}
+                        {petProfile.age?.toLowerCase() || ""}
                       </Text>
                     </HStack>
 

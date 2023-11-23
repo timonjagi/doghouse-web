@@ -2,83 +2,107 @@ import {
   Box,
   Button,
   Container,
-  HStack,
+  Flex,
   Heading,
+  HStack,
   Stack,
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import type { User } from "firebase/auth";
-import { useRouter } from "next/router";
-// import { useEffect, useState } from "react";
-import { useState, useEffect } from "react";
+import { FiDownloadCloud } from "react-icons/fi";
+import { Sidebar } from "./Sidebar";
+import { Navbar } from "./Navbar";
 import { useAuthState } from "react-firebase-hooks/auth";
-
 import { auth } from "lib/firebase/client";
-
-import BreederDashboard from "./BreederDashboard";
-import ClientDashboard from "./ClientDashboard";
-import { NextSeo } from "next-seo";
-import { BreedGroups } from "../home/BreedGroups";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const Dashboard = () => {
-  const router = useRouter();
+  const isDesktop = useBreakpointValue({ base: false, lg: true });
   const [user, loading, error] = useAuthState(auth);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [isBreeder, setIsBreeder] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user?.uid) {
-      router.push("/~");
-      return;
+    // load user document - check
+    // check user groups - check // saved alongside user
+    // display on sidebar
+    // save user doc as atom
+
+    const fetchUserDoc = async () => {
+      console.log(user.uid);
+      const response = await fetch(
+        `/api/users/get-user?${new URLSearchParams({
+          uid: user.uid,
+        })}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.status === 404) {
+        console.log(response);
+        console.log("User doc not found");
+        router.push("/signup");
+      }
+    };
+
+    if (!loading && !user) {
+      router.push("/login");
+    } else if (!loading && user) {
+      fetchUserDoc();
     }
-
-    // const getClaims = async (authUser: User) => {
-    //   const tokenResult = await authUser.getIdTokenResult(true);
-    //   if (tokenResult) {
-    //     const { claims } = tokenResult;
-    //     setIsBreeder(claims.isBreeder);
-    //   }
-    // };
-
-    // if (user) {
-    //   getClaims(user);
-    // }
-  }, [user, loading, error, router]);
+  }, [user, loading]);
 
   return (
-    <Box as="section" height="100vh" overflowY="auto">
-      <NextSeo title="Dashboard" />
-
-      <Container
-        pt={{
-          base: "8",
-          lg: "12",
-        }}
-        pb={{
-          base: "12",
-          lg: "24",
-        }}
-      >
-        <HStack spacing="4" justify="space-between">
-          <Stack spacing="1">
-            <Heading
-              size={useBreakpointValue({
-                base: "xs",
-                lg: "sm",
-              })}
-              fontWeight="medium"
-            >
-              Hi, {user?.displayName?.split(" ")[0]}
-            </Heading>
-            <Text color="muted">All important metrics at a glance</Text>
-          </Stack>
-          <Button variant="primary">Create</Button>
-        </HStack>
-
-        <BreedGroups />
-      </Container>
-    </Box>
+    <Flex
+      as="section"
+      direction={{ base: "column", lg: "row" }}
+      height="100vh"
+      bg="bg-canvas"
+      overflowY="auto"
+    >
+      {isDesktop ? <Sidebar /> : <Navbar />}
+      <Box bg="bg-accent" flex="1">
+        <Box bg="bg-canvas" height="full">
+          <Container py="8" height="full">
+            <Stack spacing={{ base: "8", lg: "6" }} height="full">
+              <Stack
+                spacing="4"
+                direction={{ base: "column", lg: "row" }}
+                justify="space-between"
+                align={{ base: "start", lg: "center" }}
+              >
+                <Stack spacing="1">
+                  <Heading
+                    size={useBreakpointValue({ base: "xs", lg: "sm" })}
+                    fontWeight="medium"
+                  >
+                    Dashboard
+                  </Heading>
+                  <Text color="muted">All important metrics at a glance</Text>
+                </Stack>
+                <HStack spacing="3">
+                  <Button
+                    variant="secondary"
+                    leftIcon={<FiDownloadCloud fontSize="1.25rem" />}
+                  >
+                    Download
+                  </Button>
+                  <Button variant="primary">Create</Button>
+                </HStack>
+              </Stack>
+              <Box
+                bg="bg-surface"
+                borderRadius="lg"
+                borderWidth="1px"
+                height="full"
+              />
+            </Stack>
+          </Container>
+        </Box>
+      </Box>
+    </Flex>
   );
 };
 
