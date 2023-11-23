@@ -263,9 +263,8 @@ export const Process = () => (
           >
             {/* Finding a quality dog breed can be difficult, but Doghouse makes it
             easy to find the perfect pup for your needs */}
-            We connect you with responsible breeders who are passionate about
-            matching you with the right pet. From personalized recommendations
-            to secure reservations, we've got you covered at every step.
+            From personalized recommendations to secure reservations, we've got
+            you covered at every step.
           </Text>
         </Stack>
         <Stack

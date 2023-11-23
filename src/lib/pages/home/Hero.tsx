@@ -30,7 +30,7 @@ export default function Hero({ user }) {
         >
           <Box maxW="xl">
             <Heading as="h1" size="3xl" fontWeight="bold">
-              Welcome to Doghouse 🐶
+              Find Your Perfect Furry Friend
             </Heading>
             <Text
               fontSize={{
@@ -40,7 +40,8 @@ export default function Hero({ user }) {
               mt="4"
               maxW="lg"
             >
-              Fostering Responsible Pet Adoption and Ethical Breeding
+              Discover your ideal furry companion and start a journey of love
+              and companionship
             </Text>
             <Stack
               direction={{

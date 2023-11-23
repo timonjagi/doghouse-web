@@ -58,7 +58,7 @@ export default function Features() {
   return (
     <Box as="section">
       <Container
-        pt={{
+        py={{
           base: "16",
           md: "24",
         }}
@@ -105,9 +105,9 @@ export default function Features() {
               }}
               maxW="3xl"
             >
-              Whether you&apos;re looking for an obedient family pet or a guard
-              dog, find your perfect match on our app by selecting the type of
-              breed that suits you best.
+              We connect you with responsible breeders who are passionate about
+              matching you with the right pet, whether you&apos;re looking for
+              an obedient family pet or a guard dog.
             </Text>
           </Stack>
           <SimpleGrid

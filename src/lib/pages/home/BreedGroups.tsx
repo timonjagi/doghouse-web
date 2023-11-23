@@ -28,7 +28,7 @@ import NextLink from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 
 // @ts-ignore
-import { breedGroups } from "../../data/_breed_groups";
+import breedGroups from "../../data/breed-groups_2.json";
 import router, { useRouter } from "next/router";
 import { useState } from "react";
 import { MdOutlineChevronRight } from "react-icons/md";
