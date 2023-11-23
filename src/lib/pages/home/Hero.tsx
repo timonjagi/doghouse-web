@@ -52,7 +52,7 @@ export default function Hero({ user }) {
             >
               <Button
                 as={Link}
-                href={user ? "/profile" : "/signup"}
+                href={user ? "/waitlist" : "/waitlist"}
                 variant="primary"
                 color="brand.500"
                 backgroundColor="brand.500"
@@ -67,7 +67,7 @@ export default function Hero({ user }) {
               </Button>
               <HStack
                 as={Link}
-                href={user ? "/profile" : "/signup"}
+                href={user ? "/waitlist" : "/waitlist"}
                 transition="background 0.2s"
                 justify={{
                   base: "center",
