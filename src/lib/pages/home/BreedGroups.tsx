@@ -27,6 +27,7 @@ import NextLink from "next/link";
 // import * as React from "react";
 import { FaArrowRight } from "react-icons/fa";
 
+// @ts-ignore
 import { breedGroups } from "../../data/breed_groups";
 import router, { useRouter } from "next/router";
 import { useState } from "react";
