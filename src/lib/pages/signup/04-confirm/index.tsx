@@ -3,30 +3,20 @@ import {
   Button,
   ButtonGroup,
   Spacer,
-  Image,
   useColorModeValue,
   Box,
-  Wrap,
-  WrapItem,
   HStack,
   Icon,
   Text,
   Heading,
-  Badge,
-  Avatar,
-  Checkbox,
   useToast,
 } from "@chakra-ui/react";
-import { auth } from "firebase-admin";
-import { setDoc, doc, addDoc, getDoc, collection } from "firebase/firestore";
+import { setDoc, doc, addDoc, collection } from "firebase/firestore";
 import useGroupData from "hooks/useGroupData";
 import { fireStore } from "lib/firebase/client";
 import { useEffect, useState } from "react";
 import { IoImagesOutline, IoLocationOutline } from "react-icons/io5";
 import { PiDog, PiGenderIntersex } from "react-icons/pi";
-import safeJsonStringify from "safe-json-stringify";
-import { breedGroups } from "../../../data/breed_groups.js";
-import { Group } from "atoms/groupsAtom.js";
 import { useRouter } from "next/router.js";
 
 export const Confirm = ({ currentStep, setStep }) => {
