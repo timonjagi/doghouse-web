@@ -48,7 +48,7 @@ const Dashboard = () => {
     };
 
     if (!loading && !user) {
-      router.push("/login");
+      router.push("/");
     } else if (!loading && user) {
       fetchUserDoc();
     }

@@ -21,6 +21,7 @@ import {
   Heading,
   Icon,
   AvatarGroup,
+  useToast,
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
@@ -37,6 +38,7 @@ import { auth, fireStore } from "lib/firebase/client";
 import { doc, getDoc } from "firebase/firestore";
 import { Loader } from "lib/components/Loader";
 import { LoginForm } from "lib/components/auth/LoginForm";
+import { useRouter } from "next/router";
 
 type User = {
   // eslint-disable-next-line
@@ -137,6 +139,9 @@ const SignUp = () => {
     count: steps.length,
   });
 
+  const toast = useToast();
+  const router = useRouter();
+
   useEffect(() => {
     setModalOpen(isMobile);
 
@@ -156,6 +161,31 @@ const SignUp = () => {
         } else if (profile.name && profile.location) {
           setActiveStep(1);
         }
+      } else {
+        const fetchUserDoc = async () => {
+          console.log(user.uid);
+          const response = await fetch(
+            `/api/users/get-user?${new URLSearchParams({
+              uid: user.uid,
+            })}`,
+            {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+
+          if (response.status === 200) {
+            toast({
+              title: "Already signed up",
+              description: "You already created your profile",
+              status: "success",
+            });
+
+            router.push("/dashboard");
+          }
+        };
+
+        fetchUserDoc();
       }
     } catch (error) {
       console.error("Error parsing or retrieving profile data:", error);
@@ -241,60 +271,65 @@ const SignUp = () => {
           {!loadingUser && !loadingUserProfile && (
             <Stack
               spacing="9"
-              w="full"
               px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
+              align="center"
             >
-              {!user?.uid && (
+              {!user?.uid ? (
                 <>
                   <Heading size="lg">Let's create your account</Heading>
                   <LoginForm />
                 </>
-              )}
+              ) : (
+                <>
+                  {isMobile && (
+                    <Stack mt="8">
+                      <Stepper
+                        size="sm"
+                        index={activeStep}
+                        gap="0"
+                        colorScheme="brand"
+                      >
+                        {steps.map((step, index) => (
+                          <Step key={index}>
+                            <StepIndicator>
+                              <StepStatus complete={<StepIcon />} />
+                            </StepIndicator>
+                            <StepSeparator />
+                          </Step>
+                        ))}
+                      </Stepper>
+                      <Text>
+                        Step {activeStep + 1}: <b>{steps[activeStep].title}</b>
+                      </Text>
+                    </Stack>
+                  )}
 
-              {isMobile && user?.uid && (
-                <Stack mt="8">
-                  <Stepper
-                    size="sm"
-                    index={activeStep}
-                    gap="0"
-                    colorScheme="brand"
-                  >
-                    {steps.map((step, index) => (
-                      <Step key={index}>
-                        <StepIndicator>
-                          <StepStatus complete={<StepIcon />} />
-                        </StepIndicator>
-                        <StepSeparator />
-                      </Step>
-                    ))}
-                  </Stepper>
-                  <Text>
-                    Step {activeStep + 1}: <b>{steps[activeStep].title}</b>
-                  </Text>
-                </Stack>
-              )}
+                  {activeStep === 0 && (
+                    <ContactDetails
+                      currentStep={activeStep}
+                      setStep={setActiveStep}
+                    />
+                  )}
 
-              {user?.uid && activeStep === 0 && (
-                <ContactDetails
-                  currentStep={activeStep}
-                  setStep={setActiveStep}
-                />
-              )}
+                  {activeStep === 1 && (
+                    <SelectPath
+                      currentStep={activeStep}
+                      setStep={setActiveStep}
+                      user={user}
+                    />
+                  )}
 
-              {user?.uid && activeStep === 1 && (
-                <SelectPath
-                  currentStep={activeStep}
-                  setStep={setActiveStep}
-                  user={user}
-                />
-              )}
+                  {activeStep === 2 && (
+                    <PetDetails
+                      currentStep={activeStep}
+                      setStep={setActiveStep}
+                    />
+                  )}
 
-              {user?.uid && activeStep === 2 && (
-                <PetDetails currentStep={activeStep} setStep={setActiveStep} />
-              )}
-
-              {user?.uid && activeStep === 3 && (
-                <Confirm currentStep={activeStep} setStep={setActiveStep} />
+                  {activeStep === 3 && (
+                    <Confirm currentStep={activeStep} setStep={setActiveStep} />
+                  )}
+                </>
               )}
             </Stack>
           )}

@@ -197,53 +197,46 @@ export const LoginForm = (props: PageProps) => {
   return (
     <Stack spacing="8">
       <Stack spacing="6">
-        <HStack
+        <Stack
           spacing="6"
           as="form"
           align="center"
           onSubmit={checkIfUserExists}
         >
           <FormControl>
-            <FormLabel htmlFor="phone">Continue with mobile number</FormLabel>
+            {/* <FormLabel htmlFor="phone">Continue with mobile number</FormLabel> */}
 
-            <HStack>
-              <InputGroup size="lg">
-                <InputLeftAddon>+254</InputLeftAddon>
-                <Input
-                  as="input"
-                  required
-                  id="phone"
-                  name="phone"
-                  placeholder="e.g 722..."
-                  type="number"
-                  onChange={(event) => onInputChange(event?.target.value)}
-                  pattern="^([7]{1}|[1]{1})[0-9]{8}$"
-                  maxLength={9}
-                  value={phoneNumber}
-                />
-              </InputGroup>
-
-              <ButtonGroup>
-                <Spacer />
-                <Button
-                  isLoading={loading}
-                  type="submit"
-                  size="lg"
-                  variant="primary"
-                  isDisabled={phoneNumber.length !== 9}
-                >
-                  {!isMobile && (
-                    <span>
-                      {router.pathname.includes("signup") ? "Next" : "Continue"}
-                    </span>
-                  )}
-
-                  {isMobile && <Icon as={BsChevronRight} />}
-                </Button>
-              </ButtonGroup>
-            </HStack>
+            <InputGroup size="lg">
+              <InputLeftAddon>+254</InputLeftAddon>
+              <Input
+                as="input"
+                required
+                id="phone"
+                name="phone"
+                placeholder="e.g 722..."
+                type="number"
+                onChange={(event) => onInputChange(event?.target.value)}
+                pattern="^([7]{1}|[1]{1})[0-9]{8}$"
+                maxLength={9}
+                value={phoneNumber}
+              />
+            </InputGroup>
           </FormControl>
-        </HStack>
+
+          <ButtonGroup>
+            {router.pathname.includes("signup") && <Spacer />}
+            <Button
+              isLoading={loading}
+              type="submit"
+              size="lg"
+              w="full"
+              variant="primary"
+              isDisabled={phoneNumber.length !== 9}
+            >
+              <span>Continue with phone</span>
+            </Button>
+          </ButtonGroup>
+        </Stack>
 
         <VerifyOTPModal
           loading={loading}
