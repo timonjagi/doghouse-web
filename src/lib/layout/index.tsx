@@ -36,13 +36,13 @@ const Layout = ({ children }: LayoutProps) => {
         {["/"].includes(router.pathname) ||
         (["/login", "/signup"].includes(router.pathname) && isMobile) ? (
           <Header />
-        ) : ["/dashboard"].includes(router.pathname) && isMobile ? (
+        ) : ["/home"].includes(router.pathname) && isMobile ? (
           <Navbar />
         ) : (
           <></>
         )}
 
-        {["/dashboard", "/account", "/services"].includes(router.pathname) ? (
+        {["/home", "/account", "/services"].includes(router.pathname) ? (
           <Flex
             as="section"
             direction={{ base: "column", lg: "row" }}

@@ -32,53 +32,27 @@ import breedGroups from "../../data/breed-groups_2.json";
 import router, { useRouter } from "next/router";
 import { useState } from "react";
 import { MdOutlineChevronRight } from "react-icons/md";
+import breeds from "../../data/breeds_with_group.json";
+import { BreedCard } from "../breeds/BreedCard";
 
-// import { CategoryCard } from "./CatetgoryCard";
-
-// const breedGroups = [
-//   {
-//     name: "Working",
-//     imageUrl: "images/breed_groups/breed_group_working.jpeg",
-//   },
-//   {
-//     name: "Toy",
-//     imageUrl: "images/breed_groups/breed_group_toy.jpeg",
-//   },
-//   {
-//     name: "Pastoral",
-//     imageUrl: "images/breed_groups/breed_group_pastoral.jpeg",
-//   },
-//   {
-//     name: "Hound",
-//     imageUrl: "images/breed_groups/breed_group_hound.png",
-//   },
-//   {
-//     name: "Terrier",
-//     imageUrl: "images/breed_groups/breed_group_terrier.png",
-//   },
-//   {
-//     name: "Utility",
-//     imageUrl: "images/breed_groups/breed_group_utility.jpeg",
-//   },
-//   {
-//     name: "Gun Dog",
-//     imageUrl: "images/breed_groups/breed_group_gun_dog.png",
-//   },
-// ];
-
-// const CategoryCard = (props: Props) => {
-//   // eslint-disable-next-line
-//   const { group, rootProps } = props;
-//   return (
-
-//   );
-// };
-
-export const BreedGroups = () => {
+export const PopularBreeds = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const [selectedGroup, setSelectedGroup] = useState({} as any);
   const router = useRouter();
-
+  const popularBreeds = breeds.filter((breed) =>
+    [
+      "german shepherd dog",
+      "japanese spitz",
+      "golden retriever",
+      "labrador retreiver",
+      "maltese",
+      "siberian husky",
+      "rottweiler",
+      "boerboel",
+      "beagle",
+    ].includes(breed.name)
+  );
+  console.log(popularBreeds);
   const onSelectGroup = (group) => {
     console.log(group);
     setSelectedGroup(group);
@@ -86,7 +60,7 @@ export const BreedGroups = () => {
   };
 
   return (
-    <Box as="section" w="full" bg="brand.100">
+    <Box as="section" w="full" bg="bg-accent">
       <Container>
         <Box mx="auto" py={{ base: "6", md: "8", lg: "12" }}>
           <Stack spacing={{ base: "6", md: "8", lg: "12" }}>
@@ -95,70 +69,31 @@ export const BreedGroups = () => {
               align={{ base: "start", md: "center" }}
               direction={{ base: "column", md: "row" }}
             >
-              <Heading
-                size="lg"
-                mb={{ base: "3", md: "0" }}
-                color="secondary.100"
-              >
-                Explore groups
+              <Heading size="lg" mb={{ base: "3", md: "0" }} color="white">
+                Popular breeds
               </Heading>
-              {/* <HStack spacing={{ base: "2", md: "3" }}>
+              <HStack spacing={{ base: "2", md: "3" }}>
                 <Link
                   as={NextLink}
                   fontWeight="semibold"
-                  color={useColorModeValue("brand.500", "brand.300")}
+                  color={useColorModeValue("brand.100", "brand.300")}
                   href="/breeds"
                 >
-                  Explore breeds
+                  More breeds
                 </Link>
                 <Icon
                   as={FaArrowRight}
-                  color={useColorModeValue("brand.500", "brand.300")}
+                  color={useColorModeValue("brand.100", "brand.300")}
                   fontSize={{ base: "sm", md: "md" }}
                 />
-              </HStack> */}
+              </HStack>
             </Flex>
             <SimpleGrid
               columns={{ base: 2, md: 3, lg: 4 }}
               gap={{ base: "4", md: "6", lg: "8" }}
             >
-              {breedGroups.map((group) => (
-                <Box
-                  position="relative"
-                  key={group.name}
-                  borderRadius="xl"
-                  overflow="hidden"
-                >
-                  <Link onClick={() => onSelectGroup(group)}>
-                    <AspectRatio
-                      // eslint-disable-next-line
-                      ratio={1 / 1}
-                      p="64px"
-                    >
-                      <Image
-                        src={group.imageUrl}
-                        alt={group.name}
-                        fallback={<Skeleton />}
-                        border="4px solid"
-                        borderColor="brand.500"
-                        borderRadius="xl"
-                      />
-                    </AspectRatio>
-                    <Box
-                      position="absolute"
-                      inset="0"
-                      boxSize="full"
-                      bg="blackAlpha.200"
-                      _hover={{ bg: "blackAlpha.400" }}
-                    />
-                    {/* <Box position="absolute" bottom="6" width="full" textAlign="center">
-                      <Text color="white" fontSize="lg" fontWeight="semibold">
-                        {group.name}
-                      </Text>
-                    </Box> */}
-                  </Link>
-                </Box>
-                // <CategoryCard key={group.name} group={group} />
+              {popularBreeds.map((breed) => (
+                <BreedCard hit={breed} />
               ))}
             </SimpleGrid>
           </Stack>

@@ -56,8 +56,8 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
               <NavButton
                 label="Dashboard"
                 icon={RxDashboard}
-                aria-current={pathname === "/dashboard" ? "page" : false}
-                onClick={() => onClickNavButton("/dashboard")}
+                aria-current={pathname === "/home" ? "page" : false}
+                onClick={() => onClickNavButton("/home")}
               />
             </Stack>
             {/* <Stack>

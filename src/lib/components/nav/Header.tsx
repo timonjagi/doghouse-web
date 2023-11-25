@@ -60,11 +60,11 @@ const Header = () => {
                     rounded="full"
                     as={Link}
                     aria-current={
-                      pathname.includes("dashboard") ? "page" : false
+                      pathname.includes("home") ? "page" : false
                     }
-                    href="/dashboard"
+                    href="/home"
                   >
-                    Dashboard
+                    Home
                   </Button>
                 )}
 

@@ -18,7 +18,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Services from "../services";
 
-const Dashboard = () => {
+const Home = () => {
   const isDesktop = useBreakpointValue({ base: false, lg: true });
   const [user, loading, error] = useAuthState(auth);
   const router = useRouter();
@@ -73,4 +73,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Home;

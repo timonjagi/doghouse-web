@@ -39,8 +39,7 @@ export const BreedCard = ({ hit }: any) => {
             </Text>
 
             <Text color="white" fontSize="sm" fontWeight="light" pt={0}>
-              {hit.breedGroup &&
-                hit.breedGroup.substring(0, hit.breedGroup.length - 1)}
+              {hit.breedGroup} group
             </Text>
           </Stack>
         </Box>

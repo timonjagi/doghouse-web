@@ -181,7 +181,7 @@ const SignUp = () => {
               status: "success",
             });
 
-            router.push("/dashboard");
+            router.push("/home");
           }
         };
 

@@ -95,7 +95,7 @@ export const Confirm = ({ currentStep, setStep }) => {
         status: "success",
       });
 
-      router.push("/dashboard");
+      router.push("/home");
     } catch (error) {
       throw error;
     }

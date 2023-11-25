@@ -43,9 +43,8 @@ export const Sidebar = () => {
             <NavButton
               label="Home"
               icon={FiHome}
-              aria-current={
-                router.pathname.includes("dashboard") ? "page" : "false"
-              }
+              onClick={() => onClickMenuLink("/home")}
+              aria-current={router.pathname.includes("home") ? "page" : "false"}
             />
             <NavButton label="Inbox" icon={FiMessageSquare} />
           </Stack>
@@ -70,6 +69,9 @@ export const Sidebar = () => {
               <NavButton
                 label="Profile"
                 icon={FiUser}
+                aria-current={
+                  router.pathname.includes("account") ? "page" : "false"
+                }
                 onClick={() => onClickMenuLink("/account")}
               />
               <NavButton label="Pets" icon={FiGitlab} />

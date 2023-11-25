@@ -53,7 +53,7 @@ export default function Hero({ user }) {
             >
               <Button
                 as={Link}
-                href={user ? "/dashboard" : "/signup"}
+                href={user ? "/home" : "/signup"}
                 variant="primary"
                 color="brand.500"
                 backgroundColor="brand.500"
@@ -68,7 +68,7 @@ export default function Hero({ user }) {
               </Button>
               <HStack
                 as={Link}
-                href={user ? "/dashboard" : "/login"}
+                href={user ? "/home" : "/login"}
                 transition="background 0.2s"
                 justify={{
                   base: "center",
