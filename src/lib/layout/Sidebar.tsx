@@ -4,6 +4,7 @@ import {
   Stack,
   Text,
   useColorModeValue as mode,
+  useDisclosure,
 } from "@chakra-ui/react";
 import * as React from "react";
 import {
@@ -11,6 +12,7 @@ import {
   FiClock,
   FiGitlab,
   FiHome,
+  FiLogOut,
   FiMessageSquare,
   FiSettings,
   FiUser,
@@ -18,11 +20,13 @@ import {
 import { Logo } from "../components/nav/Logo";
 import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
-import Link from "next/link";
+import { useSignOut } from "react-firebase-hooks/auth";
+import { auth } from "lib/firebase/client";
 
 export const Sidebar = () => {
-  const router = useRouter();
+  const [signOut, loading, error] = useSignOut(auth);
 
+  const router = useRouter();
   const onClickMenuLink = (link) => {
     router.push(link);
   };
@@ -33,10 +37,11 @@ export const Sidebar = () => {
       color="on-accent"
       overflowY="auto"
       maxW={{ base: "full", sm: "xs" }}
+      maxH="100vh"
       py={{ base: "6", sm: "8" }}
       px={{ base: "4", sm: "6" }}
     >
-      <Stack justify="space-between" spacing="1" width="full">
+      <Stack justify="space-between" spacing="1" width="full" h="full7">
         <Stack spacing="8" shouldWrapChildren>
           <Logo />
           <Stack spacing="1">
@@ -50,7 +55,7 @@ export const Sidebar = () => {
           </Stack>
           <Stack>
             <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-              My Services
+              Services
             </Text>
             <Stack spacing="1">
               <NavButton
@@ -70,14 +75,26 @@ export const Sidebar = () => {
                 label="Profile"
                 icon={FiUser}
                 aria-current={
-                  router.pathname.includes("account") ? "page" : "false"
+                  router.pathname.includes("account/profile") ? "page" : "false"
                 }
-                onClick={() => onClickMenuLink("/account")}
+                onClick={() => onClickMenuLink("/account/profile")}
               />
-              <NavButton label="Pets" icon={FiGitlab} />
-              <NavButton label="Settings" icon={FiSettings} />
+              <NavButton
+                label="Pets"
+                icon={FiGitlab}
+                onClick={() => onClickMenuLink("/account/pets")}
+              />
+              <NavButton
+                label="Settings"
+                icon={FiSettings}
+                onClick={() => onClickMenuLink("/account/settings")}
+              />
             </Stack>
           </Stack>
+
+          {/* <Stack>
+            <NavButton label="Logout" icon={FiLogOut} />
+          </Stack> */}
         </Stack>
       </Stack>
     </Flex>

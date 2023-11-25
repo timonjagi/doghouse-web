@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 // import * as React from "react";
 
-export const Settings = () => {
+const Settings = () => {
   const notifications = [
     {
       type: "Email",
@@ -81,3 +81,5 @@ export const Settings = () => {
     </Box>
   );
 };
+
+export default Settings;

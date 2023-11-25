@@ -23,30 +23,40 @@ type LayoutProps = {
 
 const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
-  const isDesktop = useBreakpointValue({ base: false, lg: true });
+  const isDesktop = useBreakpointValue({ base: false, md: true });
 
   const isMobile = useBreakpointValue({
     base: true,
     md: false,
   });
 
+  const publicLinks = ["/", "/breeds"];
+  const authLinks = ["/login", "/signup"];
+  const privateLinks = [
+    "/home",
+    "/services",
+    "/account/pets",
+    "/account/profile",
+    "/account/settings",
+  ];
+
   return (
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">
       <Box h="full">
-        {["/"].includes(router.pathname) ||
-        (["/login", "/signup"].includes(router.pathname) && isMobile) ? (
+        {publicLinks.includes(router.pathname) ||
+        (authLinks.includes(router.pathname) && isMobile) ? (
           <Header />
-        ) : ["/home"].includes(router.pathname) && isMobile ? (
+        ) : privateLinks.includes(router.pathname) && isMobile ? (
           <Navbar />
         ) : (
           <></>
         )}
 
-        {["/home", "/account", "/services"].includes(router.pathname) ? (
+        {privateLinks.includes(router.pathname) ? (
           <Flex
             as="section"
-            direction={{ base: "column", lg: "row" }}
-            height="100vh"
+            direction={{ base: "column", md: "row" }}
+            h={{ base: "calc(100vh - 64px)", md: "100vh" }}
             bg="bg-canvas"
             overflowY="auto"
           >

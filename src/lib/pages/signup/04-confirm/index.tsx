@@ -81,7 +81,7 @@ export const Confirm = ({ currentStep, setStep }) => {
     try {
       setSaving(true);
 
-      await Promise.allSettled([
+      await Promise.all([
         createUserProfile(),
         createPetProfile(),
         createPost(),
@@ -95,112 +95,48 @@ export const Confirm = ({ currentStep, setStep }) => {
         status: "success",
       });
 
-      router.push("/home");
+      // router.push("/home");
     } catch (error) {
       throw error;
     }
   };
 
   const createUserProfile = async () => {
-    try {
-      const userPayload = {
-        ...userProfile,
-        groups: [petProfile.breed.breedGroup],
-      };
+    const userPayload = {
+      ...userProfile,
+      groups: [petProfile.breed.breedGroup],
+    };
 
-      delete userPayload.pet_profiles;
+    delete userPayload.pet_profiles;
 
-      await setDoc(doc(fireStore, "users", userProfile.userId), userPayload);
-
-      // eslint-disable-next-line
-    } catch (err: any) {
-      toast({
-        title: "Error creating user profile",
-        description: err.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+    await setDoc(doc(fireStore, "users", userProfile.userId), userPayload);
   };
 
   const createPetProfile = async () => {
-    try {
-      const petPayload = {
-        breed: petProfile.breed.name,
-        age: petProfile.age || "",
-        sex: petProfile.breed.sex || "",
-        [userProfile.roles.includes("dog_owner") ? "ownerId" : "seekerId"]:
-          userProfile.userId,
-      };
-
-      await addDoc(collection(fireStore, "pets"), petPayload);
-    } catch (error) {
-      toast({
-        title: "Error creating pet profile",
-        description: error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  // const joinBreedGroup = () => {
-  //   const breedGroup = breedGroups.find(
-  //     (group) => group.slug === petProfile?.breed?.breedGroup
-  //   );
-
-  //   const groupData = {
-  //     name: breedGroup.name,
-  //     id: breedGroup.slug,
-  //     slug: breedGroup.slug,
-  //     userId: userProfile.userId,
-  //   };
-
-  //   onJoinOrLeaveGroup(groupData, false);
-  // };
-
-  const createPost = async () => {
-    const newPost: any = {
-      creatorId: userProfile.userId,
-      creatorDisplayName: userProfile.name,
-      title: petProfile.breed.name,
-      body: petProfile,
-      numberOfComments: 0,
-      voteCount: 0,
-      createdAt: serverTimestamp() as Timestamp,
+    const petPayload = {
+      breed: petProfile.breed.name,
+      age: petProfile.age || "",
+      sex: petProfile.breed.sex || "",
+      [userProfile.roles.includes("dog_owner") ? "ownerId" : "seekerId"]:
+        userProfile.userId,
     };
 
-    // remove images from payload
-    delete newPost.body.images;
+    const petDocRef = await addDoc(collection(fireStore, "pets"), petPayload);
 
-    try {
-      // store post in db
-      const postDocRef = await addDoc(collection(fireStore, "posts"), newPost);
+    if (petProfile.images.length) {
+      const downloadUrls = [];
 
-      // check for selected file
-      if (userProfile.roles.includes("dog_owner")) {
-        // store image in firebase/storage
-        const downloadUrls = [];
-        const imageRef = ref(storage, `posts/${postDocRef.id}/image`);
-        for (const image of petProfile.images) {
-          await uploadString(imageRef, image, "data_url");
-          // get download url from stroage
-          const downloadUrl = await getDownloadURL(imageRef);
-          downloadUrls.push(downloadUrl);
-        }
-
-        // update post doc by adding image url
-        await updateDoc(postDocRef, { imageUrls: downloadUrls });
+      // store images in firebase/storage
+      for (const image of petProfile.images) {
+        const imageRef = ref(storage, `pets/${petDocRef.id}/image`);
+        await uploadString(imageRef, image, "data_url");
+        // get download url from stroage
+        const downloadUrl = await getDownloadURL(imageRef);
+        downloadUrls.push(downloadUrl);
       }
-    } catch (error: any) {
-      toast({
-        title: "Error creating post",
-        description: error,
-        status: "error",
-      });
-      console.log("HandleCreatePost error", error.message);
+
+      // update pet doc by adding image urls
+      await updateDoc(petDocRef, { imageUrls: downloadUrls });
     }
   };
 
@@ -279,7 +215,7 @@ export const Confirm = ({ currentStep, setStep }) => {
                       <HStack spacing="3">
                         <Icon fontSize="xl" as={IoImagesOutline} />
                         <Text textTransform="capitalize" fontSize="sm">
-                          {petProfile.images.length} photo
+                          {petProfile.images?.length} photo
                           {petProfile.images.length > 1 ? "s" : ""}{" "}
                         </Text>
                       </HStack>
