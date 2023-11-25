@@ -139,6 +139,25 @@ const Header = () => {
                 aria-label="Open Menu"
                 onClick={onToggle}
               /> */}
+              {user ? (
+                <UserProfileMenu
+                  name={user?.displayName || ""}
+                  image={user?.photoURL || ""}
+                  phoneNumber={user?.phoneNumber || ""}
+                />
+              ) : (
+                <HStack spacing="3">
+                  <Button
+                    variant="secondary-on-accent"
+                    rounded="full"
+                    borderColor="white"
+                    onClick={() => router.push("/login")}
+                  >
+                    Log in
+                  </Button>
+                </HStack>
+              )}
+
               <Drawer
                 isOpen={isOpen}
                 placement="left"

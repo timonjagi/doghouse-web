@@ -22,6 +22,7 @@ import {
   Icon,
   AvatarGroup,
   useToast,
+  Button,
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
@@ -163,10 +164,9 @@ const SignUp = () => {
         }
       } else {
         const fetchUserDoc = async () => {
-          console.log(user.uid);
           const response = await fetch(
             `/api/users/get-user?${new URLSearchParams({
-              uid: user.uid,
+              uid: user?.uid,
             })}`,
             {
               method: "GET",
@@ -185,12 +185,14 @@ const SignUp = () => {
           }
         };
 
-        fetchUserDoc();
+        if (!loadingUser && user) {
+          fetchUserDoc();
+        }
       }
     } catch (error) {
       console.error("Error parsing or retrieving profile data:", error);
     }
-  }, []);
+  }, [user, loadingUser]);
 
   return (
     <Flex h="100%">
@@ -269,18 +271,33 @@ const SignUp = () => {
           align={{ base: "start", md: "center" }}
         >
           {!loadingUser && !loadingUserProfile && (
-            <Stack
-              spacing="9"
-              px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
-              align="center"
-            >
+            <>
               {!user?.uid ? (
-                <>
+                <Stack
+                  spacing="9"
+                  px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
+                  align="center"
+                >
                   <Heading size="lg">Let's create your account</Heading>
                   <LoginForm />
-                </>
+
+                  <HStack justify="center" spacing="1">
+                    <Text color="muted">Already&apos;t have an account?</Text>
+                    <Button
+                      variant="link"
+                      colorScheme="brand"
+                      onClick={() => router.push("/login")}
+                    >
+                      Log in
+                    </Button>
+                  </HStack>
+                </Stack>
               ) : (
-                <>
+                <Stack
+                  spacing="9"
+                  px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
+                  align="center"
+                >
                   {isMobile && (
                     <Stack mt="8">
                       <Stepper
@@ -329,9 +346,9 @@ const SignUp = () => {
                   {activeStep === 3 && (
                     <Confirm currentStep={activeStep} setStep={setActiveStep} />
                   )}
-                </>
+                </Stack>
               )}
-            </Stack>
+            </>
           )}
         </Flex>
       </Flex>

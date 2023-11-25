@@ -26,6 +26,7 @@ import { auth } from "lib/firebase/client";
 import { User } from "lib/models/user";
 import { GoogleIcon, TwitterIcon, GitHubIcon } from "./ProviderIcons";
 import { BsChevronBarRight, BsChevronRight } from "react-icons/bs";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 type PageProps = {};
 
@@ -35,7 +36,7 @@ export const LoginForm = (props: PageProps) => {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
-  const [existingUser, setExistingUser] = useState({} as User);
+  const [user, loadingUser, error] = useAuthState(auth);
   const [openOTPModal, setOpenOTPModal] = useState(false);
   const [codeVerified, setCodeVerified] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -51,7 +52,9 @@ export const LoginForm = (props: PageProps) => {
     sm: false,
   });
 
-  const sendVerificationCode = async () => {
+  const sendVerificationCode = async (event) => {
+    event.preventDefault();
+
     setLoading(true);
     setInvalidCode(false);
     setMountRecapture(false);
@@ -73,7 +76,6 @@ export const LoginForm = (props: PageProps) => {
       console.log(result);
       if (result) {
         setOpenOTPModal(true);
-        console.log("set open otp modal", openOTPModal);
         setConfirmationResult(result);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -106,24 +108,8 @@ export const LoginForm = (props: PageProps) => {
       if (result) {
         setCodeVerified(true);
 
-        if (existingUser) {
-          if (
-            existingUser.customClaims &&
-            existingUser.customClaims.isBreeder
-          ) {
-            await router.push("/dashboard");
-            toast({
-              title: "Logged in successfully",
-              duration: 2000,
-              status: "success",
-            });
-            // } else {
-            //   assignBreederRole(existingUser.uid);
-          } else {
-            await router.push("/profile");
-          }
-          // } else {
-          //   await assignBreederRole(result.user.uid);
+        if (!loading && user) {
+          checkIfUserExists();
         }
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -150,16 +136,13 @@ export const LoginForm = (props: PageProps) => {
     setLoading(false);
   };
 
-  const checkIfUserExists = async (event: React.FormEvent) => {
-    event.preventDefault();
-
+  const checkIfUserExists = async () => {
     try {
       setLoading(true);
-      const mobileNumber = `+254${phoneNumber}`;
-      console.log(mobileNumber);
+
       const response = await fetch(
-        `/api/get-auth-user?${new URLSearchParams({
-          phoneNumber: mobileNumber,
+        `/api/users/get-user?${new URLSearchParams({
+          uid: user.uid,
         })}`,
         {
           method: "GET",
@@ -167,12 +150,17 @@ export const LoginForm = (props: PageProps) => {
         }
       );
 
+      console.log("response: ", response);
+
       if (response.status === 200) {
-        await sendVerificationCode();
-        const { user } = await response.json();
-        setExistingUser(user);
+        router.push("/dashboard");
       } else {
-        await sendVerificationCode();
+        toast({
+          title: "Account created successfully",
+          description: "Let's finish creating your your profile",
+          status: "success",
+        });
+        router.push("/signup");
       }
 
       // eslint-disable-next-line
@@ -201,7 +189,8 @@ export const LoginForm = (props: PageProps) => {
           spacing="6"
           as="form"
           align="center"
-          onSubmit={checkIfUserExists}
+          onSubmit={(event) => sendVerificationCode(event)}
+          w="full"
         >
           <FormControl>
             {/* <FormLabel htmlFor="phone">Continue with mobile number</FormLabel> */}
@@ -223,7 +212,7 @@ export const LoginForm = (props: PageProps) => {
             </InputGroup>
           </FormControl>
 
-          <ButtonGroup>
+          <ButtonGroup w="full">
             {router.pathname.includes("signup") && <Spacer />}
             <Button
               isLoading={loading}
@@ -240,7 +229,7 @@ export const LoginForm = (props: PageProps) => {
 
         <VerifyOTPModal
           loading={loading}
-          existingUser={existingUser}
+          existingUser={user}
           phoneNumber={phoneNumber}
           onSubmit={onVerifyCode}
           setCode={setCode}

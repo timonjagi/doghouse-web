@@ -11,18 +11,26 @@ import {
   Heading,
   useToast,
 } from "@chakra-ui/react";
-import { setDoc, doc, addDoc, collection } from "firebase/firestore";
+import {
+  setDoc,
+  doc,
+  addDoc,
+  collection,
+  serverTimestamp,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore";
 import useGroupData from "hooks/useGroupData";
-import { fireStore } from "lib/firebase/client";
+import { fireStore, storage } from "lib/firebase/client";
 import { useEffect, useState } from "react";
 import { IoImagesOutline, IoLocationOutline } from "react-icons/io5";
 import { PiDog, PiGenderIntersex } from "react-icons/pi";
 import { useRouter } from "next/router.js";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 
 export const Confirm = ({ currentStep, setStep }) => {
   const [userProfile, setUserProfile] = useState({} as any);
   const [petProfile, setPetProfile] = useState({} as any);
-  const { groupStateValue, onJoinOrLeaveGroup, loading } = useGroupData();
 
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -107,7 +115,8 @@ export const Confirm = ({ currentStep, setStep }) => {
       // eslint-disable-next-line
     } catch (err: any) {
       toast({
-        title: err.message,
+        title: "Error creating user profile",
+        description: err.message,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -128,7 +137,8 @@ export const Confirm = ({ currentStep, setStep }) => {
       await addDoc(collection(fireStore, "pets"), petPayload);
     } catch (error) {
       toast({
-        title: error.message,
+        title: "Error creating pet profile",
+        description: error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -151,7 +161,48 @@ export const Confirm = ({ currentStep, setStep }) => {
   //   onJoinOrLeaveGroup(groupData, false);
   // };
 
-  const createPost = () => {};
+  const createPost = async () => {
+    const newPost: any = {
+      creatorId: userProfile.userId,
+      creatorDisplayName: userProfile.name,
+      title: petProfile.breed.name,
+      body: petProfile,
+      numberOfComments: 0,
+      voteCount: 0,
+      createdAt: serverTimestamp() as Timestamp,
+    };
+
+    // remove images from payload
+    delete newPost.body.images;
+
+    try {
+      // store post in db
+      const postDocRef = await addDoc(collection(fireStore, "posts"), newPost);
+
+      // check for selected file
+      if (userProfile.roles.includes("dog_owner")) {
+        // store image in firebase/storage
+        const downloadUrls = [];
+        const imageRef = ref(storage, `posts/${postDocRef.id}/image`);
+        for (const image of petProfile.images) {
+          await uploadString(imageRef, image, "data_url");
+          // get download url from stroage
+          const downloadUrl = await getDownloadURL(imageRef);
+          downloadUrls.push(downloadUrl);
+        }
+
+        // update post doc by adding image url
+        await updateDoc(postDocRef, { imageUrls: downloadUrls });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error creating post",
+        description: error,
+        status: "error",
+      });
+      console.log("HandleCreatePost error", error.message);
+    }
+  };
 
   return (
     <>
@@ -255,9 +306,9 @@ export const Confirm = ({ currentStep, setStep }) => {
                   : "listings"}{" "}
                 later.
                 {userProfile.roles.includes("dog_owner")
-                  ? "An announcement will be made on "
-                  : "A listing will be added on the "}{" "}
-                {petProfile.breed.breedGroup} group to notify members about your{" "}
+                  ? "An announcement will be made"
+                  : "A listing will be added"}
+                to notify members about your{" "}
                 {userProfile.roles.includes("dog_owner")
                   ? "membership"
                   : "request"}

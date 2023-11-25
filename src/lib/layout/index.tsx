@@ -2,11 +2,12 @@ import { Box, useBreakpointValue, useToast } from "@chakra-ui/react";
 import { ReactNode, useEffect, useRef } from "react";
 
 // import Footer from "./Footer";
-import Header from "../components/nav/Header";
 import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 import RouteGuard from "lib/components/auth/RouteGuard";
+import { Navbar } from "lib/pages/home/Navbar";
+import Header from "../components/nav/Header";
 
 type LayoutProps = {
   children: ReactNode;
@@ -23,10 +24,11 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">
       <Box h="full">
-        {!["/login", "/signup", "/profile", "/dashboard"].includes(
-          router.pathname
-        ) || isMobile ? (
+        {["/"].includes(router.pathname) ||
+        (["/login", "/signup"].includes(router.pathname) && isMobile) ? (
           <Header />
+        ) : ["/dashboard"].includes(router.pathname) && isMobile ? (
+          <Navbar />
         ) : (
           <></>
         )}
