@@ -20,7 +20,6 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import useGroupData from "hooks/useGroupData";
 import { fireStore, storage } from "lib/firebase/client";
 import { useEffect, useState } from "react";
 import { IoImagesOutline, IoLocationOutline } from "react-icons/io5";
@@ -81,11 +80,7 @@ export const Confirm = ({ currentStep, setStep }) => {
     try {
       setSaving(true);
 
-      await Promise.all([
-        createUserProfile(),
-        createPetProfile(),
-        createPost(),
-      ]);
+      await Promise.all([createUserProfile(), createPetProfile()]);
 
       setSaving(false);
 
@@ -129,7 +124,7 @@ export const Confirm = ({ currentStep, setStep }) => {
       // store images in firebase/storage
       for (const image of petProfile.images) {
         const imageRef = ref(storage, `pets/${petDocRef.id}/image`);
-        await uploadString(imageRef, image, "data_url");
+        ~(await uploadString(imageRef, image, "data_url"));
         // get download url from stroage
         const downloadUrl = await getDownloadURL(imageRef);
         downloadUrls.push(downloadUrl);
