@@ -1,29 +1,31 @@
-import { Flex, Stack, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Stack,
+  Text,
+  useColorModeValue as mode,
+} from "@chakra-ui/react";
 import * as React from "react";
 import {
-  FiBarChart2,
-  FiCamera,
   FiCheckSquare,
   FiClock,
-  FiFilm,
   FiGitlab,
   FiHome,
-  FiInstagram,
-  FiLinkedin,
   FiMessageSquare,
-  FiMic,
-  FiMusic,
   FiSettings,
-  FiTwitter,
   FiUser,
 } from "react-icons/fi";
-import { Logo } from "../../components/nav/Logo";
+import { Logo } from "../components/nav/Logo";
 import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export const Sidebar = () => {
   const router = useRouter();
 
+  const onClickMenuLink = (link) => {
+    router.push(link);
+  };
   return (
     <Flex
       flex="1"
@@ -52,7 +54,11 @@ export const Sidebar = () => {
               My Services
             </Text>
             <Stack spacing="1">
-              <NavButton label="Scheduled" icon={FiClock} />
+              <NavButton
+                label="Scheduled"
+                icon={FiClock}
+                onClick={() => onClickMenuLink("/services")}
+              />
               <NavButton label="Completed" icon={FiCheckSquare} />
             </Stack>
           </Stack>
@@ -61,7 +67,11 @@ export const Sidebar = () => {
               Account
             </Text>
             <Stack spacing="1">
-              <NavButton label="Profile" icon={FiUser} />
+              <NavButton
+                label="Profile"
+                icon={FiUser}
+                onClick={() => onClickMenuLink("/account")}
+              />
               <NavButton label="Pets" icon={FiGitlab} />
               <NavButton label="Settings" icon={FiSettings} />
             </Stack>

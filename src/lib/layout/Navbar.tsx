@@ -10,7 +10,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import * as React from "react";
-import { Logo } from "../../components/nav/Logo";
+import { Logo } from "../components/nav/Logo";
 import { Sidebar } from "./Sidebar";
 import { ToggleButton } from "./ToggleButton";
 import { useSignOut } from "react-firebase-hooks/auth";

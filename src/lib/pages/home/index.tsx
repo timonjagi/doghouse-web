@@ -10,12 +10,13 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { FiDownloadCloud } from "react-icons/fi";
-import { Sidebar } from "./Sidebar";
-import { Navbar } from "./Navbar";
+import { Sidebar } from "../../layout/Sidebar";
+import { Navbar } from "../../layout/Navbar";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import Services from "../services";
 
 const Dashboard = () => {
   const isDesktop = useBreakpointValue({ base: false, lg: true });
@@ -61,43 +62,10 @@ const Dashboard = () => {
       bg="bg-canvas"
       overflowY="auto"
     >
-      {isDesktop ? <Sidebar /> : <></>}
       <Box bg="bg-accent" flex="1">
         <Box bg="bg-canvas" height="full">
           <Container py="8" height="full">
-            <Stack spacing={{ base: "8", lg: "6" }} height="full">
-              <Stack
-                spacing="4"
-                direction={{ base: "column", lg: "row" }}
-                justify="space-between"
-                align={{ base: "start", lg: "center" }}
-              >
-                <Stack spacing="1">
-                  <Heading
-                    size={useBreakpointValue({ base: "xs", lg: "sm" })}
-                    fontWeight="medium"
-                  >
-                    Dashboard
-                  </Heading>
-                  <Text color="muted">All important metrics at a glance</Text>
-                </Stack>
-                <HStack spacing="3">
-                  <Button
-                    variant="secondary"
-                    leftIcon={<FiDownloadCloud fontSize="1.25rem" />}
-                  >
-                    Download
-                  </Button>
-                  <Button variant="primary">Create</Button>
-                </HStack>
-              </Stack>
-              <Box
-                bg="bg-surface"
-                borderRadius="lg"
-                borderWidth="1px"
-                height="full"
-              />
-            </Stack>
+            {router.pathname.includes("services") && <Services />}
           </Container>
         </Box>
       </Box>
