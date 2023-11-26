@@ -30,7 +30,7 @@ const Layout = ({ children }: LayoutProps) => {
     md: false,
   });
 
-  const publicLinks = ["/", "/breeds"];
+  const publicLinks = ["/", "/breeds", "/blog"];
   const authLinks = ["/login", "/signup"];
   const privateLinks = [
     "/home",
@@ -44,6 +44,7 @@ const Layout = ({ children }: LayoutProps) => {
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">
       <Box h="full">
         {publicLinks.includes(router.pathname) ||
+        router.pathname.includes("blog") ||
         (authLinks.includes(router.pathname) && isMobile) ? (
           <Header />
         ) : privateLinks.includes(router.pathname) && isMobile ? (
