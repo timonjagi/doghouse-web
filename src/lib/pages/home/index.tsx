@@ -65,7 +65,7 @@ const Home = () => {
       <Box bg="bg-accent" flex="1">
         <Box bg="bg-canvas" height="full">
           <Container py="8" height="full">
-            {router.pathname.includes("services") && <Services />}
+            Home page feed
           </Container>
         </Box>
       </Box>
