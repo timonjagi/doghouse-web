@@ -90,9 +90,14 @@ export const Confirm = ({ currentStep, setStep }) => {
         status: "success",
       });
 
-      // router.push("/home");
+      router.push("/account/profile");
     } catch (error) {
-      throw error;
+      toast({
+        title: "Error saving profile",
+        description: error.messsage,
+        status: "error",
+      });
+      setSaving(false);
     }
   };
 
@@ -111,20 +116,24 @@ export const Confirm = ({ currentStep, setStep }) => {
     const petPayload = {
       breed: petProfile.breed.name,
       age: petProfile.age || "",
-      sex: petProfile.breed.sex || "",
+      sex: petProfile.sex || "",
       [userProfile.roles.includes("dog_owner") ? "ownerId" : "seekerId"]:
         userProfile.userId,
+      numberOfComments: 0,
+      voteCount: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     const petDocRef = await addDoc(collection(fireStore, "pets"), petPayload);
 
-    if (petProfile.images.length) {
+    if (petProfile.images && petProfile.images.length) {
       const downloadUrls = [];
 
       // store images in firebase/storage
       for (const image of petProfile.images) {
         const imageRef = ref(storage, `pets/${petDocRef.id}/image`);
-        ~(await uploadString(imageRef, image, "data_url"));
+        await uploadString(imageRef, image, "data_url");
         // get download url from stroage
         const downloadUrl = await getDownloadURL(imageRef);
         downloadUrls.push(downloadUrl);

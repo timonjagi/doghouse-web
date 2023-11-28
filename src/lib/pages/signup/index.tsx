@@ -23,6 +23,7 @@ import {
   AvatarGroup,
   useToast,
   Button,
+  Center,
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
@@ -198,13 +199,12 @@ const SignUp = () => {
     <Flex h="100%">
       <NextSeo title="Create Profile" />
 
-      <Flex w="full">
+      <Flex maxW="8xl" mx="auto" width="full">
         {/* side bar */}
         <Box
           display={{ base: "none", md: "flex" }}
           backgroundColor="brand.700"
-          minW={{ md: "sm", lg: "lg" }}
-          maxW="xl"
+          flex="1"
         >
           <Flex
             direction="column"
@@ -264,19 +264,15 @@ const SignUp = () => {
         </Box>
         {/* end sidebar */}
 
-        <Flex
-          flex="1"
-          w="full"
-          h="full"
-          align={{ base: "start", md: "center" }}
-        >
+        <Flex flex="1" w="full" h="full" align="center">
           {!loadingUser && !loadingUserProfile && (
-            <>
+            <Center w="full" pt="4">
               {!user?.uid ? (
                 <Stack
-                  spacing="9"
+                  spacing={{ base: "6", md: "9" }}
                   px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
                   align="center"
+                  textAlign="center"
                 >
                   <Heading size="lg">Let's create your account</Heading>
                   <LoginForm />
@@ -348,7 +344,7 @@ const SignUp = () => {
                   )}
                 </Stack>
               )}
-            </>
+            </Center>
           )}
         </Flex>
       </Flex>

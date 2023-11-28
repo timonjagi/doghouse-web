@@ -73,7 +73,6 @@ export const LoginForm = (props: PageProps) => {
         `+254${phoneNumber}`,
         appVerifier
       );
-      console.log(result);
       if (result) {
         setOpenOTPModal(true);
         setConfirmationResult(result);
@@ -183,100 +182,98 @@ export const LoginForm = (props: PageProps) => {
   };
 
   return (
-    <Stack spacing="8">
-      <Stack spacing="6">
-        <Stack
-          spacing="6"
-          as="form"
-          align="center"
-          onSubmit={(event) => sendVerificationCode(event)}
-          w="full"
-        >
-          <FormControl>
-            {/* <FormLabel htmlFor="phone">Continue with mobile number</FormLabel> */}
+    <Stack spacing="6">
+      <Stack
+        spacing="6"
+        as="form"
+        align="center"
+        onSubmit={(event) => sendVerificationCode(event)}
+        w="full"
+      >
+        <FormControl>
+          {/* <FormLabel htmlFor="phone">Continue with mobile number</FormLabel> */}
 
-            <InputGroup size="lg">
-              <InputLeftAddon>+254</InputLeftAddon>
-              <Input
-                as="input"
-                required
-                id="phone"
-                name="phone"
-                placeholder="e.g 722..."
-                type="number"
-                onChange={(event) => onInputChange(event?.target.value)}
-                pattern="^([7]{1}|[1]{1})[0-9]{8}$"
-                maxLength={9}
-                value={phoneNumber}
-              />
-            </InputGroup>
-          </FormControl>
+          <InputGroup size="lg">
+            <InputLeftAddon>+254</InputLeftAddon>
+            <Input
+              as="input"
+              required
+              id="phone"
+              name="phone"
+              placeholder="e.g 722..."
+              type="number"
+              onChange={(event) => onInputChange(event?.target.value)}
+              pattern="^([7]{1}|[1]{1})[0-9]{8}$"
+              maxLength={9}
+              value={phoneNumber}
+            />
+          </InputGroup>
+        </FormControl>
 
-          <ButtonGroup w="full">
-            {router.pathname.includes("signup") && <Spacer />}
-            <Button
-              isLoading={loading}
-              type="submit"
-              size="lg"
-              w="full"
-              variant="primary"
-              isDisabled={phoneNumber.length !== 9}
-            >
-              <span>Continue with phone</span>
-            </Button>
-          </ButtonGroup>
-        </Stack>
-
-        <VerifyOTPModal
-          loading={loading}
-          existingUser={user}
-          phoneNumber={phoneNumber}
-          onSubmit={onVerifyCode}
-          setCode={setCode}
-          openOTPModal={openOTPModal}
-          sendVerificationCode={sendVerificationCode}
-        />
-
-        <Box id="recaptcha-container" display="none" />
-
-        <HStack>
-          <Divider />
-          <Text fontSize="sm" color="muted">
-            OR
-          </Text>
-          <Divider />
-        </HStack>
-        <Stack spacing="3">
+        <ButtonGroup w="full">
+          {router.pathname.includes("signup") && <Spacer />}
           <Button
-            variant="secondary"
-            leftIcon={<GoogleIcon boxSize="5" />}
-            iconSpacing="3"
+            isLoading={loading}
+            type="submit"
+            size="lg"
+            w="full"
+            variant="primary"
+            isDisabled={phoneNumber.length !== 9}
           >
-            Continue with Google
+            <span>Continue with phone</span>
           </Button>
-          <Button
-            variant="secondary"
-            leftIcon={<TwitterIcon boxSize="5" />}
-            iconSpacing="3"
-          >
-            Continue with Twitter
-          </Button>
-          <Button
-            variant="secondary"
-            leftIcon={<GitHubIcon boxSize="5" />}
-            iconSpacing="3"
-          >
-            Continue with GitHub
-          </Button>
-        </Stack>
-
-        {router.pathname.includes("signup") && (
-          <Text fontSize="xs" color="subtle" textAlign="center">
-            By continuing, you acknowledge that you have read, understood, and
-            agree to our terms and condition
-          </Text>
-        )}
+        </ButtonGroup>
       </Stack>
+
+      <VerifyOTPModal
+        loading={loading}
+        existingUser={user}
+        phoneNumber={phoneNumber}
+        onSubmit={onVerifyCode}
+        setCode={setCode}
+        openOTPModal={openOTPModal}
+        sendVerificationCode={sendVerificationCode}
+      />
+
+      <Box id="recaptcha-container" display="none" />
+
+      <HStack>
+        <Divider />
+        <Text fontSize="sm" color="muted">
+          OR
+        </Text>
+        <Divider />
+      </HStack>
+      <Stack spacing="3">
+        <Button
+          variant="secondary"
+          leftIcon={<GoogleIcon boxSize="5" />}
+          iconSpacing="3"
+        >
+          Continue with Google
+        </Button>
+        <Button
+          variant="secondary"
+          leftIcon={<TwitterIcon boxSize="5" />}
+          iconSpacing="3"
+        >
+          Continue with Twitter
+        </Button>
+        <Button
+          variant="secondary"
+          leftIcon={<GitHubIcon boxSize="5" />}
+          iconSpacing="3"
+        >
+          Continue with GitHub
+        </Button>
+      </Stack>
+      {/* 
+    {router.pathname.includes("signup") && (
+      <Text fontSize="xs" color="subtle" textAlign="center">
+        By continuing, you acknowledge that you have read, understood, and
+        agree to our terms and condition
+      </Text>
+    )} */}
     </Stack>
   );
 };

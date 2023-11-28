@@ -75,6 +75,7 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
         </Flex>
       ) : (
         <Center
+          width="full"
           borderWidth="1px"
           borderRadius="lg"
           px="6"
