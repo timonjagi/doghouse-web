@@ -90,7 +90,7 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
               <HStack spacing="1" whiteSpace="nowrap">
                 <Button
                   variant="link"
-                  colorScheme="blue"
+                  colorScheme="brand"
                   size="sm"
                   onClick={() => selectedFileRef.current?.click()}
                 >

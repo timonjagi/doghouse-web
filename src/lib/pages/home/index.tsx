@@ -1,47 +1,42 @@
 import {
   Avatar,
   AvatarBadge,
-  Badge,
   Box,
   Button,
-  Center,
   Container,
-  Divider,
-  Flex,
-  Heading,
   HStack,
   Icon,
   Input,
   InputGroup,
   InputLeftElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
   Stack,
   StackDivider,
   Text,
   useBreakpointValue,
-  Wrap,
-  WrapItem,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { FiDownloadCloud, FiSearch } from "react-icons/fi";
-import { Sidebar } from "../../layout/Sidebar";
-import { Navbar } from "../../layout/Navbar";
+import { FiSearch } from "react-icons/fi";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Services from "../services";
 import { NextSeo } from "next-seo";
+import NewPostForm from "./NewPostForm";
+import Post from "./Post";
 
 const Home = ({ activity }) => {
-  const isDesktop = useBreakpointValue({ base: false, lg: true });
   const [user, loading, error] = useAuthState(auth);
+  const [userProfile, setUserProfile] = useState({} as any);
+
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    // load user document - check
-    // check user groups - check // saved alongside user
-    // display on sidebar
-    // save user doc as atom
-
     const fetchUserDoc = async () => {
       const response = await fetch(
         `/api/users/get-user?${new URLSearchParams({
@@ -54,9 +49,10 @@ const Home = ({ activity }) => {
       );
 
       if (response.status === 404) {
-        console.log(response);
-        console.log("User doc not found");
         router.push("/signup");
+      } else {
+        const user = await response.json();
+        setUserProfile(user.user);
       }
     };
 
@@ -64,6 +60,7 @@ const Home = ({ activity }) => {
       router.push("/");
     } else if (!loading && user) {
       fetchUserDoc();
+      console.log(user);
     }
   }, [user, loading]);
 
@@ -78,68 +75,49 @@ const Home = ({ activity }) => {
         <NextSeo title="Home" />
 
         <Stack spacing="5">
-          <Stack
-            spacing="4"
-            direction={{ base: "column", md: "row" }}
-            justify="space-between"
-          >
+          <Stack spacing="4" direction="row" justify="space-between">
             <Box>
               <Text fontSize="lg" fontWeight="medium">
                 Activity feed
               </Text>
               <Text color="muted" fontSize="sm">
-                All updates from the past hour
+                All updates show up here
               </Text>
             </Box>
-            <InputGroup maxW={{ sm: "xs" }}>
-              <InputLeftElement pointerEvents="none">
-                <Icon as={FiSearch} color="muted" boxSize="5" />
-              </InputLeftElement>
-              <Input placeholder="Search" />
-            </InputGroup>
+            <Button variant="primary" alignSelf="start" onClick={onOpen}>
+              Post
+            </Button>
           </Stack>
-          <Divider />
+
+          <InputGroup>
+            <InputLeftElement pointerEvents="none">
+              <Icon as={FiSearch} color="muted" boxSize="5" />
+            </InputLeftElement>
+            <Input placeholder="Search" />
+          </InputGroup>
 
           <Box bg="bg-surface" py="4">
             <Stack divider={<StackDivider />} spacing="4">
               {activity.map((act) => (
-                <Stack key={act.id} fontSize="sm" px="4" spacing="4">
-                  <Stack direction="row" justify="space-between" spacing="4">
-                    <HStack spacing="3">
-                      <Avatar src={act.userProfileUrl} boxSize="10">
-                        <AvatarBadge boxSize="4" bg="active" />
-                      </Avatar>
-                      <Box>
-                        <Text fontWeight="medium" color="emphasized">
-                          {act.userName}
-                        </Text>
-                        <Text color="muted">
-                          {act.userId
-                            ? ""
-                            : act.ownerId
-                            ? "Pet Owner"
-                            : "Pet Seeker"}
-                        </Text>
-                      </Box>
-                    </HStack>
-                    <Text color="muted">{act.createdAt}</Text>
-                  </Stack>
-                  <Text
-                    color="muted"
-                    sx={{
-                      "-webkit-box-orient": "vertical",
-                      "-webkit-line-clamp": "2",
-                      overflow: "hidden",
-                      display: "-webkit-box",
-                    }}
-                  >
-                    {act.description}
-                  </Text>
-                </Stack>
+                <Post post={act} userProfile={userProfile} />
               ))}
             </Stack>
           </Box>
         </Stack>
+
+        <Modal
+          onClose={onClose}
+          isOpen={isOpen}
+          size={{ base: "xs", md: "sm" }}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalCloseButton />
+            <ModalBody>
+              <NewPostForm></NewPostForm>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </Container>
     </Box>
   );

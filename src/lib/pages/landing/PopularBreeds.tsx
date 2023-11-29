@@ -51,9 +51,7 @@ export const PopularBreeds = () => {
       "beagle",
     ].includes(breed.name)
   );
-  console.log(popularBreeds);
   const onSelectGroup = (group) => {
-    console.log(group);
     setSelectedGroup(group);
     router.push(`?group=${group.name}`);
   };

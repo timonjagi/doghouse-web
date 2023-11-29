@@ -81,10 +81,7 @@ const ProfileCard: React.FC<any> = ({
 
             <FormControl id="picture">
               <FormLabel>Picture</FormLabel>
-              <Stack
-                spacing={{ base: "3", md: "5" }}
-                direction={{ base: "column", sm: "row" }}
-              >
+              <Stack spacing={{ base: "3", md: "5" }} direction="row">
                 <Avatar
                   size="lg"
                   name={userProfile.name}

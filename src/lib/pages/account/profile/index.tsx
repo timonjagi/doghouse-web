@@ -2,7 +2,7 @@ import { Box, Center, Spinner, Stack, Text, useToast } from "@chakra-ui/react";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import ProfileCard from "./ProfileCard";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
 import { auth, fireStore, storage } from "lib/firebase/client";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
@@ -12,6 +12,8 @@ const Profile = () => {
   const [selectedFiles, setSelectedFiles] = useState([] as any);
   const toast = useToast();
   const [user, loading, error] = useAuthState(auth);
+  const [updateProfile] = useUpdateProfile(auth);
+
   const [userProfile, setUserProfile] = useState({} as any);
 
   const [firstName, setUserFirstName] = useState("");
@@ -96,6 +98,8 @@ const Profile = () => {
 
         // get download url from stroage
         downloadUrl = await getDownloadURL(imageRef);
+
+        await updateProfile({ photoURL: downloadUrl });
       }
       // update pet doc by adding image urls
       await updateDoc(userDocRef, {
@@ -105,6 +109,8 @@ const Profile = () => {
           ? downloadUrl
           : userProfile.profilePhotoUrl,
       });
+
+      // update
 
       toast({
         title: "Profile updated successfully",

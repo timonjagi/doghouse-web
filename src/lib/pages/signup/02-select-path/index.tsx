@@ -31,7 +31,6 @@ interface RadioCardGroupProps<T> extends Omit<StackProps, "onChange"> {
 
 const RadioCardGroup = <T extends string>(props: RadioCardGroupProps<T>) => {
   const { children, name, defaultValue, value, onChange, ...rest } = props;
-  console.log(defaultValue);
   const { getRootProps, getRadioProps } = useRadioGroup({
     name,
     defaultValue,

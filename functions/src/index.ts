@@ -30,7 +30,7 @@ export const logPetAdded = functions.firestore.document("pets/{docId}").onCreate
     // Pet has seekerId, add activity log notifying users of pet listing
     const activity = {
       title: 'Pet listed',
-      description: `Hi, I'm looking for a ${pet.breed} ${pet.age}, preferrably ${pet.sex}`,
+      description: `Hi, I'm looking for ${pet.sex} ${pet.breed} ${pet.age}`,
       seekerId: pet.seekerId,
       userName: user.displayName,
       userPhotoUrl: user.photoURL || null,
