@@ -14,10 +14,10 @@ export const logPetAdded = functions.firestore.document("pets/{docId}").onCreate
     // Pet has ownerId, add activity log notifying users of pet addition with pet breed details
     const activity = {
       title: 'Pet added',
-      description: `Hi, my ${pet.sex} (${pet.breed} ${pet.age}) is available for adoption`,
+      description: `Hi, my ${pet.sex} ${pet.breed} ${pet.age} is available for adoption`,
       ownerId: pet.ownerId,
       userName: user.displayName,
-      userPhotoUrl: user.photoURL || null,
+      userProfilePhotoUrl: user.photoURL || null,
       petBreed: pet.breed,
       petAge: pet.age,
       petSex: pet.sex,
@@ -33,7 +33,7 @@ export const logPetAdded = functions.firestore.document("pets/{docId}").onCreate
       description: `Hi, I'm looking for ${pet.sex} ${pet.breed} ${pet.age}`,
       seekerId: pet.seekerId,
       userName: user.displayName,
-      userPhotoUrl: user.photoURL || null,
+      userProfilePhotoUrl: user.photoURL || null,
       petBreed: pet.breed,
       petAge: pet.age,
       petSex: pet.sex,

@@ -203,16 +203,11 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
       const payload = {
         ...userProfile,
         pet_profiles: [
-          selectedRole.includes("dog_owner")
-            ? {
-                breed: selectedBreed,
-                images: selectedFiles,
-              }
-            : {
-                breed: selectedBreed,
-                sex: selectedSex,
-                age: selectedAge,
-              },
+          {
+            breed: selectedBreed,
+            sex: selectedSex,
+            age: selectedAge,
+          },
         ],
       };
 
@@ -260,93 +255,72 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
               />
             </FormControl>
 
-            {selectedRole.includes("dog_seeker") && (
-              <>
-                <FormControl>
-                  <FormLabel htmlFor="breeds" fontWeight="semibold">
-                    Age
-                  </FormLabel>
+            <FormControl>
+              <FormLabel htmlFor="breeds" fontWeight="semibold">
+                Age
+              </FormLabel>
 
-                  <RadioButtonGroup
-                    key="age"
-                    size="md"
-                    value={selectedAge}
-                    onChange={setSelectedAge}
+              <RadioButtonGroup
+                key="age"
+                size="md"
+                value={selectedAge}
+                onChange={setSelectedAge}
+              >
+                <RadioButton value="puppy">
+                  <Text
+                    fontWeight={selectedAge === "puppy" ? "semibold" : "normal"}
                   >
-                    <RadioButton value="puppy">
-                      <Text
-                        fontWeight={
-                          selectedAge === "puppy" ? "semibold" : "normal"
-                        }
-                      >
-                        Puppy
-                      </Text>
-                    </RadioButton>
-                    <RadioButton value="adolescent">
-                      <Text
-                        fontWeight={
-                          selectedAge === "adolescent" ? "semibold" : "normal"
-                        }
-                      >
-                        Adolescent
-                      </Text>
-                    </RadioButton>
-                    <RadioButton value="adult">
-                      <Text
-                        fontWeight={
-                          selectedAge === "adult" ? "semibold" : "normal"
-                        }
-                      >
-                        Adult
-                      </Text>
-                    </RadioButton>
-                  </RadioButtonGroup>
-                </FormControl>
-                <FormControl>
-                  <FormLabel htmlFor="sex" fontWeight="semibold">
-                    Sex
-                  </FormLabel>
-
-                  <RadioButtonGroup
-                    key="sex"
-                    size="md"
-                    value={selectedSex}
-                    onChange={setSelectedSex}
+                    Puppy
+                  </Text>
+                </RadioButton>
+                <RadioButton value="adolescent">
+                  <Text
+                    fontWeight={
+                      selectedAge === "adolescent" ? "semibold" : "normal"
+                    }
                   >
-                    <RadioButton value="male">
-                      <Text
-                        fontWeight={
-                          selectedSex === "male" ? "semibold" : "normal"
-                        }
-                      >
-                        Male
-                      </Text>
-                    </RadioButton>
-                    <RadioButton value="female">
-                      <Text
-                        fontWeight={
-                          selectedSex === "female" ? "semibold" : "normal"
-                        }
-                      >
-                        Female
-                      </Text>
-                    </RadioButton>
-                  </RadioButtonGroup>
-                </FormControl>
-              </>
-            )}
+                    Adolescent
+                  </Text>
+                </RadioButton>
+                <RadioButton value="adult">
+                  <Text
+                    fontWeight={selectedAge === "adult" ? "semibold" : "normal"}
+                  >
+                    Adult
+                  </Text>
+                </RadioButton>
+              </RadioButtonGroup>
+            </FormControl>
 
-            {selectedRole.includes("dog_owner") && (
-              <FormControl id="file">
-                <FormLabel fontWeight="semibold">Upload photo(s)</FormLabel>
-                <Dropzone
-                  selectedFiles={selectedFiles}
-                  onRemove={onRemoveImage}
-                  onChange={onSelectImage}
-                  maxUploads={4}
-                />
-              </FormControl>
-            )}
+            <FormControl>
+              <FormLabel htmlFor="sex" fontWeight="semibold">
+                Sex/Gender
+              </FormLabel>
+
+              <RadioButtonGroup
+                key="sex"
+                size="md"
+                value={selectedSex}
+                onChange={setSelectedSex}
+              >
+                <RadioButton value="male">
+                  <Text
+                    fontWeight={selectedSex === "male" ? "semibold" : "normal"}
+                  >
+                    Male
+                  </Text>
+                </RadioButton>
+                <RadioButton value="female">
+                  <Text
+                    fontWeight={
+                      selectedSex === "female" ? "semibold" : "normal"
+                    }
+                  >
+                    Female
+                  </Text>
+                </RadioButton>
+              </RadioButtonGroup>
+            </FormControl>
           </Stack>
 
           <ButtonGroup width="100%" mb="4">
@@ -361,11 +335,7 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
             <Button
               isLoading={loading}
               type="submit"
-              isDisabled={
-                selectedRole.includes("dog_owner")
-                  ? !selectedBreed || !selectedFiles.length
-                  : !selectedBreed || !selectedSex || !selectedAge
-              }
+              isDisabled={!selectedBreed || !selectedSex || !selectedAge}
               variant="primary"
             >
               Next

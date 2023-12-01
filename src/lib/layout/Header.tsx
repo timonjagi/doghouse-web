@@ -20,8 +20,8 @@ import { FiHelpCircle, FiBell } from "react-icons/fi";
 
 import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
-import { ToggleButton } from "./ToggleButton";
-import UserProfileMenu from "lib/components/nav/UserProfileMenu";
+
+import UserProfileMenu from "lib/components/auth/UserProfileMenu";
 import { auth } from "lib/firebase/client";
 
 const Header = () => {
@@ -169,7 +169,7 @@ const Header = () => {
               >
                 <DrawerOverlay />
                 <DrawerContent>
-                  <Sidebar onClose={onClose} />
+                  <Sidebar />
                 </DrawerContent>
               </Drawer>
             </Flex>

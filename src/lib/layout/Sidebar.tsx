@@ -17,7 +17,7 @@ import {
   FiSettings,
   FiUser,
 } from "react-icons/fi";
-import { Logo } from "../components/nav/Logo";
+import { Logo } from "./Logo";
 import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
 import { useSignOut } from "react-firebase-hooks/auth";
@@ -82,12 +82,20 @@ export const Sidebar = () => {
               <NavButton
                 label="Pets"
                 icon={FiGitlab}
+                aria-current={
+                  router.pathname.includes("account/pets") ? "page" : "false"
+                }
                 onClick={() => onClickMenuLink("/account/pets")}
               />
               <NavButton
                 label="Settings"
                 icon={FiSettings}
                 onClick={() => onClickMenuLink("/account/settings")}
+                aria-current={
+                  router.pathname.includes("account/settings")
+                    ? "page"
+                    : "false"
+                }
               />
             </Stack>
           </Stack>

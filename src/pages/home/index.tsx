@@ -20,7 +20,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const data = [];
   querySnapshot.forEach((doc) => {
     if (doc) {
-      data.push(doc.data());
+      data.push({ id: doc.id, ...doc.data() });
     }
   });
 

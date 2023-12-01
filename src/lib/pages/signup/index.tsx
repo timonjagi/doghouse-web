@@ -28,13 +28,14 @@ import {
 // import * as React from "react";
 import { NextSeo } from "next-seo";
 import { useEffect, useState } from "react";
-import { Logo } from "../../components/nav/Logo";
+import { Logo } from "../../layout/Logo";
 
 import { Confirm } from "./04-confirm";
 import { SelectPath } from "./02-select-path";
 import { PetDetails } from "./03-pet-details";
 import { ContactDetails } from "./01-contact-details";
-import index from "instantsearch.js/es/widgets/index/index";
+import { Success } from "./05-success";
+
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, fireStore } from "lib/firebase/client";
 import { doc, getDoc } from "firebase/firestore";
@@ -201,16 +202,13 @@ const SignUp = () => {
 
       <Flex maxW="8xl" mx="auto" width="full">
         {/* side bar */}
-        <Box
-          display={{ base: "none", md: "flex" }}
-          backgroundColor="brand.700"
-          flex="1"
-        >
+        <Box display={{ base: "none", md: "flex" }} backgroundColor="brand.700">
           <Flex
             direction="column"
             px={{ base: "4", md: "8" }}
             height="full"
             color="on-accent"
+            minW={{ base: "none", md: "sm", lg: "md" }}
           >
             <Flex align="center" h="24">
               <Logo />
@@ -220,6 +218,7 @@ const SignUp = () => {
               align="center"
               h="full"
               px={useBreakpointValue({ base: "0", xl: "16" })}
+              ml="16"
             >
               {!user?.uid && <Features />}
 
@@ -341,6 +340,10 @@ const SignUp = () => {
 
                   {activeStep === 3 && (
                     <Confirm currentStep={activeStep} setStep={setActiveStep} />
+                  )}
+
+                  {activeStep === 4 && (
+                    <Success currentStep={activeStep} setStep={setActiveStep} />
                   )}
                 </Stack>
               )}

@@ -1,7 +1,6 @@
 import {
   Stack,
   FormControl,
-  FormLabel,
   Input,
   ButtonGroup,
   Button,
@@ -14,7 +13,6 @@ import {
   Text,
   useBreakpointValue,
   Divider,
-  Icon,
 } from "@chakra-ui/react";
 import type { ConfirmationResult } from "firebase/auth";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
@@ -23,9 +21,7 @@ import { useState } from "react";
 import { VerifyOTPModal } from "./VerifyOTPModal";
 
 import { auth } from "lib/firebase/client";
-import { User } from "lib/models/user";
 import { GoogleIcon, TwitterIcon, GitHubIcon } from "./ProviderIcons";
-import { BsChevronBarRight, BsChevronRight } from "react-icons/bs";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 type PageProps = {};
@@ -104,10 +100,12 @@ export const LoginForm = (props: PageProps) => {
 
       setLoading(true);
       const result = await confirmationResult.confirm(code);
+
       if (result) {
         setCodeVerified(true);
 
         if (!loading && user) {
+          localStorage.setItem("userId", user.uid);
           checkIfUserExists();
         }
       }

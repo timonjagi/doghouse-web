@@ -26,6 +26,7 @@ import { IoImagesOutline, IoLocationOutline } from "react-icons/io5";
 import { PiDog, PiGenderIntersex } from "react-icons/pi";
 import { useRouter } from "next/router.js";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { FiCalendar, FiMapPin } from "react-icons/fi";
 
 export const Confirm = ({ currentStep, setStep }) => {
   const [userProfile, setUserProfile] = useState({} as any);
@@ -119,29 +120,27 @@ export const Confirm = ({ currentStep, setStep }) => {
       sex: petProfile.sex || "",
       [userProfile.roles.includes("dog_owner") ? "ownerId" : "seekerId"]:
         userProfile.userId,
-      numberOfComments: 0,
-      voteCount: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
     const petDocRef = await addDoc(collection(fireStore, "pets"), petPayload);
 
-    if (petProfile.images && petProfile.images.length) {
-      const downloadUrls = [];
+    // if (petProfile.images && petProfile.images.length) {
+    //   const downloadUrls = [];
 
-      // store images in firebase/storage
-      for (const image of petProfile.images) {
-        const imageRef = ref(storage, `pets/${petDocRef.id}/image`);
-        await uploadString(imageRef, image, "data_url");
-        // get download url from stroage
-        const downloadUrl = await getDownloadURL(imageRef);
-        downloadUrls.push(downloadUrl);
-      }
+    //   // store images in firebase/storage
+    //   for (const image of petProfile.images) {
+    //     const imageRef = ref(storage, `pets/${petDocRef.id}/image`);
+    //     await uploadString(imageRef, image, "data_url");
+    //     // get download url from stroage
+    //     const downloadUrl = await getDownloadURL(imageRef);
+    //     downloadUrls.push(downloadUrl);
+    //   }
 
-      // update pet doc by adding image urls
-      await updateDoc(petDocRef, { imageUrls: downloadUrls });
-    }
+    //   // update pet doc by adding image urls
+    //   await updateDoc(petDocRef, { imageUrls: downloadUrls });
+    // }
   };
 
   return (
@@ -173,69 +172,52 @@ export const Confirm = ({ currentStep, setStep }) => {
                 spacing="4"
                 bg={useColorModeValue("gray.50", "gray.700")}
               >
-                <HStack>
-                  {/* <Image
-                        src={`images/breed_groups/${petProfile.breed.breedGroup.replace(
-                          " dogs",
-                          ""
-                        )}`}
-                        fallbackSrc="/images/logo_white.png"
-                        fallbackStrategy="beforeLoadOrError"
-                        bg="bg-subtle"
-                        w="50%"
-                      /> */}
+                <Stack spacing="2">
+                  <Heading size="xs">{userProfile.name}</Heading>
+                  <Text
+                    textTransform="capitalize"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                    lineHeight="1rem"
+                    borderRadius="base"
+                  >
+                    {userProfile.roles[0].replace("_", " ")}
+                  </Text>
+                </Stack>
 
-                  <Stack>
-                    <Heading size="xs">{userProfile.name}</Heading>
-                    <Text
-                      textTransform="capitalize"
-                      fontSize="sm"
-                      fontWeight="semibold"
-                      lineHeight="1rem"
-                      borderRadius="base"
-                    >
-                      {userProfile.roles[0].replace("_", " ")}
+                <Stack>
+                  <HStack spacing="3">
+                    <Icon fontSize="xl" as={FiMapPin} color="subtle" />
+                    <Text textTransform="capitalize" fontSize="sm">
+                      {userProfile.location}
                     </Text>
-                    <HStack spacing="3">
-                      <Icon
-                        fontSize="xl"
-                        as={IoLocationOutline}
-                        color="muted"
-                      />
-                      <Text textTransform="capitalize" fontSize="sm">
-                        {userProfile.location}
-                      </Text>
-                    </HStack>
+                  </HStack>
+                  <HStack spacing="3">
+                    <Icon
+                      fontSize="xl"
+                      as={PiDog}
+                      color="subtle"
+                      fontWeight="medium"
+                    />
+                    <Text textTransform="capitalize" fontSize="sm">
+                      {petProfile.breed.name}
+                    </Text>
+                  </HStack>
 
-                    <HStack spacing="3">
-                      <Icon fontSize="xl" as={PiDog} />
-                      <Text textTransform="capitalize" fontSize="sm">
-                        {petProfile.breed.name}{" "}
-                        {petProfile.age?.toLowerCase() || ""}
-                      </Text>
-                    </HStack>
+                  <HStack spacing="3">
+                    <Icon fontSize="xl" as={FiCalendar} color="subtle" />
+                    <Text textTransform="capitalize" fontSize="sm">
+                      {petProfile.age}
+                    </Text>
+                  </HStack>
 
-                    {userProfile.roles.includes("dog_owner") && (
-                      <HStack spacing="3">
-                        <Icon fontSize="xl" as={IoImagesOutline} />
-                        <Text textTransform="capitalize" fontSize="sm">
-                          {petProfile.images?.length} photo
-                          {petProfile.images.length > 1 ? "s" : ""}{" "}
-                        </Text>
-                      </HStack>
-                    )}
-                    {userProfile.roles.includes("dog_seeker") && (
-                      <>
-                        <HStack spacing="3">
-                          <Icon fontSize="xl" as={PiGenderIntersex} />
-                          <Text textTransform="capitalize" fontSize="sm">
-                            {petProfile.sex}
-                          </Text>
-                        </HStack>
-                      </>
-                    )}
-                  </Stack>
-                </HStack>
+                  <HStack spacing="3">
+                    <Icon fontSize="xl" as={PiGenderIntersex} color="subtle" />
+                    <Text textTransform="capitalize" fontSize="sm">
+                      {petProfile.sex}
+                    </Text>
+                  </HStack>
+                </Stack>
               </Stack>
 
               <Text fontSize="xs" color="subtle" textAlign="start">

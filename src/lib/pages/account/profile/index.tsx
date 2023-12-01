@@ -1,4 +1,4 @@
-import { Box, Center, Spinner, Stack, Text, useToast } from "@chakra-ui/react";
+import { Box, Stack, Text, useToast } from "@chakra-ui/react";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import ProfileCard from "./ProfileCard";
@@ -6,7 +6,7 @@ import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
 import { auth, fireStore, storage } from "lib/firebase/client";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
-import image from "next/image";
+import { useRouter } from "next/router";
 
 const Profile = () => {
   const [selectedFiles, setSelectedFiles] = useState([] as any);
@@ -22,6 +22,8 @@ const Profile = () => {
 
   const [loadingUserProfile, setLoadingUserProfile] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const router = useRouter();
 
   const fetchUserProfile = async () => {
     setLoadingUserProfile(true);
@@ -118,7 +120,10 @@ const Profile = () => {
       });
       // reset image  and reload profile
       setSelectedFiles([]);
-      fetchUserProfile();
+
+      if (!userProfile.profilePhotoUrl) {
+        router.push("/account/pets");
+      }
     } catch (error) {
       toast({
         title: "Error saving profile",

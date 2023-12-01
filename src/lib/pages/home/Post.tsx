@@ -12,21 +12,66 @@ import {
   Icon,
   Spacer,
   useBreakpointValue,
+  useToast,
 } from "@chakra-ui/react";
+import { doc, updateDoc } from "firebase/firestore";
+import { fireStore } from "lib/firebase/client";
 import moment from "moment";
-import React from "react";
+import React, { useState } from "react";
 import { FiHeart, FiMapPin, FiMoreVertical, FiTrash2 } from "react-icons/fi";
 
 type PostProps = {
   post: any;
   userProfile: any;
+  onViewPost: any;
 };
 
-const Post: React.FC<PostProps> = ({ post, userProfile }) => {
+const Post: React.FC<PostProps> = ({ post, userProfile, onViewPost }) => {
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
+
+  const ownPost = [post.userId, post.ownerId, post.seekerId].includes(
+    userProfile.userId
+  );
+
   const isMobile = useBreakpointValue({
     base: true,
     sm: false,
   });
+
+  const onSearch = () => {};
+
+  const onFilter = () => {};
+
+  const onSort = () => {};
+
+  const onDelete = () => {};
+
+  const onLike = async () => {
+    setLoading(true);
+    try {
+      const activityDocRef = doc(fireStore, "activity", post.id as string);
+      await updateDoc(activityDocRef, {
+        likeCount: post.likeCount + 1,
+      });
+
+      post.likeCount = post.likeCount + 1;
+
+      toast({
+        title: "Post liked successfully",
+        status: "success",
+      });
+    } catch (error) {
+      setLoading(false);
+      toast({
+        title: "Error liking post",
+        description: error.message,
+        status: "error",
+      });
+    }
+  };
+
+  const onMakeOffer = () => {};
 
   function getHighlightedText(text, highlight) {
     // Split text on highlight term, include term itself into parts, ignore case
@@ -57,16 +102,17 @@ const Post: React.FC<PostProps> = ({ post, userProfile }) => {
       <Stack key={post.id} fontSize="sm" p="4" spacing="4">
         <Stack direction="row" justify="space-between" spacing="2">
           <HStack spacing="3">
-            <Avatar src={userProfile?.profilePhotoUrl} boxSize="10">
+            <Avatar src={post.userProfilePhotoUrl} boxSize="10">
               <AvatarBadge boxSize="4" bg="postive" />
             </Avatar>
             <Box>
               <Text fontWeight="medium" color="emphasized">
                 {post.userName}
               </Text>
-              <Text color="muted">
-                {post.userId ? "" : post.ownerId ? "Pet Owner" : "Pet Seeker"}
-              </Text>
+              <HStack>
+                <Icon as={FiMapPin} color="subtle" />
+                <Text color="subtle">{post.userLocation}</Text>
+              </HStack>
             </Box>
           </HStack>
           <Text color="muted">{moment(post.createdAt).fromNow()}</Text>
@@ -86,31 +132,43 @@ const Post: React.FC<PostProps> = ({ post, userProfile }) => {
         <Divider />
 
         <Flex direction="row-reverse">
-          {[post.userId, post.ownerId, post.seekerId].includes(
-            userProfile.id
-          ) && (
+          {ownPost && (
             <Button
               type="submit"
               size="sm"
               variant="ghost"
               colorScheme="danger"
-              mx="2"
+              onClick={onDelete}
             >
               <FiTrash2 />
-              {!isMobile && "Delete"}
+              {!isMobile && <Text ml="2">Delete</Text>}
             </Button>
           )}
-          <Button type="submit" size="sm" variant="primary">
-            Make Offer
-          </Button>
-          <Button type="submit" size="sm" variant="outline" mx="2">
-            <FiHeart /> {isMobile ? "" : "Like"}
-          </Button>
+
+          {/* {!ownPost && (
+            <Button
+              type="submit"
+              size="sm"
+              variant="outline"
+              mx="2"
+              onClick={onLike}
+            >
+              <FiHeart /> {post.likeCount}{" "}
+              {isMobile ? "" : <Text ml="2">Like</Text>}
+            </Button>
+          )} */}
+
           <Spacer />
-          <HStack>
-            <Icon as={FiMapPin} color="subtle" />
-            <Text color="subtle">{userProfile.location}</Text>
-          </HStack>
+
+          <Button
+            type="submit"
+            size="sm"
+            variant="ghost"
+            colorScheme="danger"
+            onClick={onViewPost}
+          >
+            View
+          </Button>
         </Flex>
       </Stack>
     </Box>

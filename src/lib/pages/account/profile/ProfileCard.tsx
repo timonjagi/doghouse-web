@@ -11,6 +11,8 @@ import {
   Box,
   Center,
   Spinner,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { Dropzone } from "lib/components/Dropzone";
 import React from "react";
@@ -52,6 +54,10 @@ const ProfileCard: React.FC<any> = ({
             px={{ base: "4", md: "6" }}
             py={{ base: "5", md: "6" }}
           >
+            <Alert status="info">
+              <AlertIcon />
+              Upload profile photo to continue
+            </Alert>
             <Stack spacing="6" direction={{ base: "column", md: "row" }}>
               <FormControl id="firstName">
                 <FormLabel>First Name</FormLabel>
