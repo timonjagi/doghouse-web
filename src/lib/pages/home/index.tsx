@@ -1,27 +1,18 @@
 import {
-  Avatar,
-  AvatarBadge,
   Box,
   Button,
   Container,
   Flex,
-  HStack,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
   Stack,
-  StackDivider,
   Text,
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { FiSearch } from "react-icons/fi";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 import { useEffect, useState } from "react";
@@ -94,9 +85,6 @@ const Home = ({ activity }) => {
                     All updates show up here
                   </Text>
                 </Box>
-                <Button variant="primary" alignSelf="start" onClick={onOpen}>
-                  Post
-                </Button>
               </Stack>
               {/* 
               <InputGroup>

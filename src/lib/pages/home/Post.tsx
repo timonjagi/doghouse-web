@@ -144,31 +144,6 @@ const Post: React.FC<PostProps> = ({ post, userProfile, onViewPost }) => {
               {!isMobile && <Text ml="2">Delete</Text>}
             </Button>
           )}
-
-          {/* {!ownPost && (
-            <Button
-              type="submit"
-              size="sm"
-              variant="outline"
-              mx="2"
-              onClick={onLike}
-            >
-              <FiHeart /> {post.likeCount}{" "}
-              {isMobile ? "" : <Text ml="2">Like</Text>}
-            </Button>
-          )} */}
-
-          <Spacer />
-
-          <Button
-            type="submit"
-            size="sm"
-            variant="ghost"
-            colorScheme="danger"
-            onClick={onViewPost}
-          >
-            View
-          </Button>
         </Flex>
       </Stack>
     </Box>

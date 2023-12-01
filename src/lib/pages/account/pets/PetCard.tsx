@@ -37,7 +37,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         roundedTop="inherit"
       />
       <Avatar size="xl" src={pet.petImageUrl} />
-      <VStack spacing="1" flex="1">
+      <VStack spacing="2" flex="1">
         <HStack>
           <Text fontWeight="bold" textTransform="capitalize">
             {pet.breed}
@@ -58,26 +58,27 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         >
           {pet.age} {pet.sex}
         </Text>
-      </VStack>{" "}
-      <HStack
-        spacing="1"
-        fontSize="sm"
-        color={useColorModeValue("gray.600", "gray.400")}
-      >
-        <Icon as={HiUsers} />
-        <Text>{pet.breed}</Text>
-      </HStack>
-      <Button
-        variant="primary"
-        colorScheme="brand"
-        rounded="full"
-        size="sm"
-        width="full"
-        as={Link}
-        href={`/account/pets/${pet.id}`}
-      >
-        View Profile
-      </Button>
+
+        <HStack
+          spacing="1"
+          fontSize="sm"
+          color={useColorModeValue("gray.600", "gray.400")}
+        >
+          <Icon as={HiUsers} />
+          <Text>{pet.breedGroup} group</Text>
+        </HStack>
+        <Button
+          variant="primary"
+          colorScheme="brand"
+          rounded="full"
+          size="sm"
+          width="full"
+          as={Link}
+          href={`/account/pets/${pet.id}`}
+        >
+          View Profile
+        </Button>
+      </VStack>
     </Flex>
   );
 };

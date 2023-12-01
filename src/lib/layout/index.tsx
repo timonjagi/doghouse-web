@@ -91,9 +91,10 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
       <Flex
         as="section"
         direction={{ base: "column", md: "row" }}
-        h={{ base: "calc(100vh - 64px)", md: "100vh" }}
         bg="bg-canvas"
         overflowY="auto"
+        h={{ base: "calc(100vh - 64px)", md: "100vh" }}
+        maxH="100vh"
       >
         {isDesktop ? <Sidebar /> : <></>}
 
