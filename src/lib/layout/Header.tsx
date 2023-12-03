@@ -173,7 +173,7 @@ const Header = () => {
               >
                 <DrawerOverlay />
                 <DrawerContent>
-                  <Sidebar />
+                  <Sidebar onClose={onClose} />
                 </DrawerContent>
               </Drawer>
             </Flex>
