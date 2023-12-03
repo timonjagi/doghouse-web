@@ -289,7 +289,7 @@ export const PetDetail: React.FC<PetDetailProps> = ({ pet }) => {
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
-            <PetProfileEdit
+            {/* <PetProfileEdit
               activeStep={activeStep}
               onClose={onClose}
               setBreed={setBreed}
@@ -306,7 +306,7 @@ export const PetDetail: React.FC<PetDetailProps> = ({ pet }) => {
               onSelectVaccination={onSelectVaccination}
               onSelectImage={onSelectImage}
               onRemoveImage={onRemoveImage}
-            />
+            /> */}
           </ModalBody>
 
           <Divider />

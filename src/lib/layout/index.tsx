@@ -6,7 +6,13 @@ import { Navbar } from "lib/layout/Navbar";
 import Header from "./Header";
 import Services from "lib/pages/services";
 import { Sidebar } from "./Sidebar";
-import { useBreakpointValue, Flex, Container, Box } from "@chakra-ui/react";
+import {
+  useBreakpointValue,
+  Flex,
+  Container,
+  Box,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { ReactNode } from "react";
 
 type LayoutProps = {
@@ -93,6 +99,7 @@ const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
 const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   const isDesktop = useBreakpointValue({ base: false, md: true });
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const { isOpen, onToggle, onClose } = useDisclosure();
 
   return (
     <>
@@ -105,7 +112,13 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         h={{ base: "calc(100vh - 64px)", md: "100vh" }}
         maxH="100vh"
       >
-        {isDesktop ? <Sidebar /> : <></>}
+        {isDesktop ? (
+          <>
+            <Sidebar onClose={onClose} />
+          </>
+        ) : (
+          <></>
+        )}
 
         <Box bg="bg-accent" flex="1">
           <Box bg="bg-canvas" height="full">
