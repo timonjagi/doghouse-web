@@ -14,7 +14,7 @@ import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
 import { LogoGrid } from "./LogoGrid";
 import { PopularBreeds } from "./PopularBreeds";
-
+import { CtaWithImage } from "./CtaWithImage";
 const Home = () => {
   const [user] = useAuthState(auth);
 
@@ -31,7 +31,8 @@ const Home = () => {
         <Hero user={user} />
 
         {/* <Stats /> */}
-        <PopularBreeds />
+
+        <Features />
 
         <Process />
 
@@ -41,7 +42,9 @@ const Home = () => {
 
         <Cta />
 
-        <Features />
+        <CtaWithImage />
+
+        <PopularBreeds />
 
         {/* <LogoGrid /> */}
       </Flex>

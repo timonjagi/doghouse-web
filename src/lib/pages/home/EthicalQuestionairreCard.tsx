@@ -14,11 +14,11 @@ type CompleteProfileCTAProps = {};
 
 const EthicalQuestionairreCard: React.FC<CompleteProfileCTAProps> = () => {
   return (
-    <Box as="section">
+    <Box as="section" bg="bg-surface">
       <Container
         py={{
-          base: "16",
-          md: "24",
+          base: "8",
+          md: "16",
         }}
       >
         <Stack

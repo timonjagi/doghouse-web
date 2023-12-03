@@ -63,10 +63,14 @@ export const PopularBreeds = () => {
           <Stack spacing={{ base: "6", md: "8", lg: "12" }}>
             <Flex
               justify="space-between"
-              align={{ base: "start", md: "center" }}
-              direction={{ base: "column", md: "row" }}
+              align={{ base: "center", md: "center" }}
+              direction={{ base: "row", md: "row" }}
             >
-              <Heading size="lg" mb={{ base: "3", md: "0" }} color="white">
+              <Heading
+                size={{ base: "sm", md: "lg" }}
+                mb={{ base: "3", md: "0" }}
+                color="white"
+              >
                 Popular breeds
               </Heading>
               <HStack spacing={{ base: "2", md: "3" }}>

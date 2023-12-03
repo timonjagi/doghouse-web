@@ -14,13 +14,25 @@ import {
   useBreakpointValue,
   useToast,
   Badge,
+  IconButton,
 } from "@chakra-ui/react";
 import { doc, updateDoc } from "firebase/firestore";
 import { fireStore } from "lib/firebase/client";
 import moment from "moment";
 import React, { useState } from "react";
-import { FiHeart, FiMapPin, FiMoreVertical, FiTrash2 } from "react-icons/fi";
+import {
+  FiBellOff,
+  FiGitlab,
+  FiHeart,
+  FiMapPin,
+  FiMessageSquare,
+  FiMoreVertical,
+  FiSettings,
+  FiTrash2,
+  FiUser,
+} from "react-icons/fi";
 import PetCard from "../account/pets/PetCard";
+import router from "next/router";
 
 type PostProps = {
   post: any;
@@ -96,26 +108,46 @@ const Post: React.FC<PostProps> = ({ post, userProfile, onViewPost }) => {
   }
 
   return (
-    <Box bg="bg-surface" borderRadius="lg" w="full">
+    <Box borderRadius="lg" w="full">
       <Stack key={post.id} fontSize="sm" p="4" spacing="4">
         <Stack direction="row" justify="space-between" spacing="2">
-          <HStack spacing="3">
-            <Avatar src={post.userProfilePhotoUrl} boxSize="10">
-              <AvatarBadge boxSize="4" bg="postive" />
-            </Avatar>
-            <Box>
-              <Text fontWeight="medium" color="emphasized">
-                {post.userName}
+          <Stack direction="row" justify="space-between" w="full" align="start">
+            <HStack>
+              <Avatar />
+              <Stack spacing="1">
+                <Text fontWeight="medium" color="emphasized">
+                  {post.petBreed}
+                </Text>
+                <HStack>
+                  <Text color="subtle">
+                    {post.petAge}, {post.petSex}
+                  </Text>
+                </HStack>
+              </Stack>
+            </HStack>
+
+            <Spacer />
+
+            <HStack>
+              <Text color="muted" fontSize="12">
+                {moment(post.createdAt).fromNow()}
               </Text>
-              <HStack>
-                <Icon as={FiMapPin} color="subtle" />
-                <Text color="subtle">{post.userLocation}</Text>
-              </HStack>
-            </Box>
-          </HStack>
-          <Text color="muted">{moment(post.createdAt).fromNow()}</Text>
+              <IconButton
+                icon={<FiMoreVertical />}
+                onClick={() => {}}
+                aria-current={
+                  router.pathname.includes("account/settings")
+                    ? "page"
+                    : "false"
+                }
+                aria-label="Settings"
+                variant="ghost"
+                size="sm"
+              />
+            </HStack>
+          </Stack>
         </Stack>
-        <Stack shouldWrapChildren spacing="4">
+        <Stack shouldWrapChildren spacing="4" pr="4">
           <HStack justify="space-between">
             <Badge
               colorScheme={post.title === "Pet added" ? "green" : "blue"}
@@ -124,19 +156,27 @@ const Post: React.FC<PostProps> = ({ post, userProfile, onViewPost }) => {
               {post.title === "Pet added" ? "Listing" : "Request"}
             </Badge>
             <HStack spacing="3">
-              <Text
+              {/* <Text
                 fontSize="xs"
                 color="subtle"
                 fontWeight="medium"
                 textTransform="capitalize"
               >
-                {post.petBreed} {post.petAge}, {post.petSex}
-              </Text>
-              <Avatar
-                src={`/images/${post.petBreedGroup}`}
-                name={post.petBreedGroup}
-                boxSize="6"
-              />
+                {post.userName}
+              </Text> */}
+              <IconButton icon={<FiUser />} aria-label="View User" size="sm" />
+
+              <IconButton
+                icon={<FiMessageSquare />}
+                aria-label="Send Message"
+                size="sm"
+              ></IconButton>
+
+              <IconButton
+                icon={<FiBellOff />}
+                aria-label="Send Message"
+                size="sm"
+              ></IconButton>
             </HStack>
           </HStack>
         </Stack>

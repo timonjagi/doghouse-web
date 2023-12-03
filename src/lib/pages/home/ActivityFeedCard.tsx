@@ -5,9 +5,13 @@ import {
   StackDivider,
   IconButton,
   HStack,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
 } from "@chakra-ui/react";
 import React from "react";
-import Post from "./Post";
+import Post from "./Activity";
 import { FiSearch } from "react-icons/fi";
 
 type ActivityCardProps = {
@@ -26,7 +30,14 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   onOpen,
 }) => {
   return (
-    <Box py="4" bg="bg-surface" borderRadius="md" w="full">
+    <Box
+      py="4"
+      bg="bg-surface"
+      borderRadius="md"
+      w={{ base: "full", md: "sm" }}
+      h="100%"
+      overflow="scroll"
+    >
       <Stack
         divider={<StackDivider />}
         spacing="1"
@@ -34,6 +45,9 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
         px="4"
         pt="2"
         pb="4"
+        position="sticky"
+        top="0"
+        zIndex="1"
       >
         <>
           <HStack justify="space-between">
@@ -46,13 +60,22 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
               </Text>
             </Box>
 
+            {/* {isDesktop && (
+              <InputGroup maxW={{ sm: "xs" }}>
+                <InputLeftElement pointerEvents="none">
+                  <Icon as={FiSearch} color="muted" boxSize="5" />
+                </InputLeftElement>
+                <Input placeholder="Search" />
+              </InputGroup>
+            )} */}
+
             <IconButton icon={<FiSearch />} aria-label="Search activity" />
           </HStack>
         </>
         <></>
       </Stack>
 
-      <Stack spacing="4">
+      <Stack spacing="4" zIndex="2">
         {activity.map((act) => (
           <Post
             post={act}

@@ -4,6 +4,7 @@ import {
   Stack,
   Text,
   useColorModeValue as mode,
+  useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import * as React from "react";
@@ -23,12 +24,13 @@ import { useRouter } from "next/router";
 import { useSignOut } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 
-export const Sidebar = () => {
+export const Sidebar = ({ onClose }) => {
   const [signOut, loading, error] = useSignOut(auth);
-
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const router = useRouter();
   const onClickMenuLink = (link) => {
     router.push(link);
+    if (isMobile) onClose();
   };
   return (
     <Flex

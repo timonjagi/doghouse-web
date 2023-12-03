@@ -22,14 +22,21 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import NewPostForm from "./NewPostForm";
-import Post from "./Post";
+import Post from "./Activity";
 import PostDetails from "./PostDetails";
 import ActivityCard from "./ActivityFeedCard";
 import { NavButton } from "lib/layout/NavButton";
-import { FiUser, FiGitlab, FiSettings } from "react-icons/fi";
+import {
+  FiUser,
+  FiGitlab,
+  FiSettings,
+  FiMessageSquare,
+  FiBell,
+} from "react-icons/fi";
 import CompleteProfileCTA from "./EthicalQuestionairreCard";
 import EthicalQuestionairreCard from "./EthicalQuestionairreCard";
 import { CompleteProfileBanner } from "./CompleteProfileBanner";
+import { NewsletterForm } from "./NewsletterForm";
 
 const Home = ({ activity }) => {
   const [user, loading, error] = useAuthState(auth);
@@ -77,11 +84,21 @@ const Home = ({ activity }) => {
   return (
     <>
       <HStack justify="space-between" align="start">
-        <Heading pb="8" size={{ base: "xs", sm: "md" }}>
+        <Heading pb="4" size={{ base: "xs", sm: "md" }}>
           Hi, {user.displayName} 👋
         </Heading>
 
         <HStack spacing="1" direction="row">
+          {isDesktop && (
+            <IconButton
+              icon={<FiBell />}
+              aria-label="Pets"
+              aria-current={
+                router.pathname.includes("account/pets") ? "page" : "false"
+              }
+              onClick={() => onClickMenuLink("/account/pets")}
+            />
+          )}
           <IconButton
             aria-label='"'
             icon={<FiUser />}
@@ -90,14 +107,7 @@ const Home = ({ activity }) => {
             }
             onClick={() => onClickMenuLink("/account/profile")}
           />
-          <IconButton
-            icon={<FiGitlab />}
-            aria-label="Pets"
-            aria-current={
-              router.pathname.includes("account/pets") ? "page" : "false"
-            }
-            onClick={() => onClickMenuLink("/account/pets")}
-          />
+
           <IconButton
             icon={<FiSettings />}
             onClick={() => onClickMenuLink("/account/settings")}
@@ -110,17 +120,11 @@ const Home = ({ activity }) => {
       </HStack>
 
       <Stack
-        direction={{ base: "column-reverse", lg: "row" }}
+        direction={{ base: "column", lg: "row" }}
         spacing={{ base: "5", lg: "8" }}
         justify="space-between"
       >
-        <Flex flex="1" direction="column" py="4">
-          <CompleteProfileBanner />
-
-          <EthicalQuestionairreCard />
-        </Flex>
-
-        <Flex>
+        <Flex flex="1">
           <ActivityCard
             activity={activity}
             userProfile={userProfile}
@@ -128,9 +132,11 @@ const Home = ({ activity }) => {
             onViewPost={onViewPost}
             onOpen={onOpen}
           />
-          <Flex>
-            <Box></Box>
-          </Flex>
+        </Flex>
+
+        <Flex direction="column">
+          <CompleteProfileBanner />
+          <NewsletterForm />
         </Flex>
       </Stack>
     </>

@@ -39,7 +39,7 @@ export const Navbar = () => {
         >
           <DrawerOverlay />
           <DrawerContent>
-            <Sidebar />
+            <Sidebar onClose={onClose} />
           </DrawerContent>
         </Drawer>
       </Flex>
