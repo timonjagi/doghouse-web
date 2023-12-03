@@ -28,6 +28,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/login", layout: HeaderLayout },
     { path: "/signup", layout: HeaderLayout },
     { path: "/home", layout: DashboardLayout },
+    { path: "/inbox", layout: DashboardLayout },
     { path: "/services", layout: DashboardLayout },
     { path: "/account/pets", layout: DashboardLayout },
     { path: "/account/profile", layout: DashboardLayout },
@@ -66,17 +67,25 @@ export default Layout;
 // Separate layout components based on your needs
 const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
   return (
     <>
-      <Header />
-
-      <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
-        {["/login", "/signup", "/profile"].includes(router.pathname) ? (
-          <>{children}</>
-        ) : (
-          <RouteGuard>{children}</RouteGuard>
-        )}
-      </Box>
+      {["/login", "/signup"].includes(router.pathname) ? (
+        <>
+          {isMobile && <Header />}
+          <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
+            {children}{" "}
+          </Box>
+        </>
+      ) : (
+        <>
+          <Header />
+          <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
+            <RouteGuard>{children}</RouteGuard>
+          </Box>
+        </>
+      )}
     </>
   );
 };

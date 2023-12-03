@@ -18,6 +18,7 @@ export const logPetAdded = functions.firestore.document("pets/{docId}").onCreate
       ownerId: pet.ownerId,
       userName: user.displayName,
       userProfilePhotoUrl: user.photoURL || null,
+      userLocation: '',
       petBreed: pet.breed,
       petAge: pet.age,
       petSex: pet.sex,

@@ -13,12 +13,14 @@ import {
   Spacer,
   useBreakpointValue,
   useToast,
+  Badge,
 } from "@chakra-ui/react";
 import { doc, updateDoc } from "firebase/firestore";
 import { fireStore } from "lib/firebase/client";
 import moment from "moment";
 import React, { useState } from "react";
 import { FiHeart, FiMapPin, FiMoreVertical, FiTrash2 } from "react-icons/fi";
+import PetCard from "../account/pets/PetCard";
 
 type PostProps = {
   post: any;
@@ -94,11 +96,7 @@ const Post: React.FC<PostProps> = ({ post, userProfile, onViewPost }) => {
   }
 
   return (
-    <Box
-      bg="bg-surface"
-      boxShadow={useColorModeValue("sm", "sm-dark")}
-      borderRadius="lg"
-    >
+    <Box bg="bg-surface" borderRadius="lg" w="full">
       <Stack key={post.id} fontSize="sm" p="4" spacing="4">
         <Stack direction="row" justify="space-between" spacing="2">
           <HStack spacing="3">
@@ -117,35 +115,34 @@ const Post: React.FC<PostProps> = ({ post, userProfile, onViewPost }) => {
           </HStack>
           <Text color="muted">{moment(post.createdAt).fromNow()}</Text>
         </Stack>
-        <Text
-          color="muted"
-          sx={{
-            "-webkit-box-orient": "vertical",
-            "-webkit-line-clamp": "2",
-            overflow: "hidden",
-            display: "-webkit-box",
-          }}
-        >
-          {getHighlightedText(post.description, post.petBreed)}
-        </Text>
-
-        <Divider />
-
-        <Flex direction="row-reverse">
-          {ownPost && (
-            <Button
-              type="submit"
+        <Stack shouldWrapChildren spacing="4">
+          <HStack justify="space-between">
+            <Badge
+              colorScheme={post.title === "Pet added" ? "green" : "blue"}
               size="sm"
-              variant="ghost"
-              colorScheme="danger"
-              onClick={onDelete}
             >
-              <FiTrash2 />
-              {!isMobile && <Text ml="2">Delete</Text>}
-            </Button>
-          )}
-        </Flex>
+              {post.title === "Pet added" ? "Listing" : "Request"}
+            </Badge>
+            <HStack spacing="3">
+              <Text
+                fontSize="xs"
+                color="subtle"
+                fontWeight="medium"
+                textTransform="capitalize"
+              >
+                {post.petBreed} {post.petAge}, {post.petSex}
+              </Text>
+              <Avatar
+                src={`/images/${post.petBreedGroup}`}
+                name={post.petBreedGroup}
+                boxSize="6"
+              />
+            </HStack>
+          </HStack>
+        </Stack>
       </Stack>
+
+      <Divider />
     </Box>
   );
 };

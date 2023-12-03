@@ -26,7 +26,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      activityData: data,
+      activityData: [...data].sort(),
     },
   };
 }

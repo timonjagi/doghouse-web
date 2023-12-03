@@ -3,6 +3,9 @@ import {
   Button,
   Container,
   Flex,
+  HStack,
+  Heading,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -21,6 +24,12 @@ import { NextSeo } from "next-seo";
 import NewPostForm from "./NewPostForm";
 import Post from "./Post";
 import PostDetails from "./PostDetails";
+import ActivityCard from "./ActivityFeedCard";
+import { NavButton } from "lib/layout/NavButton";
+import { FiUser, FiGitlab, FiSettings } from "react-icons/fi";
+import CompleteProfileCTA from "./EthicalQuestionairreCard";
+import EthicalQuestionairreCard from "./EthicalQuestionairreCard";
+import { CompleteProfileBanner } from "./CompleteProfileBanner";
 
 const Home = ({ activity }) => {
   const [user, loading, error] = useAuthState(auth);
@@ -63,93 +72,68 @@ const Home = ({ activity }) => {
     setSelectedPost(post);
   };
 
+  const onClickMenuLink = (link) => {};
+
   return (
-    <Box
-      as="section"
-      pt={{ base: "4", md: "8" }}
-      pb={{ base: "12", md: "24" }}
-      overflowY="scroll"
-    >
-      <Container>
-        <NextSeo title="Home" />
+    <>
+      <HStack justify="space-between" align="start">
+        <Heading pb="8" size={{ base: "xs", sm: "md" }}>
+          Hi, {user.displayName} 👋
+        </Heading>
 
-        <Flex flex="1">
-          <Flex maxW={{ base: "unset", md: "sm" }}>
-            <Stack spacing="5">
-              <Stack spacing="4" direction="row" justify="space-between">
-                <Box>
-                  <Text fontSize="lg" fontWeight="medium">
-                    Activity feed
-                  </Text>
-                  <Text color="muted" fontSize="sm">
-                    All updates show up here
-                  </Text>
-                </Box>
-              </Stack>
-              {/* 
-              <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <Icon as={FiSearch} color="muted" boxSize="5" />
-                </InputLeftElement>
-                <Input placeholder="Search" />
-              </InputGroup> */}
+        <HStack spacing="1" direction="row">
+          <IconButton
+            aria-label='"'
+            icon={<FiUser />}
+            aria-current={
+              router.pathname.includes("account/profile") ? "page" : "false"
+            }
+            onClick={() => onClickMenuLink("/account/profile")}
+          />
+          <IconButton
+            icon={<FiGitlab />}
+            aria-label="Pets"
+            aria-current={
+              router.pathname.includes("account/pets") ? "page" : "false"
+            }
+            onClick={() => onClickMenuLink("/account/pets")}
+          />
+          <IconButton
+            icon={<FiSettings />}
+            onClick={() => onClickMenuLink("/account/settings")}
+            aria-current={
+              router.pathname.includes("account/settings") ? "page" : "false"
+            }
+            aria-label="Settings"
+          />
+        </HStack>
+      </HStack>
 
-              <Box py="4">
-                <Stack spacing="4">
-                  {activity.map((act) => (
-                    <Post
-                      post={act}
-                      userProfile={userProfile}
-                      onViewPost={() => (isDesktop ? onViewPost(act) : onOpen)}
-                    />
-                  ))}
-                </Stack>
-              </Box>
-            </Stack>
-          </Flex>
+      <Stack
+        direction={{ base: "column-reverse", lg: "row" }}
+        spacing={{ base: "5", lg: "8" }}
+        justify="space-between"
+      >
+        <Flex flex="1" direction="column" py="4">
+          <CompleteProfileBanner />
 
-          {selectedPost && isDesktop ? (
-            <Flex flex="1">
-              <PostDetails
-                selectedPost={selectedPost}
-                userProfile={userProfile}
-              />
-            </Flex>
-          ) : (
-            <Modal
-              onClose={onClose}
-              isOpen={isOpen}
-              size={{ base: "xs", md: "sm" }}
-            >
-              <ModalOverlay />
-              <ModalContent>
-                <ModalCloseButton />
-                <ModalBody>
-                  <PostDetails
-                    selectedPost={selectedPost}
-                    userProfile={userProfile}
-                  />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          )}
+          <EthicalQuestionairreCard />
         </Flex>
 
-        <Modal
-          onClose={onClose}
-          isOpen={isOpen}
-          size={{ base: "xs", md: "sm" }}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalCloseButton />
-            <ModalBody>
-              <NewPostForm></NewPostForm>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </Container>
-    </Box>
+        <Flex>
+          <ActivityCard
+            activity={activity}
+            userProfile={userProfile}
+            isDesktop={isDesktop}
+            onViewPost={onViewPost}
+            onOpen={onOpen}
+          />
+          <Flex>
+            <Box></Box>
+          </Flex>
+        </Flex>
+      </Stack>
+    </>
   );
 };
 

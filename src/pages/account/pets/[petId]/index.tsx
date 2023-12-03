@@ -1,12 +1,4 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-  startAt,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 import { fireStore } from "lib/firebase/client";
 import { PetDetail } from "lib/pages/account/pets/pet-detail";
@@ -22,11 +14,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     ? JSON.parse(safeJsonStringify({ id: petDoc.id, ...petDoc.data() }))
     : "";
 
-  const breedInfo = breedData.find((breed) => breed.name === pet.breed);
-
-  if (breedInfo) {
-    pet.breedGroup = breedInfo.breedGroup;
-  }
+  pet.breedGroup = breedData.find(
+    (breed) => breed.name === pet.breed
+  ).breedGroup;
 
   return {
     props: {

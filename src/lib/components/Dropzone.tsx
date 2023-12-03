@@ -11,6 +11,7 @@ import {
   Box,
   Flex,
   IconButton,
+  Stack,
 } from "@chakra-ui/react";
 import { useRef } from "react";
 // import React from "react";
@@ -82,11 +83,11 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
           py="4"
           bg={useColorModeValue("white", "gray.800")}
         >
-          <VStack spacing="3">
+          <Stack spacing="3">
             <Square size="10" bg="bg-subtle" borderRadius="lg">
               <Icon as={FiUploadCloud} boxSize="5" color="muted" />
             </Square>
-            <VStack spacing="1">
+            <Stack spacing="1">
               <HStack spacing="1" whiteSpace="nowrap">
                 <Button
                   variant="link"
@@ -103,8 +104,8 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
               <Text fontSize="xs" color="muted">
                 PNG, JPG or GIF up to 2MB
               </Text>
-            </VStack>
-          </VStack>
+            </Stack>
+          </Stack>
         </Center>
       )}
 
@@ -113,6 +114,7 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
         type="file"
         accept="image/jpeg, image/png"
         hidden
+        multiple
         onChange={onChange}
       ></input>
     </>

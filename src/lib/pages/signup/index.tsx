@@ -122,8 +122,8 @@ const Features = () => {
 const SignUp = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [user, loadingUser] = useAuthState(auth);
-  const [loadingUserProfile, setLoadingUserProfile] = useState(false);
-  const [userProfile, setUserProfile] = useState({} as any);
+  const [tempUserProfile, setTempUserProfile] = useState({} as any);
+  const [profileNotCreated, setProfileNotCreated] = useState(false);
 
   const isMobile = useBreakpointValue({
     base: true,
@@ -141,8 +141,6 @@ const SignUp = () => {
     index: 0,
     count: steps.length,
   });
-
-  const toast = useToast();
   const router = useRouter();
 
   useEffect(() => {
@@ -151,7 +149,7 @@ const SignUp = () => {
     try {
       const profile = JSON.parse(localStorage.getItem("profile"));
       if (profile) {
-        setUserProfile(profile);
+        setTempUserProfile(profile);
         if (
           profile.name &&
           profile.location &&
@@ -163,32 +161,6 @@ const SignUp = () => {
           setActiveStep(2);
         } else if (profile.name && profile.location) {
           setActiveStep(1);
-        }
-      } else {
-        const fetchUserDoc = async () => {
-          const response = await fetch(
-            `/api/users/get-user?${new URLSearchParams({
-              uid: user?.uid,
-            })}`,
-            {
-              method: "GET",
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-
-          if (response.status === 200) {
-            toast({
-              title: "Already signed up",
-              description: "You already created your profile",
-              status: "success",
-            });
-
-            router.push("/home");
-          }
-        };
-
-        if (!loadingUser && user) {
-          fetchUserDoc();
         }
       }
     } catch (error) {
@@ -202,7 +174,11 @@ const SignUp = () => {
 
       <Flex maxW="8xl" mx="auto" width="full">
         {/* side bar */}
-        <Box display={{ base: "none", md: "flex" }} backgroundColor="brand.700">
+        <Box
+          display={{ base: "none", md: "flex" }}
+          backgroundColor="brand.700"
+          flex="1"
+        >
           <Flex
             direction="column"
             px={{ base: "4", md: "8" }}
@@ -218,7 +194,6 @@ const SignUp = () => {
               align="center"
               h="full"
               px={useBreakpointValue({ base: "0", xl: "16" })}
-              ml="16"
             >
               {!user?.uid && <Features />}
 
@@ -263,10 +238,10 @@ const SignUp = () => {
         </Box>
         {/* end sidebar */}
 
-        <Flex flex="1" w="full" h="full" align="center">
-          {!loadingUser && !loadingUserProfile && (
-            <Center w="full" pt="4">
-              {!user?.uid ? (
+        <>
+          {!loadingUser && (
+            <Center w="full" flex="1">
+              {!user?.uid && !profileNotCreated ? (
                 <Stack
                   spacing={{ base: "6", md: "9" }}
                   px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
@@ -274,7 +249,8 @@ const SignUp = () => {
                   textAlign="center"
                 >
                   <Heading size="lg">Let's create your account</Heading>
-                  <LoginForm />
+
+                  <LoginForm setProfileNotCreated={setProfileNotCreated} />
 
                   <HStack justify="center" spacing="1">
                     <Text color="muted">Already&apos;t have an account?</Text>
@@ -349,7 +325,7 @@ const SignUp = () => {
               )}
             </Center>
           )}
-        </Flex>
+        </>
       </Flex>
     </Flex>
   );

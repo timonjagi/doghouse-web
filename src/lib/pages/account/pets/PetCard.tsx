@@ -8,6 +8,7 @@ import {
   Button,
   Box,
   Text,
+  Spacer,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
@@ -38,7 +39,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
       />
       <Avatar size="xl" src={pet.petImageUrl} />
       <VStack spacing="2" flex="1">
-        <HStack>
+        <HStack textAlign="center">
           <Text fontWeight="bold" textTransform="capitalize">
             {pet.breed}
           </Text>
@@ -58,7 +59,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         >
           {pet.age} {pet.sex}
         </Text>
-
+        {/* 
         <HStack
           spacing="1"
           fontSize="sm"
@@ -66,7 +67,9 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
         >
           <Icon as={HiUsers} />
           <Text>{pet.breedGroup} group</Text>
-        </HStack>
+        </HStack> */}
+
+        <Spacer />
         <Button
           variant="primary"
           colorScheme="brand"
@@ -76,7 +79,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
           as={Link}
           href={`/account/pets/${pet.id}`}
         >
-          View Profile
+          View Pet
         </Button>
       </VStack>
     </Flex>

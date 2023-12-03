@@ -146,16 +146,20 @@ const Header = () => {
                   phoneNumber={user?.phoneNumber || ""}
                 />
               ) : (
-                <HStack spacing="3">
-                  <Button
-                    variant="secondary-on-accent"
-                    rounded="full"
-                    borderColor="white"
-                    onClick={() => router.push("/login")}
-                  >
-                    Log in
-                  </Button>
-                </HStack>
+                <>
+                  {["login", "signup"].includes(router.pathname) && (
+                    <HStack spacing="3">
+                      <Button
+                        variant="secondary-on-accent"
+                        rounded="full"
+                        borderColor="white"
+                        onClick={() => router.push("/login")}
+                      >
+                        Log in
+                      </Button>
+                    </HStack>
+                  )}
+                </>
               )}
 
               <Drawer

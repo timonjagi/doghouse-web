@@ -24,10 +24,12 @@ import { auth } from "lib/firebase/client";
 import { GoogleIcon, TwitterIcon, GitHubIcon } from "./ProviderIcons";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-type PageProps = {};
+type PageProps = {
+  setProfileNotCreated?: any;
+};
 
 // eslint-disable-next-line
-export const LoginForm = (props: PageProps) => {
+export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
   const toast = useToast();
   const router = useRouter();
 
@@ -137,27 +139,30 @@ export const LoginForm = (props: PageProps) => {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        `/api/users/get-user?${new URLSearchParams({
-          uid: user.uid,
-        })}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
+      if (!loading && user) {
+        const response = await fetch(
+          `/api/users/get-user?${new URLSearchParams({
+            uid: user.uid,
+          })}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        console.log("response: ", response);
+
+        if (response.status === 200) {
+          router.push("/home");
+        } else {
+          setProfileNotCreated(true);
+          toast({
+            title: "Account created successfully",
+            description: "Let's finish creating your your profile",
+            status: "success",
+          });
+          router.push("/signup");
         }
-      );
-
-      console.log("response: ", response);
-
-      if (response.status === 200) {
-        router.push("/home");
-      } else {
-        toast({
-          title: "Account created successfully",
-          description: "Let's finish creating your your profile",
-          status: "success",
-        });
-        router.push("/signup");
       }
 
       // eslint-disable-next-line
@@ -180,7 +185,7 @@ export const LoginForm = (props: PageProps) => {
   };
 
   return (
-    <Stack spacing="6">
+    <Stack spacing="6" w="full">
       <Stack
         spacing="6"
         as="form"
@@ -189,8 +194,6 @@ export const LoginForm = (props: PageProps) => {
         w="full"
       >
         <FormControl>
-          {/* <FormLabel htmlFor="phone">Continue with mobile number</FormLabel> */}
-
           <InputGroup size="lg">
             <InputLeftAddon>+254</InputLeftAddon>
             <Input
@@ -209,7 +212,6 @@ export const LoginForm = (props: PageProps) => {
         </FormControl>
 
         <ButtonGroup w="full">
-          {router.pathname.includes("signup") && <Spacer />}
           <Button
             isLoading={loading}
             type="submit"

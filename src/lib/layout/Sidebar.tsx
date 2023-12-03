@@ -51,7 +51,14 @@ export const Sidebar = () => {
               onClick={() => onClickMenuLink("/home")}
               aria-current={router.pathname.includes("home") ? "page" : "false"}
             />
-            <NavButton label="Inbox" icon={FiMessageSquare} />
+            <NavButton
+              label="Inbox"
+              icon={FiMessageSquare}
+              onClick={() => onClickMenuLink("/inbox")}
+              aria-current={
+                router.pathname.includes("inbox") ? "page" : "false"
+              }
+            />
           </Stack>
           <Stack>
             <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">

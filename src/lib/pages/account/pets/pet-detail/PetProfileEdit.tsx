@@ -1,14 +1,17 @@
 import {
-  useColorModeValue,
   Stack,
   FormControl,
   FormLabel,
-  Divider,
-  Flex,
-  Button,
   Box,
   Text,
   useToast,
+  useSteps,
+  Step,
+  StepIcon,
+  StepIndicator,
+  StepSeparator,
+  StepStatus,
+  Stepper,
 } from "@chakra-ui/react";
 import { Dropzone } from "lib/components/Dropzone";
 import { RadioButton } from "lib/components/RadioButton";
@@ -17,29 +20,57 @@ import React, { useEffect, useState } from "react";
 import breedData from "../../../../data/breeds_with_group.json";
 
 import { Select } from "chakra-react-select";
+import { useRouter } from "next/router";
 
 type PetProfileEditProps = {
-  pet: any;
+  pet?: any;
+  onClose: any;
+  activeStep: any;
+  setBreed: any;
+  setSex: any;
+  setAge: any;
+  setSelectedFiles: any;
+  selectedBreed: any;
+  selectedSex: any;
+  selectedAge: any;
+  selectedFiles: any;
+  selectedImmunizations: any;
+  onSelectBreed: any;
+  onSelectVaccination: any;
+  onSelectImage: any;
+  onRemoveImage: any;
 };
 
-const PetProfileEdit: React.FC<PetProfileEditProps> = ({ pet }) => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [selectedSex, setSex] = useState<string>("");
-  const [selectedAge, setAge] = useState<string>("");
+const PetProfileEdit = ({
+  pet,
+  onClose,
+  activeStep,
+  setBreed,
+  setSex,
+  setAge,
+  setVaccinations,
+  setSelectedFiles,
+  selectedBreed,
+  selectedSex,
+  selectedAge,
+  selectedFiles,
+  selectedVaccinations,
+  onSelectBreed,
+  onSelectVaccination,
+  onSelectImage,
+  onRemoveImage,
+}) => {
   const [breeds, setBreeds] = useState([] as any[]);
-  const [selectedBreed, setBreed] = useState<any>({} as any);
-  const [vaccinations, setVaccinations] = useState([] as any);
-
-  const [loading, setLoading] = useState(true);
-
   const toast = useToast();
+
   const availableVaccinations = [
-    "Parvovirus",
-    "Distemper",
-    "Leptovirus",
-    "Hepatitis",
-    "Rabies",
+    { label: "Parvovirus", value: "parvovirus" },
+    { label: "Distemper", value: "distemper" },
+    { label: "Hepatitis", value: "hepatitis" },
+    { label: "Leptovirus", value: "leptovirus" },
+    { label: "Rabies", value: "rabies" },
   ];
+
   useEffect(() => {
     setBreeds(
       breedData.map((breed) => ({
@@ -48,81 +79,22 @@ const PetProfileEdit: React.FC<PetProfileEditProps> = ({ pet }) => {
       }))
     );
 
-    const breed = breedData.find((breed) => breed.name === pet.breed);
-    setBreed(breed);
-    setAge(pet.age);
-    setSex(pet.sex);
+    if (pet) {
+      const breed = breedData.find((breed) => breed.name === pet.breed);
+      setBreed(breed);
+      setAge(pet.age);
+      setSex(pet.sex);
+    }
   }, []);
-
-  const onSelectBreed = (selectedBreed: any) => {
-    const breed = breedData.find((breed) => breed.name === selectedBreed.value);
-    if (breed) {
-      setBreed({ label: breed.name, value: breed.name });
-    }
-  };
-
-  const onSelectVaccination = (selectedVaccinations) => {
-    setVaccinations(selectedVaccinations);
-  };
-
-  const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { files },
-    } = event;
-    const reader = new FileReader();
-
-    if (files?.length) {
-      reader.readAsDataURL(files[0]);
-
-      reader.onload = (readerEvent) => {
-        const newFile = readerEvent.target?.result;
-        if (newFile) {
-          if (selectedFiles.includes(newFile)) {
-            return toast({
-              title: "Image already selected",
-              description: "Please select a different image",
-              status: "error",
-              duration: 4000,
-            });
-          }
-          setSelectedFiles([...selectedFiles, newFile]);
-        }
-      };
-    }
-  };
-
-  const onRemoveImage = (file) => {
-    const files = selectedFiles.filter((selectedFile) => selectedFile !== file);
-    setSelectedFiles(files);
-  };
-
-  const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    setLoading(true);
-
-    try {
-      // eslint-disable-next-line
-    } catch (err: any) {
-      toast({
-        title: err.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-
-    setLoading(false);
-  };
 
   return (
     <Box bg="bg-surface" borderRadius="lg" flex="1">
       <Stack
         spacing="5"
         px={{ base: "4", md: "6" }}
-        py={{ base: "5", md: "6" }}
+        py={{ base: "5", md: "8" }}
       >
-        <Stack spacing={{ base: 3, md: 9 }}>
+        {activeStep === 0 && (
           <FormControl>
             <FormLabel htmlFor="breeds" fontWeight="semibold">
               Breed
@@ -135,7 +107,9 @@ const PetProfileEdit: React.FC<PetProfileEditProps> = ({ pet }) => {
               onChange={onSelectBreed}
             />
           </FormControl>
+        )}
 
+        {activeStep === 1 && (
           <FormControl>
             <FormLabel htmlFor="breeds" fontWeight="semibold">
               Age
@@ -172,7 +146,9 @@ const PetProfileEdit: React.FC<PetProfileEditProps> = ({ pet }) => {
               </RadioButton>
             </RadioButtonGroup>
           </FormControl>
+        )}
 
+        {activeStep === 2 && (
           <FormControl>
             <FormLabel htmlFor="sex" fontWeight="semibold">
               Sex/Gender
@@ -200,7 +176,9 @@ const PetProfileEdit: React.FC<PetProfileEditProps> = ({ pet }) => {
               </RadioButton>
             </RadioButtonGroup>
           </FormControl>
+        )}
 
+        {activeStep === 3 && (
           <FormControl>
             <FormLabel htmlFor="vaccinations" fontWeight="semibold">
               Vaccinations
@@ -210,34 +188,24 @@ const PetProfileEdit: React.FC<PetProfileEditProps> = ({ pet }) => {
               colorScheme="brand"
               isMulti
               options={availableVaccinations}
-              value={vaccinations}
+              value={selectedVaccinations}
               onChange={onSelectVaccination}
             />
           </FormControl>
-        </Stack>
+        )}
 
-        {/* <FormControl id="picture">
-          <FormLabel>Picture</FormLabel>
-          <Dropzone
-            selectedFiles={selectedFiles}
-            onRemove={onRemoveImage}
-            onChange={onSelectImage}
-            maxUploads={1}
-          />
-        </FormControl> */}
+        {activeStep === 4 && (
+          <FormControl id="picture">
+            <FormLabel>Photos</FormLabel>
+            <Dropzone
+              selectedFiles={selectedFiles}
+              onRemove={onRemoveImage}
+              onChange={onSelectImage}
+              maxUploads={4}
+            />
+          </FormControl>
+        )}
       </Stack>
-      <Divider />
-
-      <Flex direction="row-reverse" py="4" px={{ base: "4", md: "6" }}>
-        <Button
-          type="submit"
-          variant="primary"
-          onClick={onSubmit}
-          isLoading={loading}
-        >
-          Save
-        </Button>
-      </Flex>
     </Box>
   );
 };

@@ -14,12 +14,12 @@ const Settings = () => {
     {
       type: "Email",
       description: "Receive email updates on comments you followed",
-      isActive: true,
+      isActive: false,
     },
     {
       type: "Text messages",
       description: "Receive updates by SMS",
-      isActive: false,
+      isActive: true,
     },
     {
       type: "Browser",
@@ -27,6 +27,13 @@ const Settings = () => {
       isActive: true,
     },
   ];
+
+  const onToggleNotification = (notification) => {
+    if ((notification.type = "Email")) {
+      // open add email modal
+      // include subscribe to newsletter option/checkbox
+    }
+  };
 
   return (
     <Box
@@ -55,7 +62,7 @@ const Settings = () => {
                 Receive notifications about Doghouse updates.
               </Text>
             </Stack>
-            {notifications.map((notifcation, id) => (
+            {notifications.map((notification, id) => (
               <Stack
                 // eslint-disable-next-line
                 key={id}
@@ -65,13 +72,14 @@ const Settings = () => {
               >
                 <Stack spacing="0.5" fontSize="sm">
                   <Text color="emphasized" fontWeight="medium">
-                    {notifcation.type}
+                    {notification.type}
                   </Text>
-                  <Text color="muted">{notifcation.description}</Text>
+                  <Text color="muted">{notification.description}</Text>
                 </Stack>
                 <Switch
-                  defaultChecked={notifcation.isActive}
+                  defaultChecked={notification.isActive}
                   colorScheme="brand"
+                  onChange={() => onToggleNotification(notification)}
                 />
               </Stack>
             ))}
