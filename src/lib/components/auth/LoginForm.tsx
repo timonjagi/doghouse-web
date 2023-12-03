@@ -1,7 +1,6 @@
 import {
   Stack,
   FormControl,
-  FormLabel,
   Input,
   ButtonGroup,
   Button,
@@ -13,6 +12,7 @@ import {
   useToast,
   Text,
   useBreakpointValue,
+  Divider,
 } from "@chakra-ui/react";
 import type { ConfirmationResult } from "firebase/auth";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
@@ -21,17 +21,20 @@ import { useState } from "react";
 import { VerifyOTPModal } from "./VerifyOTPModal";
 
 import { auth } from "lib/firebase/client";
-import { User } from "lib/models/user";
+import { GoogleIcon, TwitterIcon, GitHubIcon } from "./ProviderIcons";
+import { useAuthState } from "react-firebase-hooks/auth";
 
-type PageProps = {};
+type PageProps = {
+  setProfileNotCreated?: any;
+};
 
 // eslint-disable-next-line
-export const LoginForm = (props: PageProps) => {
+export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
   const toast = useToast();
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
-  const [existingUser, setExistingUser] = useState({} as User);
+  const [user, loadingUser, error] = useAuthState(auth);
   const [openOTPModal, setOpenOTPModal] = useState(false);
   const [codeVerified, setCodeVerified] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -42,7 +45,14 @@ export const LoginForm = (props: PageProps) => {
   const [invalidCode, setInvalidCode] = useState(false);
   const [mountRecapture, setMountRecapture] = useState(true);
 
-  const sendVerificationCode = async () => {
+  const isMobile = useBreakpointValue({
+    base: true,
+    sm: false,
+  });
+
+  const sendVerificationCode = async (event) => {
+    event.preventDefault();
+
     setLoading(true);
     setInvalidCode(false);
     setMountRecapture(false);
@@ -58,13 +68,11 @@ export const LoginForm = (props: PageProps) => {
     try {
       const result = await signInWithPhoneNumber(
         auth,
-        phoneNumber,
+        `+254${phoneNumber}`,
         appVerifier
       );
-      console.log(result);
       if (result) {
         setOpenOTPModal(true);
-        console.log("set open otp modal", openOTPModal);
         setConfirmationResult(result);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -94,27 +102,13 @@ export const LoginForm = (props: PageProps) => {
 
       setLoading(true);
       const result = await confirmationResult.confirm(code);
+
       if (result) {
         setCodeVerified(true);
 
-        if (existingUser) {
-          if (
-            existingUser.customClaims &&
-            existingUser.customClaims.isBreeder
-          ) {
-            await router.push("/dashboard");
-            toast({
-              title: "Logged in successfully",
-              duration: 2000,
-              status: "success",
-            });
-            // } else {
-            //   assignBreederRole(existingUser.uid);
-          } else {
-            await router.push("/profile");
-          }
-          // } else {
-          //   await assignBreederRole(result.user.uid);
+        if (!loading && user) {
+          localStorage.setItem("userId", user.uid);
+          checkIfUserExists();
         }
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -141,26 +135,34 @@ export const LoginForm = (props: PageProps) => {
     setLoading(false);
   };
 
-  const checkIfUserExists = async (event: React.FormEvent) => {
-    event.preventDefault();
-
+  const checkIfUserExists = async () => {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        `/api/get-user?${new URLSearchParams({ phoneNumber })}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      if (!loading && user) {
+        const response = await fetch(
+          `/api/users/get-user?${new URLSearchParams({
+            uid: user.uid,
+          })}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
-      if (response.status === 200) {
-        await sendVerificationCode();
-        const { user } = await response.json();
-        setExistingUser(user);
-      } else {
-        await sendVerificationCode();
+        console.log("response: ", response);
+
+        if (response.status === 200) {
+          router.push("/home");
+        } else {
+          setProfileNotCreated(true);
+          toast({
+            title: "Account created successfully",
+            description: "Let's finish creating your your profile",
+            status: "success",
+          });
+          router.push("/signup");
+        }
       }
 
       // eslint-disable-next-line
@@ -174,12 +176,24 @@ export const LoginForm = (props: PageProps) => {
     setLoading(false);
   };
 
-  return (
-    <Stack spacing="9">
-      <Stack spacing="6" as="form" onSubmit={checkIfUserExists}>
-        <FormControl>
-          <FormLabel htmlFor="phone">Mobile number</FormLabel>
+  const onInputChange = (value: string) => {
+    console.log(value);
+    if (value.charAt(0) === "0") {
+      return;
+    }
+    setPhoneNumber(value);
+  };
 
+  return (
+    <Stack spacing="6" w="full">
+      <Stack
+        spacing="6"
+        as="form"
+        align="center"
+        onSubmit={(event) => sendVerificationCode(event)}
+        w="full"
+      >
+        <FormControl>
           <InputGroup size="lg">
             <InputLeftAddon>+254</InputLeftAddon>
             <Input
@@ -187,33 +201,33 @@ export const LoginForm = (props: PageProps) => {
               required
               id="phone"
               name="phone"
-              placeholder="Enter you mobile number"
-              type="tel"
-              onChange={(event) => setPhoneNumber(`+254${event?.target.value}`)}
+              placeholder="e.g 722..."
+              type="number"
+              onChange={(event) => onInputChange(event?.target.value)}
               pattern="^([7]{1}|[1]{1})[0-9]{8}$"
               maxLength={9}
+              value={phoneNumber}
             />
           </InputGroup>
         </FormControl>
 
-        {router.pathname.includes("signup") && (
-          <Text fontSize="xs" color="subtle" textAlign="center">
-            By continuing, you acknowledge that you have read, understood, and
-            agree to our terms and condition
-          </Text>
-        )}
-
-        <ButtonGroup width="100%">
-          <Spacer />
-          <Button isLoading={loading} type="submit" variant="primary">
-            {router.pathname.includes("signup") ? "Next" : "Continue"}
+        <ButtonGroup w="full">
+          <Button
+            isLoading={loading}
+            type="submit"
+            size="lg"
+            w="full"
+            variant="primary"
+            isDisabled={phoneNumber.length !== 9}
+          >
+            <span>Continue with phone</span>
           </Button>
         </ButtonGroup>
       </Stack>
 
       <VerifyOTPModal
         loading={loading}
-        existingUser={existingUser}
+        existingUser={user}
         phoneNumber={phoneNumber}
         onSubmit={onVerifyCode}
         setCode={setCode}
@@ -222,6 +236,44 @@ export const LoginForm = (props: PageProps) => {
       />
 
       <Box id="recaptcha-container" display="none" />
+
+      <HStack>
+        <Divider />
+        <Text fontSize="sm" color="muted">
+          OR
+        </Text>
+        <Divider />
+      </HStack>
+      <Stack spacing="3">
+        <Button
+          variant="secondary"
+          leftIcon={<GoogleIcon boxSize="5" />}
+          iconSpacing="3"
+        >
+          Continue with Google
+        </Button>
+        <Button
+          variant="secondary"
+          leftIcon={<TwitterIcon boxSize="5" />}
+          iconSpacing="3"
+        >
+          Continue with Twitter
+        </Button>
+        <Button
+          variant="secondary"
+          leftIcon={<GitHubIcon boxSize="5" />}
+          iconSpacing="3"
+        >
+          Continue with GitHub
+        </Button>
+      </Stack>
+      {/* 
+    {router.pathname.includes("signup") && (
+      <Text fontSize="xs" color="subtle" textAlign="center">
+        By continuing, you acknowledge that you have read, understood, and
+        agree to our terms and condition
+      </Text>
+    )} */}
     </Stack>
   );
 };

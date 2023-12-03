@@ -1,48 +1,145 @@
-import { Box, Flex } from "@chakra-ui/react";
-import { NextSeo } from "next-seo";
-
-import Footer from "lib/layout/Footer";
-
-import { Cta } from "./Cta";
-// import Features from "./Features";
-import Hero from "./Hero";
-// import { LogoGrid } from "./LogoGrid";
-import { PopularBreeds } from "./PopularBreeds";
-import { Process } from "./Process";
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  HStack,
+  Heading,
+  IconButton,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Stack,
+  Text,
+  useBreakpointValue,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
-// import { Stats } from "./Stats";
-// import { Testimonials } from "./Testimonials";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
+import NewPostForm from "./NewPostForm";
+import Post from "./Activity";
+import PostDetails from "./PostDetails";
+import ActivityCard from "./ActivityFeedCard";
+import { NavButton } from "lib/layout/NavButton";
+import {
+  FiUser,
+  FiGitlab,
+  FiSettings,
+  FiMessageSquare,
+  FiBell,
+} from "react-icons/fi";
+import CompleteProfileCTA from "./EthicalQuestionairreCard";
+import EthicalQuestionairreCard from "./EthicalQuestionairreCard";
+import { CompleteProfileBanner } from "./CompleteProfileBanner";
+import { NewsletterForm } from "./NewsletterForm";
 
-const Home = () => {
-  const [user] = useAuthState(auth);
+const Home = ({ activity }) => {
+  const [user, loading, error] = useAuthState(auth);
+  const [userProfile, setUserProfile] = useState({} as any);
+  const [selectedPost, setSelectedPost] = useState();
+
+  const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const isDesktop = useBreakpointValue({ base: false, md: true });
+
+  useEffect(() => {
+    const fetchUserDoc = async () => {
+      const response = await fetch(
+        `/api/users/get-user?${new URLSearchParams({
+          uid: user.uid,
+        })}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.status === 404) {
+        router.push("/signup");
+      } else {
+        const user = await response.json();
+        setUserProfile(user.user);
+      }
+    };
+
+    if (!loading && !user) {
+      router.push("/");
+    } else if (!loading && user) {
+      fetchUserDoc();
+      console.log(user);
+    }
+  }, [user, loading]);
+
+  const onViewPost = (post) => {
+    setSelectedPost(post);
+  };
+
+  const onClickMenuLink = (link) => {};
 
   return (
-    <Box as="section" height="100vh" overflowY="auto">
-      <Flex
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        minHeight="70vh"
-        w="full"
+    <>
+      <HStack justify="space-between" align="start">
+        <Heading pb="4" size={{ base: "xs", sm: "md" }}>
+          Hi, {user.displayName} 👋
+        </Heading>
+
+        <HStack spacing="1" direction="row">
+          {isDesktop && (
+            <IconButton
+              icon={<FiBell />}
+              aria-label="Pets"
+              aria-current={
+                router.pathname.includes("account/pets") ? "page" : "false"
+              }
+              onClick={() => onClickMenuLink("/account/pets")}
+            />
+          )}
+          <IconButton
+            aria-label='"'
+            icon={<FiUser />}
+            aria-current={
+              router.pathname.includes("account/profile") ? "page" : "false"
+            }
+            onClick={() => onClickMenuLink("/account/profile")}
+          />
+
+          <IconButton
+            icon={<FiSettings />}
+            onClick={() => onClickMenuLink("/account/settings")}
+            aria-current={
+              router.pathname.includes("account/settings") ? "page" : "false"
+            }
+            aria-label="Settings"
+          />
+        </HStack>
+      </HStack>
+
+      <Stack
+        direction={{ base: "column", lg: "row" }}
+        spacing={{ base: "5", lg: "8" }}
+        justify="space-between"
       >
-        <NextSeo title="Home" />
-        <Hero user={user} />
+        <Flex flex="1">
+          <ActivityCard
+            activity={activity}
+            userProfile={userProfile}
+            isDesktop={isDesktop}
+            onViewPost={onViewPost}
+            onOpen={onOpen}
+          />
+        </Flex>
 
-        {/* <Features /> */}
-        {/* <Stats /> */}
-
-        {/* <Process /> */}
-
-        {/* <PopularBreeds /> */}
-
-        {/* <Testimonials /> */}
-        {/* <LogoGrid /> */}
-
-        <Cta />
-      </Flex>
-      <Footer />
-    </Box>
+        <Flex direction="column">
+          <CompleteProfileBanner />
+          <NewsletterForm />
+        </Flex>
+      </Stack>
+    </>
   );
 };
 

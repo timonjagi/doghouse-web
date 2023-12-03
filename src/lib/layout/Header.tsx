@@ -18,10 +18,10 @@ import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { FiHelpCircle, FiBell } from "react-icons/fi";
 
-import { Logo } from "../components/Logo";
-import { Sidebar } from "../components/nav/Sidebar";
-import { ToggleButton } from "../components/nav/ToggleButton";
-import UserProfileMenu from "lib/components/nav/UserProfileMenu";
+import { Logo } from "./Logo";
+import { Sidebar } from "./Sidebar";
+
+import UserProfileMenu from "lib/components/auth/UserProfileMenu";
 import { auth } from "lib/firebase/client";
 
 const Header = () => {
@@ -60,11 +60,11 @@ const Header = () => {
                     rounded="full"
                     as={Link}
                     aria-current={
-                      pathname.includes("dashboard") ? "page" : false
+                      pathname.includes("home") ? "page" : false
                     }
-                    href="/dashboard"
+                    href="/home"
                   >
-                    Dashboard
+                    Home
                   </Button>
                 )}
 
@@ -139,6 +139,29 @@ const Header = () => {
                 aria-label="Open Menu"
                 onClick={onToggle}
               /> */}
+              {user ? (
+                <UserProfileMenu
+                  name={user?.displayName || ""}
+                  image={user?.photoURL || ""}
+                  phoneNumber={user?.phoneNumber || ""}
+                />
+              ) : (
+                <>
+                  {["login", "signup"].includes(router.pathname) && (
+                    <HStack spacing="3">
+                      <Button
+                        variant="secondary-on-accent"
+                        rounded="full"
+                        borderColor="white"
+                        onClick={() => router.push("/login")}
+                      >
+                        Log in
+                      </Button>
+                    </HStack>
+                  )}
+                </>
+              )}
+
               <Drawer
                 isOpen={isOpen}
                 placement="left"
@@ -150,7 +173,7 @@ const Header = () => {
               >
                 <DrawerOverlay />
                 <DrawerContent>
-                  <Sidebar onClose={onClose} />
+                  <Sidebar />
                 </DrawerContent>
               </Drawer>
             </Flex>

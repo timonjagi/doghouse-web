@@ -15,6 +15,17 @@ const extendedColors: DeepPartial<
     800: "#85643D",
     900: "#785730",
   },
+  secondary: {
+    100: "#5C6A2B",
+    200: "#5C6A2B",
+    300: "#5C6A2B",
+    400: "#5C6A2B",
+    500: "#5C6A2B",
+    600: "#5C6A2B",
+    700: "#5C6A2B",
+    800: "#5C6A2B",
+    900: "#666935"
+  }
 };
 
 /** override chakra colors here */

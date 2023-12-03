@@ -22,21 +22,40 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { Logo } from "../../components/Logo";
+import { Logo } from "../../layout/Logo";
 
 const Login = () => {
   const router = useRouter();
-  const [user] = useAuthState(auth);
-
+  const [user, loading, error] = useAuthState(auth);
+  const toast = useToast();
   useEffect(() => {
-    if (user) {
-      if (user.displayName) {
-        router.push("/dashboard");
-      } else {
-        router.push("/profile");
-      }
+    if (!loading && user) {
+      const fetchUserDoc = async () => {
+        const response = await fetch(
+          `/api/users/get-user?${new URLSearchParams({
+            uid: user.uid,
+          })}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        if (response.status === 200) {
+          router.push("/home");
+        } else {
+          toast({
+            title: "Account created successfully",
+            description: "Let's finish creating your your profile",
+            status: "success",
+          });
+          router.push("/signup");
+        }
+      };
+
+      fetchUserDoc();
     }
-  }, [user]);
+  }, [user, loading, error]);
 
   return (
     <Flex

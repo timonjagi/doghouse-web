@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
 
 import type { Breed } from "lib/models/breed";
-import BreedDetails from "lib/pages/breed-details";
+import BreedDetails from "lib/pages/breeds/breed-details";
 
 const BreedDetailPage = () => {
   const router = useRouter();
@@ -20,6 +20,7 @@ const BreedDetailPage = () => {
     base: true,
     lg: false,
   });
+
   useEffect(() => {
     router.prefetch("/breeds");
   }, [router]);

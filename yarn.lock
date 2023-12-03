@@ -5973,6 +5973,11 @@ gtoken@^6.1.0:
     google-p12-pem "^4.0.0"
     jws "^4.0.0"
 
+hamt_plus@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/hamt_plus/-/hamt_plus-1.0.2.tgz#e21c252968c7e33b20f6a1b094cd85787a265601"
+  integrity sha512-t2JXKaehnMb9paaYA7J0BX8QQAY8lwfQ9Gjf4pg/mk4krt+cmwmU652HOoWonf+7+EQV97ARPMhhVgU1ra2GhA==
+
 handlebars@^4.7.7:
   version "4.7.8"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.8.tgz#41c42c18b1be2365439188c77c6afae71c0cd9e9"
@@ -7311,6 +7316,11 @@ modify-values@^1.0.0:
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
 ms@2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
@@ -8184,6 +8194,13 @@ readable-stream@~2.3.6:
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
+recoil@^0.7.7:
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/recoil/-/recoil-0.7.7.tgz#c5f2c843224384c9c09e4a62c060fb4c1454dc8e"
+  integrity sha512-8Og5KPQW9LwC577Vc7Ug2P0vQshkv1y3zG3tSSkWMqkWSwHmE+by06L8JtnGocjW6gcCvfwB3YtrJG6/tWivNQ==
+  dependencies:
+    hamt_plus "1.0.2"
+
 redent@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/redent/-/redent-3.0.0.tgz#e557b7998316bb53c9f1f56fa626352c6963059f"
@@ -8429,6 +8446,11 @@ safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
+
+safe-json-stringify@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/safe-json-stringify/-/safe-json-stringify-1.2.0.tgz#356e44bc98f1f93ce45df14bcd7c01cda86e0afd"
+  integrity sha512-gH8eh2nZudPQO6TytOvbxnuhYBOvDBBLW52tz5q6X58lJcd/tkmqFR+5Z9adS8aJtURSXWThWy/xJtJwixErvg==
 
 safe-regex-test@^1.0.0:
   version "1.0.0"

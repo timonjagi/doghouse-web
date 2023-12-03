@@ -23,7 +23,6 @@ import {
 export const VerifyOTPModal = (props) => {
   const {
     loading,
-    existingUser,
     phoneNumber,
     onSubmit,
     setCode,
@@ -38,16 +37,11 @@ export const VerifyOTPModal = (props) => {
       <ModalContent p="8">
         <ModalBody>
           <Stack spacing="9" as="form" onSubmit={onSubmit}>
-            {existingUser && existingUser.displayName && (
-              <Heading size="md">
-                Hey {existingUser.displayName}. Welcome back!
-              </Heading>
-            )}
-
             <Alert status="success">
               <AlertIcon />
               <Text fontSize="sm">
-                Please enter the OTP code sent to {phoneNumber} to continue
+                One-time Password code sent to {phoneNumber}. Enter to
+                continue...
               </Text>
             </Alert>
 

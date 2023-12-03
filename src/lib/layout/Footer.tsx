@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 
-import { Logo } from "../components/Logo";
+import { Logo } from "./Logo";
 
 const Footer = () => (
   <Box bg="bg-accent" color="on-accent">

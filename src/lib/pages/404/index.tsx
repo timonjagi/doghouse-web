@@ -5,31 +5,34 @@ import {
   Text,
   useColorMode,
   Flex,
+  Stack,
 } from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const Page404 = () => {
   const { colorMode } = useColorMode();
-
+  const router = useRouter();
   return (
     <Flex minHeight="70vh" direction="column" justifyContent="center">
       <NextSeo title="404 Not Found" />
 
       <Box marginY={4}>
         <Heading textAlign="center" size="lg">
-          Page not Found.
+          Page not Found~~
         </Heading>
 
         <Box textAlign="center" marginTop={4}>
-          <Text fontSize="sm" color="gray">
+          <Text fontSize="lg" fontWeight="semibold" color="gray">
             It&apos;s Okay!
           </Text>
           <Button
-            as={Link}
-            href="/"
+            colorScheme="brand"
+            onClick={() => router.back()}
             backgroundColor={colorMode === "light" ? "gray.300" : "teal.500"}
-            size="sm"
+            size="lg"
+            mt="8"
           >
             Let&apos;s Head Back
           </Button>

@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Heading,
+  Spinner,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
@@ -14,12 +15,11 @@ import { HiPencilAlt } from "react-icons/hi";
 
 import { auth } from "lib/firebase/client";
 
-import { CardContent } from "./CardContent";
-import { CardWithAvatar } from "./CardWithAvatar";
-import { Settings } from "./Settings";
-import { UserInfo } from "./UserInfo";
+import { CardContent } from "./profile/CardContent";
+import { CardWithAvatar } from "./profile/CardWithAvatar";
+import { UserInfo } from "./profile/UserInfo";
 
-const Account = () => {
+const Profile = () => {
   const [user, loading, error] = useAuthState(auth);
   // eslint-disable-next-line
   const [isBreeder, setIsBreeder] = useState(false);
@@ -45,37 +45,44 @@ const Account = () => {
   }, [user, loading, error, router]);
 
   return (
-    <Box as="section" pt="20" pb="12" position="relative">
-      <Box position="absolute" inset="0" height="32" bg="brand.600" />
-      <CardWithAvatar
-        maxW="2xl"
-        avatarProps={{
-          src: user?.photoURL,
-          name: user.displayName,
-        }}
-        action={
-          <Button variant="primary" size="sm" leftIcon={<HiPencilAlt />}>
-            Edit
-          </Button>
-        }
-      >
-        <CardContent>
-          <Heading size="md" fontWeight="bold" letterSpacing="tight">
-            {user && user?.displayName}
-          </Heading>
-          <Text color={useColorModeValue("gray.600", "gray.400")}>
-            {user && user.phoneNumber}
-          </Text>
-          <UserInfo
-            location={"Nairobi, Kenya"}
-            website="esther.com"
-            memberSince={new Date(user.metadata.creationTime).toDateString()}
-          />
-        </CardContent>
-      </CardWithAvatar>
-
-      <Settings />
-    </Box>
+    <>
+      {" "}
+      {loading ? (
+        <Spinner size="lg" colorScheme="brand" />
+      ) : (
+        <Box as="section" pt="20" pb="12" position="relative">
+          <Box position="absolute" inset="0" height="32" bg="brand.600" />
+          <CardWithAvatar
+            maxW="2xl"
+            avatarProps={{
+              src: user?.photoURL,
+              name: user?.displayName,
+            }}
+            action={
+              <Button variant="primary" size="sm" leftIcon={<HiPencilAlt />}>
+                Edit
+              </Button>
+            }
+          >
+            <CardContent>
+              <Heading size="md" fontWeight="bold" letterSpacing="tight">
+                {user && user?.displayName}
+              </Heading>
+              <Text color={useColorModeValue("gray.600", "gray.400")}>
+                {user && user?.phoneNumber}
+              </Text>
+              <UserInfo
+                location={"Nairobi, Kenya"}
+                website="esther.com"
+                memberSince={new Date(
+                  user?.metadata?.creationTime
+                ).toDateString()}
+              />
+            </CardContent>
+          </CardWithAvatar>
+        </Box>
+      )}
+    </>
   );
 };
-export default Account;
+export default Profile;

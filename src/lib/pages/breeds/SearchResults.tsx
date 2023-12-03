@@ -23,7 +23,7 @@ import {
   useInstantSearch,
 } from "react-instantsearch-hooks-web";
 
-import BreedDetails from "../breed-details";
+import BreedDetails from "./breed-details";
 import type { Breed } from "lib/models/breed";
 
 import { BreedCard } from "./BreedCard";

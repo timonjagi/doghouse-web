@@ -9,7 +9,7 @@ export default async function handler(
 ) {
   try {
     const { uid } = req.query;
-
+    debugger
     if (uid) {
       const docRef = doc(fireStore, "users", uid as string);
       const docSnap = await getDoc(docRef);
