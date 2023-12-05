@@ -120,8 +120,8 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           <></>
         )}
 
-        <Box bg="bg-accent" flex="1">
-          <Box bg="bg-canvas" height="full">
+        <Box bg="bg-canvas" flex="1" overflowY="auto">
+          <Box height="full">
             <Container py="8" height="full">
               <RouteGuard>{children}</RouteGuard>
             </Container>

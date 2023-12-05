@@ -6,7 +6,7 @@ import { auth } from "lib/firebase/client";
 import { Box, Center, Flex, Spinner } from "@chakra-ui/react";
 import { Loader } from "../Loader";
 
-const RouteGuard = ({ children }) => {
+const RouteGuard = ({ children, ...rest }) => {
   const router = useRouter();
   const [user, loading] = useAuthState(auth);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -22,7 +22,11 @@ const RouteGuard = ({ children }) => {
     }
   }, [user, loading, router]);
 
-  return loading ? <Loader /> : isAuthorized ? children : null;
+  return loading ? (
+    <Loader />
+  ) : isAuthorized ? (
+    <Box {...rest}>{children}</Box>
+  ) : null;
 };
 
 export default RouteGuard;
