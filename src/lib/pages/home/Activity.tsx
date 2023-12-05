@@ -31,7 +31,7 @@ import {
   FiTrash2,
   FiUser,
 } from "react-icons/fi";
-import PetCard from "../account/pets/PetCard";
+import PetCard from "../pets/PetCard";
 import router from "next/router";
 
 type PostProps = {

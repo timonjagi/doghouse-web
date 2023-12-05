@@ -34,23 +34,22 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
       py="4"
       bg="bg-surface"
       borderRadius="md"
-      w={{ base: "full", md: "sm" }}
-      h="100%"
+      w="full"
+      h="lg"
       overflow="scroll"
     >
       <Stack
         divider={<StackDivider />}
         spacing="1"
         flexShrink={0}
-        px="4"
         pt="2"
         pb="4"
         position="sticky"
         top="0"
-        zIndex="1"
+        zIndex="4"
       >
         <>
-          <HStack justify="space-between">
+          <HStack justify="space-between" px="6">
             <Box pb="4">
               <Text fontSize="lg" fontWeight="medium">
                 Activity feed
@@ -75,7 +74,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
         <></>
       </Stack>
 
-      <Stack spacing="4" zIndex="2">
+      <Stack spacing="4" zIndex="1">
         {activity.map((act) => (
           <Post
             post={act}

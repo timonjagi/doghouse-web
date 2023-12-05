@@ -1,6 +1,7 @@
 import {
   Button,
   Flex,
+  Spacer,
   Stack,
   Text,
   useColorModeValue as mode,
@@ -11,10 +12,12 @@ import * as React from "react";
 import {
   FiCheckSquare,
   FiClock,
+  FiCreditCard,
   FiGitlab,
   FiHome,
   FiLogOut,
   FiMessageSquare,
+  FiSearch,
   FiSettings,
   FiUser,
 } from "react-icons/fi";
@@ -43,8 +46,8 @@ export const Sidebar = ({ onClose }) => {
       py={{ base: "6", sm: "8" }}
       px={{ base: "4", sm: "6" }}
     >
-      <Stack justify="space-between" spacing="1" width="full" h="full7">
-        <Stack spacing="8" shouldWrapChildren>
+      <Stack justify="space-between" spacing="1" width="full" h="full">
+        <Stack spacing="8" shouldWrapChildren h="full">
           <Logo />
           <Stack spacing="1">
             <NavButton
@@ -64,17 +67,30 @@ export const Sidebar = ({ onClose }) => {
           </Stack>
           <Stack>
             <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-              Services
+              Breeds
             </Text>
             <Stack spacing="1">
               <NavButton
-                label="Scheduled"
-                icon={FiClock}
-                onClick={() => onClickMenuLink("/services")}
+                label="Explore"
+                icon={FiSearch}
+                onClick={() => onClickMenuLink("/breeds")}
+                aria-current={
+                  router.pathname.includes("breeds") ? "page" : "false"
+                }
               />
-              <NavButton label="Completed" icon={FiCheckSquare} />
+              <NavButton
+                label="Manage"
+                icon={FiCheckSquare}
+                onClick={() => onClickMenuLink("/pets")}
+                aria-current={
+                  router.pathname.includes("pets") ? "page" : "false"
+                }
+              />
             </Stack>
           </Stack>
+
+          <Spacer />
+
           <Stack>
             <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
               Account
@@ -88,13 +104,14 @@ export const Sidebar = ({ onClose }) => {
                 }
                 onClick={() => onClickMenuLink("/account/profile")}
               />
+
               <NavButton
-                label="Pets"
-                icon={FiGitlab}
+                label="Billing"
+                icon={FiCreditCard}
                 aria-current={
-                  router.pathname.includes("account/pets") ? "page" : "false"
+                  router.pathname.includes("account/billing") ? "page" : "false"
                 }
-                onClick={() => onClickMenuLink("/account/pets")}
+                onClick={() => onClickMenuLink("/account/billing")}
               />
               <NavButton
                 label="Settings"

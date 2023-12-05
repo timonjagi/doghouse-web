@@ -36,7 +36,7 @@ import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { fireStore, storage } from "lib/firebase/client";
 import { useRouter } from "next/router";
-import breedData from "../../../../data/breeds_with_group.json";
+import breedData from "../../../data/breeds_with_group.json";
 
 type PetDetailProps = {
   pet: any;

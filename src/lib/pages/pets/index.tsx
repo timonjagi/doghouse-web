@@ -33,7 +33,7 @@
 // import { auth, fireStore, storage } from "lib/firebase/client";
 // import { useAuthState } from "react-firebase-hooks/auth";
 // import PetCard from "./PetCard";
-// import breedData from "../../../data/breeds_with_group.json";
+// import breedData from "../../data/breeds_with_group.json";
 // import { FiPlus } from "react-icons/fi";
 // import PetProfileEdit from "./pet-detail/PetProfileEdit";
 // import { ref, uploadString, getDownloadURL } from "firebase/storage";
@@ -42,23 +42,6 @@
 // type petsProps = {
 //   petData: any;
 // };
-
-// const steps = [
-//   { title: "Select Breed" },
-//   { title: "Choose age" },
-//   { title: "Choose sex/gender" },
-//   { title: "Select vaccinations" },
-//   { title: "Upload photos" },
-// ];
-
-// const { activeStep, setActiveStep } = useSteps({
-//   index: 0,
-//   count: steps.length,
-// });
-
-// const [loading, setLoading] = useState(false);
-// const toast = useToast();
-// const router = useRouter();
 
 // export const Pets: React.FC<petsProps> = ({ petData }) => {
 //   const isVerified = false;
@@ -72,6 +55,21 @@
 //   const [selectedAge, setAge] = useState<string>("");
 //   const [selectedBreed, setBreed] = useState<any>({} as any);
 //   const [selectedVaccinations, setVaccinations] = useState([] as any);
+
+//   const [saving, setSaving] = useState(false);
+
+//   const steps = [
+//     { title: "Select Breed" },
+//     { title: "Choose age" },
+//     { title: "Choose sex/gender" },
+//     { title: "Select vaccinations" },
+//     { title: "Upload photos" },
+//   ];
+
+//   const { activeStep, setActiveStep } = useSteps({
+//     index: 0,
+//     count: steps.length,
+//   });
 
 //   const onSelectBreed = (selectedBreed: any) => {
 //     const breed = breedData.find((breed) => breed.name === selectedBreed.value);
@@ -119,7 +117,7 @@
 //   const onSubmit = async (event: React.FormEvent) => {
 //     event.preventDefault();
 
-//     setLoading(true);
+//     setSaving(true);
 
 //     try {
 //       // update pet doc by adding image urls
@@ -155,7 +153,7 @@
 //         images: downloadUrls,
 //       });
 
-//       setLoading(false);
+//       setSaving(false);
 //       onClose();
 
 //       // eslint-disable-next-line
@@ -167,7 +165,7 @@
 //         isClosable: true,
 //       });
 
-//       setLoading(false);
+//       setSaving(false);
 //     }
 //   };
 
@@ -306,12 +304,3 @@
 //   );
 // };
 // export default Pets;
-
-import React from "react";
-
-type indexProps = {};
-
-const index: React.FC<indexProps> = () => {
-  return <div>Have a good coding</div>;
-};
-export default index;

@@ -17,7 +17,7 @@ import { Dropzone } from "lib/components/Dropzone";
 import { RadioButton } from "lib/components/RadioButton";
 import { RadioButtonGroup } from "lib/components/RadioButtonGroup";
 import React, { useEffect, useState } from "react";
-import breedData from "../../../../data/breeds_with_group.json";
+import breedData from "../../../data/breeds_with_group.json";
 
 import { Select } from "chakra-react-select";
 import { useRouter } from "next/router";

@@ -1,7 +1,7 @@
 import { doc, getDoc } from "firebase/firestore";
 
 import { fireStore } from "lib/firebase/client";
-import { PetDetail } from "lib/pages/account/pets/pet-detail";
+import { PetDetail } from "lib/pages/pets/pet-detail";
 import { GetServerSidePropsContext } from "next";
 import safeJsonStringify from "safe-json-stringify";
 import breedData from "../../../../lib/data/breeds_with_group.json";

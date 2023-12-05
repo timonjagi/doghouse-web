@@ -10,9 +10,11 @@ import {
   Flex,
   HStack,
   Icon,
+  IconButton,
   Stack,
   StackDivider,
   Text,
+  useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
 // import * as React from "react";
@@ -41,13 +43,10 @@ export const Filter = () => {
 
   return (
     <>
-      <Flex
-        width="full"
-        justify="space-between"
-        display={{ base: "flex", md: "none" }}
-      >
-        <HStack
-          as="button"
+      <Flex width="auto" justify="space-between">
+        <IconButton
+          icon={<MdFilterList />}
+          aria-label="Filter breeds"
           fontSize="sm"
           type="button"
           px="3"
@@ -57,33 +56,25 @@ export const Filter = () => {
           rounded="md"
         >
           <Icon as={MdFilterList} />
-          <Text>Filters</Text>
-        </HStack>
-        <SortbySelect
+          {/* <Text>Filters</Text> */}
+        </IconButton>
+        {/* <SortbySelect
           width="120px"
           defaultValue="23"
           placeholder="Sort"
           size="sm"
-        />
+        /> */}
       </Flex>
 
-      <Box display={{ base: "none", md: "flex" }}>
-        <RefinementList
-          items={items}
-          label="Breed Group"
-          spacing={4}
-          setSelectedBreedGroups={setSelectedBreedGroups}
-        />
-      </Box>
       <Drawer
-        placement="bottom"
+        placement={useBreakpointValue({ base: "bottom", md: "start" })}
         isFullHeight
         isOpen={isOpen}
         onClose={onClose}
         blockScrollOnMount={false}
         trapFocus={false}
       >
-        <DrawerContent h="auto" maxH="70vh">
+        <DrawerContent h={{ base: "auto", md: "full" }}>
           <DrawerHeader px="4" borderBottomWidth="1px">
             <Flex justify="space-between" align="center">
               <CloseButton onClick={onClose} />

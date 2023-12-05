@@ -31,7 +31,7 @@ import {
   FiTrash2,
   FiUser,
 } from "react-icons/fi";
-import PetCard from "../account/pets/PetCard";
+import PetCard from "../pets/PetCard";
 import router from "next/router";
 
 type ActivityCardProps = {
@@ -112,7 +112,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   }
 
   return (
-    <Box borderRadius="lg" w="full">
+    <Box w="full">
       <Stack key={post.id} fontSize="sm" p="4" spacing="4">
         <Stack direction="row" justify="space-between" spacing="2">
           <Stack direction="row" justify="space-between" w="full" align="start">

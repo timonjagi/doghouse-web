@@ -29,8 +29,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   const routes: RouteConfig[] = [
     { path: "/", layout: HeaderLayout },
-    { path: "/breeds", layout: HeaderLayout },
-    { path: "/breeds/[breedName]", layout: HeaderLayout },
+    { path: "/breeds", layout: DashboardLayout },
+    { path: "/breeds/[breedName]", layout: DashboardLayout },
     { path: "/login", layout: HeaderLayout },
     { path: "/signup", layout: HeaderLayout },
     { path: "/home", layout: DashboardLayout },
@@ -108,9 +108,11 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         as="section"
         direction={{ base: "column", md: "row" }}
         bg="bg-canvas"
-        overflowY="auto"
+        overflow="auto"
+        w="100vw"
         h={{ base: "calc(100vh - 64px)", md: "100vh" }}
         maxH="100vh"
+        maxW="100vw"
       >
         {isDesktop ? (
           <>
@@ -120,7 +122,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           <></>
         )}
 
-        <Box bg="bg-canvas" flex="1" overflowY="auto">
+        <Box bg="bg-canvas" flex="1" overflow="auto" w="full">
           <Box height="full">
             <Container py="8" height="full">
               <RouteGuard>{children}</RouteGuard>

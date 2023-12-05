@@ -1,18 +1,9 @@
 import {
-  Box,
-  Button,
-  Container,
   Flex,
   HStack,
   Heading,
   IconButton,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
   Stack,
-  Text,
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -20,23 +11,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { NextSeo } from "next-seo";
-import NewPostForm from "./NewPostForm";
-import Post from "./Activity";
-import PostDetails from "./PostDetails";
 import ActivityCard from "./ActivityFeedCard";
-import { NavButton } from "lib/layout/NavButton";
-import {
-  FiUser,
-  FiGitlab,
-  FiSettings,
-  FiMessageSquare,
-  FiBell,
-} from "react-icons/fi";
-import CompleteProfileCTA from "./EthicalQuestionairreCard";
-import EthicalQuestionairreCard from "./EthicalQuestionairreCard";
-import { CompleteProfileBanner } from "./CompleteProfileBanner";
+import { FiUser, FiSettings, FiBell } from "react-icons/fi";
 import { NewsletterForm } from "./NewsletterForm";
+import { ExploreBreeds } from "./ExploreBreeds";
+import { CompleteProfileBanner } from "./CompleteProfileBanner";
 
 const Home = ({ activity }) => {
   const [user, loading, error] = useAuthState(auth);
@@ -118,13 +97,19 @@ const Home = ({ activity }) => {
           />
         </HStack>
       </HStack>
+      {/* <NewsletterForm /> */}
 
       <Stack
         direction={{ base: "column", lg: "row" }}
         spacing={{ base: "5", lg: "8" }}
         justify="space-between"
       >
-        <Flex flex="1">
+        <Stack
+          spacing="4"
+          flex="1"
+          direction="column"
+          maxW={{ base: "none", lg: "lg" }}
+        >
           <ActivityCard
             activity={activity}
             userProfile={userProfile}
@@ -132,11 +117,11 @@ const Home = ({ activity }) => {
             onViewPost={onViewPost}
             onOpen={onOpen}
           />
-        </Flex>
-
-        <Flex direction="column">
           <CompleteProfileBanner />
-          <NewsletterForm />
+        </Stack>
+
+        <Flex direction="column" flex="1" maxW={{ base: "none", lg: "lg" }}>
+          <ExploreBreeds />
         </Flex>
       </Stack>
     </>
