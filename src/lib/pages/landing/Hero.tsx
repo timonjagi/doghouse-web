@@ -30,7 +30,7 @@ export default function Hero({ user }) {
           color="white"
         >
           <Box maxW="xl">
-            <Heading as="h1" size="3xl" fontWeight="bold">
+            <Heading as="h1" size="3xl" fontWeight="bold" textShadow="md">
               Find Your Perfect Furry Friend
             </Heading>
             <Text
@@ -40,6 +40,7 @@ export default function Hero({ user }) {
               }}
               mt="4"
               maxW="lg"
+              textShadow="lg"
             >
               Discover your ideal furry companion and start a journey of love
               and companionship
@@ -112,7 +113,7 @@ export default function Hero({ user }) {
             objectPosition="90% center"
             position="absolute"
           />
-          <Box position="absolute" w="full" h="full" bg="blackAlpha.700" />
+          <Box position="absolute" w="full" h="full" bg="blackAlpha.400" />
         </Box>
       </Flex>
     </Box>

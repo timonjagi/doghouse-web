@@ -3,13 +3,16 @@ import {
   Button,
   CloseButton,
   Container,
+  HStack,
+  Icon,
+  Square,
   Stack,
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import * as React from "react";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiUser } from "react-icons/fi";
 
 export const CompleteProfileBanner = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -34,9 +37,15 @@ export const CompleteProfileBanner = () => {
               align={{ base: "start", md: "center" }}
             >
               <Stack spacing="0.5" pe={{ base: "4", md: "0" }}>
-                <Text fontWeight="medium" fontSize="lg">
-                  Complete Your Profile
-                </Text>
+                <HStack>
+                  <Square size="12" borderRadius="md">
+                    <Icon as={FiUser} boxSize="6" color="subtle" />
+                  </Square>
+
+                  <Text fontWeight="medium" fontSize="lg">
+                    Finish setting up your profile
+                  </Text>
+                </HStack>
                 <Text color="muted" fontSize="sm">
                   You can add more of your pets, upload their photos and update
                   their veterinary information
@@ -54,9 +63,9 @@ export const CompleteProfileBanner = () => {
                 width="full"
                 size="sm"
                 as={Link}
-                href="/accounts/pets"
+                href="/account/pets"
               >
-                Add a Pet
+                View Pets
               </Button>
 
               <Button

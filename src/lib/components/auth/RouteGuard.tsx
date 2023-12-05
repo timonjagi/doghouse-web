@@ -5,12 +5,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 import { Box, Center, Flex, Spinner } from "@chakra-ui/react";
 import { Loader } from "../Loader";
+import AuthErrorPage from "./AuthErrorPage";
 
-const RouteGuard = ({ children }) => {
+const RouteGuard = ({ children, ...rest }) => {
   const router = useRouter();
-  const [user, loading] = useAuthState(auth);
+  const [user, loading, error] = useAuthState(auth);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const protectedRoutes = ["/dashoard", "profile", "account"];
+  const protectedRoutes = ["/home", "profile", "account"];
   useEffect(() => {
     if (!loading) {
       // If the authentication state is loaded
@@ -22,7 +23,13 @@ const RouteGuard = ({ children }) => {
     }
   }, [user, loading, router]);
 
-  return loading ? <Loader /> : isAuthorized ? children : null;
+  return loading && !error ? (
+    <Loader />
+  ) : !loading && !error && isAuthorized ? (
+    <Box {...rest}>{children}</Box>
+  ) : (
+    <AuthErrorPage error={error} />
+  );
 };
 
 export default RouteGuard;

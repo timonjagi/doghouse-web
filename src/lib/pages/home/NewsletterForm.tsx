@@ -62,8 +62,8 @@ export const NewsletterForm = () => {
                 </Text>
               </HStack>
               <Text color="muted" fontSize="sm">
-                You can add more of your pets, upload their photos and update
-                their veterinary information
+                Subscribe to our newsletter and stay informed about our latest
+                updates, early access opportunities, and exclusive benefits.
               </Text>
             </Stack>
           </Stack>

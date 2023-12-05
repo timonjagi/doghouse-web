@@ -12,14 +12,22 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
+import { FaTransgender } from "react-icons/fa";
 import { HiBadgeCheck, HiUsers } from "react-icons/hi";
 
 type PetCardProps = {
   pet: any;
+  onToggle: any;
+  setSelectedPet: any;
 };
 
-const PetCard: React.FC<PetCardProps> = ({ pet }) => {
+const PetCard: React.FC<PetCardProps> = ({ pet, onToggle, setSelectedPet }) => {
   const isVerified = false;
+
+  const onViewPet = () => {
+    setSelectedPet(pet);
+    onToggle();
+  };
   return (
     <Flex
       direction="column"
@@ -57,17 +65,17 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
           noOfLines={2}
           color={useColorModeValue("gray.600", "gray.400")}
         >
-          {pet.age} {pet.sex}
+          {pet.age}
         </Text>
-        {/* 
+
         <HStack
           spacing="1"
           fontSize="sm"
           color={useColorModeValue("gray.600", "gray.400")}
         >
-          <Icon as={HiUsers} />
-          <Text>{pet.breedGroup} group</Text>
-        </HStack> */}
+          <Icon as={FaTransgender} />
+          <Text>{pet.sex}</Text>
+        </HStack>
 
         <Spacer />
         <Button
@@ -76,8 +84,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
           rounded="full"
           size="sm"
           width="full"
-          as={Link}
-          href={`/account/pets/${pet.id}`}
+          onClick={onViewPet}
         >
           View Pet
         </Button>

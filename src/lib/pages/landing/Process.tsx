@@ -20,33 +20,34 @@ import { useRouter } from "next/router";
 import { BsBookmarkHeartFill, BsCheckCircleFill } from "react-icons/bs";
 import { ImProfile } from "react-icons/im";
 import { FaSearch } from "react-icons/fa";
-import { FiCheck } from "react-icons/fi";
+import { FiCheck, FiGitlab } from "react-icons/fi";
 import { GoListOrdered } from "react-icons/go";
+import { GiDogHouse } from "react-icons/gi";
 
 export const steps = [
   {
     name: "Create your profile",
     description:
-      "Tell us about your lifestyle, preferences, and what breed you're looking for to help us understand your unique needs",
+      "Tell us more about yourself and explore a curated list of breeds that align perfectly with your lifestyle and preferences",
     icon: ImProfile,
   },
-  {
-    name: "Explore tailored matches.",
-    description:
-      "Explore a curated list of breeds that align perfectly with your lifestyle and preferences",
-    icon: FaSearch,
-  },
+  // {
+  //   name: "Explore tailored matches.",
+  //   description:
+  //     "Explore a curated list of breeds that align perfectly with your lifestyle and preferences",
+  //   icon: FaSearch,
+  // },
   {
     name: "Connect with breeders",
     description:
-      "Get personalized offers from reputable breeders based on your preferences and choose the perfect pet for your needs",
-    icon: GoListOrdered,
+      "Add a listing and get personalized offers from reputable breeders based on your preferences and choose the perfect pet for your needs",
+    icon: FiGitlab,
   },
   {
     name: "Reserve your pet",
     description:
       "Secure your pet with a reservation fee to ensure both your commitment and the breeder's dedication to providing a loving home",
-    icon: BsBookmarkHeartFill,
+    icon: GiDogHouse,
   },
   // {
   //   name: "Confirm your Adoption",

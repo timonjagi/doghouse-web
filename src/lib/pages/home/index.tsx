@@ -1,18 +1,10 @@
 import {
   Box,
-  Button,
-  Container,
   Flex,
   HStack,
   Heading,
   IconButton,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
   Stack,
-  Text,
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -20,23 +12,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { NextSeo } from "next-seo";
-import NewPostForm from "./NewPostForm";
-import Post from "./Activity";
-import PostDetails from "./PostDetails";
-import ActivityCard from "./ActivityFeedCard";
-import { NavButton } from "lib/layout/NavButton";
-import {
-  FiUser,
-  FiGitlab,
-  FiSettings,
-  FiMessageSquare,
-  FiBell,
-} from "react-icons/fi";
-import CompleteProfileCTA from "./EthicalQuestionairreCard";
-import EthicalQuestionairreCard from "./EthicalQuestionairreCard";
+import { FiUser, FiSettings, FiBell } from "react-icons/fi";
+
 import { CompleteProfileBanner } from "./CompleteProfileBanner";
 import { NewsletterForm } from "./NewsletterForm";
+import ActivityFeedCard from "./ActivityFeedCard";
 
 const Home = ({ activity }) => {
   const [user, loading, error] = useAuthState(auth);
@@ -82,10 +62,10 @@ const Home = ({ activity }) => {
   const onClickMenuLink = (link) => {};
 
   return (
-    <>
-      <HStack justify="space-between" align="start">
+    <Box h="full">
+      <HStack justify="space-between" align="start" position="sticky" top="0">
         <Heading pb="4" size={{ base: "xs", sm: "md" }}>
-          Hi, {user.displayName} 👋
+          Hi, {user?.displayName} 👋
         </Heading>
 
         <HStack spacing="1" direction="row">
@@ -125,7 +105,7 @@ const Home = ({ activity }) => {
         justify="space-between"
       >
         <Flex flex="1">
-          <ActivityCard
+          <ActivityFeedCard
             activity={activity}
             userProfile={userProfile}
             isDesktop={isDesktop}
@@ -139,7 +119,7 @@ const Home = ({ activity }) => {
           <NewsletterForm />
         </Flex>
       </Stack>
-    </>
+    </Box>
   );
 };
 

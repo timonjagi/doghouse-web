@@ -18,7 +18,7 @@ export const CtaWithImage = () => {
   const [user, loading, error] = useAuthState(auth);
 
   return (
-    <Box bg="bg-surface">
+    <Box bg="bg-subtle">
       <Container
         py={{
           base: "16",

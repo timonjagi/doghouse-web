@@ -42,7 +42,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/account/pets/[petId]", layout: DashboardLayout },
   ];
 
-  console.log(router.pathname);
+  // console.log(router.pathname);
 
   const matchedRoute = routes.find((route) => {
     if (route.path.includes("[")) {
@@ -58,7 +58,7 @@ const Layout = ({ children }: LayoutProps) => {
   }
 
   const { layout: LayoutComponent } = matchedRoute;
-  console.log("matched route", matchedRoute);
+  // console.log("matched route", matchedRoute);
   return (
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">
       <Box h="full">
@@ -120,10 +120,18 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           <></>
         )}
 
-        <Box bg="bg-accent" flex="1">
-          <Box bg="bg-canvas" height="full">
-            <Container py="8" height="full">
-              <RouteGuard>{children}</RouteGuard>
+        <Box
+          bg="bg-accent"
+          overflowY="auto"
+          flex="1"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          h="full"
+        >
+          <Box bg="bg-canvas" h="full">
+            <Container py="8" h="full">
+              {children}
             </Container>
           </Box>
         </Box>

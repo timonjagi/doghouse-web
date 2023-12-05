@@ -64,7 +64,7 @@ export const Sidebar = ({ onClose }) => {
           </Stack>
           <Stack>
             <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-              Services
+              Groups
             </Text>
             <Stack spacing="1">
               <NavButton
