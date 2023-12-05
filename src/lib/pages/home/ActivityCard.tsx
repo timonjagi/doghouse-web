@@ -27,6 +27,7 @@ import {
   FiMapPin,
   FiMessageSquare,
   FiMoreVertical,
+  FiPlus,
   FiSettings,
   FiTrash2,
   FiUser,
@@ -154,7 +155,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
         <Stack shouldWrapChildren spacing="4" pr="4">
           <HStack justify="space-between">
             <Badge
-              colorScheme={post.title === "Pet added" ? "green" : "blue"}
+              color={post.title === "Pet added" ? "primary" : "secondary"}
               size="sm"
             >
               {post.title === "Pet added" ? "Listing" : "Request"}

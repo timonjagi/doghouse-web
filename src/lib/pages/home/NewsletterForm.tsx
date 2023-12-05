@@ -1,77 +1,74 @@
 import {
   Box,
-  Button,
-  CloseButton,
   Container,
+  HStack,
   Icon,
+  IconButton,
   Input,
   LightMode,
   Square,
   Stack,
   Text,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import * as React from "react";
-import { FiMail } from "react-icons/fi";
+import { FiArrowRight, FiMail } from "react-icons/fi";
 
 export const NewsletterForm = () => {
-  const isMobile = useBreakpointValue({ base: true, md: false });
   return (
-    <Box as="section">
-      <Box bg="bg-accent" color="on-accent">
-        <Container py={{ base: "4", md: "2.5" }} position="relative">
-          <CloseButton
-            display={{ md: "none" }}
-            position="absolute"
-            right="2"
-            top="2"
-          />
+    <Box bg="bg-surface" w="full">
+      <Container py={{ base: "4", md: "4" }} position="relative">
+        <Stack
+          direction={{ base: "column", md: "column" }}
+          justify="space-between"
+          spacing={{ base: "4", md: "6" }}
+        >
           <Stack
+            spacing="6"
             direction={{ base: "column", md: "row" }}
-            justify="space-between"
-            spacing={{ base: "3", md: "8" }}
+            align={{ base: "start", md: "center" }}
           >
-            <Stack
-              spacing="4"
-              direction={{ base: "column", md: "row" }}
-              align={{ base: "start", md: "center" }}
-            >
-              {!isMobile && (
-                <Square size="12" bg="bg-accent-subtle" borderRadius="md">
-                  <Icon as={FiMail} boxSize="6" />
+            <Stack spacing="0.5" pe={{ base: "4", md: "0" }}>
+              <HStack>
+                <Square size="12" borderRadius="md">
+                  <Icon as={FiMail} boxSize="6" color="subtle" />
                 </Square>
-              )}
-              <Stack spacing="0.5" pe={{ base: "4", sm: "0" }}>
-                <Text fontWeight="medium">Subscribe to our newsletter</Text>
-                <Text color="on-accent-muted">
-                  This way you'll be the first to know when we launch.
+
+                <Text fontWeight="medium" fontSize="lg">
+                  Subscribe to our newsletter
                 </Text>
-              </Stack>
-            </Stack>
-            <Stack
-              as="form"
-              onSubmit={(e) => e.preventDefault()}
-              direction={{ base: "column", sm: "row" }}
-              spacing={{ base: "3", md: "2" }}
-              align={{ base: "stretch", md: "center" }}
-            >
-              <LightMode>
-                <Input
-                  placeholder="Enter your email"
-                  type="email"
-                  isRequired
-                  variant="outline-on-accent"
-                  w="full"
-                />
-              </LightMode>
-              {/* <Button variant="primary-on-accent" flexShrink={0} type="submit">
-                Subscribe
-              </Button> */}
-              <CloseButton display={{ base: "none", md: "inline-flex" }} />
+              </HStack>
+              <Text color="muted" fontSize="sm">
+                You can add more of your pets, upload their photos and update
+                their veterinary information
+              </Text>
             </Stack>
           </Stack>
-        </Container>
-      </Box>
+          <HStack
+            as="form"
+            onSubmit={(e) => e.preventDefault()}
+            direction={{ base: "column", sm: "column" }}
+            spacing={{ base: "3", md: "2" }}
+            align={{ base: "stretch" }}
+            w="full"
+          >
+            <LightMode>
+              <Input
+                placeholder="Enter your email"
+                type="email"
+                isRequired
+                variant="outline-on-accent"
+                colorScheme="brand"
+              />
+            </LightMode>
+            <IconButton
+              aria-label="Subscribe"
+              icon={<FiArrowRight />}
+              flexShrink={0}
+              type="submit"
+            ></IconButton>
+          </HStack>
+        </Stack>
+      </Container>
     </Box>
   );
 };

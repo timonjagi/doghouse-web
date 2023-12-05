@@ -36,13 +36,11 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/home", layout: DashboardLayout },
     { path: "/inbox", layout: DashboardLayout },
     { path: "/services", layout: DashboardLayout },
-    { path: "/account/pets", layout: DashboardLayout },
+    { path: "/pets", layout: DashboardLayout },
     { path: "/account/profile", layout: DashboardLayout },
     { path: "/account/settings", layout: DashboardLayout },
-    { path: "/account/pets/[petId]", layout: DashboardLayout },
+    { path: "/pets/[petId]", layout: DashboardLayout },
   ];
-
-  console.log(router.pathname);
 
   const matchedRoute = routes.find((route) => {
     if (route.path.includes("[")) {

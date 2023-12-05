@@ -45,13 +45,13 @@ export const ExploreBreeds = () => {
       >
         <Stack flex="1">
           <Stack spacing="4">
-            <ProductBadge bg="brand.400" color="white">
+            <ProductBadge bg="secondary.300" color="white">
               Featured Breed
             </ProductBadge>
 
             <HStack alignSelf="baseline" justify="space-between" w="full">
               <Stack spacing="1">
-                <Heading size="sm" fontWeight="medium">
+                <Heading size="xs" fontWeight="medium">
                   Golden Retriever
                 </Heading>
                 <Text as="span" fontWeight="medium" color="gray.600">
@@ -73,7 +73,7 @@ export const ExploreBreeds = () => {
           </Stack>
 
           <Stack spacing="3">
-            <Text textAlign="center" as={Link} href="/breeds/german-spitz">
+            <Text textAlign="center" as={Link} href="/breeds/golden-retriever">
               View full details
             </Text>
             {/* <ColorPicker

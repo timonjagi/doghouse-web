@@ -19,7 +19,7 @@ export const CompleteProfileBanner = () => {
   return (
     <Box as="section" pb={{ base: "4", md: "6" }}>
       <Box bg="bg-surface">
-        <Container py={{ base: "4", md: "8" }} position="relative">
+        <Container py={{ base: "4", md: "4" }} position="relative">
           <CloseButton
             display={{ md: "none" }}
             position="absolute"
@@ -29,14 +29,14 @@ export const CompleteProfileBanner = () => {
           <Stack
             direction={{ base: "column", md: "column" }}
             justify="space-between"
-            spacing={{ base: "3", md: "6" }}
+            spacing={{ base: "3", md: "4" }}
           >
             <Stack
               spacing="6"
               direction={{ base: "column", md: "row" }}
               align={{ base: "start", md: "center" }}
             >
-              <Stack spacing="0.5" pe={{ base: "4", md: "0" }}>
+              <Stack spacing="2">
                 <HStack>
                   <Square size="12" borderRadius="md">
                     <Icon as={FiUser} boxSize="6" color="subtle" />
@@ -47,8 +47,8 @@ export const CompleteProfileBanner = () => {
                   </Text>
                 </HStack>
                 <Text color="muted" fontSize="sm">
-                  You can add more of your pets, upload their photos and update
-                  their veterinary information
+                  Add a profile photo so guys can know you better. You can also
+                  list more pets and upload photos.
                 </Text>
               </Stack>
             </Stack>
@@ -59,13 +59,13 @@ export const CompleteProfileBanner = () => {
               w="full"
             >
               <Button
-                variant="primary"
+                variant="ghost"
+                bg="bg-muted"
                 width="full"
-                size="sm"
                 as={Link}
-                href="/accounts/pets"
+                href="/accounts/profile"
               >
-                Add a Pet
+                Update Profile
               </Button>
 
               <Button
@@ -73,10 +73,9 @@ export const CompleteProfileBanner = () => {
                 width="full"
                 rightIcon={<FiArrowRight />}
                 as={Link}
-                href="/account/profile"
-                size="sm"
+                href="/breeds"
               >
-                Update Profile
+                Explore Breeds
               </Button>
             </Stack>
           </Stack>

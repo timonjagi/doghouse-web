@@ -6,6 +6,7 @@ import {
   Container,
   Grid,
   HStack,
+  Spacer,
 } from "@chakra-ui/react";
 import algoliasearch from "algoliasearch/lite";
 import type { User } from "firebase/auth";
@@ -64,6 +65,7 @@ export default function Breeds({ serverState, url }: PageProps) {
                 Find out all about your favorite furry friend
               </Text>
             </Stack>
+
             <InstantSearchSSRProvider {...serverState}>
               <InstantSearch
                 searchClient={client}
@@ -96,6 +98,9 @@ export default function Breeds({ serverState, url }: PageProps) {
                     colorScheme="brand"
                   />
                 </Stack>
+
+                <Spacer />
+
                 <SearchResults />
               </InstantSearch>
             </InstantSearchSSRProvider>

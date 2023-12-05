@@ -9,10 +9,11 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Button,
 } from "@chakra-ui/react";
 import React from "react";
 import Post from "./Activity";
-import { FiSearch } from "react-icons/fi";
+import { FiPlus, FiSearch } from "react-icons/fi";
 
 type ActivityCardProps = {
   activity: any;
@@ -35,7 +36,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
       bg="bg-surface"
       borderRadius="md"
       w="full"
-      h="lg"
+      h="90vh"
       overflow="scroll"
     >
       <Stack
@@ -68,7 +69,12 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
               </InputGroup>
             )} */}
 
-            <IconButton icon={<FiSearch />} aria-label="Search activity" />
+            <Box>
+              <Button variant="secondary" rightIcon={<FiPlus />} mx="2">
+                New
+              </Button>
+              <IconButton icon={<FiSearch />} aria-label="Search activity" />
+            </Box>
           </HStack>
         </>
         <></>

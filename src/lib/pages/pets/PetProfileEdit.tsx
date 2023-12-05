@@ -17,7 +17,7 @@ import { Dropzone } from "lib/components/Dropzone";
 import { RadioButton } from "lib/components/RadioButton";
 import { RadioButtonGroup } from "lib/components/RadioButtonGroup";
 import React, { useEffect, useState } from "react";
-import breedData from "../../../data/breeds_with_group.json";
+import breedData from "../../data/breeds_with_group.json";
 
 import { Select } from "chakra-react-select";
 import { useRouter } from "next/router";
@@ -103,13 +103,13 @@ const PetProfileEdit = ({
               placeholder="Select breed..."
               colorScheme="brand"
               options={breeds}
-              value={{ label: selectedBreed.name, value: selectedBreed.name }}
+              value={{ label: selectedBreed?.name, value: selectedBreed?.name }}
               onChange={onSelectBreed}
             />
           </FormControl>
         )}
 
-        {activeStep === 1 && (
+        {activeStep === 0 && (
           <FormControl>
             <FormLabel htmlFor="breeds" fontWeight="semibold">
               Age
@@ -148,7 +148,7 @@ const PetProfileEdit = ({
           </FormControl>
         )}
 
-        {activeStep === 2 && (
+        {activeStep === 0 && (
           <FormControl>
             <FormLabel htmlFor="sex" fontWeight="semibold">
               Sex/Gender
@@ -178,7 +178,19 @@ const PetProfileEdit = ({
           </FormControl>
         )}
 
-        {activeStep === 3 && (
+        {activeStep === 1 && (
+          <FormControl id="picture">
+            <FormLabel>Photos</FormLabel>
+            <Dropzone
+              selectedFiles={selectedFiles}
+              onRemove={onRemoveImage}
+              onChange={onSelectImage}
+              maxUploads={4}
+            />
+          </FormControl>
+        )}
+
+        {activeStep === 2 && (
           <FormControl>
             <FormLabel htmlFor="vaccinations" fontWeight="semibold">
               Vaccinations
@@ -190,18 +202,6 @@ const PetProfileEdit = ({
               options={availableVaccinations}
               value={selectedVaccinations}
               onChange={onSelectVaccination}
-            />
-          </FormControl>
-        )}
-
-        {activeStep === 4 && (
-          <FormControl id="picture">
-            <FormLabel>Photos</FormLabel>
-            <Dropzone
-              selectedFiles={selectedFiles}
-              onRemove={onRemoveImage}
-              onChange={onSelectImage}
-              maxUploads={4}
             />
           </FormControl>
         )}

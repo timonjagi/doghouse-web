@@ -54,10 +54,10 @@ const ProfileCard: React.FC<any> = ({
             px={{ base: "4", md: "6" }}
             py={{ base: "5", md: "6" }}
           >
-            <Alert status="info">
+            {/* <Alert status="info">
               <AlertIcon />
               Upload profile photo to continue
-            </Alert>
+            </Alert> */}
             <Stack spacing="6" direction={{ base: "column", md: "row" }}>
               <FormControl id="firstName">
                 <FormLabel>First Name</FormLabel>

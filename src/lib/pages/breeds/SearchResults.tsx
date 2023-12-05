@@ -69,7 +69,7 @@ const SearchResults = () => {
     <>
       {status !== "idle" && !hits.length && (
         <SimpleGrid
-          columns={{ base: 2, sm: 4, lg: 2, xl: 4 }}
+          columns={{ base: 2, sm: 2, lg: 2, xl: 2 }}
           gap={{ base: "4", md: "6", lg: "8" }}
         >
           {[...Array(20)].map((item, index) => (
@@ -89,7 +89,7 @@ const SearchResults = () => {
       )}
 
       <SimpleGrid
-        columns={{ base: 2, md: 3, lg: 4 }}
+        columns={{ base: 2, lg: 3, xl: 4 }}
         gap={{ base: "4", md: "6", lg: "8" }}
       >
         {hits.map((hit) => (

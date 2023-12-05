@@ -108,7 +108,8 @@ const Home = ({ activity }) => {
           spacing="4"
           flex="1"
           direction="column"
-          maxW={{ base: "none", lg: "lg" }}
+          w={{ base: "full", lg: "lg" }}
+          minW="sm"
         >
           <ActivityCard
             activity={activity}
@@ -117,11 +118,11 @@ const Home = ({ activity }) => {
             onViewPost={onViewPost}
             onOpen={onOpen}
           />
-          <CompleteProfileBanner />
         </Stack>
 
-        <Flex direction="column" flex="1" maxW={{ base: "none", lg: "lg" }}>
-          <ExploreBreeds />
+        <Flex direction="column" flex="1" maxW={{ base: "none", lg: "sm" }}>
+          <CompleteProfileBanner />
+          <NewsletterForm />
         </Flex>
       </Stack>
     </>

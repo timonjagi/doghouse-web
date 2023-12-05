@@ -35,7 +35,7 @@ const images = [
 
 export const Gallery = (props: GalleryProps) => {
   const { rootProps } = props;
-  const aspectRatio = 4 / 3;
+  const aspectRatio = 5 / 4;
   const [index, setIndex] = React.useState(0);
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const slidesPerView = useBreakpointValue({ base: 3, md: 5 });
@@ -53,7 +53,8 @@ export const Gallery = (props: GalleryProps) => {
       <AspectRatio ratio={aspectRatio}>
         <Image
           src={`/images/breeds/golden_retriever/doghousekenya_${images[index].src}.webp`}
-          objectFit="cover"
+          objectFit="contain"
+          objectPosition="top"
           alt={images[index].alt}
           fallback={<Skeleton />}
         />
