@@ -136,10 +136,6 @@ export const SelectPath = ({ currentStep, setStep, user }: any) => {
     // },
   ];
 
-  const onBack = () => {
-    setStep(currentStep - 1);
-  };
-
   useEffect(() => {
     const profile = JSON.parse(localStorage.getItem("profile"));
     setUserProfile(profile);
@@ -170,10 +166,7 @@ export const SelectPath = ({ currentStep, setStep, user }: any) => {
 
   return (
     <Stack as="form" spacing="9" onSubmit={(event) => onSubmit(event)}>
-      <Heading size="md">
-        Nice to meet you, {userProfile?.name && userProfile.name.split(" ")[0]}.
-        Choose your path.
-      </Heading>
+      <Heading size="md">How would you like to continue?</Heading>
       <RadioCardGroup
         defaultValue={selectedRole}
         spacing="3"
@@ -192,9 +185,9 @@ export const SelectPath = ({ currentStep, setStep, user }: any) => {
       </RadioCardGroup>
 
       <ButtonGroup width="100%">
-        <Button onClick={onBack} variant="ghost">
+        {/* <Button onClick={onBack} variant="ghost">
           Back
-        </Button>
+        </Button> */}
         <Spacer />
         <Button
           isLoading={loading}

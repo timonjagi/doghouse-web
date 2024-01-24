@@ -31,16 +31,20 @@ import {
   FiTrash2,
   FiUser,
 } from "react-icons/fi";
-import PetCard from "../pets/PetCard";
+import PetCard from "../my-breeds/PetCard_old";
 import router from "next/router";
 
-type PostProps = {
+type ActivityProps = {
   post: any;
   userProfile: any;
   onViewPost: any;
 };
 
-const Post: React.FC<PostProps> = ({ post, userProfile, onViewPost }) => {
+const Activity: React.FC<ActivityProps> = ({
+  post,
+  userProfile,
+  onViewPost,
+}) => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -164,13 +168,16 @@ const Post: React.FC<PostProps> = ({ post, userProfile, onViewPost }) => {
               >
                 {post.userName}
               </Text> */}
-              <IconButton icon={<FiUser />} aria-label="View User" size="sm" />
 
-              <IconButton
-                icon={<FiMessageSquare />}
+              <Button
+                rightIcon={<FiMessageSquare />}
                 aria-label="Send Message"
                 size="sm"
-              ></IconButton>
+              >
+                22
+              </Button>
+
+              <IconButton icon={<FiUser />} aria-label="View User" size="sm" />
 
               <IconButton
                 icon={<FiBellOff />}
@@ -186,4 +193,4 @@ const Post: React.FC<PostProps> = ({ post, userProfile, onViewPost }) => {
     </Box>
   );
 };
-export default Post;
+export default Activity;

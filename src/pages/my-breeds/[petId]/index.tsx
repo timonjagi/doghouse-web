@@ -1,10 +1,10 @@
 import { doc, getDoc } from "firebase/firestore";
 
 import { fireStore } from "lib/firebase/client";
-import { PetDetail } from "lib/pages/pets/pet-detail";
 import { GetServerSidePropsContext } from "next";
 import safeJsonStringify from "safe-json-stringify";
-import breedData from "../../../../lib/data/breeds_with_group.json";
+import breedData from "../../../lib/data/breeds_with_group.json";
+import BreedProfile from "lib/pages/my-breeds/BreedProfile";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const petDocRef = doc(fireStore, "pets", context.query.petId as string);
@@ -14,10 +14,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     ? JSON.parse(safeJsonStringify({ id: petDoc.id, ...petDoc.data() }))
     : "";
 
-  pet.breedGroup = breedData.find(
-    (breed) => breed.name === pet.breed
-  ).breedGroup;
-
   return {
     props: {
       petData: pet,
@@ -25,8 +21,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-const PetDetailPage = ({ petData }) => {
-  return <PetDetail pet={petData} />;
+const UserBreedDetailPage = ({ petData }) => {
+  return <BreedProfile />;
 };
 
-export default PetDetailPage;
+export default UserBreedDetailPage;

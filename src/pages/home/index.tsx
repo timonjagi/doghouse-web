@@ -32,7 +32,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const HomePage = ({ activityData }) => {
-  return <Home activity={activityData} />;
+  return <Home activities={activityData} />;
 };
 
 export default HomePage;

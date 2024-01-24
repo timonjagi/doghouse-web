@@ -74,16 +74,14 @@ export const Sidebar = ({ onClose }) => {
                 label="Explore"
                 icon={FiSearch}
                 onClick={() => onClickMenuLink("/breeds")}
-                aria-current={
-                  router.pathname.includes("breeds") ? "page" : "false"
-                }
+                aria-current={router.pathname === "/breeds" ? "page" : "false"}
               />
               <NavButton
                 label="Manage"
                 icon={FiCheckSquare}
-                onClick={() => onClickMenuLink("/pets")}
+                onClick={() => onClickMenuLink("/my-breeds")}
                 aria-current={
-                  router.pathname.includes("pets") ? "page" : "false"
+                  router.pathname.includes("my-breeds") ? "page" : "false"
                 }
               />
             </Stack>

@@ -29,17 +29,20 @@ const Layout = ({ children }: LayoutProps) => {
 
   const routes: RouteConfig[] = [
     { path: "/", layout: HeaderLayout },
-    { path: "/breeds", layout: DashboardLayout },
-    { path: "/breeds/[breedName]", layout: DashboardLayout },
+
     { path: "/login", layout: HeaderLayout },
     { path: "/signup", layout: HeaderLayout },
+
     { path: "/home", layout: DashboardLayout },
     { path: "/inbox", layout: DashboardLayout },
-    { path: "/services", layout: DashboardLayout },
-    { path: "/pets", layout: DashboardLayout },
+
+    { path: "/breeds", layout: DashboardLayout },
+    { path: "/breeds/[breedName]", layout: DashboardLayout },
+    { path: "/my-breeds", layout: DashboardLayout },
+    { path: "/my-breeds/[petId]", layout: DashboardLayout },
+
     { path: "/account/profile", layout: DashboardLayout },
     { path: "/account/settings", layout: DashboardLayout },
-    { path: "/pets/[petId]", layout: DashboardLayout },
   ];
 
   const matchedRoute = routes.find((route) => {

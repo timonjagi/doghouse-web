@@ -23,6 +23,7 @@ import { Sidebar } from "./Sidebar";
 
 import UserProfileMenu from "lib/components/auth/UserProfileMenu";
 import { auth } from "lib/firebase/client";
+import { ToggleButton } from "./ToggleButton";
 
 const Header = () => {
   const isDesktop = useBreakpointValue({

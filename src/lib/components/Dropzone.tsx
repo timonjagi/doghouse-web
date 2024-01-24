@@ -12,6 +12,7 @@ import {
   Flex,
   IconButton,
   Stack,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { useRef } from "react";
 // import React from "react";
@@ -35,9 +36,9 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
             bg={useColorModeValue("white", "gray.800")}
             boxSizing="content-box"
           >
-            {selectedFiles.map((selectedFile) => (
-              <Box p="2">
-                <Square size={{ base: "24", lg: "32" }}>
+            <SimpleGrid columns={{ base: 2 }} gap="4" w="full">
+              {selectedFiles.map((selectedFile) => (
+                <Box h="full" w="full" position="relative">
                   <Image
                     width="100%"
                     height="100%"
@@ -53,25 +54,27 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
                     icon={<IoMdClose />}
                     variant="outline"
                     height="28px"
+                    left="40%"
+                    top="40%"
                     onClick={() => onRemove(selectedFile)}
                   ></IconButton>
-                </Square>
-              </Box>
-            ))}
-
-            {selectedFiles.length !== maxUploads && (
-              <Box p="2">
-                <Square
-                  as={Button}
-                  size={{ base: "24", lg: "32" }}
-                  bg="bg-subtle"
-                  borderRadius="lg"
-                  onClick={() => selectedFileRef.current?.click()}
-                >
-                  <Icon as={BiImageAdd} boxSize="8" color="muted" />
-                </Square>
-              </Box>
-            )}
+                </Box>
+              ))}
+              {selectedFiles.length !== maxUploads && (
+                <Box>
+                  <Square
+                    as={Button}
+                    w="full"
+                    h="full"
+                    bg="bg-subtle"
+                    borderRadius="lg"
+                    onClick={() => selectedFileRef.current?.click()}
+                  >
+                    <Icon as={BiImageAdd} boxSize="8" color="muted" />
+                  </Square>
+                </Box>
+              )}
+            </SimpleGrid>
           </Flex>
         </Flex>
       ) : (
@@ -112,7 +115,7 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
       <input
         ref={selectedFileRef}
         type="file"
-        accept="image/jpeg, image/png"
+        accept="image/jpeg, image/png, image/webp"
         hidden
         multiple
         onChange={onChange}

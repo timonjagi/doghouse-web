@@ -5,17 +5,62 @@ import {
   Container,
   HStack,
   Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
   Square,
   Stack,
   Text,
   useBreakpointValue,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import * as React from "react";
 import { FiArrowRight, FiMail, FiUser } from "react-icons/fi";
+import UserProfileForm from "../account/profile/UserProfileForm";
+import { useState } from "react";
+import { user } from "firebase-functions/v1/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, fireStore } from "lib/firebase/client";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 export const CompleteProfileBanner = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const toast = useToast();
+  const [user, loading, error] = useAuthState(auth);
+
+  const [userProfile, setUserProfile] = useState({} as any);
+  const [loadingUserProfile, setLoadingUserProfile] = useState(true);
+
+  const { isOpen, onToggle, onClose } = useDisclosure();
+
+  const fetchUserProfile = async () => {
+    setLoadingUserProfile(true);
+    try {
+      const userDocRef = doc(fireStore, "users", user.uid as string);
+
+      const userDoc = await getDoc(userDocRef);
+      setUserProfile({ id: userDoc.id, ...userDoc.data() });
+    } catch (error) {
+      toast({
+        title: "Error loading profile",
+        description: error.message,
+        status: "error",
+      });
+    }
+
+    setLoadingUserProfile(false);
+  };
+
+  React.useEffect(() => {
+    if (!loading && user) {
+      fetchUserProfile();
+    }
+  }, [user, loading]);
+
   return (
     <Box as="section" pb={{ base: "4", md: "6" }}>
       <Box bg="bg-surface">
@@ -48,7 +93,8 @@ export const CompleteProfileBanner = () => {
                 </HStack>
                 <Text color="muted" fontSize="sm">
                   Add a profile photo so guys can know you better. You can also
-                  list more pets and upload photos.
+                  list more breeds, upload their photos and update their
+                  veterinary information.
                 </Text>
               </Stack>
             </Stack>
@@ -62,8 +108,8 @@ export const CompleteProfileBanner = () => {
                 variant="ghost"
                 bg="bg-muted"
                 width="full"
-                as={Link}
-                href="/accounts/profile"
+                onClick={onToggle}
+                disabled={!userProfile.name}
               >
                 Update Profile
               </Button>
@@ -73,13 +119,27 @@ export const CompleteProfileBanner = () => {
                 width="full"
                 rightIcon={<FiArrowRight />}
                 as={Link}
-                href="/breeds"
+                href="/my-breeds"
               >
-                Explore Breeds
+                Manage Breeds
               </Button>
             </Stack>
           </Stack>
         </Container>
+
+        <Modal
+          onClose={onClose}
+          isOpen={isOpen}
+          size={{ base: "xs", md: "sm" }}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalCloseButton />
+            <ModalBody>
+              <UserProfileForm userProfile={userProfile} onClose={onClose} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </Box>
     </Box>
   );

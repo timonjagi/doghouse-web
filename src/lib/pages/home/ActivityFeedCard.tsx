@@ -12,42 +12,34 @@ import {
   Button,
 } from "@chakra-ui/react";
 import React from "react";
-import Post from "./Activity";
+import Activity from "./Activity";
 import { FiPlus, FiSearch } from "react-icons/fi";
+import ActivityCard from "./ActivityCard";
 
 type ActivityCardProps = {
-  activity: any;
+  activities: any;
   userProfile: any;
   isDesktop: any;
   onViewPost: any;
-  onOpen: any;
 };
 
-const ActivityCard: React.FC<ActivityCardProps> = ({
-  activity,
+const ActivityFeedCard: React.FC<ActivityCardProps> = ({
+  activities,
   userProfile,
   isDesktop,
   onViewPost,
-  onOpen,
 }) => {
   return (
-    <Box
-      py="4"
-      bg="bg-surface"
-      borderRadius="md"
-      w="full"
-      h="90vh"
-      overflow="scroll"
-    >
+    <Box bg="bg-surface" borderRadius="md" w="full" h="90vh" overflow="scroll">
       <Stack
         divider={<StackDivider />}
         spacing="1"
         flexShrink={0}
-        pt="2"
-        pb="4"
+        pt="4"
         position="sticky"
         top="0"
         zIndex="4"
+        bg="white"
       >
         <>
           <HStack justify="space-between" px="6">
@@ -81,15 +73,15 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
       </Stack>
 
       <Stack spacing="4" zIndex="1">
-        {activity.map((act) => (
-          <Post
-            post={act}
+        {activities.map((activity) => (
+          <ActivityCard
+            post={activity}
             userProfile={userProfile}
-            onViewPost={() => (isDesktop ? onViewPost(act) : onOpen)}
+            onViewPost={() => onViewPost(activity)}
           />
         ))}
       </Stack>
     </Box>
   );
 };
-export default ActivityCard;
+export default ActivityFeedCard;

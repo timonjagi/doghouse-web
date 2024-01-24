@@ -13,6 +13,7 @@ import {
   Text,
   useBreakpointValue,
   Divider,
+  Icon,
 } from "@chakra-ui/react";
 import type { ConfirmationResult } from "firebase/auth";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
@@ -23,6 +24,7 @@ import { VerifyOTPModal } from "./VerifyOTPModal";
 import { auth } from "lib/firebase/client";
 import { GoogleIcon, TwitterIcon, GitHubIcon } from "./ProviderIcons";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { FaFacebook } from "react-icons/fa";
 
 type PageProps = {
   setProfileNotCreated?: any;
@@ -107,8 +109,8 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
         setCodeVerified(true);
 
         if (!loading && user) {
-          localStorage.setItem("userId", user.uid);
-          checkIfUserExists();
+          localStorage.setItem("authUser", JSON.stringify(user));
+          router.push("/home");
         }
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -132,47 +134,6 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
       });
     }
 
-    setLoading(false);
-  };
-
-  const checkIfUserExists = async () => {
-    try {
-      setLoading(true);
-
-      if (!loading && user) {
-        const response = await fetch(
-          `/api/users/get-user?${new URLSearchParams({
-            uid: user.uid,
-          })}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        console.log("response: ", response);
-
-        if (response.status === 200) {
-          router.push("/home");
-        } else {
-          setProfileNotCreated(true);
-          toast({
-            title: "Account created successfully",
-            description: "Let's finish creating your your profile",
-            status: "success",
-          });
-          router.push("/signup");
-        }
-      }
-
-      // eslint-disable-next-line
-    } catch (err: any) {
-      toast({
-        title: err.message,
-        status: "error",
-        isClosable: true,
-      });
-    }
     setLoading(false);
   };
 
@@ -220,7 +181,7 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
             variant="primary"
             isDisabled={phoneNumber.length !== 9}
           >
-            <span>Continue with phone</span>
+            <span>Continue with mobile</span>
           </Button>
         </ButtonGroup>
       </Stack>
@@ -254,26 +215,19 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
         </Button>
         <Button
           variant="secondary"
-          leftIcon={<TwitterIcon boxSize="5" />}
+          leftIcon={<Icon as={FaFacebook} boxSize="5" />}
           iconSpacing="3"
         >
-          Continue with Twitter
-        </Button>
-        <Button
-          variant="secondary"
-          leftIcon={<GitHubIcon boxSize="5" />}
-          iconSpacing="3"
-        >
-          Continue with GitHub
+          Continue with Facebook
         </Button>
       </Stack>
-      {/* 
-    {router.pathname.includes("signup") && (
-      <Text fontSize="xs" color="subtle" textAlign="center">
-        By continuing, you acknowledge that you have read, understood, and
-        agree to our terms and condition
-      </Text>
-    )} */}
+
+      {router.pathname.includes("signup") && (
+        <Text fontSize="xs" color="subtle" textAlign="center">
+          By continuing, you acknowledge that you have read, understood, and
+          agree to our terms and conditions
+        </Text>
+      )}
     </Stack>
   );
 };

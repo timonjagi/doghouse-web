@@ -112,7 +112,7 @@ export default function Hero({ user }) {
             objectPosition="90% center"
             position="absolute"
           />
-          <Box position="absolute" w="full" h="full" bg="blackAlpha.700" />
+          <Box position="absolute" w="full" h="full" bg="blackAlpha.400" />
         </Box>
       </Flex>
     </Box>

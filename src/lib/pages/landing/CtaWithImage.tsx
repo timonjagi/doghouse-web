@@ -79,7 +79,12 @@ export const CtaWithImage = () => {
                 Learn more
               </Button>
 
-              <Button variant="primary" size="lg" as={Link} href="/signup">
+              <Button
+                variant="primary"
+                size="lg"
+                as={Link}
+                href={user ? "/home" : "/signup"}
+              >
                 Get Started
               </Button>
             </Stack>

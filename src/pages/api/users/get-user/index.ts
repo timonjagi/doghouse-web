@@ -9,7 +9,6 @@ export default async function handler(
 ) {
   try {
     const { uid } = req.query;
-    debugger
     if (uid) {
       const docRef = doc(fireStore, "users", uid as string);
       const docSnap = await getDoc(docRef);
@@ -17,10 +16,10 @@ export default async function handler(
       if (docSnap.exists()) {
         const user = docSnap.data()
         console.log("Document data:", user);
-        res.status(200).json({ user })
+        return res.status(200).json({ user })
       } else {
         console.log("No such document!");
-        res.status(404);
+        return res.status(404);
       }
     } else {
       throw new Error();

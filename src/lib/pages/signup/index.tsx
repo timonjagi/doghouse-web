@@ -6,40 +6,16 @@ import {
   Stack,
   Text,
   useBreakpointValue,
-  useColorModeValue as mode,
-  StepDescription,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  Stepper,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
-  useSteps,
-  Step,
   Avatar,
   Heading,
-  Icon,
   AvatarGroup,
-  useToast,
   Button,
   Center,
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
-import { useEffect, useState } from "react";
 import { Logo } from "../../layout/Logo";
 
-import { Confirm } from "./04-confirm";
-import { SelectPath } from "./02-select-path";
-import { PetDetails } from "./03-pet-details";
-import { ContactDetails } from "./01-contact-details";
-import { Success } from "./05-success";
-
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, fireStore } from "lib/firebase/client";
-import { doc, getDoc } from "firebase/firestore";
-import { Loader } from "lib/components/Loader";
 import { LoginForm } from "lib/components/auth/LoginForm";
 import { useRouter } from "next/router";
 
@@ -120,53 +96,7 @@ const Features = () => {
 };
 
 const SignUp = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [user, loadingUser] = useAuthState(auth);
-  const [tempUserProfile, setTempUserProfile] = useState({} as any);
-  const [profileNotCreated, setProfileNotCreated] = useState(false);
-
-  const isMobile = useBreakpointValue({
-    base: true,
-    md: false,
-  });
-
-  const steps = [
-    { title: "Contact info", description: "Name, Location" },
-    { title: "Choose path", description: "Owner, Seeker" },
-    { title: "Pet details", description: "Breed, Gender, Age" },
-    { title: "Confirm", description: "Review info" },
-  ];
-
-  const { activeStep, setActiveStep } = useSteps({
-    index: 0,
-    count: steps.length,
-  });
   const router = useRouter();
-
-  useEffect(() => {
-    setModalOpen(isMobile);
-
-    try {
-      const profile = JSON.parse(localStorage.getItem("profile"));
-      if (profile) {
-        setTempUserProfile(profile);
-        if (
-          profile.name &&
-          profile.location &&
-          profile.roles &&
-          profile.pet_profiles
-        ) {
-          setActiveStep(3);
-        } else if (profile.name && profile.location && profile.roles) {
-          setActiveStep(2);
-        } else if (profile.name && profile.location) {
-          setActiveStep(1);
-        }
-      }
-    } catch (error) {
-      console.error("Error parsing or retrieving profile data:", error);
-    }
-  }, [user, loadingUser]);
 
   return (
     <Flex h="100%">
@@ -195,9 +125,9 @@ const SignUp = () => {
               h="full"
               px={useBreakpointValue({ base: "0", xl: "16" })}
             >
-              {!user?.uid && <Features />}
+              <Features />
 
-              {user?.uid && (
+              {/* {user?.uid && (
                 <Stepper
                   index={activeStep}
                   orientation="vertical"
@@ -226,7 +156,7 @@ const SignUp = () => {
                     </Step>
                   ))}
                 </Stepper>
-              )}
+              )} */}
             </Flex>
 
             <Flex align="center" h="24">
@@ -238,94 +168,29 @@ const SignUp = () => {
         </Box>
         {/* end sidebar */}
 
-        <>
-          {!loadingUser && (
-            <Center w="full" flex="1">
-              {!user?.uid && !profileNotCreated ? (
-                <Stack
-                  spacing={{ base: "6", md: "9" }}
-                  px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
-                  align="center"
-                  textAlign="center"
-                >
-                  <Heading size="lg">Let's create your account</Heading>
+        <Center w="full" flex="1">
+          <Stack
+            spacing={{ base: "6", md: "9" }}
+            px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
+            align="center"
+            textAlign="center"
+          >
+            <Heading size="lg">Let's create your account</Heading>
 
-                  <LoginForm setProfileNotCreated={setProfileNotCreated} />
+            <LoginForm />
 
-                  <HStack justify="center" spacing="1">
-                    <Text color="muted">Already&apos;t have an account?</Text>
-                    <Button
-                      variant="link"
-                      colorScheme="brand"
-                      onClick={() => router.push("/login")}
-                    >
-                      Log in
-                    </Button>
-                  </HStack>
-                </Stack>
-              ) : (
-                <Stack
-                  spacing="9"
-                  px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
-                  align="center"
-                >
-                  {isMobile && (
-                    <Stack mt="8">
-                      <Stepper
-                        size="sm"
-                        index={activeStep}
-                        gap="0"
-                        colorScheme="brand"
-                      >
-                        {steps.map((step, index) => (
-                          <Step key={index}>
-                            <StepIndicator>
-                              <StepStatus complete={<StepIcon />} />
-                            </StepIndicator>
-                            <StepSeparator />
-                          </Step>
-                        ))}
-                      </Stepper>
-                      <Text>
-                        Step {activeStep + 1}: <b>{steps[activeStep].title}</b>
-                      </Text>
-                    </Stack>
-                  )}
-
-                  {activeStep === 0 && (
-                    <ContactDetails
-                      currentStep={activeStep}
-                      setStep={setActiveStep}
-                    />
-                  )}
-
-                  {activeStep === 1 && (
-                    <SelectPath
-                      currentStep={activeStep}
-                      setStep={setActiveStep}
-                      user={user}
-                    />
-                  )}
-
-                  {activeStep === 2 && (
-                    <PetDetails
-                      currentStep={activeStep}
-                      setStep={setActiveStep}
-                    />
-                  )}
-
-                  {activeStep === 3 && (
-                    <Confirm currentStep={activeStep} setStep={setActiveStep} />
-                  )}
-
-                  {activeStep === 4 && (
-                    <Success currentStep={activeStep} setStep={setActiveStep} />
-                  )}
-                </Stack>
-              )}
-            </Center>
-          )}
-        </>
+            <HStack justify="center" spacing="1">
+              <Text color="muted">Already&apos;t have an account?</Text>
+              <Button
+                variant="link"
+                colorScheme="brand"
+                onClick={() => router.push("/login")}
+              >
+                Log in
+              </Button>
+            </HStack>
+          </Stack>
+        </Center>
       </Flex>
     </Flex>
   );

@@ -58,12 +58,10 @@ export default function Breeds({ serverState, url }: PageProps) {
           <Stack spacing="5">
             <Stack spacing="1">
               <Heading size="md" mb={{ base: "3", md: "0" }}>
-                Search breeds
+                Explore breeds
               </Heading>
 
-              <Text color="muted">
-                Find out all about your favorite furry friend
-              </Text>
+              <Text color="muted">All about your favorite furry friend</Text>
             </Stack>
 
             <InstantSearchSSRProvider {...serverState}>

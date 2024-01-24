@@ -20,13 +20,13 @@ import { RadioButton } from "lib/components/RadioButton";
 import { RadioButtonGroup } from "lib/components/RadioButtonGroup";
 
 // eslint-disable-next-line
-export const PetDetails = ({ currentStep, setStep }: any) => {
+export const PetBasics = ({ currentStep, setStep }: any) => {
   const [userProfile, setUserProfile] = useState({} as any);
   const [breeds, setBreeds] = useState([] as any[]);
   const [selectedBreed, setSelectedBreed] = useState<any>({} as any);
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedSex, setSelectedSex] = useState<string>("");
-  const [selectedAge, setSelectedAge] = useState<string>("");
+
   const [loading, setLoading] = useState(true);
 
   const toast = useToast();
@@ -51,8 +51,6 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
       if (profile.pet_profiles) {
         const petProfile = profile.pet_profiles[0];
         setSelectedBreed(petProfile.breed);
-        setSelectedAge(petProfile.age);
-        setSelectedSex(petProfile.sex);
       }
     }
   }, []);
@@ -77,7 +75,6 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
           {
             breed: selectedBreed,
             sex: selectedSex,
-            age: selectedAge,
           },
         ],
       };
@@ -107,12 +104,14 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
           onSubmit={(event) => onSubmit(event)}
         >
           <Heading size="md">
-            Awesome! Tell us about your
-            {selectedRole.includes("dog_seeker") ? " ideal " : ""} furry friend
-            🐶
+            Awesome!{" "}
+            {selectedRole.includes("dog_seeker")
+              ? "Tell us about your ideal furry friend"
+              : "Tell us about one of your amazing breeds"}
+            {" 🐶"}
           </Heading>
 
-          <Stack spacing={{ base: 3, md: 9 }}>
+          <Stack spacing={{ base: 3, md: 4 }}>
             <FormControl>
               <FormLabel htmlFor="breeds" fontWeight="semibold">
                 Breed
@@ -127,45 +126,10 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
             </FormControl>
 
             <FormControl>
-              <FormLabel htmlFor="breeds" fontWeight="semibold">
-                Age
-              </FormLabel>
-
-              <RadioButtonGroup
-                key="age"
-                size="md"
-                value={selectedAge}
-                onChange={setSelectedAge}
-              >
-                <RadioButton value="puppy">
-                  <Text
-                    fontWeight={selectedAge === "puppy" ? "semibold" : "normal"}
-                  >
-                    Puppy
-                  </Text>
-                </RadioButton>
-                <RadioButton value="adolescent">
-                  <Text
-                    fontWeight={
-                      selectedAge === "adolescent" ? "semibold" : "normal"
-                    }
-                  >
-                    Adolescent
-                  </Text>
-                </RadioButton>
-                <RadioButton value="adult">
-                  <Text
-                    fontWeight={selectedAge === "adult" ? "semibold" : "normal"}
-                  >
-                    Adult
-                  </Text>
-                </RadioButton>
-              </RadioButtonGroup>
-            </FormControl>
-
-            <FormControl>
               <FormLabel htmlFor="sex" fontWeight="semibold">
-                Sex/Gender
+                {userProfile.roles.includes("dog_seeker")
+                  ? "Preferred Sex/Gender"
+                  : "Sex/Gender"}
               </FormLabel>
 
               <RadioButtonGroup
@@ -190,10 +154,35 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
                     Female
                   </Text>
                 </RadioButton>
+                <RadioButton
+                  value={
+                    userProfile.roles?.includes("dog_seeker")
+                      ? "either"
+                      : "both"
+                  }
+                >
+                  <Text
+                    fontWeight={
+                      ["both", "either"].includes(selectedSex)
+                        ? "semibold"
+                        : "normal"
+                    }
+                  >
+                    {userProfile.roles?.includes("dog_seeker")
+                      ? "No preference"
+                      : "Both"}
+                  </Text>
+                </RadioButton>
               </RadioButtonGroup>
             </FormControl>
           </Stack>
 
+          <Text fontSize="sm" color="subtle" textAlign="start">
+            {userProfile.roles?.includes("dog_owner") ? "Have" : "Want"}{" "}
+            multiple breeds? That's awesome! You can create additional{" "}
+            {userProfile.roles?.includes("dog_owner") ? "profiles" : "listings"}{" "}
+            later.
+          </Text>
           <ButtonGroup width="100%" mb="4">
             <Button
               onClick={() => setStep(currentStep - 1)}
@@ -206,7 +195,7 @@ export const PetDetails = ({ currentStep, setStep }: any) => {
             <Button
               isLoading={loading}
               type="submit"
-              isDisabled={!selectedBreed || !selectedSex || !selectedAge}
+              isDisabled={!selectedBreed || !selectedSex}
               variant="primary"
             >
               Next

@@ -32,7 +32,7 @@ import {
   FiTrash2,
   FiUser,
 } from "react-icons/fi";
-import PetCard from "../pets/PetCard";
+import PetCard from "../my-breeds/PetCard_old";
 import router from "next/router";
 
 type ActivityCardProps = {
@@ -169,13 +169,18 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
               >
                 {post.userName}
               </Text> */}
-              <IconButton icon={<FiUser />} aria-label="View User" size="sm" />
 
-              <IconButton
-                icon={<FiMessageSquare />}
+              <Button
+                rightIcon={<FiMessageSquare />}
                 aria-label="Send Message"
                 size="sm"
-              ></IconButton>
+                fontSize="xs"
+                color="blackAlpha.700"
+              >
+                12
+              </Button>
+
+              <IconButton icon={<FiUser />} aria-label="View User" size="sm" />
 
               <IconButton
                 icon={<FiBellOff />}

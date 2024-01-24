@@ -34,6 +34,8 @@ const Home = () => {
 
         <Features />
 
+        <PopularBreeds />
+
         <Process />
 
         {/* <BreedGroups /> */}
@@ -43,8 +45,6 @@ const Home = () => {
         <Cta />
 
         <CtaWithImage />
-
-        <PopularBreeds />
 
         {/* <LogoGrid /> */}
       </Flex>
