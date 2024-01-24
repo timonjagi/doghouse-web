@@ -32,7 +32,6 @@ import {
   FiTrash2,
   FiUser,
 } from "react-icons/fi";
-import PetCard from "../my-breeds/PetCard_old";
 import router from "next/router";
 
 type ActivityCardProps = {

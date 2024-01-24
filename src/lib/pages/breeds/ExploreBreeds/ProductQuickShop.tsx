@@ -81,9 +81,7 @@ export const ProductQuickShop = (props: ProductQuickShopProps) => {
             </Stack> */}
           </HStack>
 
-          <Box flex="1">
-            <Gallery images={product.images} />
-          </Box>
+          <Box flex="1">{/* <Gallery images={product.images} /> */}</Box>
         </Stack>
 
         <Stack>

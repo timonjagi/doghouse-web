@@ -95,11 +95,14 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
         <Stack mt={{ base: 4, md: 8 }} w="full">
           <Stepper size="sm" index={activeStep} gap="0" colorScheme="brand">
             {steps.map((step, index) => (
-              <Step key={index} gap="0">
+              <Step key={index}>
                 <StepIndicator>
                   <StepStatus complete={<StepIcon />} />
                 </StepIndicator>
-                <StepSeparator _horizontal={{ ml: "0" }} />
+                <StepSeparator
+                  //@ts-ignore
+                  _horizontal={{ ml: "0" }}
+                />
               </Step>
             ))}
           </Stepper>
