@@ -1,4 +1,5 @@
 import {
+  Center,
   Container,
   Flex,
   HStack,
@@ -12,6 +13,7 @@ import {
   Stack,
   useBreakpointValue,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
@@ -25,10 +27,11 @@ import { UserProfile } from "lib/models/user-profile";
 import OnboardingModal from "../onboarding";
 import Welcome from "../onboarding/00-welcome";
 import { Success } from "../onboarding/05-success";
+import HeaderButtonGroup from "./HeaderButtonGroup";
+import { Loader } from "../../components/Loader";
 
-const Home = ({ activities }) => {
+const Home = ({ activities, userProfile }) => {
   const [user, loading, error] = useAuthState(auth);
-  const [userProfile, setUserProfile] = useState({} as any);
   const [selectedPost, setSelectedPost] = useState();
 
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
@@ -39,11 +42,13 @@ const Home = ({ activities }) => {
   const router = useRouter();
   const { isOpen, onToggle, onClose } = useDisclosure();
   const isDesktop = useBreakpointValue({ base: false, md: true });
+  const toast = useToast();
 
   const fetchUserProfile = async (): Promise<UserProfile> => {
     setLoadingUserProfile(true);
-    console.log("laoding user profile");
     try {
+      console.log("laoding user profile", user.uid);
+
       const response = await fetch(
         `/api/users/get-user?${new URLSearchParams({
           uid: user.uid,
@@ -53,22 +58,35 @@ const Home = ({ activities }) => {
           headers: { "Content-Type": "application/json" },
         }
       );
+      console.log("Response status: ", response.status);
 
       if (response.status === 200) {
         const profile = await response.json();
-        console.log(profile);
+        console.log("profile ", profile);
 
-        setUserProfile(profile);
+        setUserProfile(profile.user);
         return profile;
       } else {
-        setShowOnboardingModal(showOnboardingModal);
+        setShowOnboardingModal(true);
         console.log("user profile not found");
       }
-    } catch (error) {}
+      setLoadingUserProfile(false);
+    } catch (error) {
+      toast({
+        title: error.message,
+        status: "error",
+      });
+      setLoadingUserProfile(false);
+    }
   };
 
   useEffect(() => {
     if (!loading && !user) {
+      toast({
+        title: "You're not logged in",
+        description: "Please login to access your dashboard",
+        status: "info",
+      });
       router.push("/");
     } else if (!loading && user) {
       fetchUserProfile();
@@ -81,78 +99,41 @@ const Home = ({ activities }) => {
     setSelectedPost(post);
   };
 
-  const onClickMenuLink = (link) => {};
-
   const onCloseOnboardingModal = () => {
     setShowOnboardingModal(false);
     setShowSuccessAlert(true);
   };
 
   return (
-    <Container>
-      <HStack justify="space-between" align="start">
-        <Heading pb="4" size={{ base: "xs", sm: "md" }}>
-          Hi, {user.displayName} 👋
-        </Heading>
-
-        <HStack spacing="1" direction="row">
-          <IconButton
-            icon={<FiBell />}
-            aria-label="Notifications"
-            aria-current={
-              router.pathname.includes("account/notifications")
-                ? "page"
-                : "false"
-            }
-            onClick={() => onClickMenuLink("/account/notifications")}
-          />
-
-          <IconButton
-            aria-label='"'
-            icon={<FiUser />}
-            aria-current={
-              router.pathname.includes("account/profile") ? "page" : "false"
-            }
-            onClick={() => onClickMenuLink("/account/profile")}
-          />
-
-          <IconButton
-            icon={<FiSettings />}
-            onClick={() => onClickMenuLink("/account/settings")}
-            aria-current={
-              router.pathname.includes("account/settings") ? "page" : "false"
-            }
-            aria-label="Settings"
-          />
-        </HStack>
-      </HStack>
-      {/* <NewsletterForm /> */}
-
-      <Stack
-        direction={{ base: "column", lg: "row" }}
-        spacing={{ base: "5", lg: "8" }}
-        justify="space-between"
-      >
+    <Container h="full">
+      <>
+        <HeaderButtonGroup />
         <Stack
-          spacing="4"
-          flex="1"
-          direction="column"
-          w={{ base: "full", lg: "lg" }}
-          minW="sm"
+          direction={{ base: "column", lg: "row" }}
+          spacing={{ base: "5", lg: "8" }}
+          justify="space-between"
         >
-          <ActivityFeedCard
-            activities={activities}
-            userProfile={userProfile}
-            isDesktop={isDesktop}
-            onViewPost={onViewPost}
-          />
-        </Stack>
+          <Stack
+            spacing="4"
+            flex="1"
+            direction="column"
+            w={{ base: "full", lg: "lg" }}
+            minW="sm"
+          >
+            <ActivityFeedCard
+              activities={activities}
+              userProfile={userProfile}
+              isDesktop={isDesktop}
+              onViewPost={onViewPost}
+            />
+          </Stack>
 
-        <Flex direction="column" flex="1" maxW={{ base: "none", lg: "sm" }}>
-          {/* <CompleteProfileBanner />*/}
-          {/* <NewsletterForm /> */}
-        </Flex>
-      </Stack>
+          <Flex direction="column" flex="1" maxW={{ base: "none", lg: "sm" }}>
+            {/* <CompleteProfileBanner />*/}
+            {/* <NewsletterForm /> */}
+          </Flex>
+        </Stack>
+      </>
 
       <Modal
         onClose={onClose}

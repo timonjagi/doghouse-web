@@ -2,37 +2,34 @@ import {
   Stack,
   HStack,
   Avatar,
-  AvatarBadge,
   Box,
   Text,
-  useColorModeValue,
   Button,
   Divider,
-  Flex,
-  Icon,
   Spacer,
   useBreakpointValue,
   useToast,
   Badge,
   IconButton,
 } from "@chakra-ui/react";
-import { doc, updateDoc } from "firebase/firestore";
-import { fireStore } from "lib/firebase/client";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+import { auth, fireStore } from "lib/firebase/client";
 import moment from "moment";
 import React, { useState } from "react";
 import {
   FiBellOff,
-  FiGitlab,
-  FiHeart,
-  FiMapPin,
   FiMessageSquare,
   FiMoreVertical,
-  FiPlus,
-  FiSettings,
-  FiTrash2,
   FiUser,
 } from "react-icons/fi";
 import router from "next/router";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 type ActivityCardProps = {
   post: any;
@@ -45,17 +42,15 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   userProfile,
   onViewPost,
 }) => {
+  const [user] = useAuthState(auth);
   const toast = useToast();
   const [loading, setLoading] = useState(false);
 
   const ownPost = [post.userId, post.ownerId, post.seekerId].includes(
-    userProfile.userId
+    userProfile?.userId
   );
 
-  const isMobile = useBreakpointValue({
-    base: true,
-    sm: false,
-  });
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
 
   const onSearch = () => {};
 
@@ -89,7 +84,24 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
     }
   };
 
-  const onMakeOffer = () => {};
+  const onSendMessage = async () => {
+    setIsCreatingChat(true);
+    try {
+      const chatDocRef = await addDoc(collection(fireStore, "chats"), {
+        users: [user.uid, post.seekerId ? post.seekerId : post.ownerId],
+        lastSent: serverTimestamp(),
+      });
+
+      console.log(chatDocRef);
+      router.push(`/inbox/${chatDocRef.id}`);
+    } catch (error: any) {
+      toast({
+        title: error.message,
+        status: "error",
+      });
+    }
+    setIsCreatingChat(false);
+  };
 
   function getHighlightedText(text, highlight) {
     // Split text on highlight term, include term itself into parts, ignore case
@@ -160,32 +172,32 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
               {post.title === "Pet added" ? "Listing" : "Request"}
             </Badge>
             <HStack spacing="3">
-              {/* <Text
-                fontSize="xs"
-                color="subtle"
-                fontWeight="medium"
-                textTransform="capitalize"
-              >
-                {post.userName}
-              </Text> */}
+              {!ownPost && (
+                <IconButton
+                  icon={<FiMessageSquare />}
+                  aria-label="Send Message"
+                  size="sm"
+                  color="blackAlpha.700"
+                  onClick={onSendMessage}
+                  isLoading={isCreatingChat}
+                />
+              )}
 
-              <Button
-                rightIcon={<FiMessageSquare />}
-                aria-label="Send Message"
-                size="sm"
-                fontSize="xs"
-                color="blackAlpha.700"
-              >
-                12
-              </Button>
+              {!ownPost && (
+                <IconButton
+                  icon={<FiUser />}
+                  aria-label="View User"
+                  size="sm"
+                />
+              )}
 
-              <IconButton icon={<FiUser />} aria-label="View User" size="sm" />
-
-              <IconButton
-                icon={<FiBellOff />}
-                aria-label="Send Message"
-                size="sm"
-              ></IconButton>
+              {!ownPost && (
+                <IconButton
+                  icon={<FiBellOff />}
+                  aria-label="Send Message"
+                  size="sm"
+                ></IconButton>
+              )}
             </HStack>
           </HStack>
         </Stack>

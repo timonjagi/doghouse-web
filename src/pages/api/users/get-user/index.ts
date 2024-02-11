@@ -16,13 +16,13 @@ export default async function handler(
       if (docSnap.exists()) {
         const user = docSnap.data()
         console.log("Document data:", user);
-        return res.status(200).json({ user })
+        return res.status(200).json({ ...user })
       } else {
         console.log("No such document!");
         return res.status(404);
       }
     } else {
-      throw new Error();
+      throw new Error('Bad Request: uid must be present');
     }
     // eslint-disable-next-line
   } catch (error: any) {

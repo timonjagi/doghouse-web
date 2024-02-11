@@ -35,6 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
 
     { path: "/home", layout: DashboardLayout },
     { path: "/inbox", layout: DashboardLayout },
+    { path: "/inbox/[chatId]", layout: DashboardLayout },
 
     { path: "/breeds", layout: DashboardLayout },
     { path: "/breeds/[breedName]", layout: DashboardLayout },
@@ -89,7 +90,7 @@ const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
         <>
           <Header />
           <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
-            <RouteGuard>{children}</RouteGuard>
+            {children}
           </Box>
         </>
       )}

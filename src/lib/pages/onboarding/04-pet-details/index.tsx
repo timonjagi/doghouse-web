@@ -108,6 +108,12 @@ export const PetDetails = ({ currentStep, setStep, onClose }) => {
       groups: [petProfile.breed.breedGroup],
     };
 
+    userPayload.breeds = userPayload.pet_profiles.reduce((acc, profile) => {
+      const breed: string = profile.breed.name;
+      acc.push(breed);
+      return acc;
+    }, []);
+
     delete userPayload.pet_profiles;
 
     await setDoc(doc(fireStore, "users", userProfile.userId), userPayload);

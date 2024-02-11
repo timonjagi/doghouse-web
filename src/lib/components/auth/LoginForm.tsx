@@ -107,11 +107,8 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
 
       if (result) {
         setCodeVerified(true);
-
-        if (!loading && user) {
-          localStorage.setItem("authUser", JSON.stringify(user));
-          router.push("/home");
-        }
+        localStorage.setItem("user", JSON.stringify(result.user));
+        router.push("/home");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -126,7 +123,7 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
             : err.message,
         description:
           err.code === "auth/invalid-verification-code"
-            ? "Please try again or try resending code"
+            ? "Please try again or try resending the code"
             : err.name,
         status: "error",
         duration: 5000,
