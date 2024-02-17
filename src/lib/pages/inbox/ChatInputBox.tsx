@@ -28,7 +28,7 @@ export default function Chatbox({ scrollRef, id }: any) {
     scrollRef.current.scrollIntoView({ behavior: "smooth" });
   };
   return (
-    <Flex direction="row" position="sticky" bottom={0}>
+    <Flex direction="row" position="sticky" bottom={10}>
       <FormControl
         p={2}
         zIndex={3}

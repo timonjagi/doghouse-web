@@ -31,7 +31,7 @@ const Message = ({ message, photoURL, id }: any) => {
   );
 };
 
-export default function ChatBox({ scrollRef, id, chatType }: any) {
+export default function ChatBox({ scrollRef, id }: any) {
   const [messages] = useCollectionData(
     query(
       collection(fireStore, "chats", id, "messages"),
@@ -40,24 +40,28 @@ export default function ChatBox({ scrollRef, id, chatType }: any) {
   );
 
   return (
-    <Flex
-      maxW="sm"
-      grow="1"
-      align="start"
-      justify="flex-end"
-      direction="column"
-      overflowY="scroll"
-      p="10px"
-    >
-      {messages?.map((msg) => (
-        <Message
-          key={Math.random()}
-          id={msg.uid}
-          message={msg.Message}
-          photoURL={msg.photoURL}
-        />
-      ))}
-      <div ref={scrollRef}></div>
-    </Flex>
+    <Box h="full">
+      {!messages && <Box>Hello chatbox</Box>}
+      {messages && (
+        <Flex
+          maxW="sm"
+          grow="1"
+          align="start"
+          justify="flex-end"
+          direction="column"
+          overflowY="scroll"
+          p="10px"
+        >
+          {messages?.map((msg) => (
+            <Message
+              key={Math.random()}
+              id={msg.uid}
+              message={msg.Message}
+              photoURL={msg.photoURL}
+            />
+          ))}
+        </Flex>
+      )}
+    </Box>
   );
 }

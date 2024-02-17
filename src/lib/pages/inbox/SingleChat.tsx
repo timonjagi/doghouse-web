@@ -1,19 +1,26 @@
 import { Avatar, Flex, Text, useColorMode } from "@chakra-ui/react";
-import { collection, query, where } from "firebase/firestore";
+import { collection, doc, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useCollectionData } from "react-firebase-hooks/firestore";
+import { useDocument } from "react-firebase-hooks/firestore";
 import { auth, fireStore } from "lib/firebase/client";
+import { useEffect, useState } from "react";
 
-export default function SingleChat({ users, id }: any) {
+export default function SingleChat({ key, id, users }: any) {
   const [user] = useAuthState(auth);
   const { colorMode } = useColorMode();
   const router = useRouter();
-  // @ts-ignore
-  const chatPartner = users?.find((user) => user.userId !== user.uid);
-  const handleClick = () => {
-    router.push(`/inbox/${id}`);
-  };
+  const [chatPartner, setChatPartner] = useState(null);
+  const chatPartnerId = users?.find((userId) => userId !== user.uid);
+  const [chatPartnerDoc, loadingChatPartnerDoc, errorLoadingChatPartnerDoc] =
+    useDocument(doc(fireStore, "users", chatPartnerId));
+
+  useEffect(() => {
+    if (chatPartnerDoc) {
+      setChatPartner({ ...chatPartnerDoc, id: chatPartnerDoc.id });
+      console.log("chat Partner: ", chatPartnerDoc.data());
+    }
+  }, [chatPartnerDoc]);
 
   return (
     <Flex
@@ -21,7 +28,7 @@ export default function SingleChat({ users, id }: any) {
       p={4}
       cursor="pointer"
       _hover={{ bg: colorMode === "light" ? "gray.200" : "gray.700" }}
-      onClick={handleClick}
+      onClick={() => router.push("/inbox/" + id)}
     >
       <Avatar
         mr={4}

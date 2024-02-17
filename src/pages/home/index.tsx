@@ -25,47 +25,16 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
-  const fetchUserProfile = async (): Promise<UserProfile> => {
-    try {
-      console.log("laoding user profile", user.uid);
-
-      const response = await fetch(
-        `/api/users/get-user?${new URLSearchParams({
-          uid: user.uid,
-        })}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log("Response status: ", response.status);
-
-      if (response.status === 200) {
-        const profile = await response.json();
-        console.log("profile ", profile);
-
-        return profile;
-      } else {
-        console.log("user profile not found");
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const userProfile = fetchUserProfile();
-  console.log(userProfile);
   debugger;
   return {
     props: {
       activityData: [...data].sort(),
-      //profile: userProfile,
     },
   };
 }
 
 const HomePage = ({ activityData }) => {
-  return <Home activities={activityData} userProfile={false} />;
+  return <Home activities={activityData} />;
 };
 
 export default HomePage;

@@ -14,6 +14,7 @@ import {
   useBreakpointValue,
   Divider,
   Icon,
+  useDisclosure,
 } from "@chakra-ui/react";
 import type { ConfirmationResult } from "firebase/auth";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
@@ -51,6 +52,8 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
     base: true,
     sm: false,
   });
+
+  const { isOpen, onToggle, onClose } = useDisclosure();
 
   const sendVerificationCode = async (event) => {
     event.preventDefault();
@@ -107,6 +110,7 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
 
       if (result) {
         setCodeVerified(true);
+        onClose();
         localStorage.setItem("user", JSON.stringify(result.user));
         router.push("/home");
       }

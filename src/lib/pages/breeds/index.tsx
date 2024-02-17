@@ -42,7 +42,7 @@ export default function Breeds({ serverState, url }: PageProps) {
   return (
     <>
       <Head>
-        <title>Search breeds</title>
+        <title>Explore breeds</title>
       </Head>
       <Box as="section" height="100vh">
         <Container

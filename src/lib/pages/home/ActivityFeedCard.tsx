@@ -12,7 +12,6 @@ import {
   Button,
 } from "@chakra-ui/react";
 import React from "react";
-import Activity from "./Activity";
 import { FiPlus, FiSearch } from "react-icons/fi";
 import ActivityCard from "./ActivityCard";
 
@@ -25,8 +24,6 @@ type ActivityCardProps = {
 
 const ActivityFeedCard: React.FC<ActivityCardProps> = ({
   activities,
-  userProfile,
-  isDesktop,
   onViewPost,
 }) => {
   return (
@@ -76,7 +73,6 @@ const ActivityFeedCard: React.FC<ActivityCardProps> = ({
         {activities.map((activity) => (
           <ActivityCard
             post={activity}
-            userProfile={userProfile}
             onViewPost={() => onViewPost(activity)}
           />
         ))}

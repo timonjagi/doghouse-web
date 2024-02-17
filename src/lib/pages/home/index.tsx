@@ -1,13 +1,10 @@
 import {
+  Box,
   Center,
   Container,
   Flex,
-  HStack,
-  Heading,
-  IconButton,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalOverlay,
   Stack,
@@ -20,9 +17,6 @@ import { auth } from "lib/firebase/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import ActivityFeedCard from "./ActivityFeedCard";
-import { FiUser, FiSettings, FiBell } from "react-icons/fi";
-import { NewsletterForm } from "./NewsletterForm";
-import { CompleteProfileBanner } from "./CompleteProfileBanner";
 import { UserProfile } from "lib/models/user-profile";
 import OnboardingModal from "../onboarding";
 import Welcome from "../onboarding/00-welcome";
@@ -47,7 +41,7 @@ const Home = ({ activities, userProfile }) => {
   const fetchUserProfile = async (): Promise<UserProfile> => {
     setLoadingUserProfile(true);
     try {
-      console.log("laoding user profile", user.uid);
+      console.log("loading user profile", user?.uid);
 
       const response = await fetch(
         `/api/users/get-user?${new URLSearchParams({
@@ -64,13 +58,13 @@ const Home = ({ activities, userProfile }) => {
         const profile = await response.json();
         console.log("profile ", profile);
 
-        setUserProfile(profile.user);
-        return profile;
+        localStorage.setItem("profile", JSON.stringify(profile));
       } else {
         setShowOnboardingModal(true);
         console.log("user profile not found");
       }
       setLoadingUserProfile(false);
+      return;
     } catch (error) {
       toast({
         title: error.message,
@@ -81,19 +75,17 @@ const Home = ({ activities, userProfile }) => {
   };
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !error && !user) {
       toast({
         title: "You're not logged in",
         description: "Please login to access your dashboard",
         status: "info",
       });
       router.push("/");
-    } else if (!loading && user) {
+    } else if (!loading && user.uid) {
       fetchUserProfile();
     }
-  }, []);
-
-  useEffect(() => {});
+  }, [loading, error, user]);
 
   const onViewPost = (post) => {
     setSelectedPost(post);
@@ -106,34 +98,46 @@ const Home = ({ activities, userProfile }) => {
 
   return (
     <Container h="full">
-      <>
-        <HeaderButtonGroup />
-        <Stack
-          direction={{ base: "column", lg: "row" }}
-          spacing={{ base: "5", lg: "8" }}
-          justify="space-between"
-        >
-          <Stack
-            spacing="4"
-            flex="1"
-            direction="column"
-            w={{ base: "full", lg: "lg" }}
-            minW="sm"
-          >
-            <ActivityFeedCard
-              activities={activities}
-              userProfile={userProfile}
-              isDesktop={isDesktop}
-              onViewPost={onViewPost}
-            />
-          </Stack>
+      <Box h="full">
+        {loadingUserProfile ? (
+          <Center h="full">
+            <Loader />
+          </Center>
+        ) : (
+          <Box>
+            <HeaderButtonGroup />
+            <Stack
+              direction={{ base: "column", lg: "row" }}
+              spacing={{ base: "5", lg: "8" }}
+              justify="space-between"
+            >
+              <Stack
+                spacing="4"
+                flex="1"
+                direction="column"
+                w={{ base: "full", lg: "lg" }}
+                minW="sm"
+              >
+                <ActivityFeedCard
+                  activities={activities}
+                  userProfile={userProfile}
+                  isDesktop={isDesktop}
+                  onViewPost={onViewPost}
+                />
+              </Stack>
 
-          <Flex direction="column" flex="1" maxW={{ base: "none", lg: "sm" }}>
-            {/* <CompleteProfileBanner />*/}
-            {/* <NewsletterForm /> */}
-          </Flex>
-        </Stack>
-      </>
+              <Flex
+                direction="column"
+                flex="1"
+                maxW={{ base: "none", lg: "sm" }}
+              >
+                {/* <CompleteProfileBanner />*/}
+                {/* <NewsletterForm /> */}
+              </Flex>
+            </Stack>
+          </Box>
+        )}
+      </Box>
 
       <Modal
         onClose={onClose}
@@ -149,7 +153,7 @@ const Home = ({ activities, userProfile }) => {
             )}
             {showOnboardingSteps && (
               <OnboardingModal
-                userProfile={userProfile}
+                userProfile={JSON.parse(localStorage.getItem("profile"))}
                 onClose={() => onCloseOnboardingModal()}
               />
             )}

@@ -19,7 +19,7 @@ export default async function handler(
         return res.status(200).json({ ...user })
       } else {
         console.log("No such document!");
-        return res.status(404);
+        return res.status(404).json({ message: 'User not found' });
       }
     } else {
       throw new Error('Bad Request: uid must be present');

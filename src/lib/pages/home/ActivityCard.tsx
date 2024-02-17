@@ -16,8 +16,10 @@ import {
   addDoc,
   collection,
   doc,
+  query,
   serverTimestamp,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { auth, fireStore } from "lib/firebase/client";
 import moment from "moment";
@@ -30,27 +32,29 @@ import {
 } from "react-icons/fi";
 import router from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
 
 type ActivityCardProps = {
   post: any;
-  userProfile: any;
   onViewPost: any;
 };
 
-const ActivityCard: React.FC<ActivityCardProps> = ({
-  post,
-  userProfile,
-  onViewPost,
-}) => {
+const ActivityCard: React.FC<ActivityCardProps> = ({ post, onViewPost }) => {
   const [user] = useAuthState(auth);
   const toast = useToast();
-  const [loading, setLoading] = useState(false);
 
   const ownPost = [post.userId, post.ownerId, post.seekerId].includes(
-    userProfile?.userId
+    user?.uid
   );
 
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+
+  const [chatValues, loading, error] = useCollection(
+    query(
+      collection(fireStore, "chats"),
+      where("users", "array-contains", user.uid)
+    )
+  );
 
   const onSearch = () => {};
 
@@ -61,7 +65,6 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
   const onDeleteOwn = () => {};
 
   const onLike = async () => {
-    setLoading(true);
     try {
       const activityDocRef = doc(fireStore, "activity", post.id as string);
       await updateDoc(activityDocRef, {
@@ -75,7 +78,6 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
         status: "success",
       });
     } catch (error) {
-      setLoading(false);
       toast({
         title: "Error liking post",
         description: error.message,
@@ -86,6 +88,20 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
 
   const onSendMessage = async () => {
     setIsCreatingChat(true);
+    if (!loading && !error && chatValues) {
+      const chats = chatValues?.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      // @ts-ignore
+      let existingChat = chats.find((chat) => chat.users.includes(user.uid));
+
+      if (existingChat) {
+        console.log("existing chat", existingChat);
+        return router.push(`/inbox/${existingChat.id}`);
+      }
+    }
+
     try {
       const chatDocRef = await addDoc(collection(fireStore, "chats"), {
         users: [user.uid, post.seekerId ? post.seekerId : post.ownerId],

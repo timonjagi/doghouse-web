@@ -1,7 +1,5 @@
 import {
   Stack,
-  Heading,
-  useBreakpointValue,
   Alert,
   Text,
   AlertIcon,
@@ -10,13 +8,11 @@ import {
   PinInput,
   PinInputField,
   Button,
-  ButtonGroup,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  Spacer,
   Center,
 } from "@chakra-ui/react";
 
