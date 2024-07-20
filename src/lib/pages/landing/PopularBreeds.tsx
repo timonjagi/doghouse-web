@@ -32,7 +32,6 @@ import router, { useRouter } from "next/router";
 import { useState } from "react";
 import { MdOutlineChevronRight } from "react-icons/md";
 import breeds from "../../data/breeds_with_group.json";
-import { BreedCard } from "../breeds/BreedCard";
 
 export const PopularBreeds = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });

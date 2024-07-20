@@ -19,10 +19,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { FiHelpCircle, FiBell } from "react-icons/fi";
 
 import { Logo } from "./Logo";
-import { Sidebar } from "./Sidebar";
 
-import UserProfileMenu from "lib/components/auth/UserProfileMenu";
-import { auth } from "lib/firebase/client";
 import { ToggleButton } from "./ToggleButton";
 
 const Header = () => {
@@ -33,8 +30,6 @@ const Header = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
   // const { pathname } = router;
-
-  const [user] = useAuthState(auth);
 
   return (
     <Box
@@ -107,7 +102,7 @@ const Header = () => {
                 )} */}
               </ButtonGroup>
 
-              {user ? (
+              {/* {user ? (
                 <UserProfileMenu
                   name={user?.displayName || ""}
                   image={user?.photoURL || ""}
@@ -124,7 +119,7 @@ const Header = () => {
                     Log in
                   </Button>
                 </HStack>
-              )}
+              )} */}
             </HStack>
           ) : (
             <Flex align="center">
@@ -140,7 +135,7 @@ const Header = () => {
                 aria-label="Open Menu"
                 onClick={onToggle}
               /> */}
-              {user ? (
+              {/* {user ? (
                 <UserProfileMenu
                   name={user?.displayName || ""}
                   image={user?.photoURL || ""}
@@ -161,22 +156,8 @@ const Header = () => {
                     </HStack>
                   )}
                 </>
-              )}
+              )} */}
 
-              <Drawer
-                isOpen={isOpen}
-                placement="left"
-                onClose={onClose}
-                isFullHeight
-                preserveScrollBarGap
-                // Only disabled for showcase
-                trapFocus={false}
-              >
-                <DrawerOverlay />
-                <DrawerContent>
-                  <Sidebar onClose={onClose} />
-                </DrawerContent>
-              </Drawer>
             </Flex>
           )}
         </Flex>

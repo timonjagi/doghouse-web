@@ -12,8 +12,8 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { HiChevronRight } from "react-icons/hi";
-import Video from "next-video";
-export default function Hero({ user }) {
+
+export default function Hero() {
   return (
     <Box w="full" bg="gray.800" as="section" position="relative">
       <Box pt="16" py="32" position="relative" zIndex={1}>
@@ -54,7 +54,7 @@ export default function Hero({ user }) {
             >
               <Button
                 as={Link}
-                href={user ? "/home" : "/signup"}
+                href={""}
                 variant="primary"
                 color="brand.500"
                 backgroundColor="brand.500"
@@ -69,7 +69,7 @@ export default function Hero({ user }) {
               </Button>
               <HStack
                 as={Link}
-                href={user ? "/home" : "/login"}
+                href={""}
                 transition="background 0.2s"
                 justify={{
                   base: "center",
@@ -84,7 +84,7 @@ export default function Hero({ user }) {
                   bg: "whiteAlpha.300",
                 }}
               >
-                <span>Already a member? Log in</span>
+                <span>Learn more</span>
                 <HiChevronRight />
               </HStack>
             </Stack>
@@ -103,22 +103,14 @@ export default function Hero({ user }) {
         align="center"
       >
         <Box position="relative" w="full" h="full">
-          {/* <Img
-            src="images/hero_2_2.png"
+          <Img
+            src="images/hero.jpg"
             alt="Main Image"
             w="full"
             h="full"
             objectFit="cover"
             objectPosition="90% center"
             position="absolute"
-          /> */}
-          <Video
-            autoPlay
-            muted
-            loop
-            controls={false}
-            src={require("../../../../videos/hero.mp4")}
-            className="video"
           />
           <Box position="absolute" w="full" h="full" bg="blackAlpha.400" />
         </Box>

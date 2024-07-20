@@ -8,7 +8,6 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { auth } from "lib/firebase/client";
 import Link from "next/link";
 import * as React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -43,8 +42,6 @@ const EmbeddedIframe = () => {
 export default EmbeddedIframe;
 
 export const CtaWithImage = () => {
-  const isMobile = useBreakpointValue({ base: true, md: false });
-  const [user, loading, error] = useAuthState(auth);
 
   return (
     <Box bg="bg-surface">
@@ -112,13 +109,13 @@ export const CtaWithImage = () => {
                 variant="primary"
                 size="lg"
                 as={Link}
-                href={user ? "/home" : "/signup"}
+                href={""}
               >
-                Get Started
+                Get the app
               </Button>
             </Stack>
           </Stack>
-          {/* <Image
+          <Image
             width="full"
             height={{
               base: "auto",
@@ -126,9 +123,7 @@ export const CtaWithImage = () => {
             }}
             objectFit="cover"
             src={"images/screenshot.png"}
-          /> */}
-
-          <EmbeddedIframe />
+          />
         </Stack>
       </Container>
     </Box>
