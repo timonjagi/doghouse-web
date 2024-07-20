@@ -223,11 +223,7 @@ const FeatureCard = (props: any) => {
 export const Process = () => (
   <Box as="section">
     <Container
-      pt="16"
-      pb={{
-        base: "16",
-        md: "32",
-      }}
+      py="sm"
     >
       <Stack
         spacing={{

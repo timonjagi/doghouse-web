@@ -11,43 +11,13 @@ import {
 import Link from "next/link";
 import * as React from "react";
 
-const EmbeddedIframe = () => {
-  const containerStyle: React.CSSProperties = {
-    position: "relative",
-    paddingBottom: "calc(82.39293139293139% + 42px)",
-    height: 0,
-  };
-
-  const iframeStyle: React.CSSProperties = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-  };
-
-  return (
-    <div style={containerStyle}>
-      <iframe
-        src="https://app.supademo.com/embed/WqOLGJBXHR2ee58zs_mer"
-        allow="clipboard-write"
-        frameBorder="0"
-        style={iframeStyle}
-      ></iframe>
-    </div>
-  );
-};
-
-export default EmbeddedIframe;
-
 export const CtaWithImage = () => {
 
   return (
-    <Box bg="bg-surface">
+    <Box>
       <Container
         py={{
           base: "16",
-          md: "24",
         }}
       >
         <Stack
@@ -120,8 +90,8 @@ export const CtaWithImage = () => {
               base: "auto",
               md: "lg",
             }}
-            objectFit="cover"
-            src={"images/screenshot.png"}
+            objectFit="contain"
+            src={"images/mockup.png"}
           />
         </Stack>
       </Container>
