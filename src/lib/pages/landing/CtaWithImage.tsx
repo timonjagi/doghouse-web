@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import * as React from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 const EmbeddedIframe = () => {
   const containerStyle: React.CSSProperties = {

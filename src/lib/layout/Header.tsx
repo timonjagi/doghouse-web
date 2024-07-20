@@ -15,7 +15,6 @@ import {
 
 import { useRouter } from "next/router";
 // import * as React from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { FiHelpCircle, FiBell } from "react-icons/fi";
 
 import { Logo } from "./Logo";
