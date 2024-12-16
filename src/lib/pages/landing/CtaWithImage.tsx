@@ -8,21 +8,16 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { auth } from "lib/firebase/client";
 import Link from "next/link";
 import * as React from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 export const CtaWithImage = () => {
-  const isMobile = useBreakpointValue({ base: true, md: false });
-  const [user, loading, error] = useAuthState(auth);
 
   return (
-    <Box bg="bg-surface">
+    <Box>
       <Container
         py={{
           base: "16",
-          md: "24",
         }}
       >
         <Stack
@@ -79,8 +74,13 @@ export const CtaWithImage = () => {
                 Learn more
               </Button>
 
-              <Button variant="primary" size="lg" as={Link} href="/signup">
-                Get Started
+              <Button
+                variant="primary"
+                size="lg"
+                as={Link}
+                href={""}
+              >
+                Get the app
               </Button>
             </Stack>
           </Stack>
@@ -90,8 +90,8 @@ export const CtaWithImage = () => {
               base: "auto",
               md: "lg",
             }}
-            objectFit="cover"
-            src={"images/screenshot.png"}
+            objectFit="contain"
+            src={"images/mockup.png"}
           />
         </Stack>
       </Container>

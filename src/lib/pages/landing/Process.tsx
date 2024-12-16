@@ -30,12 +30,12 @@ export const steps = [
       "Tell us about your lifestyle, preferences, and what breed you're looking for to help us understand your unique needs",
     icon: ImProfile,
   },
-  {
-    name: "Explore tailored matches.",
-    description:
-      "Explore a curated list of breeds that align perfectly with your lifestyle and preferences",
-    icon: FaSearch,
-  },
+  // {
+  //   name: "Explore tailored matches.",
+  //   description:
+  //     "Explore a curated list of breeds that align perfectly with your lifestyle and preferences",
+  //   icon: FaSearch,
+  // },
   {
     name: "Connect with breeders",
     description:
@@ -223,11 +223,7 @@ const FeatureCard = (props: any) => {
 export const Process = () => (
   <Box as="section">
     <Container
-      pt="8"
-      pb={{
-        base: "16",
-        md: "32",
-      }}
+      py="sm"
     >
       <Stack
         spacing={{
