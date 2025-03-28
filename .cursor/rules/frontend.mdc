@@ -1,0 +1,86 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+## Frontend Rules
+
+1. **Component Structure**
+   - Use functional components with hooks
+   - Implement proper TypeScript types
+   - Follow atomic design principles
+   - Keep components focused and reusable
+   - Document component props
+
+2. **Styling**
+   - Use Tamagui for UI components
+   - Follow consistent spacing system
+   - Implement responsive design
+   - Support dark/light mode
+   - Use theme variables
+
+3. **Forms & Validation**
+   - Use React Hook Form
+   - Implement proper error handling
+   - Show validation feedback
+   - Handle file uploads
+   - Support keyboard navigation
+
+4. **Accessibility**
+   - Follow WCAG guidelines
+   - Support screen readers
+   - Implement proper focus management
+   - Use semantic HTML
+   - Test with accessibility tools
+
+5. **Code Organization**
+   - Follow feature-based structure
+   - Separate business logic from UI
+   - Use proper file naming
+   - Implement proper imports
+   - Document complex logic
+
+6. **Testing**
+   - Write unit tests for components
+   - Test user interactions
+   - Mock external dependencies
+   - Test error scenarios
+   - Maintain test coverage
+
+**Frontend Guidelines**
+
+Below are the design guidelines to ensure a consistent and cohesive UI/UX in Pethouse:
+
+1. **Fonts & Typography**  
+   - **Primary Font**: Use system fonts (San Francisco on iOS, Roboto on Android) or a lightweight custom font if desired.  
+   - **Hierarchy**:  
+     - **H1/H2** for main headings (pet name, screen titles).  
+     - **Body** text for descriptions, forms, and messages.  
+     - **Caption** for labels or hints.
+
+2. **Color Palette**  
+   - **Primary**: #FF6B00 (accent color for CTA buttons, highlights)  
+   - **Secondary**: #4CAF50 (adoption success states, confirmations)  
+   - **Background**: #F9F9F9 (light, neutral)  
+   - **Text**: #333333 (primary text), #888888 (secondary text)
+
+3. **Spacing & Layout Rules**  
+   - **Grid/Spacing**: Use multiples of 8 for margins, paddings.  
+   - **Buttons**: Minimum height of 48px.  
+   - **Forms**: Generous vertical spacing between input fields (16px).
+
+4. **Preferred UI Library**  
+   - **Tamagui** for cross-platform styling.  
+   - Keep consistent usage of Tamagui's theming and responsive props.
+
+5. **Icon Set**  
+   - **Lucide Icons** from `@tamagui/lucide-icons`.  
+   - Minimalistic, outline-style icons for clarity.
+
+6. **Visual Language**  
+   - **Imagery**: Warm, friendly pet images.  
+   - **Illustrations**: Subtle, brand-aligned illustrations for empty states.  
+   - **Animations**: Light micro-interactions (e.g., button presses, success confirmations).
+
+---

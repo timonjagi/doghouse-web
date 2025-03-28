@@ -28,6 +28,7 @@ const Login = () => {
   const router = useRouter();
   const [user, loading, error] = useAuthState(auth);
   const toast = useToast();
+  
   useEffect(() => {
     if (!loading && user) {
       const fetchUserDoc = async () => {
