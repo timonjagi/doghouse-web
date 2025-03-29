@@ -1,32 +1,60 @@
 // components/PrivateRoute.tsx
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "lib/firebase/client";
 import { Box, Center, Flex, Spinner } from "@chakra-ui/react";
 import { Loader } from "../Loader";
+import { supabase } from "@/lib/supabase";
 
-const RouteGuard = ({ children, ...rest }) => {
+export const RouteGuard = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const [user, loading] = useAuthState(auth);
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const protectedRoutes = ["/dashoard", "profile", "account"];
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+
   useEffect(() => {
-    if (!loading) {
-      // If the authentication state is loaded
-      if (!user && protectedRoutes.includes[router.pathname]) {
+    const checkAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (!session) {
+          router.push("/login");
+          return;
+        }
+
+        setAuthenticated(true);
+      } catch (error) {
+        console.error("Auth error:", error);
         router.push("/login");
-      } else {
-        setIsAuthorized(true);
+      } finally {
+        setLoading(false);
       }
-    }
-  }, [user, loading, router]);
+    };
 
-  return loading ? (
-    <Loader />
-  ) : isAuthorized ? (
-    <Box {...rest}>{children}</Box>
-  ) : null;
+    checkAuth();
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        setAuthenticated(true);
+      } else if (event === 'SIGNED_OUT') {
+        setAuthenticated(false);
+        router.push("/login");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router]);
+
+  if (loading) {
+    return (
+      <Center h="100vh">
+        <Loader />
+      </Center>
+    );
+  }
+
+  return authenticated ? <>{children}</> : null;
 };
-
-export default RouteGuard;

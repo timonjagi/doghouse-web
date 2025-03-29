@@ -3,7 +3,6 @@ description:
 globs: 
 alwaysApply: false
 ---
-
 ## Frontend Rules
 
 1. **Component Structure**
@@ -11,76 +10,160 @@ alwaysApply: false
    - Implement proper TypeScript types
    - Follow atomic design principles
    - Keep components focused and reusable
-   - Document component props
+   - Document component props using JSDoc
+   - Use Next.js best practices for pages and layouts
 
 2. **Styling**
-   - Use Tamagui for UI components
-   - Follow consistent spacing system
-   - Implement responsive design
-   - Support dark/light mode
-   - Use theme variables
+   - Use Chakra UI v2 for components and styling
+   - Implement custom theme extending Chakra's base theme
+   - Follow consistent spacing system (multiples of 4)
+   - Support dark/light mode via Chakra's color mode
+   - Use Chakra's style props for responsive design
+   - Avoid direct CSS/SCSS files unless necessary
 
 3. **Forms & Validation**
-   - Use React Hook Form
-   - Implement proper error handling
-   - Show validation feedback
-   - Handle file uploads
+   - Use React Hook Form with Chakra UI components
+   - Implement proper error handling using Chakra's form controls
+   - Show validation feedback using Chakra's form feedback
+   - Handle file uploads with proper loading states
    - Support keyboard navigation
+   - Use Chakra's FormControl for consistent form styling
 
 4. **Accessibility**
    - Follow WCAG guidelines
-   - Support screen readers
+   - Leverage Chakra UI's built-in accessibility features
+   - Support screen readers with proper ARIA labels
    - Implement proper focus management
    - Use semantic HTML
    - Test with accessibility tools
 
 5. **Code Organization**
-   - Follow feature-based structure
-   - Separate business logic from UI
-   - Use proper file naming
-   - Implement proper imports
-   - Document complex logic
+   - Follow Next.js file-based routing convention
+   - Use feature-based structure within pages
+   - Separate business logic from UI components
+   - Implement proper imports (absolute paths)
+   - Document complex logic with JSDoc
+   - Keep pages lightweight, move logic to components/hooks
 
 6. **Testing**
-   - Write unit tests for components
+   - Write unit tests for components using Jest and Testing Library
    - Test user interactions
    - Mock external dependencies
    - Test error scenarios
    - Maintain test coverage
+   - Test responsive behavior
 
 **Frontend Guidelines**
 
-Below are the design guidelines to ensure a consistent and cohesive UI/UX in Pethouse:
+Below are the design guidelines for Pethouse using Chakra UI v2:
 
-1. **Fonts & Typography**  
-   - **Primary Font**: Use system fonts (San Francisco on iOS, Roboto on Android) or a lightweight custom font if desired.  
-   - **Hierarchy**:  
-     - **H1/H2** for main headings (pet name, screen titles).  
-     - **Body** text for descriptions, forms, and messages.  
-     - **Caption** for labels or hints.
+1. **Fonts & Typography**
+   - **Primary Font**: Inter (Chakra UI default)
+   - **Hierarchy**:
+     ```typescript
+     // Example theme configuration
+     const theme = extendTheme({
+       fonts: {
+         heading: 'Inter, sans-serif',
+         body: 'Inter, sans-serif',
+       },
+       fontSizes: {
+         xs: '0.75rem',
+         sm: '0.875rem',
+         md: '1rem',
+         lg: '1.125rem',
+         xl: '1.25rem',
+         '2xl': '1.5rem',
+         '3xl': '1.875rem',
+         '4xl': '2.25rem',
+       },
+     })
+     ```
 
-2. **Color Palette**  
-   - **Primary**: #FF6B00 (accent color for CTA buttons, highlights)  
-   - **Secondary**: #4CAF50 (adoption success states, confirmations)  
-   - **Background**: #F9F9F9 (light, neutral)  
-   - **Text**: #333333 (primary text), #888888 (secondary text)
+2. **Color Palette**
+   ```typescript
+   const theme = extendTheme({
+     colors: {
+       brand: {
+         50: '#FFF5E6',
+         100: '#FFE0B2',
+         200: '#FFCC80',
+         300: '#FFB74D',
+         400: '#FFA726',
+         500: '#FF6B00', // primary
+         600: '#FB8C00',
+         700: '#F57C00',
+         800: '#EF6C00',
+         900: '#E65100',
+       },
+       success: {
+         500: '#4CAF50',
+       },
+     },
+   })
+   ```
 
-3. **Spacing & Layout Rules**  
-   - **Grid/Spacing**: Use multiples of 8 for margins, paddings.  
-   - **Buttons**: Minimum height of 48px.  
-   - **Forms**: Generous vertical spacing between input fields (16px).
+3. **Spacing & Layout Rules**
+   - Use Chakra's built-in spacing scale (multiples of 4)
+   - Utilize Chakra's responsive array syntax for breakpoints
+   ```jsx
+   <Box p={[4, 6, 8]} margin={[2, 4]}>
+   ```
+   - Standard spacing tokens: 2 (8px), 4 (16px), 6 (24px), 8 (32px)
 
-4. **Preferred UI Library**  
-   - **Tamagui** for cross-platform styling.  
-   - Keep consistent usage of Tamagui's theming and responsive props.
+4. **Component Usage**
+   - Use Chakra UI components as primary building blocks
+   - Extend components using `chakra` factory when needed
+   - Create reusable compound components
+   ```jsx
+   export const Card = chakra(Box, {
+     baseStyle: {
+       shadow: 'md',
+       rounded: 'lg',
+       p: 6,
+     },
+   })
+   ```
 
-5. **Icon Set**  
-   - **Lucide Icons** from `@tamagui/lucide-icons`.  
-   - Minimalistic, outline-style icons for clarity.
+5. **Icon Set**
+   - Use `react-icons` library
+   - Maintain consistent icon sizes
+   ```jsx
+   <Icon as={FiUser} boxSize={5} />
+   ```
 
-6. **Visual Language**  
-   - **Imagery**: Warm, friendly pet images.  
-   - **Illustrations**: Subtle, brand-aligned illustrations for empty states.  
-   - **Animations**: Light micro-interactions (e.g., button presses, success confirmations).
+6. **Visual Language**
+   - Use Chakra's built-in transitions and animations
+   - Implement loading states using Chakra's Spinner
+   - Use Skeleton components for content loading
+   - Implement proper error states using Alert component
+   - Use Toast for success/error feedback
+
+7. **Mobile-First Development**
+   - Design for mobile layouts first
+   - Use responsive props for larger screens
+   - Prepare for future Capacitor.js integration
+   - Keep touch targets minimum 44x44px
+   - Consider native-like interactions
+
+8. **Performance**
+   - Use Next.js Image component for optimized images
+   - Implement proper code splitting
+   - Use dynamic imports for heavy components
+   - Optimize Chakra UI usage (avoid unnecessary style props)
+   - Monitor bundle size
+
+9. **State Management**
+   - Use React Query for server state
+   - Implement local state with useState/useReducer
+   - Use Context API sparingly
+   - Follow proper caching strategies
+
+10. **Error Handling**
+    - Use proper error boundaries
+    - Implement fallback UI components
+    - Show user-friendly error messages
+    - Log errors appropriately
+    - Handle network errors gracefully
 
 ---

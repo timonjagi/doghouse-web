@@ -21,6 +21,7 @@ import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useUser } from "../../../hooks/auth";
 
 import { Logo } from "../../layout/Logo";
 
@@ -28,6 +29,7 @@ const Login = () => {
   const router = useRouter();
   const [user, loading, error] = useAuthState(auth);
   const toast = useToast();
+  const { data: userData, isLoading } = useUser(user?.uid);
   
   useEffect(() => {
     if (!loading && user) {
@@ -57,6 +59,8 @@ const Login = () => {
       fetchUserDoc();
     }
   }, [user, loading, error]);
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <Flex

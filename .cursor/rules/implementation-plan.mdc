@@ -1,25 +1,45 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
-
-## Implementation Plan
+ ## Implementation Plan
 
 1. **Phase 1: Project Setup & Authentication** (In Progress)
    - [x] Initialize NextJS project with TypeScript
    - [x] Set up ESLint and Prettier
    - [x] Configure Husky for git hooks
+   - [x] Migrate to pnpm package manager
+   - [x] Remove Firebase dependencies
    - [ ] Set up Supabase project
+     - [x] Install Supabase client
+     - [x] Configure environment variables
+     - [ ] Set up auth callback route (/auth/callback)
+     - [ ] Configure social auth providers in Supabase dashboard
    - [ ] Implement authentication flow
+     - [x] Migrate LoginForm to Supabase social auth
+     - [ ] Update auth state management
+     - [ ] Implement protected routes
+     - [ ] Add auth middleware
    - [ ] Add social auth providers
+     - [x] Configure Google auth
+     - [x] Configure Facebook auth
+     - [ ] Test social auth flows
    - [ ] Complete profile management
+     - [ ] Create users table in Supabase
+     - [ ] Migrate existing user profiles
+     - [ ] Update profile management UI
    - [ ] Add role-based access control
+     - [ ] Configure RLS policies in Supabase
+     - [ ] Set up user roles
    - [ ] Implement password reset flow
 
 2. **Phase 2: Core Features** (Next)
    - [ ] Database Schema Implementation
      - [ ] Set up users table
+       - [ ] Define schema
+       - [ ] Set up RLS policies
+       - [ ] Add indexes
      - [ ] Create pets table
      - [ ] Implement listings table
      - [ ] Add applications table
@@ -27,6 +47,8 @@ alwaysApply: false
    - [ ] Pet Management
      - [ ] Create pet listing form
      - [ ] Implement photo upload
+       - [ ] Configure Supabase storage
+       - [ ] Add upload functionality
      - [ ] Add pet details view
      - [ ] Create edit functionality
    - [ ] Search & Discovery
@@ -92,5 +114,27 @@ alwaysApply: false
    - User feedback collection
    - Bug fixes and improvements
    - Documentation updates
+
+   **Files Requiring Updates:**
+1. src/pages/api/* - Remove Firebase API routes, replace with Supabase client
+2. src/lib/firebase/* - Remove directory after migration
+3. src/components/auth/* - Update remaining auth components to use Supabase
+4. src/hooks/* - Create new hooks for Supabase auth state
+5. .env.local - Update environment variables for Supabase
+6. src/pages/_app.tsx - Update auth provider
+7. src/middleware.ts - Create/update for Supabase auth
+
+**New Files Needed:**
+1. src/lib/supabase.ts - Supabase client configuration
+2. src/pages/auth/callback.ts - OAuth callback handler
+3. src/hooks/useAuth.ts - Supabase auth hook
+4. src/types/supabase.ts - Type definitions
+5. src/lib/api/auth.ts - Auth utility functions
+
+**Configuration Updates Needed:**
+1. Update next.config.js for Supabase image domains
+2. Add Supabase types generation
+3. Configure Supabase RLS policies
+4. Set up storage buckets for medias
 
 ---

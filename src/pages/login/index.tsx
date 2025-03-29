@@ -1,3 +1,14 @@
+import { useLogin } from '@/hooks/auth'
+import { useRouter } from 'next/router'
 import Login from "lib/pages/login";
 
-export default Login;
+const LoginComponent = () => {
+  const router = useRouter()
+  const { mutate: login, isPending } = useLogin()
+
+  return (
+    <LoginForm onSubmit={login} isLoading={isPending} />
+  )
+}
+
+export default LoginComponent;

@@ -39,6 +39,24 @@
 1. [Node.js](https://nodejs.org/en/) or nvm installed.
 2. `yarn` installed.
 
+## Development
+
+This project uses [pnpm](https://pnpm.io) as its package manager.
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Start production server
+pnpm start
+```
+
 ## Getting Started
 
 1. You can either click `Use this template` button on this repository and clone the repo or directly from your terminal:
