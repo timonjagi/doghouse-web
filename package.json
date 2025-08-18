@@ -4,7 +4,7 @@
   "private": true,
   "author": "timonjagi",
   "scripts": {
-    "dev": "next dev & npx next-video sync -w",
+    "dev": "next dev",
     "build": "next build",
     "build:turbo": "npx turbo build",
     "postbuild": "next-sitemap --config next-sitemap.config.js",

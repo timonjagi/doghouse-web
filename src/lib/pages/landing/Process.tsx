@@ -209,9 +209,9 @@ const FeatureCard = (props: any) => {
               width="full"
               rounded="full"
               as={Link}
-              href="/signup"
+              href="/about"
             >
-              Get started
+              Learn More
             </Button>
           </Box>
         </Stack>
@@ -221,7 +221,7 @@ const FeatureCard = (props: any) => {
 };
 
 export const Process = () => (
-  <Box as="section">
+  <Box as="section" py={{ base: "6", md: "8", lg: "12" }}>
     <Container
       py="sm"
     >
@@ -233,11 +233,11 @@ export const Process = () => (
       >
         <Stack
           spacing={{
-            base: "4",
+            base: "8",
             md: "6",
           }}
         >
-          <Stack spacing="3">
+          <Stack spacing="3" textAlign="center">
             {/* <Text color="accent" fontWeight="semibold">
               Pricing
             </Text> */}
@@ -249,20 +249,21 @@ export const Process = () => (
             >
               How it works
             </Heading>
-          </Stack>
-          <Text
-            fontSize={{
-              base: "lg",
-              md: "xl",
-            }}
-            color="muted"
-            maxW="3xl"
-          >
-            {/* Finding a quality dog breed can be difficult, but Doghouse makes it
+
+            <Text
+              fontSize={{
+                base: "lg",
+                md: "xl",
+              }}
+              color="muted"
+            >
+              {/* Finding a quality dog breed can be difficult, but Doghouse makes it
             easy to find the perfect pup for your needs */}
-            From personalized recommendations to secure reservations, we've got
-            you covered at every step.
-          </Text>
+              From personalized recommendations to secure reservations, we've got
+              you covered at every step.
+            </Text>
+          </Stack>
+
         </Stack>
         <Stack
           direction={{
@@ -276,8 +277,8 @@ export const Process = () => (
         >
           <Stack
             spacing={{
-              base: "4",
-              md: "8",
+              base: "8",
+              md: "16",
             }}
             flex="1"
             justify="center"
