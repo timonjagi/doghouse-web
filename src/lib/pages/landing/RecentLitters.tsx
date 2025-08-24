@@ -31,12 +31,25 @@ import breedGroups from "../../data/breed-groups_2.json";
 import router, { useRouter } from "next/router";
 import { useState } from "react";
 import { MdOutlineChevronRight } from "react-icons/md";
-import breeds from "../../data/breeds_with_group.json";
+// import breeds from "../../data/breeds_with_group.json";
 
-export const PopularBreeds = () => {
+export const RecentLitters = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const [selectedGroup, setSelectedGroup] = useState({} as any);
   const router = useRouter();
+
+  const breeds = [
+    {
+      name: 'golden retriever',
+      breedGroup: '',
+      image: 'images/breeds/golden_retriever/doghousekenya_golden_retriever_3.webp'
+    },
+    {
+      name: 'Golden Retriever',
+      breedGroup: 'Gun Dog',
+      image: 'images/breeds/golden_retriever/doghousekenya_golden_retriever_1.webp'
+    },
+  ]
   const popularBreeds = breeds.filter((breed) =>
     [
       "german shepherd dog",
@@ -70,7 +83,7 @@ export const PopularBreeds = () => {
                 mb={{ base: "3", md: "0" }}
                 color="white"
               >
-                Popular breeds
+                Recent Litters
               </Heading>
               <HStack spacing={{ base: "2", md: "3" }}>
                 <Text
@@ -79,7 +92,7 @@ export const PopularBreeds = () => {
                   color={useColorModeValue("brand.100", "brand.300")}
                   href="/breeds"
                 >
-                  More breeds
+                  View More
                 </Text>
                 <Icon
                   as={FaArrowRight}

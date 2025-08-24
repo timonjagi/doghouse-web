@@ -9,37 +9,39 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { BiShield } from "react-icons/bi";
 // import * as React from "react";
-import { BsChatFill } from "react-icons/bs";
-import { GiDogHouse } from "react-icons/gi";
-import { MdNotificationsActive } from "react-icons/md";
+import { BsChatFill, BsShieldShaded } from "react-icons/bs";
+import { FaPaintBrush } from "react-icons/fa";
+import { GiDogHouse, GiFamilyHouse, GiGuards } from "react-icons/gi";
+import { MdApartment, MdNotificationsActive, MdSick } from "react-icons/md";
 
 const features = [
   {
-    name: "200+ Breeders",
+    name: "Apartment Dogs",
     description:
-      "Thousands of high-quality dogs from hundreds of reputable dog breeders near you.",
-    icon: GiDogHouse,
+      "",
+    icon: MdApartment,
   },
   {
-    name: "Instant Notifications",
+    name: "Family Dogs",
     description:
-      "Get notified instantly when breeders send you a personalized offers that match what you're looking for",
-    icon: MdNotificationsActive,
+      "",
+    icon: GiFamilyHouse,
   },
   {
-    name: "In-app Chat",
+    name: "Guard Dogs",
     description:
-      "Talk directly with local dog breeders who are offering their puppies at competitive prices",
-    icon: BsChatFill,
+      "",
+    icon: BsShieldShaded,
   },
 
-  // {
-  //   name: 'Themeable',
-  //   description:
-  //     "Your style. Your blue. Customize the components as you need them. It's that simple.",
-  //   icon: FaPaintBrush,
-  // },
+  {
+    name: 'Hypoallergenic Dogs',
+    description:
+      "",
+    icon: MdSick,
+  },
   // {
   //   name: 'Fully Responsive',
   //   description:
@@ -54,13 +56,13 @@ const features = [
   // },
 ];
 
-export default function Features() {
+export default function BreedTraits() {
   return (
     <Box as="section">
       <Container
         py={{
-          base: "16",
-          md: "24",
+          base: "8",
+          md: "16",
         }}
       >
         <Stack
@@ -89,12 +91,10 @@ export default function Features() {
                 Features
               </Text> */}
               <Heading
-                size={useBreakpointValue({
-                  base: "sm",
-                  md: "md",
-                })}
+                size={{ base: "sm", md: "lg" }}
+
               >
-                Find your perfect match
+                Choose From A Large Collection of Breeds
               </Heading>
             </Stack>
             <Text
@@ -105,8 +105,7 @@ export default function Features() {
               }}
               maxW="3xl"
             >
-              We connect you with responsible breeders who are passionate about
-              matching you with the right pet, whether you&apos;re looking for
+              We are passionate about matching you with the right pet, whether you&apos;re looking for
               an obedient family pet or a guard dog.
             </Text>
           </Stack>
@@ -114,7 +113,7 @@ export default function Features() {
             columns={{
               base: 1,
               md: 2,
-              lg: 3,
+              lg: 4,
             }}
             columnGap={8}
             rowGap={{
@@ -134,8 +133,9 @@ export default function Features() {
               >
                 <Square
                   size={{
-                    base: "10",
-                    md: "12",
+                    base: "16",
+                    md: "32",
+                    lg: "64"
                   }}
                   bg="accent"
                   color="inverted"
@@ -144,8 +144,9 @@ export default function Features() {
                   <Icon
                     as={feature.icon}
                     boxSize={{
-                      base: "5",
-                      md: "6",
+                      base: "8",
+                      md: "16",
+                      lg: "24"
                     }}
                   />
                 </Square>

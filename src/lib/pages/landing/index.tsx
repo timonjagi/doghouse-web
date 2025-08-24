@@ -3,10 +3,16 @@ import { NextSeo } from "next-seo";
 
 import Footer from "lib/layout/Footer";
 
-import Features from "./Features";
 import Hero from "./Hero";
 import { Process } from "./Process";
 import { CtaWithImage } from "./CtaWithImage";
+import { RecentLitters } from "./RecentLitters";
+import { Cta } from "./Cta";
+import { LogoGrid } from "./LogoGrid";
+import { Stats } from "./Stats";
+import { Testimonials } from "./Testimonials";
+import BreedTraits from "./BreedTraits";
+import WhyDoghouse from "./WhyDoghouse";
 const Home = () => {
 
   return (
@@ -21,21 +27,25 @@ const Home = () => {
         <NextSeo title="Doghouse - Quality breeds" />
         <Hero />
 
-        {/* <Stats /> */}
 
-        <Features />
 
-        {/* <PopularBreeds /> */}
+        <BreedTraits />
 
         <Process />
 
+        <RecentLitters />
+
+        <WhyDoghouse />
+
+        {/* <Stats /> */}
+
         {/* <Testimonials /> */}
 
-        {/* <Cta /> */}
+        <Cta />
 
         <CtaWithImage />
 
-        {/* <LogoGrid /> */}
+        <LogoGrid />
       </Flex>
       <Footer />
     </Box>

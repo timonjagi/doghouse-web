@@ -52,24 +52,26 @@ export default function Hero() {
               mt="10"
               spacing={{ base: 4, md: 2 }}
             >
+
               <Button
                 as={Link}
-                href={""}
+                href={"/available-dogs"}
                 variant="primary"
                 color="brand.500"
                 backgroundColor="brand.500"
                 colorScheme="brand"
                 px="8"
+                py="4"
                 rounded="full"
                 size="lg"
                 fontSize="md"
                 fontWeight="bold"
               >
-                <Text color="white">Get Started</Text>
+                <Text color="white">Browse Dogs</Text>
               </Button>
               <HStack
                 as={Link}
-                href={""}
+                href={"/about"}
                 transition="background 0.2s"
                 justify={{
                   base: "center",

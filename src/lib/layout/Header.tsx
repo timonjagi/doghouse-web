@@ -20,6 +20,7 @@ import { FiHelpCircle, FiBell } from "react-icons/fi";
 import { Logo } from "./Logo";
 
 import { ToggleButton } from "./ToggleButton";
+import Link from "next/link";
 
 const Header = () => {
   const isDesktop = useBreakpointValue({
@@ -28,7 +29,7 @@ const Header = () => {
   });
   const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
-  // const { pathname } = router;
+  const { pathname } = router;
 
   return (
     <Box
@@ -48,34 +49,11 @@ const Header = () => {
         <Flex justify="space-between">
           <HStack spacing="4">
             <Logo />
-            {/* {isDesktop && (
+            {isDesktop && (
               <ButtonGroup variant="ghost-on-accent" spacing="1">
-                {user && (
-                  <Button
-                    rounded="full"
-                    as={Link}
-                    aria-current={
-                      pathname.includes("home") ? "page" : false
-                    }
-                    href="/home"
-                  >
-                    Home
-                  </Button>
-                )}
 
-                <Button
-                  rounded="full"
-                  as={Link}
-                  aria-current={pathname.includes("breeds") ? "page" : false}
-                  href="/breeds"
-                >
-                  Search Breeds
-                </Button>
-                <Button>Tasks</Button>
-                <Button>Bookmarks</Button>
-                <Button>Users</Button>
               </ButtonGroup>
-            )} */}
+            )}
           </HStack>
           {isDesktop ? (
             <HStack spacing="4">
@@ -88,6 +66,30 @@ const Header = () => {
                   icon={<FiSettings fontSize='1.25rem' />}
                   aria-label='Settings'
                 /> */}
+                {/* {user && ( */}
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={
+                    pathname.includes("home") ? "page" : false
+                  }
+                  href="/home"
+                >
+                  Home
+                </Button>
+                {/* )} */}
+
+                <Button>About</Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("breeds") ? "page" : false}
+                  href="/breeds"
+                >
+                  Recent Litters
+                </Button>
+
+                <Button>Contact</Button>
                 <IconButton
                   icon={<FiHelpCircle fontSize="1.25rem" />}
                   aria-label="Help Center"
@@ -129,11 +131,11 @@ const Header = () => {
                 icon={<FiBell />}
                 mr={3}
               /> */}
-              {/* <ToggleButton
+              <ToggleButton
                 isOpen={isOpen}
                 aria-label="Open Menu"
                 onClick={onToggle}
-              /> */}
+              />
               {/* {user ? (
                 <UserProfileMenu
                   name={user?.displayName || ""}
