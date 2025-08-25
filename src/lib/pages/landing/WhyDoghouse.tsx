@@ -3,60 +3,37 @@ import {
   Container,
   Heading,
   Stack,
-  HStack,
   Text,
-  Button,
-  Circle,
   Icon,
-  SimpleGrid,
-  StackDivider,
   Center,
-  Link,
   useBreakpointValue,
-  useColorModeValue as mode,
-  AspectRatio,
   Skeleton,
   Image
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import { Gallery } from "lib/components/GalleryWithCarousel/Gallery";
 // import * as React from "react";
-import { BsBookmarkHeartFill, BsCheckCircleFill } from "react-icons/bs";
-import { ImProfile } from "react-icons/im";
-import { FaSearch } from "react-icons/fa";
-import { FiCheck } from "react-icons/fi";
-import { GoListOrdered } from "react-icons/go";
+import { FaHeartbeat } from "react-icons/fa";
+import { MdBlock, MdFindInPage } from "react-icons/md";
 
 export const steps = [
   {
     name: "Health Guarantee",
     description:
-      "Tell us about your lifestyle, preferences, and what breed you're looking for to help us understand your unique needs",
-    icon: ImProfile,
+      "Our health guarantee ensures that every puppy is thoroughly vetted and comes with a clean bill of health. We're committed to providing you with a happy and healthy companion.",
+    icon: FaHeartbeat,
   },
   {
     name: "No Puppy Mills",
     description:
-      "Explore a curated list of breeds that align perfectly with your lifestyle and preferences",
-    icon: FaSearch,
+      "We're dedicated to animal welfare and only work with reputable breeders who prioritize the health and well-being of their puppies. No puppy mills or irresponsible breeding practices here!",
+    icon: MdBlock,
   },
   {
-    name: "",
+    name: "Personalized Offers",
     description:
-      "Get personalized offers from reputable breeders based on your preferences and choose the perfect pet for your needs",
-    icon: GoListOrdered,
+      "Receive tailored recommendations from trusted breeders, and find your ideal furry companion with ease. Our personalized offers make the adoption process simple and stress-free.",
+    icon: MdFindInPage,
   },
-  // {
-  //   name: "Reserve your pet",
-  //   description:
-  //     "Secure your pet with a reservation fee to ensure both your commitment and the breeder's dedication to providing a loving home",
-  //   icon: BsBookmarkHeartFill,
-  // },
-  // {
-  //   name: "Confirm your Adoption",
-  //   description:
-  //     "Once the details are settled, welcome your new family member into your loving home. Your journey with Doghouse begins here.",
-  //   icon: BsBookmarkHeartFill,
-  // },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -108,69 +85,129 @@ const WhyStep = (props: any) => {
   );
 };
 
-const WhyDoghouse = () => (
-  <Box as="section" py={{ base: "6", md: "8", lg: "16" }}>
-    <Container
-      py="sm"
-    >
-      <Stack
-        spacing={{
-          base: "8",
-          md: "16",
-        }}
+const WhyDoghouse = () => {
+
+  const images = [
+    {
+      id: '01',
+      src: 'images/breeds/doghousekenya_golden_retriever_1.webp',
+      alt: 'Golden Retriever',
+      title: 'Golden Retriever',
+    },
+    {
+      id: '02',
+      src: 'images/breeds/doghousekenya_boerboel_1.jpg',
+      alt: 'Boerboel',
+      title: 'Boerboel',
+    },
+    {
+      id: '03',
+      src: 'images/breeds/doghousekenya_great_dane_1.jpg',
+      alt: 'Great Dane',
+      title: 'Great Dane',
+    },
+    {
+      id: '04',
+      src: 'images/breeds/doghousekenya_maltese_1.jpg',
+      alt: 'Maltese',
+      title: 'Maltese',
+    },
+    {
+      id: '05',
+      src: 'images/breeds/doghousekenya_siberian_husky_1.jpg',
+      alt: 'Siberian Husky',
+      title: 'Siberian Husky',
+    },
+    {
+      id: '06',
+      src: 'images/breeds/doghousekenya_rotweiler_1.jpg',
+      alt: 'Rottweiler',
+      title: 'Rottweiler',
+    },
+    {
+      id: '07',
+      src: 'images/breeds/doghousekenya_spaniel_1.jpg',
+      alt: 'Spaniel',
+      title: 'Spaniel',
+    },
+    {
+      id: '08',
+      src: 'images/breeds/doghousekenya_st_bernard_1.jpg',
+      alt: 'St Bernard',
+      title: 'St Bernard',
+    },
+    {
+      id: '09',
+      src: 'images/breeds/doghousekenya_labrador_1.jpg',
+      alt: 'Labrador',
+      title: 'Labrador',
+    }
+
+  ]
+
+  return (
+    <Box as="section" py={{ base: "6", md: "8", lg: "16" }}>
+      <Container
+        py="sm"
       >
         <Stack
           spacing={{
             base: "8",
-            md: "6",
+            md: "16",
           }}
         >
-          <Stack spacing="3" textAlign="center">
-            {/* <Text color="accent" fontWeight="semibold">
+          <Stack
+            spacing={{
+              base: "8",
+              md: "6",
+            }}
+          >
+            <Stack spacing="3" textAlign="center">
+              {/* <Text color="accent" fontWeight="semibold">
               Pricing
             </Text> */}
-            <Heading
-              size={useBreakpointValue({
-                base: "md",
-                md: "lg",
-              })}
-            >
-              Why Choose Us?
-            </Heading>
+              <Heading
+                size={useBreakpointValue({
+                  base: "sm",
+                  md: "md",
+                })}
+              >
+                Why Choose Us?
+              </Heading>
 
-            <Text
-              fontSize={{
-                base: "lg",
-                md: "xl",
-              }}
-              color="muted"
+              <Text
+                fontSize={{
+                  base: "lg",
+                  md: "xl",
+                }}
+                color="muted"
 
-            >
-              Finding a quality dog breed can be difficult, but Doghouse makes it
-              easy to find the perfect pup for your needs
+              >
+                Finding a quality dog breed can be difficult, but Doghouse makes it
+                easy to find the perfect pup for your needs
 
-            </Text>
+              </Text>
+            </Stack>
+
           </Stack>
-
-        </Stack>
-        <Stack
-          direction={{
-            base: "column",
-            md: "row",
-          }}
-          spacing={{
-            base: "12",
-            lg: "24",
-          }}
-        >
-          <Box
-            position="relative"
-            w="auto"
-            h="auto"
-            borderRadius="xl"
+          <Stack
+            direction={{
+              base: "column",
+              md: "row",
+            }}
+            spacing={{
+              base: "12",
+              lg: "24",
+            }}
           >
-            <Image
-              src="images/breeds/golden_retriever/doghousekenya_golden_retriever_3.webp"
+            <Box
+              position="relative"
+              w="auto"
+              h="auto"
+              borderRadius="xl"
+            >
+              {/* <Image
+              src="images/breeds/doghousekenya_golden_retriever_3.webp"
               alt="Golden Retriever"
               fallback={<Skeleton />}
               width="full"
@@ -180,28 +217,33 @@ const WhyDoghouse = () => (
               }}
               objectFit="contain"
               borderRadius="lg"
-            />
+            /> */}
 
-          </Box>
-          <Stack
-            spacing={{
-              base: "8",
-              md: "16",
-            }}
-            flex="1"
-            justify="center"
+              <Gallery images={images} />
+            </Box>
 
-          >
 
-            {steps.map((step, id) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <WhyStep key={id} step={step} />
-            ))}
+            <Stack
+              spacing={{
+                base: "4",
+                md: "8",
+              }}
+              flex="1"
+              justify="center"
+
+            >
+
+              {steps.map((step, id) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <WhyStep key={id} step={step} />
+              ))}
+            </Stack>
           </Stack>
         </Stack>
-      </Stack>
-    </Container>
-  </Box>
-);
+      </Container>
+    </Box>
+  )
+}
+
 
 export default WhyDoghouse;

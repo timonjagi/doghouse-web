@@ -91,7 +91,7 @@ export default function BreedTraits() {
                 Features
               </Text> */}
               <Heading
-                size={{ base: "sm", md: "lg" }}
+                size={{ base: "sm", md: "md" }}
 
               >
                 Choose From A Large Collection of Breeds
