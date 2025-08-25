@@ -54,6 +54,6 @@ export const CarouselIconButton = (props: IconButtonProps) => (
 )
 
 export const useCarousel = (options?: KeenSliderOptions) => {
-      const defaultOptions = { selector: '.chakra-carousel__slide' }
+  const defaultOptions = { selector: '.chakra-carousel__slide' }
   return useKeenSlider<HTMLDivElement>({ ...defaultOptions, ...options })
 }

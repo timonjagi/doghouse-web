@@ -112,7 +112,8 @@ export default function BreedTraits() {
           <SimpleGrid
             columns={{
               base: 1,
-              md: 2,
+              sm: 2,
+
               lg: 4,
             }}
             columnGap={8}

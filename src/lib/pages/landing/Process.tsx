@@ -209,7 +209,7 @@ const FeatureCard = (props: any) => {
 };
 
 export const Process = () => (
-  <Box as="section" py={{ base: "4", md: "8", lg: "16" }}>
+  <Box as="section" py={{ base: "8", lg: "16" }}>
     <Container
       py="md"
     >
