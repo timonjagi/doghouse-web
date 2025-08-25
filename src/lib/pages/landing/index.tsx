@@ -31,21 +31,24 @@ const Home = () => {
 
         <BreedTraits />
 
-        <Process />
 
         <RecentLitters />
 
+        <Process />
+
+        <Stats />
+
         <WhyDoghouse />
 
-        {/* <Stats /> */}
+
 
         {/* <Testimonials /> */}
 
         <Cta />
 
-        <CtaWithImage />
+        {/* <CtaWithImage />
 
-        <LogoGrid />
+        <LogoGrid /> */}
       </Flex>
       <Footer />
     </Box>

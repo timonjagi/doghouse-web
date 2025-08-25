@@ -84,9 +84,9 @@ const Header = () => {
                   rounded="full"
                   as={Link}
                   aria-current={pathname.includes("breeds") ? "page" : false}
-                  href="/breeds"
+                  href="/blog"
                 >
-                  Recent Litters
+                  Blog
                 </Button>
 
                 <Button>Contact</Button>

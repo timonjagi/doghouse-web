@@ -40,29 +40,60 @@ export const RecentLitters = () => {
 
   const breeds = [
     {
-      name: 'golden retriever',
-      breedGroup: '',
-      image: 'images/breeds/golden_retriever/doghousekenya_golden_retriever_3.webp'
+      name: 'Golden Retriever',
+      breedGroup: 'sporting',
+      image: 'images/breeds/doghousekenya_golden_retriever_1.webp'
     },
     {
-      name: 'Golden Retriever',
-      breedGroup: 'Gun Dog',
-      image: 'images/breeds/golden_retriever/doghousekenya_golden_retriever_1.webp'
+      name: 'Boerboel',
+      breedGroup: 'working',
+      image: 'images/breeds/doghousekenya_boerboel_1.jpg'
+    },
+    {
+      name: 'Great Dane',
+      breedGroup: 'working',
+      image: 'images/breeds/doghousekenya_great_dane_1.jpg'
+    },
+    {
+      name: 'Maltese',
+      breedGroup: 'toy',
+      image: 'images/breeds/doghousekenya_maltese_1.jpg'
+    },
+    {
+      name: 'Siberian Husky',
+      breedGroup: 'working',
+      image: 'images/breeds/doghousekenya_siberian_husky_1.jpg'
+    },
+    {
+      name: 'Rottweiler',
+      breedGroup: 'working',
+      image: 'images/breeds/doghousekenya_rotweiler_1.jpg'
+    },
+    {
+      name: 'Cocker Spaniel',
+      breedGroup: 'sporting',
+      image: 'images/breeds/doghousekenya_spaniel_1.jpg'
+    },
+    {
+      name: 'Saint Bernard',
+      breedGroup: 'working',
+      image: 'images/breeds/doghousekenya_st_bernard_1.jpg'
     },
   ]
-  const popularBreeds = breeds.filter((breed) =>
-    [
-      "german shepherd dog",
-      "japanese spitz",
-      "golden retriever",
-      "labrador retreiver",
-      "maltese",
-      "siberian husky",
-      "rottweiler",
-      "boerboel",
-      "beagle",
-    ].includes(breed.name)
-  );
+
+  // //filter((breed) =>
+  //   [
+  //     "german shepherd dog",
+  //     "japanese spitz",
+  //     "golden retriever",
+  //     "labrador retreiver",
+  //     "maltese",
+  //     "siberian husky",
+  //     "rottweiler",
+  //     "boerboel",
+  //     "beagle",
+  //   ].includes(breed.name)
+  // );
   const onSelectGroup = (group) => {
     setSelectedGroup(group);
     router.push(`?group=${group.name}`);
@@ -79,13 +110,13 @@ export const RecentLitters = () => {
               direction={{ base: "row", md: "row" }}
             >
               <Heading
-                size={{ base: "sm", md: "lg" }}
+                size={{ base: "sm", md: "md" }}
                 mb={{ base: "3", md: "0" }}
                 color="white"
               >
                 Recent Litters
               </Heading>
-              <HStack spacing={{ base: "2", md: "3" }}>
+              {/* <HStack spacing={{ base: "2", md: "3" }}>
                 <Text
                   as={Link}
                   fontWeight="semibold"
@@ -99,13 +130,13 @@ export const RecentLitters = () => {
                   color={useColorModeValue("brand.100", "brand.300")}
                   fontSize={{ base: "sm", md: "md" }}
                 />
-              </HStack>
+              </HStack> */}
             </Flex>
             <SimpleGrid
               columns={{ base: 2, md: 3, lg: 4 }}
               gap={{ base: "4", md: "6", lg: "8" }}
             >
-              {popularBreeds.map((breed) => (
+              {breeds.map((breed) => (
                 // <BreedCard breed={breed} />
                 <Box
                   position="relative"
@@ -165,7 +196,7 @@ export const RecentLitters = () => {
           </Stack>
         </Box>
 
-        <Drawer
+        {/* <Drawer
           isOpen={!!router.query.group}
           onClose={() => router.push("/")}
           placement={isMobile ? "bottom" : "right"}
@@ -213,7 +244,7 @@ export const RecentLitters = () => {
               </DrawerFooter>
             </DrawerContent>
           </Box>
-        </Drawer>
+        </Drawer> */}
       </Container>
     </Box>
   );
