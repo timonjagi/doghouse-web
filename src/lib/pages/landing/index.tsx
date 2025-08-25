@@ -46,9 +46,9 @@ const Home = () => {
 
         <Cta />
 
-        {/* <CtaWithImage />
+        {/* <CtaWithImage /> */}
 
-        <LogoGrid /> */}
+        {/*<LogoGrid /> */}
       </Flex>
       <Footer />
     </Box>

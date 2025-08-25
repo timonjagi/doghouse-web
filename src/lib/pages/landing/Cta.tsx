@@ -17,7 +17,7 @@ export const Cta = () => {
 
   return (
     <Box as="section" >
-      <Container py={{ base: '16', md: '24' }}>
+      <Container py={{ base: '8', md: '16' }}>
         <Stack spacing={{ base: '8', md: '10' }}>
           <Stack spacing={{ base: '4', md: '5' }} align="center">
             <Heading size={useBreakpointValue({ base: 'sm', md: 'md' })}>Is Your Home Pet-Ready?</Heading>

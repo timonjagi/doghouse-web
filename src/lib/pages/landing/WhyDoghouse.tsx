@@ -148,47 +148,40 @@ const WhyDoghouse = () => {
   return (
     <Box as="section" py={{ base: "6", md: "8", lg: "16" }}>
       <Container
-        py="sm"
+
       >
         <Stack
           spacing={{
             base: "8",
             md: "16",
           }}
+          maxW="7xl"
         >
-          <Stack
-            spacing={{
-              base: "8",
-              md: "6",
-            }}
-          >
-            <Stack spacing="3" textAlign="center">
-              {/* <Text color="accent" fontWeight="semibold">
+          <Stack spacing="3" textAlign="center">
+            {/* <Text color="accent" fontWeight="semibold">
               Pricing
             </Text> */}
-              <Heading
-                size={useBreakpointValue({
-                  base: "sm",
-                  md: "md",
-                })}
-              >
-                Why Choose Us?
-              </Heading>
+            <Heading
+              size={useBreakpointValue({
+                base: "sm",
+                md: "md",
+              })}
+            >
+              Why Choose Us?
+            </Heading>
 
-              <Text
-                fontSize={{
-                  base: "lg",
-                  md: "xl",
-                }}
-                color="muted"
+            <Text
+              fontSize={{
+                base: "lg",
+                md: "xl",
+              }}
+              color="muted"
 
-              >
-                Finding a quality dog breed can be difficult, but Doghouse makes it
-                easy to find the perfect pup for your needs
+            >
+              Finding a quality dog breed can be difficult, but Doghouse makes it
+              easy to find the perfect pup for your needs
 
-              </Text>
-            </Stack>
-
+            </Text>
           </Stack>
           <Stack
             direction={{
@@ -196,31 +189,13 @@ const WhyDoghouse = () => {
               md: "row",
             }}
             spacing={{
-              base: "12",
+              base: "0",
               lg: "24",
             }}
-          >
-            <Box
-              position="relative"
-              w="auto"
-              h="auto"
-              borderRadius="xl"
-            >
-              {/* <Image
-              src="images/breeds/doghousekenya_golden_retriever_3.webp"
-              alt="Golden Retriever"
-              fallback={<Skeleton />}
-              width="full"
-              height={{
-                base: "auto",
-                md: "lg",
-              }}
-              objectFit="contain"
-              borderRadius="lg"
-            /> */}
+            justify="center"
 
-              <Gallery images={images} />
-            </Box>
+          >
+            {/* <Gallery rootProps={{ overflow: 'hidden', }} images={images} /> */}
 
 
             <Stack
@@ -228,11 +203,9 @@ const WhyDoghouse = () => {
                 base: "4",
                 md: "8",
               }}
-              flex="1"
               justify="center"
-
+              maxW={{ lg: '3xl' }}
             >
-
               {steps.map((step, id) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <WhyStep key={id} step={step} />
