@@ -18,7 +18,7 @@ import { posts } from "./data";
 import client from "../../../../client";
 import groq from "groq";
 
-export const Blog = ({ posts }) => {
+const Blog = ({ posts }) => {
   console.log(posts);
   return (
     <Box bg="bg-surface">
@@ -150,3 +150,5 @@ export async function getStaticProps() {
     },
   };
 }
+
+export default Blog;

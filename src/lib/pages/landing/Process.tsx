@@ -25,35 +25,23 @@ import { GoListOrdered } from "react-icons/go";
 
 export const steps = [
   {
-    name: "Create your profile",
+    name: "Submit Your Application",
     description:
-      "Tell us about your lifestyle, preferences, and what breed you're looking for to help us understand your unique needs",
+      "Tell us about yourself, your lifestyle, and your preferred dog breed to help us understand your unique needs",
     icon: ImProfile,
   },
   {
-    name: "Explore tailored matches.",
+    name: "Meet Your New Pet",
     description:
-      "Explore a curated list of breeds that align perfectly with your lifestyle and preferences",
-    icon: FaSearch,
-  },
-  {
-    name: "Connect with breeders",
-    description:
-      "Get personalized offers from reputable breeders based on your preferences and choose the perfect pet for your needs",
+      "If a dog is available, we'll schedule a visit for you to meet your new furry friend and spend time with them to see if it's the perfect match",
     icon: GoListOrdered,
   },
   {
-    name: "Reserve your pet",
+    name: "Finalize the Adoption",
     description:
-      "Secure your pet with a reservation fee to ensure both your commitment and the breeder's dedication to providing a loving home",
-    icon: BsBookmarkHeartFill,
+      "Once you've found your perfect match, we'll guide you through the adoption process",
+    icon: BsCheckCircleFill,
   },
-  // {
-  //   name: "Confirm your Adoption",
-  //   description:
-  //     "Once the details are settled, welcome your new family member into your loving home. Your journey with Doghouse begins here.",
-  //   icon: BsBookmarkHeartFill,
-  // },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -209,9 +197,9 @@ const FeatureCard = (props: any) => {
               width="full"
               rounded="full"
               as={Link}
-              href="/signup"
+              href="/about"
             >
-              Get started
+              Send Us A Message
             </Button>
           </Box>
         </Stack>
@@ -221,12 +209,9 @@ const FeatureCard = (props: any) => {
 };
 
 export const Process = () => (
-  <Box as="section">
+  <Box as="section" py={{ base: "8", lg: "16" }}>
     <Container
-      py={{
-        base: "8",
-        md: "16",
-      }}
+      py="md"
     >
       <Stack
         spacing={{
@@ -236,36 +221,37 @@ export const Process = () => (
       >
         <Stack
           spacing={{
-            base: "4",
-            md: "6",
+            base: "8",
+            md: "16",
           }}
         >
-          <Stack spacing="3">
+          <Stack spacing="3" textAlign="center">
             {/* <Text color="accent" fontWeight="semibold">
               Pricing
             </Text> */}
             <Heading
               size={useBreakpointValue({
-                base: "md",
-                md: "lg",
+                base: "sm",
+                md: "md",
               })}
             >
               How it works
             </Heading>
-          </Stack>
-          <Text
-            fontSize={{
-              base: "lg",
-              md: "xl",
-            }}
-            color="muted"
-            maxW="3xl"
-          >
-            {/* Finding a quality dog breed can be difficult, but Doghouse makes it
+
+            <Text
+              fontSize={{
+                base: "lg",
+                md: "xl",
+              }}
+              color="muted"
+            >
+              {/* Finding a quality dog breed can be difficult, but Doghouse makes it
             easy to find the perfect pup for your needs */}
-            From personalized recommendations to secure reservations, we've got
-            you covered at every step.
-          </Text>
+              From personalized recommendations to secure reservations, we've got
+              you covered at every step.
+            </Text>
+          </Stack>
+
         </Stack>
         <Stack
           direction={{

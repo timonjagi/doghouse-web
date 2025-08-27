@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 import defaultSEOConfig from "../../next-seo.config";
 import { Chakra } from "lib/components/Chakra";
-import Layout from "lib/layout";
+import Layout from "lib/layout/index";
 import "lib/styles/globals.css";
 import { RecoilRoot } from "recoil";
 

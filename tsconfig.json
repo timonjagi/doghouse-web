@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext", "es2021.String"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -17,6 +17,8 @@
     "incremental": true
   },
   "include": [
+    "video.d.ts",
+    "video.d.ts",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
