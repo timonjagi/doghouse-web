@@ -13,7 +13,7 @@ import {
 import * as React from 'react'
 import { VscCircleFilled } from 'react-icons/vsc'
 
-export const BlogPost = (props) => {
+const BlogPost = (props) => {
   const { post, isHero } = props
   return (
     <Link
@@ -21,6 +21,7 @@ export const BlogPost = (props) => {
         textDecor: 'none',
       }}
       role="group"
+      href={`/blog/${post.id}`}
     >
       <Stack spacing="8">
         <Box overflow="hidden">
@@ -68,3 +69,5 @@ export const BlogPost = (props) => {
     </Link>
   )
 }
+
+export default BlogPost

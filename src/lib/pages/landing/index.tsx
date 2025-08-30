@@ -13,10 +13,11 @@ import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
 import BreedTraits from "./BreedTraits";
 import WhyDoghouse from "./WhyDoghouse";
+import { Blog } from "./Blog";
 const Home = () => {
 
   return (
-    <Box as="section" height="100vh" overflowY="auto">
+    <Box as="section" bg="bg-surface">
       <Flex
         direction="column"
         alignItems="center"
@@ -42,13 +43,16 @@ const Home = () => {
 
 
 
-        {/* <Testimonials /> */}
+        <Testimonials />
+
+
 
         <Cta />
 
         {/* <CtaWithImage /> */}
+        {/* <LogoGrid /> */}
 
-        {/*<LogoGrid /> */}
+        <Blog />
       </Flex>
       <Footer />
     </Box>

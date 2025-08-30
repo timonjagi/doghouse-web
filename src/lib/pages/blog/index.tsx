@@ -13,13 +13,13 @@ import {
 } from "@chakra-ui/react";
 import * as React from "react";
 import { FiSearch } from "react-icons/fi";
-import { BlogPost } from "./BlogPost";
 import { posts } from "./data";
 import client from "../../../../client";
 import groq from "groq";
+import BlogPostCard from "./BlogPostCard";
 
-const Blog = ({ posts }) => {
-  console.log(posts);
+const Blog = () => {
+
   return (
     <Box bg="bg-surface">
       <Box bg="bg-accent" color="on-accent">
@@ -114,7 +114,7 @@ const Blog = ({ posts }) => {
               md: "16",
             }}
           >
-            {posts && posts.length && <BlogPost post={posts[0]} isHero />}
+            {posts && posts.length && <BlogPostCard post={posts[0]} isHero />}
             <SimpleGrid
               columns={{
                 base: 1,
@@ -129,7 +129,7 @@ const Blog = ({ posts }) => {
               {posts &&
                 posts
                   .slice(1, 4)
-                  .map((post) => <BlogPost key={post.id} post={post} />)}
+                  .map((post) => <BlogPostCard key={post.id} post={post} />)}
             </SimpleGrid>
           </Stack>
         </Stack>
@@ -138,17 +138,17 @@ const Blog = ({ posts }) => {
   );
 };
 
-export async function getStaticProps() {
-  const posts = await client.fetch(groq`
-    *[_type == "post" && publishedAt < now()] | order(publishedAt desc)
-  `);
+// export async function getStaticProps() {
+//   const posts = await client.fetch(groq`
+//     *[_type == "post" && publishedAt < now()] | order(publishedAt desc)
+//   `);
 
-  console.log(posts);
-  return {
-    props: {
-      posts,
-    },
-  };
-}
+//   console.log(posts);
+//   return {
+//     props: {
+//       posts,
+//     },
+//   };
+// }
 
 export default Blog;
