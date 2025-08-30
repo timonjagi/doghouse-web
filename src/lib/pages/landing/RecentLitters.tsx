@@ -116,7 +116,7 @@ export const RecentLitters = () => {
               >
                 Recent Litters
               </Heading>
-              {/* <HStack spacing={{ base: "2", md: "3" }}>
+              <HStack spacing={{ base: "2", md: "3" }}>
                 <Text
                   as={Link}
                   fontWeight="semibold"
@@ -130,7 +130,7 @@ export const RecentLitters = () => {
                   color={useColorModeValue("brand.100", "brand.300")}
                   fontSize={{ base: "sm", md: "md" }}
                 />
-              </HStack> */}
+              </HStack>
             </Flex>
             <SimpleGrid
               columns={{ base: 2, md: 3, lg: 4 }}

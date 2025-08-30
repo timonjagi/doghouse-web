@@ -1,16 +1,16 @@
 # Doghouse Web
 
-A modern web application built with Next.js, Chakra UI, and TypeScript, designed to provide a comprehensive platform for dog enthusiasts. This project aims to offer detailed dog breed information, facilitate user interactions through profiles and authentication, and host a blog for articles and updates. Backend functionalities are powered by Firebase.
+A modern web application built with Next.js, Chakra UI, and TypeScript, designed to provide a comprehensive platform for dog enthusiasts. This project aims to host a blog for articles and updates.
 
 ## ✨ Features
 
-*   **Dog Breed Directory:** Explore a rich collection of dog breeds with detailed information and high-quality imagery.
-*   **User Authentication & Profiles:** Secure user registration, login, and personalized profiles.
 *   **Interactive Blog:** Stay updated with the latest news, articles, and tips on dog care and breeds.
 *   **Responsive Design:** Seamless experience across all devices, powered by Chakra UI.
 *   **SEO Optimized:** Enhanced search engine visibility with `next-seo` and `next-sitemap` configurations.
 *   **Progressive Web App (PWA):** Offline capabilities and installability for a native-app like experience (can be enabled via `next.config.js`).
-*   **Firebase Integration:** Robust backend services including authentication and serverless functions.
+*   **Sanity.io CMS:** Content management for blog posts and other dynamic content.
+*   **Algolia Search:** Fast and relevant search capabilities for dog breeds and blog content.
+*   **Interactive Galleries & Videos:** Engaging display of dog imagery and video content using Keen Slider and Next Video.
 *   **Code Quality Tooling:** Integrated `eslint`, `prettier`, `husky`, `lint-staged`, `commitlint`, `commitizen`, and `standard-version` for consistent code quality and development workflow.
 
 ## 🚀 Technologies Used
@@ -19,7 +19,11 @@ A modern web application built with Next.js, Chakra UI, and TypeScript, designed
 *   [React](https://reactjs.org/) - A JavaScript library for building user interfaces
 *   [Chakra UI](https://chakra-ui.com/) - A simple, modular and accessible component library for React
 *   [TypeScript](https://www.typescriptlang.org/) - Typed JavaScript at Any Scale
-*   [Firebase](https://firebase.google.com/) - Backend as a Service (BaaS) for authentication and serverless functions
+*   [Sanity.io](https://www.sanity.io/) - The platform for structured content
+*   [Algolia](https://www.algolia.com/) - Search-as-a-service for powerful search experiences
+*   [Keen Slider](https://keen-slider.io/) - A free and open-source touch slider with native feeling
+*   [Next Video](https://next-video.dev/) - Video component for Next.js
+*   [Recoil](https://recoiljs.org/) - A state management library for React
 *   [Playwright](https://playwright.dev/) - For reliable end-to-end testing
 
 ## 🛠️ Getting Started

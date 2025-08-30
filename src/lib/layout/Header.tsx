@@ -73,23 +73,45 @@ const Header = () => {
                   aria-current={
                     pathname.includes("home") ? "page" : false
                   }
-                  href="/home"
+                  href="/"
                 >
                   Home
                 </Button>
                 {/* )} */}
 
-                <Button>About</Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("about") ? "page" : false}
+                  href="/about"
+
+                >About</Button>
                 <Button
                   rounded="full"
                   as={Link}
                   aria-current={pathname.includes("breeds") ? "page" : false}
+                  href="/breeds"
+
+
+
+                >Breeds</Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("blog") ? "page" : false}
                   href="/blog"
                 >
                   Blog
                 </Button>
 
-                <Button>Contact</Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("contact") ? "page" : false}
+                  href="/contact"
+
+
+                >Contact</Button>
                 <IconButton
                   icon={<FiHelpCircle fontSize="1.25rem" />}
                   aria-label="Help Center"
