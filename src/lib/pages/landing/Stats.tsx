@@ -45,10 +45,7 @@ const Stat = (props: any) => {
 
 export const Stats = () => (
   <Container
-    pt={{
-      base: "16",
-      md: "24",
-    }}
+
   >
     <Stack
       spacing={{
@@ -64,13 +61,14 @@ export const Stats = () => (
         textAlign="center"
         align="center"
       >
+/*************  ✨ Windsurf Command 🌟  *************/
         <Heading
           size={useBreakpointValue({
             base: "sm",
             md: "md",
           })}
         >
-          A one stop shop for all your dog breed needs.
+          Our numbers speak for themselves
         </Heading>
         <Text
           fontSize={{
@@ -80,8 +78,8 @@ export const Stats = () => (
           color="muted"
           maxW="3xl"
         >
-          Find the perfect breed of dog, get in contact with reputable breeders
-          and start your search all from one place.
+          We are proud of our large collection of reputable breeders, high
+          rehoming rates and happy customers.
         </Text>
       </Stack>
       <Box

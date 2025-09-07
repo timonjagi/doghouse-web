@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["dom", "dom.iterable", "esnext", "es2021.String"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "es2021.String"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -14,7 +19,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "baseUrl": "src",
-    "incremental": true
+    "incremental": true,
   },
   "include": [
     "video.d.ts",
@@ -26,5 +31,7 @@
     "commitlint.config.js",
     "globals.d.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

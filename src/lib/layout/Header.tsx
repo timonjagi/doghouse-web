@@ -15,15 +15,12 @@ import {
 
 import { useRouter } from "next/router";
 // import * as React from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { FiHelpCircle, FiBell } from "react-icons/fi";
 
 import { Logo } from "./Logo";
-import { Sidebar } from "./Sidebar";
 
-import UserProfileMenu from "lib/components/auth/UserProfileMenu";
-import { auth } from "lib/firebase/client";
 import { ToggleButton } from "./ToggleButton";
+import Link from "next/link";
 
 const Header = () => {
   const isDesktop = useBreakpointValue({
@@ -32,9 +29,7 @@ const Header = () => {
   });
   const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
-  // const { pathname } = router;
-
-  const [user] = useAuthState(auth);
+  const { pathname } = router;
 
   return (
     <Box
@@ -54,34 +49,11 @@ const Header = () => {
         <Flex justify="space-between">
           <HStack spacing="4">
             <Logo />
-            {/* {isDesktop && (
+            {isDesktop && (
               <ButtonGroup variant="ghost-on-accent" spacing="1">
-                {user && (
-                  <Button
-                    rounded="full"
-                    as={Link}
-                    aria-current={
-                      pathname.includes("home") ? "page" : false
-                    }
-                    href="/home"
-                  >
-                    Home
-                  </Button>
-                )}
 
-                <Button
-                  rounded="full"
-                  as={Link}
-                  aria-current={pathname.includes("breeds") ? "page" : false}
-                  href="/breeds"
-                >
-                  Search Breeds
-                </Button>
-                <Button>Tasks</Button>
-                <Button>Bookmarks</Button>
-                <Button>Users</Button>
               </ButtonGroup>
-            )} */}
+            )}
           </HStack>
           {isDesktop ? (
             <HStack spacing="4">
@@ -94,6 +66,52 @@ const Header = () => {
                   icon={<FiSettings fontSize='1.25rem' />}
                   aria-label='Settings'
                 /> */}
+                {/* {user && ( */}
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={
+                    pathname.includes("home") ? "page" : false
+                  }
+                  href="/"
+                >
+                  Home
+                </Button>
+                {/* )} */}
+
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("about") ? "page" : false}
+                  href="/about"
+
+                >About</Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("breeds") ? "page" : false}
+                  href="/breeds"
+
+
+
+                >Breeds</Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("blog") ? "page" : false}
+                  href="/blog"
+                >
+                  Blog
+                </Button>
+
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("contact") ? "page" : false}
+                  href="/contact"
+
+
+                >Contact</Button>
                 <IconButton
                   icon={<FiHelpCircle fontSize="1.25rem" />}
                   aria-label="Help Center"
@@ -107,7 +125,7 @@ const Header = () => {
                 )} */}
               </ButtonGroup>
 
-              {user ? (
+              {/* {user ? (
                 <UserProfileMenu
                   name={user?.displayName || ""}
                   image={user?.photoURL || ""}
@@ -124,7 +142,7 @@ const Header = () => {
                     Log in
                   </Button>
                 </HStack>
-              )}
+              )} */}
             </HStack>
           ) : (
             <Flex align="center">
@@ -135,12 +153,12 @@ const Header = () => {
                 icon={<FiBell />}
                 mr={3}
               /> */}
-              {/* <ToggleButton
+              <ToggleButton
                 isOpen={isOpen}
                 aria-label="Open Menu"
                 onClick={onToggle}
-              /> */}
-              {user ? (
+              />
+              {/* {user ? (
                 <UserProfileMenu
                   name={user?.displayName || ""}
                   image={user?.photoURL || ""}
@@ -161,22 +179,8 @@ const Header = () => {
                     </HStack>
                   )}
                 </>
-              )}
+              )} */}
 
-              <Drawer
-                isOpen={isOpen}
-                placement="left"
-                onClose={onClose}
-                isFullHeight
-                preserveScrollBarGap
-                // Only disabled for showcase
-                trapFocus={false}
-              >
-                <DrawerOverlay />
-                <DrawerContent>
-                  <Sidebar onClose={onClose} />
-                </DrawerContent>
-              </Drawer>
             </Flex>
           )}
         </Flex>
