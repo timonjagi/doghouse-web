@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import SingleBlogPost from "lib/pages/blog/SingleBlogPost";
 
 const BlogPostPage = () => {
@@ -12,7 +12,7 @@ const BlogPostPage = () => {
 
   if (!slug) {
     // If id is still not available after router is ready, redirect to 404
-    router.push('/404');
+    router.push("/404");
     return null;
   }
   return <SingleBlogPost slug={slug as string} />;
