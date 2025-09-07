@@ -5,13 +5,13 @@ import { posts } from './data'
 import { VscCircleFilled } from 'react-icons/vsc';
 
 interface BlogPostProps {
-  id: string;
+  slug: string;
 }
 
-function BlogPost({ id }: BlogPostProps) {
+function BlogPost({ slug }: BlogPostProps) {
   const isHero = true;
-  console.log('id', id);
-  const post = posts.find((p) => p.id === id);
+  console.log('slug', slug);
+  const post = posts.find((p) => p.slug === slug);
 
   if (!post) {
     return <Box>Post not found</Box>;
@@ -71,6 +71,7 @@ function BlogPost({ id }: BlogPostProps) {
               ))}
             </HStack>
           </Stack>
+          <Box dangerouslySetInnerHTML={{ __html: post.content }} />
         </Stack>
 
       </Container>

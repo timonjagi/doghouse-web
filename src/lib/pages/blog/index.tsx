@@ -14,8 +14,8 @@ import {
 import * as React from "react";
 import { FiSearch } from "react-icons/fi";
 import { posts } from "./data";
-import client from "../../../../client";
-import groq from "groq";
+// import client from "../../../../client";
+// import groq from "groq";
 import BlogPostCard from "./BlogPostCard";
 
 const Blog = () => {
@@ -75,7 +75,7 @@ const Blog = () => {
                 maxW="2xl"
                 color="on-accent-muted"
               >
-                Ice cream pudding dragée macaroon donut marzipan chocolate
+                Stay updated with the latest news, tips, and insights
               </Text>
             </Stack>
             <InputGroup

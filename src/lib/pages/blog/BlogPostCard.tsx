@@ -21,7 +21,7 @@ const BlogPost = (props) => {
         textDecor: 'none',
       }}
       role="group"
-      href={`/blog/${post.id}`}
+      href={`/blog/${post.slug}`}
     >
       <Stack spacing="8">
         <Box overflow="hidden">
