@@ -1,14 +1,7 @@
-import { useRouter } from 'next/router';
-import SingleBlogPost from "lib/pages/blog/SingleBlogPost";
 
-const BlogPostPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
+const BreedsPage = () => {
 
-  if (!id) {
-    return router.push('/404');
-  }
-  return <SingleBlogPost id={id as string} />;
+  return <>Breeds Page</>;
 };
 
-export default BlogPostPage;
+export default BreedsPage;
