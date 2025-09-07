@@ -47,7 +47,7 @@ const Home = () => {
 
 
 
-        <Cta />
+        {/* <Cta /> */}
 
         {/* <CtaWithImage /> */}
         {/* <LogoGrid /> */}
