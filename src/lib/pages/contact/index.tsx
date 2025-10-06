@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import NextLink from "next/link";
-import Footer from 'lib/layout/Footer';
+import Footer from 'lib/components/layout/Footer';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({

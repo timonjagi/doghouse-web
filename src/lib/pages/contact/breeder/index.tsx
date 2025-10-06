@@ -32,7 +32,7 @@ export default function ContactUs() {
           h="full"
           w="full"
         >
-          <NextSeo title="Contact Us" />
+          <NextSeo title="Join Our Network" />
 
           <Modal isCentered isOpen={loading ? true : false} onClose={() => { }}>
             <ModalOverlay
@@ -57,7 +57,7 @@ export default function ContactUs() {
             />
           )}
           <iframe
-            data-tally-src="https://tally.so/r/wdaeLA"
+            data-tally-src="https://tally.so/r/mDk6r5"
             width="100%"
             height="100%"
             title="Contact form"

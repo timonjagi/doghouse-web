@@ -13,7 +13,7 @@ import {
 import React from "react";
 import { VscCircleFilled } from "react-icons/vsc";
 
-import Footer from "lib/layout/Footer";
+import Footer from "lib/components/layout/Footer";
 
 import { posts } from "./data";
 

@@ -1,3 +1,3 @@
-import Waitlist from "lib/pages/waitlist";
+import AdoptionForm from "lib/pages/contact/adoption";
 
-export default Waitlist;
+export default AdoptionForm;

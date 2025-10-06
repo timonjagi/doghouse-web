@@ -1,7 +1,7 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
 
-import Footer from "lib/layout/Footer";
+import Footer from "lib/components/layout/Footer";
 
 import { Blog } from "./Blog";
 import BreedTraits from "./BreedTraits";
