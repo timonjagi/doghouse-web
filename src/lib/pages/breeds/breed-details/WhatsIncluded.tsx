@@ -3,49 +3,47 @@ import {
   Container,
   Heading,
   Stack,
-  HStack,
   Text,
+  Icon,
+  Center,
+  useBreakpointValue,
   Button,
   Circle,
-  Icon,
+  HStack,
+  Link,
   SimpleGrid,
   StackDivider,
-  Center,
-  Link,
-  useBreakpointValue,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+
 // import * as React from "react";
-import { BsBookmarkHeartFill, BsCheckCircleFill } from "react-icons/bs";
-import { FaSearch } from "react-icons/fa";
+import { FaHeartbeat } from "react-icons/fa";
 import { FiCheck } from "react-icons/fi";
-import { GoListOrdered } from "react-icons/go";
-import { ImProfile } from "react-icons/im";
+import { MdBlock, MdFindInPage, MdHighQuality } from "react-icons/md";
+
 
 export const steps = [
   {
-    name: "Submit Your Application",
+    name: "Health Guarantee",
     description:
-      "Tell us about yourself, your lifestyle, and your preferred dog breed to help us understand your unique needs",
-    icon: ImProfile,
+      "Our health guarantee ensures that every puppy is thoroughly vetted and comes with a clean bill of health. We're committed to providing you with a happy and healthy companion.",
+    icon: FaHeartbeat,
   },
   {
-    name: "Meet Your New Pet",
+    name: "No Puppy Mills",
     description:
-      "If a dog is available, we'll schedule a visit for you to meet your new furry friend and spend time with them to see if it's the perfect match",
-    icon: GoListOrdered,
+      "We're dedicated to animal welfare and only work with reputable breeders who prioritize the health and well-being of their puppies. No puppy mills or irresponsible breeding practices here!",
+    icon: MdBlock,
   },
   {
-    name: "Finalize the Adoption",
-    description:
-      "Once you've found your perfect match, we'll guide you through the adoption process",
-    icon: BsCheckCircleFill,
+    name: "Quality Pedigree",
+    description: "We have a strong pedigree and are committed to providing quality puppies with a clean bill of health. We're dedicated to providing you with a happy and healthy companion.",
+    icon: MdHighQuality,
   },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ProcessStep = (props: any) => {
+const WhatsIncludedStep = (props: any) => {
   const { step, ...stackProps } = props;
   return (
     <Stack
@@ -93,20 +91,98 @@ const ProcessStep = (props: any) => {
   );
 };
 
+const WhatsIncluded = () => {
+  return (
+    <Box as="section" py={{ base: "6", md: "8", lg: "16" }}>
+      <Container>
+        <Stack
+          spacing={{
+            base: "8",
+            md: "16",
+          }}
+          maxW="7xl"
+        >
+          {/* <Stack spacing="3" textAlign="center">
+            <Text color="accent" fontWeight="semibold">
+              Adoption
+            </Text>
+            <Heading
+              size={useBreakpointValue({
+                base: "sm",
+                md: "md",
+              })}
+            >
+              Our Guarantee
+            </Heading>
+
+            <Text
+              fontSize={{
+                base: "lg",
+                md: "xl",
+              }}
+              color="muted"
+              maxW="2xl"
+              mx="auto"
+            >
+              We are here to support you every step of the way as you
+              embark on this exciting journey.
+            </Text>
+          </Stack> */}
+
+          <Stack
+            direction={{
+              base: "column",
+              md: "row",
+            }}
+            spacing={{
+              base: "0",
+              lg: "24",
+            }}
+            justify="center"
+          >
+            <Stack
+              spacing={{
+                base: "4",
+                md: "8",
+              }}
+              justify="center"
+              maxW={{ lg: "xl" }}
+            >
+              {steps.map((step, id) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <WhatsIncludedStep key={id} step={step} />
+              ))}
+            </Stack>
+
+            <FeatureCard />
+          </Stack>
+        </Stack>
+      </Container>
+    </Box>
+  );
+};
+
+export default WhatsIncluded;
+
+
 const features = [
-  "Breed Recommendations",
-  "Tailored Matches",
-  "Personalized Offers",
-  "Secure Reservations",
-  "Exclusive Network",
-  "Community Support",
+  // "Breed Recommendations",
+  // "Tailored Matches",
+  // "Personalized Offers",
+  // "Secure Reservations",
+  // "Exclusive Network",
+  // "Community Support",
+  // "Expert Advice",
+  // "24/7 Customer Support",
+  "Up-to-date Vaccinations",
+  "Up-to-date Dewormings",
+  "Health Certificate",
   "Expert Advice",
   "24/7 Customer Support",
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const FeatureCard = (props: any) => {
-  const router = useRouter();
   return (
     <Box
       bg="bg-surface"
@@ -140,8 +216,8 @@ const FeatureCard = (props: any) => {
           <Heading size="xs">Welcome Your New Family Member</Heading>
 
           <Text color="muted">
-            Our community is here to support you every step of the way as you
-            embark on this exciting journey together.
+            We are here to support you every step of the way as you
+            embark on this exciting journey.
           </Text>
         </Stack> */}
 
@@ -158,15 +234,15 @@ const FeatureCard = (props: any) => {
                 What&apos;s included
               </Text>
               <Text color="muted">
-                Personalized assistance to help you find your perfect dog and
-                make all necessary arrangements, with a satisfaction guarantee
+                We are here to support you every step of the way as you
+                embark on this exciting journey.
               </Text>
             </Stack>
             <SimpleGrid
               as="ul"
               columns={{
                 base: 1,
-                lg: 2,
+                lg: 1,
               }}
               columnGap="8"
               rowGap="4"
@@ -207,76 +283,3 @@ const FeatureCard = (props: any) => {
     </Box>
   );
 };
-
-export const Process = () => (
-  <Box as="section" py={{ base: "8", lg: "16" }}>
-    <Container py="md">
-      <Stack
-        spacing={{
-          base: "8",
-          md: "16",
-        }}
-      >
-        <Stack
-          spacing={{
-            base: "8",
-            md: "16",
-          }}
-        >
-          <Stack spacing="3" textAlign="center" align="center">
-            {/* <Text color="accent" fontWeight="semibold">
-              Pricing
-            </Text> */}
-            <Heading
-              size={useBreakpointValue({
-                base: "sm",
-                md: "md",
-              })}
-            >
-              Our Adoption Process
-            </Heading>
-
-            <Text
-              fontSize={{
-                base: "lg",
-                md: "xl",
-              }}
-              maxW="3xl"
-              color="muted"
-            >
-              {/* Finding a quality dog breed can be difficult, but Doghouse makes it
-            easy to find the perfect pup for your needs */}
-              From personalized recommendations to secure reservations, we've
-              got you covered at every step.
-            </Text>
-          </Stack>
-        </Stack>
-        <Stack
-          direction={{
-            base: "column",
-            md: "row",
-          }}
-          spacing={{
-            base: "12",
-            lg: "24",
-          }}
-        >
-          <Stack
-            spacing={{
-              base: "4",
-              md: "8",
-            }}
-            flex="1"
-            justify="center"
-          >
-            {steps.map((step, id) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <ProcessStep key={id} step={step} />
-            ))}
-          </Stack>
-          <FeatureCard flex="1" />
-        </Stack>
-      </Stack>
-    </Container>
-  </Box>
-);

@@ -341,6 +341,7 @@ function Contact() {
                   base: "lg",
                   md: "xl",
                 }}
+                color="muted"
                 maxW="2xl"
                 mx="auto"
               >

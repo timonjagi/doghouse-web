@@ -1,35 +1,16 @@
-import { Stack, Heading, Text, Box, Container, Grid } from "@chakra-ui/react";
-import algoliasearch from "algoliasearch/lite";
+import { Stack, Heading, Text, Box, Container, AspectRatio, SimpleGrid, Skeleton } from "@chakra-ui/react";
 // import type { User } from "firebase/auth";
-import type { GetServerSideProps } from "next";
 import Head from "next/head";
-import singletonRouter from "next/router";
-import { renderToString } from "react-dom/server";
-//import { createInstantSearchRouterNext } from "react-instantsearch-hooks-router-nextjs";
-// import { getServerState } from "react-instantsearch-hooks-server";
-// import {
-//   InstantSearch,
-//   InstantSearchSSRProvider,
-// } from "react-instantsearch-hooks-web";
-// import type { InstantSearchServerState } from "react-instantsearch-hooks-web";
 
-import { Filter } from "./Filter";
 import SearchBox from "./SearchBox";
-import SearchResults from "./SearchResults";
 import { SortbySelect } from "./SortBySelect";
-
-const client = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
-  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string
-);
-
-// type PageProps = {
-//   serverState?: InstantSearchServerState;
-//   url?: string;
-//   user?: User;
-// };
+import { useState } from "react";
+import { BreedCard } from "./BreedCard";
+import breeds from "../../data/breeds_with_group_and_traits.json";
 
 export default function Breeds() {
+  const [loading, setLoading] = useState(false);
+
   return (
     <>
       <Head>
@@ -49,25 +30,14 @@ export default function Breeds() {
           <Stack spacing="5">
             <Stack spacing="1">
               <Heading size="md" mb={{ base: "3", md: "0" }}>
-                Our breeds
+                Breeds
               </Heading>
 
               <Text color="muted">
                 Search our database of over 100 dog breeds
               </Text>
             </Stack>
-            {/* <InstantSearchSSRProvider {...serverState}>
-              <InstantSearch
-                searchClient={client}
-                indexName="breeds_2"
-                routing={{
-                  router: createInstantSearchRouterNext({
-                    serverUrl: url,
-                    singletonRouter,
-                  }),
-                }}
-                insights
-              > */}
+
             <Stack
               spacing={{ base: "6", md: "4" }}
               direction={{ base: "column", md: "row" }}
@@ -86,15 +56,41 @@ export default function Breeds() {
               />
             </Stack>
 
-            <Grid
-              templateColumns={{ base: "1fr", md: "240px 1fr" }}
-              gap={4}
+            {loading && (
+              <SimpleGrid
+                columns={{ base: 2, md: 3, lg: 4 }}
+                gap={{ base: "4", md: "6", lg: "8" }}
+              >
+                {[...Array(20)].map((item, index) => (
+                  <Box
+                    position="relative"
+                    // eslint-disable-next-line
+                    key={index}
+                    borderRadius="xl"
+                    overflow="hidden"
+                  >
+                    <AspectRatio ratio={1}>
+                      <Skeleton bg="brand.500" color="white" fadeDuration={2} />
+                    </AspectRatio>
+                  </Box>
+                ))}
+              </SimpleGrid>
+            )}
+
+            <SimpleGrid
+              columns={{ base: 2, md: 3, lg: 4 }}
+              gap={{ base: "4", md: "6", lg: "8" }}
             >
-              <Filter />
-              <SearchResults />
-            </Grid>
-            {/* </InstantSearch>
-            </InstantSearchSSRProvider> */}
+              {breeds.map((hit) => (
+                <BreedCard hit={hit} />
+              ))}
+
+              {/* {status !== "idle" && breeds.length && (
+                      <Center>
+                        <Spinner size="lg" />
+                      </Center>
+                    )} */}
+            </SimpleGrid>
           </Stack>
         </Container>
       </Box>
@@ -102,18 +98,3 @@ export default function Breeds() {
   );
 }
 
-// export const getServerSideProps: GetServerSideProps<PageProps> =
-//   async function getServerSideProps({ req }) {
-//     const protocol = req.headers.referer?.split("://")[0] || "https";
-//     const url = `${protocol}://${req.headers.host}${req.url}`;
-//     const serverState = await getServerState(<Breeds url={url} />, {
-//       renderToString,
-//     });
-
-//     return {
-//       props: {
-//         serverState,
-//         url,
-//       },
-//     };
-//   };

@@ -2,7 +2,6 @@ import {
   AspectRatio,
   Box,
   Button,
-  Center,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -11,7 +10,6 @@ import {
   DrawerOverlay,
   SimpleGrid,
   Skeleton,
-  Spinner,
   Stack,
   useBreakpointValue,
 } from "@chakra-ui/react";
@@ -22,6 +20,7 @@ import { useEffect, useRef, useState } from "react";
 //   useInfiniteHits,
 //   useInstantSearch,
 // } from "react-instantsearch-hooks-web";
+import breeds from "../../data/breeds_with_group_and_traits.json";
 
 import BreedDetails from "./breed-details";
 import type { Breed } from "lib/models/breed";
@@ -72,7 +71,7 @@ const SearchResults = () => {
     }, 1000);
   }, []);
 
-  const breeds = [
+  const AvailableBreeds = [
     {
       name: "Golden Retriever",
       breedGroup: "sporting",
@@ -156,67 +155,6 @@ const SearchResults = () => {
 
       {/* {status === "error" && <div>Error Loading Breeds</div>} */}
 
-      <Drawer
-        isOpen={!!router.query.breedName}
-        onClose={() => router.push("/breeds")}
-        placement={isMobile ? "bottom" : "right"}
-        size={isMobile ? "md" : "sm"}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          {/* {isMobile && (
-            <Button onClick={handleDrawerExpand}>
-              <Icon as={isDrawerExpanded ? BsCaretDown : BsCaretUp} />
-            </Button>
-          )} */}
-          <Box>
-            <DrawerCloseButton colorScheme="brand" />
-          </Box>
-
-          <DrawerBody>
-            <Box
-              h={isMobile ? "auto" : "100vh"}
-              maxH="70vh"
-              transition="height 0.3s, width 0.3s"
-            >
-              <BreedDetails
-                breedName={router.query.breedName as string}
-                pathname={router.pathname}
-                selectedBreed={selectedBreed}
-                setSelectedBreed={setSelectedBreed}
-                loading={loading}
-                setLoading={setLoading}
-                isDrawer
-                isMobile
-              />
-            </Box>
-          </DrawerBody>
-          <DrawerFooter>
-            {/* <Button variant="outline" mr={3} onClick={() => {}}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue">Save</Button> */}
-
-            <Stack
-              spacing="4"
-              align="flex-end"
-              justify="space-evenly"
-              width="full"
-            >
-              <Button
-                isDisabled={loading}
-                color="on-accent-subtle"
-                size="lg"
-                width="full"
-                as={Link}
-                href={`/breeds/${selectedBreed?.name?.replaceAll(" ", "-")}`}
-              >
-                View More
-              </Button>
-            </Stack>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
     </>
   );
 };

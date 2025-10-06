@@ -70,7 +70,7 @@ export const Filter = () => {
       <Box display={{ base: "none", md: "flex" }}>
         <RefinementList
           items={[]}
-          label="Breed Group"
+          label="Filter"
           spacing={4}
           setSelectedBreedGroups={setSelectedBreedGroups}
         />
