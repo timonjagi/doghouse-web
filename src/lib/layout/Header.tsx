@@ -67,7 +67,7 @@ const Header = () => {
                   aria-label='Settings'
                 /> */}
                 {/* {user && ( */}
-                <Button
+                {/* <Button
                   rounded="full"
                   as={Link}
                   aria-current={
@@ -76,20 +76,25 @@ const Header = () => {
                   href="/home"
                 >
                   Home
-                </Button>
+                </Button> */}
                 {/* )} */}
 
-                <Button>About</Button>
+                {/* <Button>About</Button> */}
                 <Button
                   rounded="full"
                   as={Link}
-                  aria-current={pathname.includes("breeds") ? "page" : false}
+                  aria-current={pathname.includes("blog") ? "page" : false}
                   href="/blog"
                 >
                   Blog
                 </Button>
 
-                <Button>Contact</Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("contact") ? "page" : false}
+                  href="/contact"
+                >Contact</Button>
                 <IconButton
                   icon={<FiHelpCircle fontSize="1.25rem" />}
                   aria-label="Help Center"
