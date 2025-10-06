@@ -87,7 +87,7 @@ export default function BreedTraits() {
                 Features
               </Text> */}
               <Heading size={{ base: "sm", md: "md" }}>
-                Choose From A Large Collection of Breeds
+                Choose From 100+ Dog Breeds
               </Heading>
             </Stack>
             <Text
@@ -104,7 +104,7 @@ export default function BreedTraits() {
           </Stack>
           <SimpleGrid
             columns={{
-              base: 1,
+              base: 2,
               sm: 2,
 
               lg: 4,
@@ -127,9 +127,8 @@ export default function BreedTraits() {
               >
                 <Square
                   size={{
-                    base: "16",
-                    md: "32",
-                    lg: "64",
+                    base: "32",
+                    lg: "48",
                   }}
                   bg="accent"
                   color="inverted"
@@ -138,24 +137,23 @@ export default function BreedTraits() {
                   <Icon
                     as={feature.icon}
                     boxSize={{
-                      base: "8",
-                      md: "16",
+                      base: "16",
                       lg: "24",
                     }}
                   />
                 </Square>
                 <Stack
                   spacing={{
-                    base: "1",
+                    base: "2",
                     md: "2",
                   }}
                 >
                   <Text
                     fontSize={{
                       base: "lg",
-                      md: "xl",
+                      lg: "xl",
                     }}
-                    fontWeight="medium"
+                    fontWeight="semibold"
                   >
                     {feature.name}
                   </Text>

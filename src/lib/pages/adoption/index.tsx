@@ -32,9 +32,9 @@ export default function ContactUs() {
           h="full"
           w="full"
         >
-          <NextSeo title="Welcome" />
+          <NextSeo title="Contact Us" />
 
-          <Modal isCentered isOpen={loading ? true : false} onClose={() => {}}>
+          <Modal isCentered isOpen={loading ? true : false} onClose={() => { }}>
             <ModalOverlay
               marginTop={{ base: "64px", lg: "72px" }}
               bg="none"
@@ -57,7 +57,7 @@ export default function ContactUs() {
             />
           )}
           <iframe
-            data-tally-src="https://tally.so/r/wQelgg"
+            data-tally-src="https://tally.so/r/wdaeLA"
             width="100%"
             height="100%"
             title="Contact form"

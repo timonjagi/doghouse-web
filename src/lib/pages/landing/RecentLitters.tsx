@@ -115,7 +115,7 @@ export const RecentLitters = () => {
                 mb={{ base: "3", md: "0" }}
                 color="white"
               >
-                Recent Litters
+                Our Breeds
               </Heading>
               <HStack spacing={{ base: "2", md: "3" }}>
                 <Text

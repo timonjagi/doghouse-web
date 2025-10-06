@@ -49,10 +49,12 @@ export default function Breeds() {
           <Stack spacing="5">
             <Stack spacing="1">
               <Heading size="md" mb={{ base: "3", md: "0" }}>
-                Search breeds
+                Our breeds
               </Heading>
 
-              <Text color="muted">Find out all about your future friend</Text>
+              <Text color="muted">
+                Search our database of over 100 dog breeds
+              </Text>
             </Stack>
             {/* <InstantSearchSSRProvider {...serverState}>
               <InstantSearch

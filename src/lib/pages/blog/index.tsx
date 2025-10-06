@@ -66,17 +66,19 @@ const Blog = () => {
                 >
                   Latest blog posts
                 </Heading>
+
+                <Text
+                  fontSize={{
+                    base: "lg",
+                    md: "xl",
+                  }}
+                  maxW="2xl"
+                  color="on-accent-muted"
+                >
+                  Stay updated with the latest news, tips, and insights
+                </Text>
               </Stack>
-              <Text
-                fontSize={{
-                  base: "lg",
-                  md: "xl",
-                }}
-                maxW="2xl"
-                color="on-accent-muted"
-              >
-                Stay updated with the latest news, tips, and insights
-              </Text>
+
             </Stack>
             <InputGroup
               size="lg"

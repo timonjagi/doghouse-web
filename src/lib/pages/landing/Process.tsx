@@ -199,7 +199,7 @@ const FeatureCard = (props: any) => {
               as={Link}
               href="/about"
             >
-              Send Us A Message
+              Start Your Journey
             </Button>
           </Box>
         </Stack>
@@ -223,7 +223,7 @@ export const Process = () => (
             md: "16",
           }}
         >
-          <Stack spacing="3" textAlign="center">
+          <Stack spacing="3" textAlign="center" align="center">
             {/* <Text color="accent" fontWeight="semibold">
               Pricing
             </Text> */}
@@ -233,7 +233,7 @@ export const Process = () => (
                 md: "md",
               })}
             >
-              How it works
+              Our Adoption Process
             </Heading>
 
             <Text
@@ -241,6 +241,7 @@ export const Process = () => (
                 base: "lg",
                 md: "xl",
               }}
+              maxW="3xl"
               color="muted"
             >
               {/* Finding a quality dog breed can be difficult, but Doghouse makes it
