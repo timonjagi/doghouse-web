@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function Breeds() {
-  return (
-    <div>Breeds</div>
-  )
+  return <div>Breeds</div>;
 }
 
-export default Breeds
+export default Breeds;

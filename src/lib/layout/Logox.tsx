@@ -1,6 +1,7 @@
-import { chakra, HTMLChakraProps } from '@chakra-ui/react'
+import type { HTMLChakraProps } from "@chakra-ui/react";
+import { chakra } from "@chakra-ui/react";
 
-export const Logo = (props: HTMLChakraProps<'svg'>) => (
+export const Logo = (props: HTMLChakraProps<"svg">) => (
   <chakra.svg
     color="on-accent"
     height="8"
@@ -54,4 +55,4 @@ export const Logo = (props: HTMLChakraProps<'svg'>) => (
       </linearGradient>
     </defs>
   </chakra.svg>
-)
+);

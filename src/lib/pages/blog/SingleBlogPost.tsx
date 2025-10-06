@@ -1,8 +1,21 @@
-import { Box, Stack, Heading, useBreakpointValue, Icon, Text, Image, Badge, HStack, Container } from '@chakra-ui/react'
-import Footer from 'lib/layout/Footer'
-import React from 'react'
-import { posts } from './data'
-import { VscCircleFilled } from 'react-icons/vsc';
+import {
+  Box,
+  Stack,
+  Heading,
+  useBreakpointValue,
+  Icon,
+  Text,
+  Image,
+  Badge,
+  HStack,
+  Container,
+} from "@chakra-ui/react";
+import React from "react";
+import { VscCircleFilled } from "react-icons/vsc";
+
+import Footer from "lib/layout/Footer";
+
+import { posts } from "./data";
 
 interface BlogPostProps {
   slug: string;
@@ -10,7 +23,7 @@ interface BlogPostProps {
 
 function BlogPost({ slug }: BlogPostProps) {
   const isHero = true;
-  console.log('slug', slug);
+  console.log("slug", slug);
   const post = posts.find((p) => p.slug === slug);
 
   if (!post) {
@@ -36,27 +49,32 @@ function BlogPost({ slug }: BlogPostProps) {
               alt={post.title}
               width="full"
               height={useBreakpointValue({
-                base: '15rem',
-                md: isHero ? 'sm' : '15rem',
+                base: "15rem",
+                md: isHero ? "sm" : "15rem",
               })}
               objectFit="cover"
               transition="all 0.2s"
               _groupHover={{
-                transform: 'scale(1.05)',
+                transform: "scale(1.05)",
               }}
             />
           </Box>
           <Stack spacing="6">
             <Stack spacing="3">
-              <HStack spacing="1" fontSize="sm" fontWeight="semibold" color="accent">
+              <HStack
+                spacing="1"
+                fontSize="sm"
+                fontWeight="semibold"
+                color="accent"
+              >
                 <Text>{post.author.name}</Text>
                 <Icon as={VscCircleFilled} boxSize="2" />
                 <Text> {post.publishedAt}</Text>
               </HStack>
               <Heading
                 size={useBreakpointValue({
-                  base: 'xs',
-                  md: isHero ? 'sm' : 'xs',
+                  base: "xs",
+                  md: isHero ? "sm" : "xs",
                 })}
               >
                 {post.title}
@@ -73,11 +91,10 @@ function BlogPost({ slug }: BlogPostProps) {
           </Stack>
           <Box dangerouslySetInnerHTML={{ __html: post.content }} />
         </Stack>
-
       </Container>
       <Footer />
     </Box>
-  )
+  );
 }
 
-export default BlogPost
+export default BlogPost;

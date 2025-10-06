@@ -1,20 +1,20 @@
 const generateSlug = (title: string) => {
   return title
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove non-alphanumeric characters except spaces and hyphens
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-'); // Replace multiple hyphens with a single hyphen
+    .replace(/[^a-z0-9\s-]/g, "") // Remove non-alphanumeric characters except spaces and hyphens
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-"); // Replace multiple hyphens with a single hyphen
 };
 
 export const posts = [
   {
-    id: '1',
-    slug: generateSlug('The Ultimate Guide to Puppy Training'),
-    title: 'The Ultimate Guide to Puppy Training',
+    id: "1",
+    slug: generateSlug("The Ultimate Guide to Puppy Training"),
+    title: "The Ultimate Guide to Puppy Training",
     excerpt:
-      'Discover essential tips and tricks for training your new puppy, from basic commands to housebreaking. This comprehensive guide covers everything from potty training to basic obedience, ensuring a well-behaved and happy companion.',
+      "Discover essential tips and tricks for training your new puppy, from basic commands to housebreaking. This comprehensive guide covers everything from potty training to basic obedience, ensuring a well-behaved and happy companion.",
     image:
-      'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80',
+      "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80",
     content: `
       <p>Bringing a new puppy home is an exciting time, but it also comes with responsibilities, especially when it comes to training. Early training is crucial for developing a well-behaved and happy dog.</p>
       <h2>Potty Training Essentials</h2>
@@ -29,27 +29,27 @@ export const posts = [
     `,
     tags: [
       {
-        label: 'Training',
-        color: 'blue',
+        label: "Training",
+        color: "blue",
       },
       {
-        label: 'Puppies',
-        color: 'green',
+        label: "Puppies",
+        color: "green",
       },
     ],
-    publishedAt: 'August 20, 2025',
+    publishedAt: "August 20, 2025",
     author: {
-      name: 'Dr. Canine',
-      avatarUrl: 'https://tinyurl.com/2p8fy9ym',
+      name: "Dr. Canine",
+      avatarUrl: "https://tinyurl.com/2p8fy9ym",
     },
   },
   {
-    id: '2',
-    slug: generateSlug('Top 10 Dog Breeds for Families'),
-    title: 'Top 10 Dog Breeds for Families',
+    id: "2",
+    slug: generateSlug("Top 10 Dog Breeds for Families"),
+    title: "Top 10 Dog Breeds for Families",
     excerpt:
-      'Find out which dog breeds are best suited for families with children, considering temperament and energy levels. This guide helps you choose a loyal and loving companion that will thrive in a family environment.',
-    image: '/images/hannah-lim-708852-unsplash.jpg',
+      "Find out which dog breeds are best suited for families with children, considering temperament and energy levels. This guide helps you choose a loyal and loving companion that will thrive in a family environment.",
+    image: "/images/hannah-lim-708852-unsplash.jpg",
     content: `
       <p>Choosing the right dog breed for your family is a significant decision. A family dog should be patient, gentle, and able to handle the energy of children. Here are some top breeds known for their family-friendly traits:</p>
       <h2>1. Labrador Retriever</h2>
@@ -76,27 +76,27 @@ export const posts = [
     `,
     tags: [
       {
-        label: 'Breeds',
-        color: 'blue',
+        label: "Breeds",
+        color: "blue",
       },
       {
-        label: 'Family',
-        color: 'red',
+        label: "Family",
+        color: "red",
       },
     ],
-    publishedAt: 'July 15, 2025',
+    publishedAt: "July 15, 2025",
     author: {
-      name: 'Paw-fessor Bark',
-      avatarUrl: 'https://tinyurl.com/2p8h98w8',
+      name: "Paw-fessor Bark",
+      avatarUrl: "https://tinyurl.com/2p8h98w8",
     },
   },
   {
-    id: '3',
-    slug: generateSlug('Healthy Dog Diet: What to Feed Your Furry Friend'),
-    title: 'Healthy Dog Diet: What to Feed Your Furry Friend',
+    id: "3",
+    slug: generateSlug("Healthy Dog Diet: What to Feed Your Furry Friend"),
+    title: "Healthy Dog Diet: What to Feed Your Furry Friend",
     excerpt:
-      'Learn about the best nutritional practices and food choices to keep your dog healthy and happy. A balanced diet is crucial for their overall well-being, energy levels, and longevity.',
-    image: '/images/marko-blazevic-447504-unsplash.jpg',
+      "Learn about the best nutritional practices and food choices to keep your dog healthy and happy. A balanced diet is crucial for their overall well-being, energy levels, and longevity.",
+    image: "/images/marko-blazevic-447504-unsplash.jpg",
     content: `
       <p>A healthy diet is the cornerstone of a long and happy life for your dog. Just like humans, dogs require a balanced intake of nutrients to thrive. Understanding what to feed your furry friend can be overwhelming with so many options available.</p>
       <h2>Understanding Your Dog's Nutritional Needs</h2>
@@ -122,27 +122,27 @@ export const posts = [
     `,
     tags: [
       {
-        label: 'Health',
-        color: 'blue',
+        label: "Health",
+        color: "blue",
       },
       {
-        label: 'Nutrition',
-        color: 'orange',
+        label: "Nutrition",
+        color: "orange",
       },
     ],
-    publishedAt: 'June 10, 2025',
+    publishedAt: "June 10, 2025",
     author: {
-      name: 'Vet. Woof',
-      avatarUrl: 'https://tinyurl.com/2p98t7nh',
+      name: "Vet. Woof",
+      avatarUrl: "https://tinyurl.com/2p98t7nh",
     },
   },
   {
-    id: '4',
-    slug: generateSlug('Fun Activities to Do With Your Dog'),
-    title: 'Fun Activities to Do With Your Dog',
+    id: "4",
+    slug: generateSlug("Fun Activities to Do With Your Dog"),
+    title: "Fun Activities to Do With Your Dog",
     excerpt:
-      'Explore exciting ways to bond with your dog, from outdoor adventures to engaging indoor games. Keeping your dog active and mentally stimulated is vital for their happiness and well-being.',
-    image: '/images/ipet-photo-1316903-unsplash.jpg',
+      "Explore exciting ways to bond with your dog, from outdoor adventures to engaging indoor games. Keeping your dog active and mentally stimulated is vital for their happiness and well-being.",
+    image: "/images/ipet-photo-1316903-unsplash.jpg",
     content: `
       <p>Dogs thrive on interaction and activity. Engaging in fun activities with your dog not only strengthens your bond but also provides essential physical and mental stimulation. Here are some ideas to keep your furry friend entertained:</p>
       <h2>Outdoor Adventures</h2>
@@ -165,27 +165,28 @@ export const posts = [
     `,
     tags: [
       {
-        label: 'Activities',
-        color: 'yellow',
+        label: "Activities",
+        color: "yellow",
       },
       {
-        label: 'Bonding',
-        color: 'purple',
+        label: "Bonding",
+        color: "purple",
       },
     ],
-    publishedAt: 'May 25, 2025',
+    publishedAt: "May 25, 2025",
     author: {
-      name: 'Dr. Canine',
-      avatarUrl: 'https://tinyurl.com/2p8fy9ym',
+      name: "Dr. Canine",
+      avatarUrl: "https://tinyurl.com/2p8fy9ym",
     },
   },
   {
-    id: '5',
-    slug: generateSlug('Understanding Dog Behavior: A Guide for Owners'),
-    title: 'Understanding Dog Behavior: A Guide for Owners',
+    id: "5",
+    slug: generateSlug("Understanding Dog Behavior: A Guide for Owners"),
+    title: "Understanding Dog Behavior: A Guide for Owners",
     excerpt:
-      'Decode your dog\'s body language and common behaviors to build a stronger relationship. Learning to interpret their signals can prevent misunderstandings and foster a harmonious home.',
-    image: 'https://images.unsplash.com/photo-1561037406-61edfb95f107?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80',
+      "Decode your dog's body language and common behaviors to build a stronger relationship. Learning to interpret their signals can prevent misunderstandings and foster a harmonious home.",
+    image:
+      "https://images.unsplash.com/photo-1561037406-61edfb95f107?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80",
     content: `
       <p>Understanding your dog's behavior is crucial for effective communication and building a strong, trusting relationship. Dogs communicate primarily through body language, and learning to interpret their signals can help you respond appropriately to their needs and emotions.</p>
       <h2>Common Dog Behaviors and Their Meanings</h2>
@@ -220,27 +221,28 @@ export const posts = [
     `,
     tags: [
       {
-        label: 'Behavior',
-        color: 'green',
+        label: "Behavior",
+        color: "green",
       },
       {
-        label: 'Understanding',
-        color: 'blue',
+        label: "Understanding",
+        color: "blue",
       },
     ],
-    publishedAt: 'April 18, 2025',
+    publishedAt: "April 18, 2025",
     author: {
-      name: 'Paw-fessor Bark',
-      avatarUrl: 'https://tinyurl.com/2p8h98w8',
+      name: "Paw-fessor Bark",
+      avatarUrl: "https://tinyurl.com/2p8h98w8",
     },
   },
   {
-    id: '6',
-    slug: generateSlug('Grooming Essentials for a Happy Dog'),
-    title: 'Grooming Essentials for a Happy Dog',
+    id: "6",
+    slug: generateSlug("Grooming Essentials for a Happy Dog"),
+    title: "Grooming Essentials for a Happy Dog",
     excerpt:
-      'Learn about the essential grooming practices to keep your dog\'s coat healthy and clean. Regular grooming not only keeps them looking good but also contributes to their overall health and comfort.',
-    image: 'https://images.unsplash.com/photo-1596492784531-fd017a67a702?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80',
+      "Learn about the essential grooming practices to keep your dog's coat healthy and clean. Regular grooming not only keeps them looking good but also contributes to their overall health and comfort.",
+    image:
+      "https://images.unsplash.com/photo-1596492784531-fd017a67a702?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80",
     content: `
       <p>Grooming is an essential part of dog care that goes beyond just aesthetics. Regular grooming helps maintain your dog's hygiene, prevents health issues, and strengthens the bond between you and your pet.</p>
       <h2>Brushing</h2>
@@ -259,27 +261,28 @@ export const posts = [
     `,
     tags: [
       {
-        label: 'Grooming',
-        color: 'pink',
+        label: "Grooming",
+        color: "pink",
       },
       {
-        label: 'Care',
-        color: 'purple',
+        label: "Care",
+        color: "purple",
       },
     ],
-    publishedAt: 'March 01, 2025',
+    publishedAt: "March 01, 2025",
     author: {
-      name: 'Angelina Gates',
-      avatarUrl: 'https://tinyurl.com/2p98t7nh',
+      name: "Angelina Gates",
+      avatarUrl: "https://tinyurl.com/2p98t7nh",
     },
   },
   {
-    id: '7',
-    slug: generateSlug('Adopting a Rescue Dog: What You Need to Know'),
-    title: 'Adopting a Rescue Dog: What You Need to Know',
+    id: "7",
+    slug: generateSlug("Adopting a Rescue Dog: What You Need to Know"),
+    title: "Adopting a Rescue Dog: What You Need to Know",
     excerpt:
-      'Considerations and tips for bringing a rescue dog into your home and helping them adjust. Providing a loving home to a dog in need is a rewarding experience.',
-    image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80',
+      "Considerations and tips for bringing a rescue dog into your home and helping them adjust. Providing a loving home to a dog in need is a rewarding experience.",
+    image:
+      "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80",
     content: `
       <p>Adopting a rescue dog is a wonderful way to give a deserving animal a second chance at a happy life. While it's incredibly rewarding, it also comes with unique considerations. Here's what you need to know to help your new companion adjust.</p>
       <h2>Patience is Paramount</h2>
@@ -298,27 +301,28 @@ export const posts = [
     `,
     tags: [
       {
-        label: 'Adoption',
-        color: 'red',
+        label: "Adoption",
+        color: "red",
       },
       {
-        label: 'Rescue',
-        color: 'blue',
+        label: "Rescue",
+        color: "blue",
       },
     ],
-    publishedAt: 'February 14, 2025',
+    publishedAt: "February 14, 2025",
     author: {
-      name: 'Busola Banks',
-      avatarUrl: 'https://tinyurl.com/2p8fy9ym',
+      name: "Busola Banks",
+      avatarUrl: "https://tinyurl.com/2p8fy9ym",
     },
   },
   {
-    id: '8',
-    slug: generateSlug('Traveling with Your Dog: Tips for a Smooth Journey'),
-    title: 'Traveling with Your Dog: Tips for a Smooth Journey',
+    id: "8",
+    slug: generateSlug("Traveling with Your Dog: Tips for a Smooth Journey"),
+    title: "Traveling with Your Dog: Tips for a Smooth Journey",
     excerpt:
-      'Make your travels with your canine companion stress-free with these essential tips and preparations. Whether it\'s a road trip or a flight, planning ahead ensures a safe and enjoyable experience for both of you.',
-    image: 'https://images.unsplash.com/photo-1560807624-8c7871079c25?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80',
+      "Make your travels with your canine companion stress-free with these essential tips and preparations. Whether it's a road trip or a flight, planning ahead ensures a safe and enjoyable experience for both of you.",
+    image:
+      "https://images.unsplash.com/photo-1560807624-8c7871079c25?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1694&q=80",
     content: `
       <p>Traveling with your dog can be a fantastic experience, creating lasting memories. However, it requires careful planning and preparation to ensure a smooth and stress-free journey for both you and your canine companion.</p>
       <h2>Before You Go</h2>
@@ -351,18 +355,18 @@ export const posts = [
     `,
     tags: [
       {
-        label: 'Travel',
-        color: 'yellow',
+        label: "Travel",
+        color: "yellow",
       },
       {
-        label: 'Adventure',
-        color: 'green',
+        label: "Adventure",
+        color: "green",
       },
     ],
-    publishedAt: 'January 05, 2025',
+    publishedAt: "January 05, 2025",
     author: {
-      name: 'Samy Tom',
-      avatarUrl: 'https://tinyurl.com/2p8h98w8',
+      name: "Samy Tom",
+      avatarUrl: "https://tinyurl.com/2p8h98w8",
     },
   },
-]
+];

@@ -1,8 +1,7 @@
-import { useToast } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useToast } from "@chakra-ui/react";
+import { useState } from "react";
 
 export const useDropZone = ({ selectedImages, setSelectedImages }) => {
-
   const toast = useToast();
 
   const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,14 +31,15 @@ export const useDropZone = ({ selectedImages, setSelectedImages }) => {
   };
 
   const onRemoveImage = (file) => {
-    const files = selectedImages.filter((selectedFile) => selectedFile !== file);
+    const files = selectedImages.filter(
+      (selectedFile) => selectedFile !== file
+    );
     setSelectedImages(files);
   };
 
   return {
     onSelectImage,
     onRemoveImage,
-    selectedImages
-  }
-
-}
+    selectedImages,
+  };
+};

@@ -9,16 +9,16 @@ import {
   Stack,
   Text,
   useBreakpointValue,
-} from '@chakra-ui/react'
-import * as React from 'react'
-import { VscCircleFilled } from 'react-icons/vsc'
+} from "@chakra-ui/react";
+import * as React from "react";
+import { VscCircleFilled } from "react-icons/vsc";
 
 const BlogPost = (props) => {
-  const { post, isHero } = props
+  const { post, isHero } = props;
   return (
     <Link
       _hover={{
-        textDecor: 'none',
+        textDecor: "none",
       }}
       role="group"
       href={`/blog/${post.slug}`}
@@ -30,27 +30,32 @@ const BlogPost = (props) => {
             alt={post.title}
             width="full"
             height={useBreakpointValue({
-              base: '15rem',
-              md: isHero ? 'sm' : '15rem',
+              base: "15rem",
+              md: isHero ? "sm" : "15rem",
             })}
             objectFit="cover"
             transition="all 0.2s"
             _groupHover={{
-              transform: 'scale(1.05)',
+              transform: "scale(1.05)",
             }}
           />
         </Box>
         <Stack spacing="6">
           <Stack spacing="3">
-            <HStack spacing="1" fontSize="sm" fontWeight="semibold" color="accent">
+            <HStack
+              spacing="1"
+              fontSize="sm"
+              fontWeight="semibold"
+              color="accent"
+            >
               <Text>{post.author.name}</Text>
               <Icon as={VscCircleFilled} boxSize="2" />
               <Text> {post.publishedAt}</Text>
             </HStack>
             <Heading
               size={useBreakpointValue({
-                base: 'xs',
-                md: isHero ? 'sm' : 'xs',
+                base: "xs",
+                md: isHero ? "sm" : "xs",
               })}
             >
               {post.title}
@@ -67,7 +72,7 @@ const BlogPost = (props) => {
         </Stack>
       </Stack>
     </Link>
-  )
-}
+  );
+};
 
-export default BlogPost
+export default BlogPost;

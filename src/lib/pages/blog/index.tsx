@@ -13,13 +13,13 @@ import {
 } from "@chakra-ui/react";
 import * as React from "react";
 import { FiSearch } from "react-icons/fi";
+
+import BlogPostCard from "./BlogPostCard";
 import { posts } from "./data";
 // import client from "../../../../client";
 // import groq from "groq";
-import BlogPostCard from "./BlogPostCard";
 
 const Blog = () => {
-
   return (
     <Box bg="bg-surface">
       <Box bg="bg-accent" color="on-accent">

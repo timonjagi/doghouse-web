@@ -13,30 +13,35 @@ import {
   Text,
   useBreakpointValue,
   useColorModeValue,
-} from '@chakra-ui/react'
-import * as React from 'react'
-import { posts } from '../blog/data'
-import BlogPost from '../blog/BlogPostCard'
-import BlogPostCard from '../blog/BlogPostCard'
-import { FaArrowRight } from 'react-icons/fa'
+} from "@chakra-ui/react";
+import * as React from "react";
+import { FaArrowRight } from "react-icons/fa";
+
+import BlogPost from "../blog/BlogPostCard";
+import BlogPostCard from "../blog/BlogPostCard";
+import { posts } from "../blog/data";
 
 export const Blog = () => {
-  const isMobile = useBreakpointValue({ base: true, md: false })
+  const isMobile = useBreakpointValue({ base: true, md: false });
   return (
     <Box bg="bg-surface">
-      <Container py={{ base: '16', md: '24' }}>
-        <Stack spacing={{ base: '12', md: '16' }}>
+      <Container py={{ base: "16", md: "24" }}>
+        <Stack spacing={{ base: "12", md: "16" }}>
           <Stack direction="row" justify="space-between">
-            <Stack spacing={{ base: '4', md: '5' }}>
+            <Stack spacing={{ base: "4", md: "5" }}>
               <Stack spacing="3">
-                <Text color="accent" fontWeight="semibold" fontSize={{ base: 'sm', md: 'md' }}>
+                <Text
+                  color="accent"
+                  fontWeight="semibold"
+                  fontSize={{ base: "sm", md: "md" }}
+                >
                   Our Blog
                 </Text>
-                <Heading size={useBreakpointValue({ base: 'sm', md: 'md' })}>
+                <Heading size={useBreakpointValue({ base: "sm", md: "md" })}>
                   Latest blog posts
                 </Heading>
               </Stack>
-              <Text color="muted" fontSize={{ base: 'lg', md: 'xl' }}>
+              <Text color="muted" fontSize={{ base: "lg", md: "xl" }}>
                 Ice cream pudding dragée macaroon donut marzipan chocolate
               </Text>
             </Stack>
@@ -82,5 +87,5 @@ export const Blog = () => {
         </Stack>
       </Container>
     </Box>
-  )
-}
+  );
+};

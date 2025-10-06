@@ -5,4 +5,4 @@ export interface UserProfile {
   roles: any;
   pet_profiles: any;
   preferences: any;
-};
+}

@@ -1,6 +1,4 @@
-
 const BreedsPage = () => {
-
   return <>Breeds Page</>;
 };
 

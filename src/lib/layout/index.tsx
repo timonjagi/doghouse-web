@@ -1,9 +1,7 @@
+import { Box } from "@chakra-ui/react";
+import type { ReactNode } from "react";
 
 import Header from "./Header";
-import {
-  Box,
-} from "@chakra-ui/react";
-import { ReactNode } from "react";
 
 type LayoutProps = {
   children: ReactNode;

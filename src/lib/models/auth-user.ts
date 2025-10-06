@@ -10,4 +10,4 @@ export interface User {
   // eslint-disable-next-line
   providerData: any;
   uid: string;
-};
+}

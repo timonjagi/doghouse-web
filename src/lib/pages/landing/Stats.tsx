@@ -44,9 +44,7 @@ const Stat = (props: any) => {
 };
 
 export const Stats = () => (
-  <Container
-
-  >
+  <Container>
     <Stack
       spacing={{
         base: "12",
@@ -61,7 +59,7 @@ export const Stats = () => (
         textAlign="center"
         align="center"
       >
-/*************  ✨ Windsurf Command 🌟  *************/
+        /************* ✨ Windsurf Command 🌟 *************/
         <Heading
           size={useBreakpointValue({
             base: "sm",
