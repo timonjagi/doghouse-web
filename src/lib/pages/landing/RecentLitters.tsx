@@ -31,7 +31,7 @@ import { useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { MdOutlineChevronRight } from "react-icons/md";
 
-import breedGroups from "../../data/breed-groups_2.json";
+// import breedGroups from "../../data/breed-groups_2.json";
 // import breeds from "../../data/breeds_with_group.json";
 
 export const RecentLitters = () => {
