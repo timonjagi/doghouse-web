@@ -65,6 +65,12 @@ const SearchResults = () => {
   //   }
   // }, [hits, isLastPage, showMore]);
 
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   const breeds = [
     {
@@ -111,7 +117,7 @@ const SearchResults = () => {
 
   return (
     <>
-      {status !== "idle" && !breeds.length && (
+      {loading && (
         <SimpleGrid
           columns={{ base: 2, md: 3, lg: 4 }}
           gap={{ base: "4", md: "6", lg: "8" }}
@@ -141,14 +147,14 @@ const SearchResults = () => {
         ))}
 
         <div ref={sentinelRef} aria-hidden="true" />
-        {status !== "idle" && breeds.length && (
+        {/* {status !== "idle" && breeds.length && (
           <Center>
             <Spinner size="lg" />
           </Center>
-        )}
+        )} */}
       </SimpleGrid>
 
-      {status === "error" && <div>Error Loading Breeds</div>}
+      {/* {status === "error" && <div>Error Loading Breeds</div>} */}
 
       <Drawer
         isOpen={!!router.query.breedName}

@@ -19,6 +19,7 @@ import { FiHelpCircle, FiBell } from "react-icons/fi";
 
 import { Logo } from "./Logo";
 import { ToggleButton } from "./ToggleButton";
+import { Sidebar } from "./Sidebar";
 
 const Header = () => {
   const isDesktop = useBreakpointValue({
@@ -172,6 +173,21 @@ const Header = () => {
                   )}
                 </>
               )} */}
+
+              <Drawer
+                isOpen={isOpen}
+                placement="left"
+                onClose={onClose}
+                isFullHeight
+                preserveScrollBarGap
+                // Only disabled for showcase
+                trapFocus={false}
+              >
+                <DrawerOverlay />
+                <DrawerContent>
+                  <Sidebar onClose={onClose} />
+                </DrawerContent>
+              </Drawer>
             </Flex>
           )}
         </Flex>

@@ -1,3 +1,3 @@
-import Blog from "lib/pages/blog";
+import Breeds from "lib/pages/breeds";
 
-export default Blog;
+export default Breeds;
