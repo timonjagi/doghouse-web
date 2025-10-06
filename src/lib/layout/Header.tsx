@@ -61,14 +61,14 @@ const Header = () => {
                   aria-label='Settings'
                 /> */}
                 {/* {user && ( */}
-                <Button
+                {/* <Button
                   rounded="full"
                   as={Link}
                   aria-current={pathname.includes("home") ? "page" : false}
                   href="/"
                 >
                   Home
-                </Button>
+                </Button> */}
                 {/* )} */}
 
                 <Button
