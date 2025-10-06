@@ -16,8 +16,8 @@ import {
 } from "@chakra-ui/react";
 import { useRef } from "react";
 // import React from "react";
-import { FiUploadCloud } from "react-icons/fi";
 import { BiImageAdd } from "react-icons/bi";
+import { FiUploadCloud } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 
 export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
@@ -57,7 +57,7 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
                     left="40%"
                     top="40%"
                     onClick={() => onRemove(selectedFile)}
-                  ></IconButton>
+                  />
                 </Box>
               ))}
               {selectedFiles.length !== maxUploads && (
@@ -119,7 +119,7 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
         hidden
         multiple
         onChange={onChange}
-      ></input>
+      />
     </>
   );
 };

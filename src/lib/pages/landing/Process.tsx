@@ -18,10 +18,10 @@ import {
 import { useRouter } from "next/router";
 // import * as React from "react";
 import { BsBookmarkHeartFill, BsCheckCircleFill } from "react-icons/bs";
-import { ImProfile } from "react-icons/im";
 import { FaSearch } from "react-icons/fa";
 import { FiCheck } from "react-icons/fi";
 import { GoListOrdered } from "react-icons/go";
+import { ImProfile } from "react-icons/im";
 
 export const steps = [
   {
@@ -210,9 +210,7 @@ const FeatureCard = (props: any) => {
 
 export const Process = () => (
   <Box as="section" py={{ base: "8", lg: "16" }}>
-    <Container
-      py="md"
-    >
+    <Container py="md">
       <Stack
         spacing={{
           base: "8",
@@ -247,11 +245,10 @@ export const Process = () => (
             >
               {/* Finding a quality dog breed can be difficult, but Doghouse makes it
             easy to find the perfect pup for your needs */}
-              From personalized recommendations to secure reservations, we've got
-              you covered at every step.
+              From personalized recommendations to secure reservations, we've
+              got you covered at every step.
             </Text>
           </Stack>
-
         </Stack>
         <Stack
           direction={{

@@ -1,38 +1,38 @@
+import type { IconButtonProps, StackProps } from "@chakra-ui/react";
 import {
   AspectRatio,
   Box,
   Circle,
   HStack,
   IconButton,
-  IconButtonProps,
   Image,
   Skeleton,
   Stack,
-  StackProps,
   useColorModeValue,
-} from '@chakra-ui/react'
-import * as React from 'react'
-import { IoChevronBackOutline, IoChevronForwardOutline } from 'react-icons/io5'
-import { Carousel, CarouselSlide, useCarousel } from './Carousel'
-import { ProductImage } from './_data'
+} from "@chakra-ui/react";
+import * as React from "react";
+import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
+
+import type { ProductImage } from "./_data";
+import { Carousel, CarouselSlide, useCarousel } from "./Carousel";
 
 interface GalleryProps {
-  images: ProductImage[]
-  aspectRatio?: number
-  rootProps?: StackProps
+  images: ProductImage[];
+  aspectRatio?: number;
+  rootProps?: StackProps;
 }
 
 export const Gallery = (props: GalleryProps) => {
-  const { images, aspectRatio = 4 / 3, rootProps } = props
+  const { images, aspectRatio = 4 / 3, rootProps } = props;
 
-  const [currentSlide, setCurrentSlide] = React.useState(0)
+  const [currentSlide, setCurrentSlide] = React.useState(0);
 
   const [ref, slider] = useCarousel({
     slideChanged: (slider) => setCurrentSlide(slider.track.details.rel),
-  })
+  });
 
-  const hasPrevious = currentSlide !== 0
-  const hasNext = currentSlide < images.length - 1
+  const hasPrevious = currentSlide !== 0;
+  const hasNext = currentSlide < images.length - 1;
 
   return (
     <Stack spacing="4" {...rootProps}>
@@ -40,8 +40,8 @@ export const Gallery = (props: GalleryProps) => {
         position="relative"
         sx={{
           _hover: {
-            '> button': {
-              display: 'inline-flex',
+            "> button": {
+              display: "inline-flex",
             },
           },
         }}
@@ -55,7 +55,12 @@ export const Gallery = (props: GalleryProps) => {
                 opacity={currentSlide === i ? 1 : 0.4}
                 _hover={{ opacity: 1 }}
               >
-                <Image src={image.src} objectFit="cover" alt={image.alt} fallback={<Skeleton />} />
+                <Image
+                  src={image.src}
+                  objectFit="cover"
+                  alt={image.alt}
+                  fallback={<Skeleton />}
+                />
               </AspectRatio>
             </CarouselSlide>
           ))}
@@ -86,15 +91,25 @@ export const Gallery = (props: GalleryProps) => {
             aria-label="Next Slide"
           />
         )}
-        <HStack position="absolute" width="full" justify="center" bottom="0" py="4">
+        <HStack
+          position="absolute"
+          width="full"
+          justify="center"
+          bottom="0"
+          py="4"
+        >
           {images.map((_, index) => (
-            <Circle key={index} size="2" bg={currentSlide === index ? 'white' : 'whiteAlpha.400'} />
+            <Circle
+              key={index}
+              size="2"
+              bg={currentSlide === index ? "white" : "whiteAlpha.400"}
+            />
           ))}
         </HStack>
       </Box>
     </Stack>
-  )
-}
+  );
+};
 
 const CarouselIconButton = (props: IconButtonProps) => (
   <IconButton
@@ -102,15 +117,15 @@ const CarouselIconButton = (props: IconButtonProps) => (
     fontSize="lg"
     isRound
     boxShadow="base"
-    bg={useColorModeValue('white', 'gray.800')}
+    bg={useColorModeValue("white", "gray.800")}
     _hover={{
-      bg: useColorModeValue('gray.100', 'gray.700'),
+      bg: useColorModeValue("gray.100", "gray.700"),
     }}
     _active={{
-      bg: useColorModeValue('gray.200', 'gray.600'),
+      bg: useColorModeValue("gray.200", "gray.600"),
     }}
-    _focus={{ boxShadow: 'inerhit' }}
-    _focusVisible={{ boxShadow: 'outline' }}
+    _focus={{ boxShadow: "inerhit" }}
+    _focusVisible={{ boxShadow: "outline" }}
     {...props}
   />
-)
+);

@@ -3,20 +3,21 @@ import { NextSeo } from "next-seo";
 
 import Footer from "lib/layout/Footer";
 
-import Hero from "./Hero";
-import { Process } from "./Process";
-import { CtaWithImage } from "./CtaWithImage";
-import { RecentLitters } from "./RecentLitters";
+import { Blog } from "./Blog";
+import BreedTraits from "./BreedTraits";
 import { Cta } from "./Cta";
+import { CtaWithImage } from "./CtaWithImage";
+import Hero from "./Hero";
 import { LogoGrid } from "./LogoGrid";
+import { Process } from "./Process";
+import { RecentLitters } from "./RecentLitters";
 import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
-import BreedTraits from "./BreedTraits";
 import WhyDoghouse from "./WhyDoghouse";
-const Home = () => {
 
+const Home = () => {
   return (
-    <Box as="section" height="100vh" overflowY="auto">
+    <Box as="section" bg="bg-surface">
       <Flex
         direction="column"
         alignItems="center"
@@ -27,10 +28,7 @@ const Home = () => {
         <NextSeo title="Doghouse - Quality breeds" />
         <Hero />
 
-
-
         <BreedTraits />
-
 
         <RecentLitters />
 
@@ -40,15 +38,14 @@ const Home = () => {
 
         <WhyDoghouse />
 
+        <Testimonials />
 
-
-        {/* <Testimonials /> */}
-
-        <Cta />
+        {/* <Cta /> */}
 
         {/* <CtaWithImage /> */}
+        {/* <LogoGrid /> */}
 
-        {/*<LogoGrid /> */}
+        <Blog />
       </Flex>
       <Footer />
     </Box>

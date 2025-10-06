@@ -1,9 +1,10 @@
-import { As, Button, ButtonProps, HStack, Icon, Text } from "@chakra-ui/react";
+import type { ButtonProps } from "@chakra-ui/react";
+import { Button, HStack, Icon, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import * as React from "react";
 
 interface NavButtonProps extends ButtonProps {
-  icon: As;
+  icon: any;
   label: string;
   href?: string;
   as?: any;

@@ -12,15 +12,13 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
-
+import Link from "next/link";
 import { useRouter } from "next/router";
 // import * as React from "react";
 import { FiHelpCircle, FiBell } from "react-icons/fi";
 
 import { Logo } from "./Logo";
-
 import { ToggleButton } from "./ToggleButton";
-import Link from "next/link";
 
 const Header = () => {
   const isDesktop = useBreakpointValue({
@@ -49,11 +47,7 @@ const Header = () => {
         <Flex justify="space-between">
           <HStack spacing="4">
             <Logo />
-            {isDesktop && (
-              <ButtonGroup variant="ghost-on-accent" spacing="1">
-
-              </ButtonGroup>
-            )}
+            {isDesktop && <ButtonGroup variant="ghost-on-accent" spacing="1" />}
           </HStack>
           {isDesktop ? (
             <HStack spacing="4">
@@ -70,16 +64,29 @@ const Header = () => {
                 {/* <Button
                   rounded="full"
                   as={Link}
-                  aria-current={
-                    pathname.includes("home") ? "page" : false
-                  }
-                  href="/home"
+                  aria-current={pathname.includes("home") ? "page" : false}
+                  href="/"
                 >
                   Home
                 </Button> */}
                 {/* )} */}
 
-                {/* <Button>About</Button> */}
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("about") ? "page" : false}
+                  href="/about"
+                >
+                  About
+                </Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("breeds") ? "page" : false}
+                  href="/breeds"
+                >
+                  Breeds
+                </Button>
                 <Button
                   rounded="full"
                   as={Link}
@@ -94,7 +101,9 @@ const Header = () => {
                   as={Link}
                   aria-current={pathname.includes("contact") ? "page" : false}
                   href="/contact"
-                >Contact</Button>
+                >
+                  Contact
+                </Button>
                 <IconButton
                   icon={<FiHelpCircle fontSize="1.25rem" />}
                   aria-label="Help Center"
@@ -163,7 +172,6 @@ const Header = () => {
                   )}
                 </>
               )} */}
-
             </Flex>
           )}
         </Flex>

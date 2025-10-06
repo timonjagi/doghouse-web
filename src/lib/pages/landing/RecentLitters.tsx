@@ -24,13 +24,14 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 // import * as React from "react";
-import { FaArrowRight } from "react-icons/fa";
 
 // @ts-ignore
-import breedGroups from "../../data/breed-groups_2.json";
 import router, { useRouter } from "next/router";
 import { useState } from "react";
+import { FaArrowRight } from "react-icons/fa";
 import { MdOutlineChevronRight } from "react-icons/md";
+
+import breedGroups from "../../data/breed-groups_2.json";
 // import breeds from "../../data/breeds_with_group.json";
 
 export const RecentLitters = () => {
@@ -40,46 +41,46 @@ export const RecentLitters = () => {
 
   const breeds = [
     {
-      name: 'Golden Retriever',
-      breedGroup: 'sporting',
-      image: 'images/breeds/doghousekenya_golden_retriever_1.webp'
+      name: "Golden Retriever",
+      breedGroup: "sporting",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
     },
     {
-      name: 'Boerboel',
-      breedGroup: 'working',
-      image: 'images/breeds/doghousekenya_boerboel_1.jpg'
+      name: "Boerboel",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_boerboel_1.jpg",
     },
     {
-      name: 'Great Dane',
-      breedGroup: 'working',
-      image: 'images/breeds/doghousekenya_great_dane_1.jpg'
+      name: "Great Dane",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_great_dane_1.jpg",
     },
     {
-      name: 'Maltese',
-      breedGroup: 'toy',
-      image: 'images/breeds/doghousekenya_maltese_1.jpg'
+      name: "Maltese",
+      breedGroup: "toy",
+      image: "images/breeds/doghousekenya_maltese_1.jpg",
     },
     {
-      name: 'Siberian Husky',
-      breedGroup: 'working',
-      image: 'images/breeds/doghousekenya_siberian_husky_1.jpg'
+      name: "Siberian Husky",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_siberian_husky_1.jpg",
     },
     {
-      name: 'Rottweiler',
-      breedGroup: 'working',
-      image: 'images/breeds/doghousekenya_rotweiler_1.jpg'
+      name: "Rottweiler",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_rotweiler_1.jpg",
     },
     {
-      name: 'Cocker Spaniel',
-      breedGroup: 'sporting',
-      image: 'images/breeds/doghousekenya_spaniel_1.jpg'
+      name: "Cocker Spaniel",
+      breedGroup: "sporting",
+      image: "images/breeds/doghousekenya_spaniel_1.jpg",
     },
     {
-      name: 'Saint Bernard',
-      breedGroup: 'working',
-      image: 'images/breeds/doghousekenya_st_bernard_1.jpg'
+      name: "Saint Bernard",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_st_bernard_1.jpg",
     },
-  ]
+  ];
 
   // //filter((breed) =>
   //   [
@@ -116,7 +117,7 @@ export const RecentLitters = () => {
               >
                 Recent Litters
               </Heading>
-              {/* <HStack spacing={{ base: "2", md: "3" }}>
+              <HStack spacing={{ base: "2", md: "3" }}>
                 <Text
                   as={Link}
                   fontWeight="semibold"
@@ -130,7 +131,7 @@ export const RecentLitters = () => {
                   color={useColorModeValue("brand.100", "brand.300")}
                   fontSize={{ base: "sm", md: "md" }}
                 />
-              </HStack> */}
+              </HStack>
             </Flex>
             <SimpleGrid
               columns={{ base: 2, md: 3, lg: 4 }}

@@ -12,7 +12,6 @@ import Link from "next/link";
 import * as React from "react";
 
 export const CtaWithImage = () => {
-
   return (
     <Box>
       <Container
@@ -74,12 +73,7 @@ export const CtaWithImage = () => {
                 Learn more
               </Button>
 
-              <Button
-                variant="primary"
-                size="lg"
-                as={Link}
-                href={""}
-              >
+              <Button variant="primary" size="lg" as={Link} href="">
                 Get the app
               </Button>
             </Stack>
@@ -91,7 +85,7 @@ export const CtaWithImage = () => {
               md: "lg",
             }}
             objectFit="contain"
-            src={"images/mockup.png"}
+            src="images/mockup.png"
           />
         </Stack>
       </Container>

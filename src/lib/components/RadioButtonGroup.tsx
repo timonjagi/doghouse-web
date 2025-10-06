@@ -1,10 +1,9 @@
-import {
-  useRadioGroup,
-  ButtonGroup,
+import type {
   ButtonGroupProps,
   ButtonProps,
   UseRadioProps,
 } from "@chakra-ui/react";
+import { useRadioGroup, ButtonGroup } from "@chakra-ui/react";
 import React from "react";
 
 interface RadioButtonGroupProps<T>
@@ -39,12 +38,12 @@ export const RadioButtonGroup = <T extends string>(
           const isFirstItem = index === 0;
           const isLastItem = array.length === index + 1;
 
-          const styleProps = Object.assign({
+          const styleProps = {
             ...(isFirstItem && !isLastItem ? { borderRightRadius: 0 } : {}),
             ...(!isFirstItem && isLastItem ? { borderLeftRadius: 0 } : {}),
             ...(!isFirstItem && !isLastItem ? { borderRadius: 0 } : {}),
             ...(!isLastItem ? { mr: "-px" } : {}),
-          });
+          };
 
           return React.cloneElement(button, {
             ...styleProps,

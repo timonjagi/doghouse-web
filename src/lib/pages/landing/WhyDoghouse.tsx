@@ -8,12 +8,14 @@ import {
   Center,
   useBreakpointValue,
   Skeleton,
-  Image
+  Image,
 } from "@chakra-ui/react";
-import { Gallery } from "lib/components/GalleryWithCarousel/Gallery";
+
 // import * as React from "react";
 import { FaHeartbeat } from "react-icons/fa";
 import { MdBlock, MdFindInPage } from "react-icons/md";
+
+import { Gallery } from "lib/components/GalleryWithCarousel/Gallery";
 
 export const steps = [
   {
@@ -86,70 +88,66 @@ const WhyStep = (props: any) => {
 };
 
 const WhyDoghouse = () => {
-
   const images = [
     {
-      id: '01',
-      src: 'images/breeds/doghousekenya_golden_retriever_1.webp',
-      alt: 'Golden Retriever',
-      title: 'Golden Retriever',
+      id: "01",
+      src: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      alt: "Golden Retriever",
+      title: "Golden Retriever",
     },
     {
-      id: '02',
-      src: 'images/breeds/doghousekenya_boerboel_1.jpg',
-      alt: 'Boerboel',
-      title: 'Boerboel',
+      id: "02",
+      src: "images/breeds/doghousekenya_boerboel_1.jpg",
+      alt: "Boerboel",
+      title: "Boerboel",
     },
     {
-      id: '03',
-      src: 'images/breeds/doghousekenya_great_dane_1.jpg',
-      alt: 'Great Dane',
-      title: 'Great Dane',
+      id: "03",
+      src: "images/breeds/doghousekenya_great_dane_1.jpg",
+      alt: "Great Dane",
+      title: "Great Dane",
     },
     {
-      id: '04',
-      src: 'images/breeds/doghousekenya_maltese_1.jpg',
-      alt: 'Maltese',
-      title: 'Maltese',
+      id: "04",
+      src: "images/breeds/doghousekenya_maltese_1.jpg",
+      alt: "Maltese",
+      title: "Maltese",
     },
     {
-      id: '05',
-      src: 'images/breeds/doghousekenya_siberian_husky_1.jpg',
-      alt: 'Siberian Husky',
-      title: 'Siberian Husky',
+      id: "05",
+      src: "images/breeds/doghousekenya_siberian_husky_1.jpg",
+      alt: "Siberian Husky",
+      title: "Siberian Husky",
     },
     {
-      id: '06',
-      src: 'images/breeds/doghousekenya_rotweiler_1.jpg',
-      alt: 'Rottweiler',
-      title: 'Rottweiler',
+      id: "06",
+      src: "images/breeds/doghousekenya_rotweiler_1.jpg",
+      alt: "Rottweiler",
+      title: "Rottweiler",
     },
     {
-      id: '07',
-      src: 'images/breeds/doghousekenya_spaniel_1.jpg',
-      alt: 'Spaniel',
-      title: 'Spaniel',
+      id: "07",
+      src: "images/breeds/doghousekenya_spaniel_1.jpg",
+      alt: "Spaniel",
+      title: "Spaniel",
     },
     {
-      id: '08',
-      src: 'images/breeds/doghousekenya_st_bernard_1.jpg',
-      alt: 'St Bernard',
-      title: 'St Bernard',
+      id: "08",
+      src: "images/breeds/doghousekenya_st_bernard_1.jpg",
+      alt: "St Bernard",
+      title: "St Bernard",
     },
     {
-      id: '09',
-      src: 'images/breeds/doghousekenya_labrador_1.jpg',
-      alt: 'Labrador',
-      title: 'Labrador',
-    }
-
-  ]
+      id: "09",
+      src: "images/breeds/doghousekenya_labrador_1.jpg",
+      alt: "Labrador",
+      title: "Labrador",
+    },
+  ];
 
   return (
     <Box as="section" py={{ base: "6", md: "8", lg: "16" }}>
-      <Container
-
-      >
+      <Container>
         <Stack
           spacing={{
             base: "8",
@@ -176,11 +174,9 @@ const WhyDoghouse = () => {
                 md: "xl",
               }}
               color="muted"
-
             >
-              Finding a quality dog breed can be difficult, but Doghouse makes it
-              easy to find the perfect pup for your needs
-
+              Finding a quality dog breed can be difficult, but Doghouse makes
+              it easy to find the perfect pup for your needs
             </Text>
           </Stack>
           <Stack
@@ -193,10 +189,8 @@ const WhyDoghouse = () => {
               lg: "24",
             }}
             justify="center"
-
           >
             {/* <Gallery rootProps={{ overflow: 'hidden', }} images={images} /> */}
-
 
             <Stack
               spacing={{
@@ -204,7 +198,7 @@ const WhyDoghouse = () => {
                 md: "8",
               }}
               justify="center"
-              maxW={{ lg: '3xl' }}
+              maxW={{ lg: "3xl" }}
             >
               {steps.map((step, id) => (
                 // eslint-disable-next-line react/no-array-index-key
@@ -215,8 +209,7 @@ const WhyDoghouse = () => {
         </Stack>
       </Container>
     </Box>
-  )
-}
-
+  );
+};
 
 export default WhyDoghouse;

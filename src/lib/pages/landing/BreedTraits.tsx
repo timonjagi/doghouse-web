@@ -19,27 +19,23 @@ import { MdApartment, MdNotificationsActive, MdSick } from "react-icons/md";
 const features = [
   {
     name: "Apartment Dogs",
-    description:
-      "",
+    description: "",
     icon: MdApartment,
   },
   {
     name: "Family Dogs",
-    description:
-      "",
+    description: "",
     icon: GiFamilyHouse,
   },
   {
     name: "Guard Dogs",
-    description:
-      "",
+    description: "",
     icon: BsShieldShaded,
   },
 
   {
-    name: 'Hypoallergenic Dogs',
-    description:
-      "",
+    name: "Hypoallergenic Dogs",
+    description: "",
     icon: MdSick,
   },
   // {
@@ -90,10 +86,7 @@ export default function BreedTraits() {
               >
                 Features
               </Text> */}
-              <Heading
-                size={{ base: "sm", md: "md" }}
-
-              >
+              <Heading size={{ base: "sm", md: "md" }}>
                 Choose From A Large Collection of Breeds
               </Heading>
             </Stack>
@@ -105,8 +98,8 @@ export default function BreedTraits() {
               }}
               maxW="3xl"
             >
-              We are passionate about matching you with the right pet, whether you&apos;re looking for
-              an obedient family pet or a guard dog.
+              We are passionate about matching you with the right pet, whether
+              you&apos;re looking for an obedient family pet or a guard dog.
             </Text>
           </Stack>
           <SimpleGrid
@@ -136,7 +129,7 @@ export default function BreedTraits() {
                   size={{
                     base: "16",
                     md: "32",
-                    lg: "64"
+                    lg: "64",
                   }}
                   bg="accent"
                   color="inverted"
@@ -147,7 +140,7 @@ export default function BreedTraits() {
                     boxSize={{
                       base: "8",
                       md: "16",
-                      lg: "24"
+                      lg: "24",
                     }}
                   />
                 </Square>
