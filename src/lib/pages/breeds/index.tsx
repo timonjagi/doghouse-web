@@ -6,17 +6,60 @@ import SearchBox from "./SearchBox";
 import { SortbySelect } from "./SortBySelect";
 import { useState } from "react";
 import { BreedCard } from "./BreedCard";
-import breeds from "../../data/breeds_with_group_and_traits.json";
+// import breeds from "../../data/breeds_with_group_and_traits.json";
 
 export default function Breeds() {
   const [loading, setLoading] = useState(false);
 
+  const breeds = [
+    {
+      name: "Golden Retriever",
+      breedGroup: "sporting",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+    },
+    {
+      name: "Boerboel",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_boerboel_1.jpg",
+    },
+    {
+      name: "Great Dane",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_great_dane_1.jpg",
+    },
+    {
+      name: "Maltese",
+      breedGroup: "toy",
+      image: "images/breeds/doghousekenya_maltese_1.jpg",
+    },
+    {
+      name: "Siberian Husky",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_siberian_husky_1.jpg",
+    },
+    {
+      name: "Rottweiler",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_rotweiler_1.jpg",
+    },
+    {
+      name: "Cocker Spaniel",
+      breedGroup: "sporting",
+      image: "images/breeds/doghousekenya_spaniel_1.jpg",
+    },
+    {
+      name: "Saint Bernard",
+      breedGroup: "working",
+      image: "images/breeds/doghousekenya_st_bernard_1.jpg",
+    },
+  ];
+
   return (
     <>
       <Head>
-        <title>Search breeds - Doghouse</title>
+        <title>Our breeds - Doghouse</title>
       </Head>
-      <Box as="section" height="100vh" overflowY="auto">
+      <Box as="section" >
         <Container
           pt={{
             base: "4",
@@ -30,15 +73,15 @@ export default function Breeds() {
           <Stack spacing="5">
             <Stack spacing="1">
               <Heading size="md" mb={{ base: "3", md: "0" }}>
-                Breeds
+                Our Breeds
               </Heading>
 
               <Text color="muted">
-                Search our database of over 100 dog breeds
+                Explore our list of dog breeds from reputable breeders around the country
               </Text>
             </Stack>
 
-            <Stack
+            {/* <Stack
               spacing={{ base: "6", md: "4" }}
               direction={{ base: "column", md: "row" }}
               justify="space-between"
@@ -54,7 +97,7 @@ export default function Breeds() {
                 size="md"
                 colorScheme="brand"
               />
-            </Stack>
+            </Stack> */}
 
             {loading && (
               <SimpleGrid
