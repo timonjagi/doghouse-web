@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   Box,
   Container,
@@ -14,39 +13,69 @@ import {
   VStack,
   HStack,
   Icon,
-  Link,
   useBreakpointValue,
-  useColorModeValue,
   Card,
   CardBody,
-  Divider,
   AspectRatio,
 } from "@chakra-ui/react";
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import NextLink from "next/link";
-import Footer from 'lib/components/layout/Footer';
+import type React from "react";
+import { useState } from "react";
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock } from "react-icons/fa";
+
+import Footer from "lib/components/layout/Footer";
+
+const MapSection = () => {
+  // Using a placeholder for the map - you can replace this with an actual map component
+  return (
+    <Card bg="bg-surface" shadow="lg">
+      <CardBody p={0}>
+        <AspectRatio ratio={16 / 9}>
+          <Box
+            bg="gray.100"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            borderRadius="lg"
+          >
+            <VStack spacing={2} color="gray.500">
+              <Icon as={FaMapMarkerAlt} boxSize={8} />
+              <Text fontSize="lg" fontWeight="medium">
+                Interactive Map
+              </Text>
+              <Text fontSize="sm" textAlign="center" px={4}>
+                Our location will be displayed here with an interactive map
+              </Text>
+            </VStack>
+          </Box>
+        </AspectRatio>
+      </CardBody>
+    </Card>
+  );
+};
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission here
-    console.log('Form submitted:', formData);
   };
 
   return (
@@ -58,7 +87,8 @@ const ContactForm = () => {
               Send us a Message
             </Heading>
             <Text color="muted">
-              Have a question or need assistance? We'd love to hear from you.
+              Have a question or need assistance? We&apos;d love to hear from
+              you.
             </Text>
           </Box>
 
@@ -128,13 +158,7 @@ const ContactForm = () => {
                 />
               </FormControl>
 
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                w="full"
-                mt={4}
-              >
+              <Button type="submit" variant="primary" size="lg" w="full" mt={4}>
                 Send Message
               </Button>
             </VStack>
@@ -151,37 +175,36 @@ const ContactInfo = () => {
       icon: FaMapMarkerAlt,
       title: "Visit Us",
       content: "Nairobi, Kenya",
-      description: "Come meet our team and some of our furry friends"
+      description: "Come meet our team and some of our furry friends",
     },
     {
       icon: FaPhone,
       title: "Call Us",
       content: "+254 700 000 000",
-      description: "Mon-Fri 9AM-6PM EAT"
+      description: "Mon-Fri 9AM-6PM EAT",
     },
     {
       icon: FaEnvelope,
       title: "Email Us",
       content: "hello@doghousekenya.com",
-      description: "We'll respond within 24 hours"
+      description: "We&apos;ll respond within 24 hours",
     },
     {
       icon: FaClock,
       title: "Business Hours",
       content: "Mon - Fri: 9:00 AM - 6:00 PM",
-      description: "Sat: 10:00 AM - 4:00 PM"
-    }
+      description: "Sat: 10:00 AM - 4:00 PM",
+    },
   ];
 
   return (
     <Card bg="bg-surface" shadow="lg">
       <CardBody p={{ base: 6, md: 8 }}>
         <VStack spacing={6} align="stretch">
-
           <MapSection />
           <VStack spacing={4} align="stretch">
-            {contactItems.map((item, index) => (
-              <HStack key={index} spacing={4} align="start">
+            {contactItems.map((item) => (
+              <HStack key={item.title} spacing={4} align="start">
                 <Box
                   p={3}
                   bg="accent"
@@ -211,57 +234,32 @@ const ContactInfo = () => {
   );
 };
 
-const MapSection = () => {
-  // Using a placeholder for the map - you can replace this with an actual map component
-  return (
-    <Card bg="bg-surface" shadow="lg">
-      <CardBody p={0}>
-        <AspectRatio ratio={16 / 9}>
-          <Box
-            bg="gray.100"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            borderRadius="lg"
-          >
-            <VStack spacing={2} color="gray.500">
-              <Icon as={FaMapMarkerAlt} boxSize={8} />
-              <Text fontSize="lg" fontWeight="medium">
-                Interactive Map
-              </Text>
-              <Text fontSize="sm" textAlign="center" px={4}>
-                Our location will be displayed here with an interactive map
-              </Text>
-            </VStack>
-          </Box>
-        </AspectRatio>
-      </CardBody>
-    </Card>
-  );
-};
-
 const FAQSection = () => {
   const faqItems = [
     {
       question: "How do I get a dog?",
-      answer: "Getting a dog through Doghouse is easy! We have a simple adoption process to ensure the best match between you and your future pet. Start by filling out our adoption application form where we'll learn about your lifestyle and preferences.",
+      answer:
+        "Getting a dog through Doghouse is easy! We have a simple adoption process to ensure the best match between you and your future pet. Start by filling out our adoption application form where we&apos;ll learn about your lifestyle and preferences.",
       link: "/contact/adoption",
-      linkText: "Start Your Adoption Journey"
+      linkText: "Start Your Adoption Journey",
     },
 
     {
       question: "What should I expect during the adoption process?",
-      answer: "Our adoption process typically involves submitting an application, meeting with our team, visiting with available dogs, and completing the necessary paperwork. We guide you through each step to ensure a smooth experience."
+      answer:
+        "Our adoption process typically involves submitting an application, meeting with our team, visiting with available dogs, and completing the necessary paperwork. We guide you through each step to ensure a smooth experience.",
     },
     {
       question: "Do you offer any support after adoption?",
-      answer: "Yes! We provide ongoing support to all our adopters, including resources for training, health care guidance, and access to our community of dog lovers. We're here for you and your new companion."
+      answer:
+        "Yes! We provide ongoing support to all our adopters, including resources for training, health care guidance, and access to our community of dog lovers. We&apos;re here for you and your new companion.",
     },
     {
       question: "How do I join your network of breeders?",
-      answer: "We welcome responsible breeders who share our commitment to animal welfare and ethical breeding practices. Our breeder onboarding process ensures we maintain the highest standards for all our partner breeders.",
+      answer:
+        "We welcome responsible breeders who share our commitment to animal welfare and ethical breeding practices. Our breeder onboarding process ensures we maintain the highest standards for all our partner breeders.",
       link: "/contact/breeder",
-      linkText: "Join Our Network"
+      linkText: "Join Our Network",
     },
   ];
 
@@ -272,13 +270,14 @@ const FAQSection = () => {
           Frequently Asked Questions
         </Heading>
         <Text color="muted">
-          Find answers to common questions about our adoption process and services
+          Find answers to common questions about our adoption process and
+          services
         </Text>
       </Box>
 
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-        {faqItems.map((faq, index) => (
-          <Card key={index} bg="bg-surface" shadow="lg">
+        {faqItems.map((faq) => (
+          <Card key={faq.question} bg="bg-surface" shadow="lg">
             <CardBody>
               <VStack spacing={4} align="stretch">
                 <Box>
@@ -309,8 +308,6 @@ const FAQSection = () => {
   );
 };
 
-
-
 function Contact() {
   return (
     <Box as="section" bg="bg-surface" minH="100vh">
@@ -325,14 +322,12 @@ function Contact() {
             textAlign="center"
           >
             <Stack spacing="4">
-
               <Heading
                 size={useBreakpointValue({
                   base: "md",
                   md: "lg",
                 })}
               >
-
                 Contact Us
               </Heading>
 
@@ -345,8 +340,9 @@ function Contact() {
                 maxW="2xl"
                 mx="auto"
               >
-                Get in touch with our team. We're here to help you find your perfect furry companion
-                or answer any questions you might have.
+                Get in touch with our team. We&apos;re here to help you find
+                your perfect furry companion or answer any questions you might
+                have.
               </Text>
             </Stack>
           </Stack>
@@ -357,14 +353,11 @@ function Contact() {
           >
             <ContactInfo />
 
-
             {/* Contact Form */}
             <ContactForm />
 
             {/* Contact Information */}
-
           </SimpleGrid>
-
 
           {/* FAQ Section */}
           <FAQSection />

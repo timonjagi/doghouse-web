@@ -22,13 +22,33 @@ interface GalleryProps {
   rootProps?: StackProps;
 }
 
+const CarouselIconButton = (props: IconButtonProps) => (
+  <IconButton
+    display="none"
+    fontSize="lg"
+    isRound
+    boxShadow="base"
+    bg={useColorModeValue("white", "gray.800")}
+    _hover={{
+      bg: useColorModeValue("gray.100", "gray.700"),
+    }}
+    _active={{
+      bg: useColorModeValue("gray.200", "gray.600"),
+    }}
+    _focus={{ boxShadow: "inerhit" }}
+    _focusVisible={{ boxShadow: "outline" }}
+    {...props}
+  />
+);
+
 export const Gallery = (props: GalleryProps) => {
   const { images, aspectRatio = 4 / 3, rootProps } = props;
 
   const [currentSlide, setCurrentSlide] = React.useState(0);
 
   const [ref, slider] = useCarousel({
-    slideChanged: (slider) => setCurrentSlide(slider.track.details.rel),
+    slideChanged: (sliderInstance) =>
+      setCurrentSlide(sliderInstance.track.details.rel),
   });
 
   const hasPrevious = currentSlide !== 0;
@@ -47,12 +67,12 @@ export const Gallery = (props: GalleryProps) => {
         }}
       >
         <Carousel ref={ref}>
-          {images.map((image, i) => (
-            <CarouselSlide key={i}>
+          {images.map((image) => (
+            <CarouselSlide key={image.src}>
               <AspectRatio
                 ratio={aspectRatio}
                 transition="all 200ms"
-                opacity={currentSlide === i ? 1 : 0.4}
+                opacity={currentSlide === images.indexOf(image) ? 1 : 0.4}
                 _hover={{ opacity: 1 }}
               >
                 <Image
@@ -65,9 +85,6 @@ export const Gallery = (props: GalleryProps) => {
             </CarouselSlide>
           ))}
         </Carousel>
-        {/* {images.map((image, i) => (
-          <Image src={image.src} objectFit="cover" alt={image.alt} fallback={<Skeleton />} />
-        ))} */}
         {hasPrevious && (
           <CarouselIconButton
             pos="absolute"
@@ -98,11 +115,15 @@ export const Gallery = (props: GalleryProps) => {
           bottom="0"
           py="4"
         >
-          {images.map((_, index) => (
+          {images.map((image) => (
             <Circle
-              key={index}
+              key={image.src}
               size="2"
-              bg={currentSlide === index ? "white" : "whiteAlpha.400"}
+              bg={
+                currentSlide === images.indexOf(image)
+                  ? "white"
+                  : "whiteAlpha.400"
+              }
             />
           ))}
         </HStack>
@@ -110,22 +131,3 @@ export const Gallery = (props: GalleryProps) => {
     </Stack>
   );
 };
-
-const CarouselIconButton = (props: IconButtonProps) => (
-  <IconButton
-    display="none"
-    fontSize="lg"
-    isRound
-    boxShadow="base"
-    bg={useColorModeValue("white", "gray.800")}
-    _hover={{
-      bg: useColorModeValue("gray.100", "gray.700"),
-    }}
-    _active={{
-      bg: useColorModeValue("gray.200", "gray.600"),
-    }}
-    _focus={{ boxShadow: "inerhit" }}
-    _focusVisible={{ boxShadow: "outline" }}
-    {...props}
-  />
-);

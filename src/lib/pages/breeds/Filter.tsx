@@ -16,7 +16,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 // import * as React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdFilterList } from "react-icons/md";
 // import { useRefinementList } from "react-instantsearch-hooks-web";
 
@@ -30,7 +30,7 @@ export const Filter = () => {
   //   sortBy: ["name:asc"],
   // });
 
-  const [selectedBreedGroups, setSelectedBreedGroups] = useState([]);
+  const [, setSelectedBreedGroups] = useState([]);
 
   // useEffect(() => {
   //   if (selectedBreedGroups) {
@@ -95,7 +95,7 @@ export const Filter = () => {
                   as="button"
                   textDecor="underline"
                   fontSize="sm"
-                  onClick={() => { }}
+                  onClick={() => {}}
                   color="on-accent-subtle"
                 >
                   Clear

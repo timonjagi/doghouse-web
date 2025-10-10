@@ -11,7 +11,6 @@ import {
   IconButton,
   useColorModeValue,
 } from "@chakra-ui/react";
-import * as React from "react";
 
 export const ColumnHeader = (props: FlexProps) => (
   <Flex

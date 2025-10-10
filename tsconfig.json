@@ -20,6 +20,7 @@
     "jsx": "preserve",
     "baseUrl": "src",
     "incremental": true,
+    "noImplicitAny": false,
   },
   "include": [
     "video.d.ts",

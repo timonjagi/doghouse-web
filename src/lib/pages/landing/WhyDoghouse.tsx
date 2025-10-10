@@ -8,11 +8,8 @@ import {
   Center,
   useBreakpointValue,
 } from "@chakra-ui/react";
-
-// import * as React from "react";
 import { FaHeartbeat } from "react-icons/fa";
 import { MdBlock, MdFindInPage } from "react-icons/md";
-
 
 export const steps = [
   {

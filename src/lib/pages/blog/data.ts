@@ -6,6 +6,13 @@ const generateSlug = (title: string) => {
     .replace(/-+/g, "-"); // Replace multiple hyphens with a single hyphen
 };
 
+const DR_CANINE = "Dr. Canine";
+const PAW_FESSOR_BARK = "Paw-fessor Bark";
+const VET_WOOF = "Vet. Woof";
+const ANGELINA_GATES = "Angelina Gates";
+const BUSOLA_BANKS = "Busola Banks";
+const SAMY_TOM = "Samy Tom";
+
 export const posts = [
   {
     id: "1",
@@ -39,7 +46,7 @@ export const posts = [
     ],
     publishedAt: "August 20, 2025",
     author: {
-      name: "Dr. Canine",
+      name: DR_CANINE,
       avatarUrl: "https://tinyurl.com/2p8fy9ym",
     },
   },
@@ -86,7 +93,7 @@ export const posts = [
     ],
     publishedAt: "July 15, 2025",
     author: {
-      name: "Paw-fessor Bark",
+      name: PAW_FESSOR_BARK,
       avatarUrl: "https://tinyurl.com/2p8h98w8",
     },
   },
@@ -132,7 +139,7 @@ export const posts = [
     ],
     publishedAt: "June 10, 2025",
     author: {
-      name: "Vet. Woof",
+      name: VET_WOOF,
       avatarUrl: "https://tinyurl.com/2p98t7nh",
     },
   },
@@ -151,7 +158,7 @@ export const posts = [
         <li><strong>Swimming:</strong> Many dogs love to swim. Find a safe lake, river, or dog-friendly pool for a refreshing activity.</li>
         <li><strong>Fetch and Frisbee:</strong> Classic games that provide great exercise and tap into your dog's natural instincts.</li>
         <li><strong>Dog Parks:</strong> A fantastic way for your dog to socialize and burn off energy with other canines.</li>
-        <li><strong>Agility Training:</strong> Enroll in an agility class or set up a mini course in your backyard. It's a great mental and physical workout.</li>
+        <li><strong>Agility Training:</b> Enroll in an agility class or set up a mini course in your backyard. It's a great mental and physical workout.</li>
       </ul>
       <h2>Indoor Fun</h2>
       <ul>
@@ -175,7 +182,7 @@ export const posts = [
     ],
     publishedAt: "May 25, 2025",
     author: {
-      name: "Dr. Canine",
+      name: DR_CANINE,
       avatarUrl: "https://tinyurl.com/2p8fy9ym",
     },
   },
@@ -193,26 +200,26 @@ export const posts = [
       <h3>Tail Wags</h3>
       <ul>
         <li><strong>High, fast wag:</strong> Excitement, happiness.</li>
-        <li><strong>Low, slow wag:</strong> Uncertainty, submission.</li>
-        <li><strong>Tail tucked:</strong> Fear, anxiety.</li>
+        <li><strong>Low, slow wag:</b> Uncertainty, submission.</li>
+        <li><strong>Tail tucked:</b> Fear, anxiety.</li>
       </ul>
       <h3>Ear Positions</h3>
       <ul>
-        <li><strong>Ears forward:</strong> Alert, interested.</li>
-        <li><strong>Ears flattened back:</strong> Fear, aggression, or submission.</li>
-        <li><strong>Ears relaxed:</strong> Content, calm.</li>
+        <li><strong>Ears forward:</b> Alert, interested.</li>
+        <li><strong>Ears flattened back:</b> Fear, aggression, or submission.</li>
+        <li><strong>Ears relaxed:</b> Content, calm.</li>
       </ul>
       <h3>Body Posture</h3>
       <ul>
-        <li><strong>Play bow (front end down, rear end up):</strong> Inviting play.</li>
-        <li><strong>Stiff, rigid body:</strong> Alert, potentially aggressive or fearful.</li>
-        <li><strong>Rolling over, exposing belly:</strong> Submission, trust, or asking for a belly rub.</li>
+        <li><strong>Play bow (front end down, rear end up):</b> Inviting play.</li>
+        <li><strong>Stiff, rigid body:</b> Alert, potentially aggressive or fearful.</li>
+        <li><strong>Rolling over, exposing belly:</b> Submission, trust, or asking for a belly rub.</li>
       </ul>
       <h3>Vocalizations</h3>
       <ul>
-        <li><strong>Barks:</strong> Can mean anything from excitement to alarm. Context is key.</li>
-        <li><strong>Whines:</strong> Seeking attention, discomfort, or excitement.</li>
-        <li><strong>Growls:</strong> A warning sign. Respect a growl and investigate the cause.</li>
+        <li><strong>Barks:</b> Can mean anything from excitement to alarm. Context is key.</li>
+        <li><strong>Whines:</b> Seeking attention, discomfort, or excitement.</li>
+        <li><strong>Growls:</b> A warning sign. Respect a growl and investigate the cause.</li>
       </ul>
       <h2>Addressing Problem Behaviors</h2>
       <p>If your dog exhibits undesirable behaviors like excessive barking, chewing, or aggression, it's important to understand the root cause. These behaviors are often a symptom of underlying issues such as anxiety, boredom, lack of exercise, or fear.</p>
@@ -231,7 +238,7 @@ export const posts = [
     ],
     publishedAt: "April 18, 2025",
     author: {
-      name: "Paw-fessor Bark",
+      name: PAW_FESSOR_BARK,
       avatarUrl: "https://tinyurl.com/2p8h98w8",
     },
   },
@@ -271,7 +278,7 @@ export const posts = [
     ],
     publishedAt: "March 01, 2025",
     author: {
-      name: "Angelina Gates",
+      name: ANGELINA_GATES,
       avatarUrl: "https://tinyurl.com/2p98t7nh",
     },
   },
@@ -311,7 +318,7 @@ export const posts = [
     ],
     publishedAt: "February 14, 2025",
     author: {
-      name: "Busola Banks",
+      name: BUSOLA_BANKS,
       avatarUrl: "https://tinyurl.com/2p8fy9ym",
     },
   },
@@ -365,7 +372,7 @@ export const posts = [
     ],
     publishedAt: "January 05, 2025",
     author: {
-      name: "Samy Tom",
+      name: SAMY_TOM,
       avatarUrl: "https://tinyurl.com/2p8h98w8",
     },
   },

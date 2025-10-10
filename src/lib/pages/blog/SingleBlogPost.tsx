@@ -10,7 +10,6 @@ import {
   HStack,
   Container,
 } from "@chakra-ui/react";
-import React from "react";
 import { VscCircleFilled } from "react-icons/vsc";
 
 import Footer from "lib/components/layout/Footer";
@@ -23,8 +22,15 @@ interface BlogPostProps {
 
 function BlogPost({ slug }: BlogPostProps) {
   const isHero = true;
-  console.log("slug", slug);
   const post = posts.find((p) => p.slug === slug);
+  const imageHeight = useBreakpointValue({
+    base: "15rem",
+    md: isHero ? "sm" : "15rem",
+  });
+  const headingSize = useBreakpointValue({
+    base: "xs",
+    md: isHero ? "sm" : "xs",
+  });
 
   if (!post) {
     return <Box>Post not found</Box>;
@@ -48,10 +54,7 @@ function BlogPost({ slug }: BlogPostProps) {
               src={post.image}
               alt={post.title}
               width="full"
-              height={useBreakpointValue({
-                base: "15rem",
-                md: isHero ? "sm" : "15rem",
-              })}
+              height={imageHeight}
               objectFit="cover"
               transition="all 0.2s"
               _groupHover={{
@@ -71,19 +74,12 @@ function BlogPost({ slug }: BlogPostProps) {
                 <Icon as={VscCircleFilled} boxSize="2" />
                 <Text> {post.publishedAt}</Text>
               </HStack>
-              <Heading
-                size={useBreakpointValue({
-                  base: "xs",
-                  md: isHero ? "sm" : "xs",
-                })}
-              >
-                {post.title}
-              </Heading>
+              <Heading size={headingSize}>{post.title}</Heading>
               <Text color="muted">{post.excerpt}</Text>
             </Stack>
             <HStack>
-              {post.tags.map((tag, id) => (
-                <Badge key={id} colorScheme={tag.color}>
+              {post.tags.map((tag) => (
+                <Badge key={tag.label} colorScheme={tag.color}>
                   {tag.label}
                 </Badge>
               ))}

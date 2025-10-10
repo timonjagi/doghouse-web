@@ -6,7 +6,6 @@ import {
   Square,
   Text,
   useColorModeValue,
-  VStack,
   Image,
   Box,
   Flex,
@@ -15,13 +14,25 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 import { useRef } from "react";
-// import React from "react";
 import { BiImageAdd } from "react-icons/bi";
 import { FiUploadCloud } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 
-export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
+interface DropzoneProps {
+  selectedFiles: any[];
+  onChange: (e: any) => void;
+  onRemove: (file: any) => void;
+  maxUploads: number;
+}
+
+export const Dropzone = ({
+  selectedFiles,
+  onChange,
+  onRemove,
+  maxUploads,
+}: DropzoneProps) => {
   const selectedFileRef = useRef<HTMLInputElement>(null);
+  const bg = useColorModeValue("white", "gray.800");
 
   return (
     <>
@@ -33,7 +44,7 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
             flexWrap="wrap"
             px="4"
             py="4"
-            bg={useColorModeValue("white", "gray.800")}
+            bg={bg}
             boxSizing="content-box"
           >
             <SimpleGrid columns={{ base: 2 }} gap="4" w="full">
@@ -84,7 +95,7 @@ export const Dropzone = ({ selectedFiles, onChange, onRemove, maxUploads }) => {
           borderRadius="lg"
           px="6"
           py="4"
-          bg={useColorModeValue("white", "gray.800")}
+          bg={bg}
         >
           <Stack spacing="3">
             <Square size="10" bg="bg-subtle" borderRadius="lg">

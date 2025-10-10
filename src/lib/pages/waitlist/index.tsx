@@ -1,15 +1,8 @@
 // pages/contact.jsx
-import {
-  Flex,
-  Box,
-  Spinner,
-  ModalOverlay,
-  Modal,
-  ModalContent,
-} from "@chakra-ui/react";
+import { Flex, Box, Spinner, ModalOverlay, Modal } from "@chakra-ui/react";
 import Script from "next/script";
 import { NextSeo } from "next-seo";
-import { useEffect, useState } from "react"; // Import useEffect
+import { useState } from "react"; // Import useEffect
 
 export default function ContactUs() {
   const [loading, setLoading] = useState(true);

@@ -11,7 +11,6 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import * as React from "react";
 import { FiSearch } from "react-icons/fi";
 
 import BlogPostCard from "./BlogPostCard";
@@ -78,7 +77,6 @@ const Blog = () => {
                   Stay updated with the latest news, tips, and insights
                 </Text>
               </Stack>
-
             </Stack>
             <InputGroup
               size="lg"

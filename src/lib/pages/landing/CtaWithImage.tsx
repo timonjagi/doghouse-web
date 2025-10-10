@@ -9,7 +9,6 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import * as React from "react";
 
 export const CtaWithImage = () => {
   return (
@@ -58,8 +57,8 @@ export const CtaWithImage = () => {
                 }}
                 color="muted"
               >
-                No credit card is required. You'll be ready to go within a few
-                minutes. Let's go.
+                No credit card is required. You&apos;ll be ready to go within a
+                few minutes. Let&apos;s go.
               </Text>
             </Stack>
             <Stack

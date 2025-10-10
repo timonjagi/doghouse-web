@@ -15,11 +15,11 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 // import * as React from "react";
-import { FiHelpCircle, FiBell } from "react-icons/fi";
+import { FiHelpCircle } from "react-icons/fi";
 
 import { Logo } from "./Logo";
-import { ToggleButton } from "./ToggleButton";
 import { Sidebar } from "./Sidebar";
+import { ToggleButton } from "./ToggleButton";
 
 const Header = () => {
   const isDesktop = useBreakpointValue({

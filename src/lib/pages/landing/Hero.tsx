@@ -8,9 +8,7 @@ import {
   HStack,
   Img,
   Link,
-  Center,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
 import { HiChevronRight } from "react-icons/hi";
 
 export default function Hero() {

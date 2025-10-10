@@ -1,12 +1,10 @@
 import {
-  Avatar,
   Box,
   Button,
   Container,
   Heading,
   HStack,
   Icon,
-  Image,
   Link,
   SimpleGrid,
   Stack,
@@ -14,15 +12,14 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
-import * as React from "react";
 import { FaArrowRight } from "react-icons/fa";
 
-import BlogPost from "../blog/BlogPostCard";
 import BlogPostCard from "../blog/BlogPostCard";
 import { posts } from "../blog/data";
 
 export const Blog = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const brandColor = useColorModeValue("brand.600", "brand.900");
   return (
     <Box bg="bg-surface">
       <Container py={{ base: "16", md: "24" }}>
@@ -50,14 +47,14 @@ export const Blog = () => {
                 <Text
                   as={Link}
                   fontWeight="semibold"
-                  color={useColorModeValue("brand.600", "brand.900")}
+                  color={brandColor}
                   href="/blog"
                 >
                   View More
                 </Text>
                 <Icon
                   as={FaArrowRight}
-                  color={useColorModeValue("brand.600", "brand.900")}
+                  color={brandColor}
                   fontSize={{ base: "sm", md: "md" }}
                 />
               </HStack>

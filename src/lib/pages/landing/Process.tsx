@@ -15,10 +15,7 @@ import {
   useBreakpointValue,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-// import * as React from "react";
-import { BsBookmarkHeartFill, BsCheckCircleFill } from "react-icons/bs";
-import { FaSearch } from "react-icons/fa";
+import { BsCheckCircleFill } from "react-icons/bs";
 import { FiCheck } from "react-icons/fi";
 import { GoListOrdered } from "react-icons/go";
 import { ImProfile } from "react-icons/im";
@@ -106,7 +103,6 @@ const features = [
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const FeatureCard = (props: any) => {
-  const router = useRouter();
   return (
     <Box
       bg="bg-surface"
@@ -136,15 +132,6 @@ const FeatureCard = (props: any) => {
           md: "8",
         }}
       >
-        {/* <Stack spacing="1">
-          <Heading size="xs">Welcome Your New Family Member</Heading>
-
-          <Text color="muted">
-            Our community is here to support you every step of the way as you
-            embark on this exciting journey together.
-          </Text>
-        </Stack> */}
-
         <Stack spacing="8" divider={<StackDivider />}>
           <Stack spacing="6">
             <Stack spacing="1">
@@ -224,9 +211,6 @@ export const Process = () => (
           }}
         >
           <Stack spacing="3" textAlign="center" align="center">
-            {/* <Text color="accent" fontWeight="semibold">
-              Pricing
-            </Text> */}
             <Heading
               size={useBreakpointValue({
                 base: "sm",
@@ -244,10 +228,8 @@ export const Process = () => (
               maxW="3xl"
               color="muted"
             >
-              {/* Finding a quality dog breed can be difficult, but Doghouse makes it
-            easy to find the perfect pup for your needs */}
-              From personalized recommendations to secure reservations, we've
-              got you covered at every step.
+              From personalized recommendations to secure reservations,
+              we&apos;ve got you covered at every step.
             </Text>
           </Stack>
         </Stack>

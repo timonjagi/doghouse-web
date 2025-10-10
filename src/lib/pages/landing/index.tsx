@@ -5,10 +5,7 @@ import Footer from "lib/components/layout/Footer";
 
 import { Blog } from "./Blog";
 import BreedTraits from "./BreedTraits";
-import { Cta } from "./Cta";
-import { CtaWithImage } from "./CtaWithImage";
 import Hero from "./Hero";
-import { LogoGrid } from "./LogoGrid";
 import { Process } from "./Process";
 import { RecentLitters } from "./RecentLitters";
 import { Stats } from "./Stats";

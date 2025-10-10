@@ -7,11 +7,6 @@ type LayoutProps = {
   children: ReactNode;
 };
 
-interface RouteConfig {
-  path: string;
-  layout: React.ComponentType<LayoutProps>;
-}
-
 const Layout = ({ children }: LayoutProps) => {
   return (
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">

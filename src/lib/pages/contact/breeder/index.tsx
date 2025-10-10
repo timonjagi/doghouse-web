@@ -1,15 +1,8 @@
 // pages/contact.jsx
-import { useEffect, useState } from "react"; // Import useEffect
+import { Flex, Box, Spinner, ModalOverlay, Modal } from "@chakra-ui/react";
 import Script from "next/script";
-import {
-  Flex,
-  Box,
-  Spinner,
-  ModalOverlay,
-  Modal,
-  ModalContent,
-} from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
+import { useState } from "react"; // Import useEffect
 
 export default function ContactUs() {
   const [loading, setLoading] = useState(true);
@@ -34,7 +27,7 @@ export default function ContactUs() {
         >
           <NextSeo title="Join Our Network" />
 
-          <Modal isCentered isOpen={loading ? true : false} onClose={() => { }}>
+          <Modal isCentered isOpen={!!loading} onClose={() => {}}>
             <ModalOverlay
               marginTop={{ base: "64px", lg: "72px" }}
               bg="none"
@@ -43,7 +36,7 @@ export default function ContactUs() {
               alignItems="center"
               justifyContent="center"
               zIndex={1}
-            ></ModalOverlay>
+            />
           </Modal>
 
           {loading && (
@@ -62,7 +55,7 @@ export default function ContactUs() {
             height="100%"
             title="Contact form"
             onLoad={() => loadTallyEmbeds()}
-          ></iframe>
+          />
         </Flex>
       </Box>
       <Script id="tally-js" src="https://tally.so/widgets/embed.js" />

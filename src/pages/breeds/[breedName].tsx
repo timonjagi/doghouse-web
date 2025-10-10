@@ -1,13 +1,10 @@
-import {
-  Box,
-  Container,
-} from "@chakra-ui/react";
+import { Box, Container } from "@chakra-ui/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-import BreedDetails from "lib/pages/breeds/breed-details";
-import Head from "next/head";
 import Footer from "lib/components/layout/Footer";
+import BreedDetails from "lib/pages/breeds/breed-details";
 
 const BreedDetailPage = () => {
   const router = useRouter();
@@ -19,27 +16,28 @@ const BreedDetailPage = () => {
 
   return (
     <>
-      <Head >
-        <title>{breedName ? breedName.charAt(0).toUpperCase() + breedName.slice(1).replace(/-/g, " ") + ' | Doghouse' : ''}</title>
+      <Head>
+        <title>
+          {breedName
+            ? `${
+                breedName.charAt(0).toUpperCase() +
+                breedName.slice(1).replace(/-/g, " ")
+              } | Doghouse`
+            : ""}
+        </title>
       </Head>
-      <Box as="section" h="100vh" >
+      <Box as="section" h="100vh">
         <Container
           pt={{
             base: "4",
             lg: "8",
           }}
-
         >
-          {breedName && (
-            <BreedDetails
-              breedName={breedName}
-            />
-          )}
+          {breedName && <BreedDetails breedName={breedName} />}
         </Container>
         <Footer />
       </Box>
     </>
-
   );
 };
 export default BreedDetailPage;

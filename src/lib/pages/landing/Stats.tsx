@@ -59,13 +59,14 @@ export const Stats = () => (
         textAlign="center"
         align="center"
       >
-        /************* ✨ Windsurf Command 🌟 *************/
+        {/* /************* ✨ Windsurf Command 🌟 ************ */}
         <Heading
           size={useBreakpointValue({
             base: "sm",
             md: "md",
           })}
         >
+          {" "}
           Our numbers speak for themselves
         </Heading>
         <Text

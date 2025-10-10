@@ -7,14 +7,10 @@ import {
   Square,
   Stack,
   Text,
-  useBreakpointValue,
 } from "@chakra-ui/react";
-import { BiShield } from "react-icons/bi";
-// import * as React from "react";
-import { BsChatFill, BsShieldShaded } from "react-icons/bs";
-import { FaPaintBrush } from "react-icons/fa";
-import { GiDogHouse, GiFamilyHouse, GiGuards } from "react-icons/gi";
-import { MdApartment, MdNotificationsActive, MdSick } from "react-icons/md";
+import { BsShieldShaded } from "react-icons/bs";
+import { GiFamilyHouse } from "react-icons/gi";
+import { MdApartment, MdSick } from "react-icons/md";
 
 const features = [
   {

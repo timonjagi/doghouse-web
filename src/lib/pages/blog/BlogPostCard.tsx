@@ -10,10 +10,29 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import * as React from "react";
 import { VscCircleFilled } from "react-icons/vsc";
 
-const BlogPost = (props) => {
+interface Post {
+  slug: string;
+  image: string;
+  title: string;
+  author: {
+    name: string;
+  };
+  publishedAt: string;
+  excerpt: string;
+  tags: {
+    color: string;
+    label: string;
+  }[];
+}
+
+interface BlogPostCardProps {
+  post: Post;
+  isHero?: boolean;
+}
+
+const BlogPost = (props: BlogPostCardProps) => {
   const { post, isHero } = props;
   return (
     <Link
@@ -63,8 +82,8 @@ const BlogPost = (props) => {
             <Text color="muted">{post.excerpt}</Text>
           </Stack>
           <HStack>
-            {post.tags.map((tag, id) => (
-              <Badge key={id} colorScheme={tag.color}>
+            {post.tags.map((tag) => (
+              <Badge key={tag.label} colorScheme={tag.color}>
                 {tag.label}
               </Badge>
             ))}

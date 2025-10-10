@@ -2,7 +2,7 @@ import { Flex } from "@chakra-ui/react";
 import type React from "react";
 
 type PageContentProps = {
-  children: any;
+  children: React.ReactNode;
 };
 
 const PageContent: React.FC<PageContentProps> = ({ children }) => {
@@ -15,7 +15,7 @@ const PageContent: React.FC<PageContentProps> = ({ children }) => {
           width={{ base: "100%", md: "65%" }}
           mr={{ base: 0, md: 6 }}
         >
-          {children && children[0]}
+          {children && (children as any)[0]}
         </Flex>
         {/* RHS */}
         <Flex
@@ -23,7 +23,7 @@ const PageContent: React.FC<PageContentProps> = ({ children }) => {
           display={{ base: "none", md: "flex" }}
           flexGrow={1}
         >
-          {children && children[1]}
+          {children && (children as any)[1]}
         </Flex>
       </Flex>
     </Flex>

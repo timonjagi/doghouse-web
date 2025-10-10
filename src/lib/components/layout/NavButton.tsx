@@ -1,13 +1,12 @@
 import type { ButtonProps } from "@chakra-ui/react";
 import { Button, HStack, Icon, Text } from "@chakra-ui/react";
-import Link from "next/link";
-import * as React from "react";
+import type { ElementType } from "react";
 
 interface NavButtonProps extends ButtonProps {
-  icon: any;
+  icon: ElementType;
   label: string;
   href?: string;
-  as?: any;
+  as?: ElementType;
 }
 
 export const NavButton = (props: NavButtonProps) => {

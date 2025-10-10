@@ -5,9 +5,7 @@ import {
   Text,
   useColorMode,
   Flex,
-  Stack,
 } from "@chakra-ui/react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 
