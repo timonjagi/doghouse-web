@@ -13,11 +13,10 @@ import {
 import * as React from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 
-import type { ProductImage } from "./_data";
 import { Carousel, CarouselSlide, useCarousel } from "./Carousel";
 
 interface GalleryProps {
-  images: ProductImage[];
+  images: any[];
   aspectRatio?: number;
   rootProps?: StackProps;
 }

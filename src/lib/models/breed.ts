@@ -7,5 +7,5 @@ export interface Breed {
   height?: string;
   weight?: string;
   breedGroup?: string;
-  traits?: string[];
+  traits?: any;
 }

@@ -16,9 +16,9 @@ const SearchResults = () => {
   const [, setIsDrawerExpanded] = useState(false);
 
   // eslint-disable-next-line
-  const handleDrawerExpand = () => {
-    setIsDrawerExpanded(!isDrawerExpanded);
-  };
+  // const handleDrawerExpand = () => {
+  //   setIsDrawerExpanded(!isDrawerExpanded);
+  // };
 
   // const { hits, isLastPage, showMore } = useInfiniteHits();
   const sentinelRef = useRef(null);
