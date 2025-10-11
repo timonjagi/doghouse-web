@@ -1,8 +1,5 @@
 import {
-  Avatar,
-  Box,
   Button,
-  Container,
   Heading,
   HStack,
   Icon,
@@ -12,9 +9,7 @@ import {
   Text,
   Img,
   useBreakpointValue,
-  useColorModeValue as mode,
 } from '@chakra-ui/react'
-import * as React from 'react'
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa'
 
 export const Team = () => {
@@ -22,15 +17,11 @@ export const Team = () => {
     {
       role: 'Co-Founder / CEO',
       image:
-        'https://images.unsplash.com/photo-1573007974656-b958089e9f7b?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Nnx8Z3V5JTIwc21pbGluZ3xlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+        'images/team/1.jpg',
       name: 'Anthony Njagi',
       socials: [
         {
-          href: 'https://github.com/anthony-njagi',
-          icon: FaGithub
-        },
-        {
-          href: 'https://www.linkedin.com/in/anthony-njagi/',
+          href: 'https://www.linkedin.com/in/njagi-anthony/',
           icon: FaLinkedin
         },
         {
@@ -45,7 +36,7 @@ export const Team = () => {
       name: 'Timothy Njagi',
       socials: [
         {
-          href: 'https://github.com/timothy-njagi',
+          href: 'https://github.com/timonjagi',
           icon: FaGithub
         }, {
 
@@ -54,7 +45,7 @@ export const Team = () => {
         },
 
         {
-          href: 'https://twitter.com/TimothyNjagi',
+          href: 'https://twitter.com/njihianjagi',
           icon: FaTwitter
         }
       ]
@@ -97,24 +88,24 @@ export const Team = () => {
         justify="space-between"
       >
         <Stack spacing="3" maxW="3xl">
-          <Text fontSize={{ base: 'sm', md: 'md' }} color="accent" fontWeight="semibold">
-            We're hiring
-          </Text>
+          {/* <Text fontSize={{ base: 'sm', md: 'md' }} color="accent" fontWeight="semibold">
+            Team
+          </Text> */}
           <Stack spacing={{ base: '4', md: '5' }}>
             <Heading size={useBreakpointValue({ base: 'sm', md: 'md' })}>Meet our team</Heading>
-            <Text fontSize={{ base: 'lg', md: 'xl' }} color="muted">
+            {/* <Text fontSize={{ base: 'lg', md: 'xl' }} color="muted">
               We are a team of talented people who are passionate about what we do.
-            </Text>
+            </Text> */}
           </Stack>
         </Stack>
-        <Stack direction={{ base: 'column-reverse', md: 'row' }} spacing="3">
+        {/* <Stack direction={{ base: 'column-reverse', md: 'row' }} spacing="3">
           <Button variant="secondary" size="lg">
             Contact us
           </Button>
           <Button variant="primary" size="lg">
             Join our team
           </Button>
-        </Stack>
+        </Stack> */}
       </Stack>
       <SimpleGrid
         columns={{ base: 1, md: 2, lg: 3 }}

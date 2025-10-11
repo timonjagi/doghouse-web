@@ -1,12 +1,39 @@
-import { Box, VStack, Heading, HStack, IconButton, Text } from "@chakra-ui/react"
+import { Box, VStack, Heading, HStack, IconButton, Text, Center, useBreakpointValue } from "@chakra-ui/react"
 import { BsTiktok } from "react-icons/bs"
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa"
+import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa"
 
 export const Socials = () => {
+  const socials = [
+    {
+      name: "Whatsapp",
+      icon: <FaWhatsapp size={24} />,
+      href: "https://www.facebook.com/profile.php?id=100012765483528"
+    },
+    {
+      name: "Facebook",
+      icon: <FaFacebook size={24} />,
+      href: "https://www.facebook.com/profile.php?id=100012765483528"
+    },
+    {
+      name: "Instagram",
+      icon: <FaInstagram size={24} />,
+      href: "https://instagram.com/doghousekenya"
+    },
+    {
+      name: "(X) Twitter",
+      icon: <FaTwitter size={24} />,
+      href: "https://x.com/doghousekenya"
+    },
+    {
+      name: "TikTok",
+      icon: <BsTiktok size={24} />,
+      href: "https://www.tiktok.com/@doghousekenya"
+    }
+  ]
   return (
     <Box p={{ base: 6, md: 8 }} borderRadius="lg" shadow="sm">
       <VStack spacing={6} align="stretch">
-        <Heading size={{ base: "md", md: "lg" }} textAlign="center">
+        <Heading size={useBreakpointValue({ base: "md", md: "lg" })} textAlign="center">
           Connect With Us
         </Heading>
         <Text fontSize={{ base: "md", md: "lg" }} color="muted" textAlign="center">
@@ -14,50 +41,22 @@ export const Socials = () => {
         </Text>
 
         <HStack spacing={4} justify="center">
-          <IconButton
-            as="a"
-            href="https://www.facebook.com/profile.php?id=100012765483528"
-            aria-label="Facebook"
-            icon={<FaFacebook />}
-            size="lg"
-            colorScheme="facebook"
-            variant="outline"
-            _hover={{ transform: "scale(1.1)" }}
-            transition="all 0.2s"
-          />
-          <IconButton
-            as="a"
-            href="https://instagram.com/doghousekenya"
-            aria-label="Instagram"
-            icon={<FaInstagram />}
-            size="lg"
-            colorScheme="pink"
-            variant="outline"
-            _hover={{ transform: "scale(1.1)" }}
-            transition="all 0.2s"
-          />
-          <IconButton
-            as="a"
-            href="https://twitter.com/doghousekenya"
-            aria-label="Twitter"
-            icon={<FaTwitter />}
-            size="lg"
-            colorScheme="twitter"
-            variant="outline"
-            _hover={{ transform: "scale(1.1)" }}
-            transition="all 0.2s"
-          />
-          <IconButton
-            as="a"
-            href="https://tiktok.com/@doghousekenya"
-            aria-label="TikTok"
-            icon={<BsTiktok />}
-            size="lg"
-            colorScheme="gray"
-            variant="outline"
-            _hover={{ transform: "scale(1.1)" }}
-            transition="all 0.2s"
-          />
+          {socials.map((social) => (
+            <IconButton
+              key={social.name}
+              as="a"
+              href={social.href}
+              aria-label="Facebook"
+              icon={social.icon}
+              _hover={{ transform: "scale(1.1)" }}
+              transition="all 0.2s"
+              bg="accent"
+              borderRadius="lg"
+              colorScheme="brand"
+              size="xl"
+            />
+          ))}
+
         </HStack>
       </VStack>
     </Box>

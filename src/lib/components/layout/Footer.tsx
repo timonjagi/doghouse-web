@@ -9,6 +9,7 @@ import {
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 
 import { Logo } from "./Logo";
+import { BsTiktok } from "react-icons/bs";
 
 const Footer = () => (
   <Box bg="bg-accent" color="on-accent">
@@ -34,6 +35,12 @@ const Footer = () => (
               href="https://twitter.com/doghousekenya"
               aria-label="Twitter"
               icon={<FaTwitter fontSize="1.25rem" />}
+            />
+            <IconButton
+              as="a"
+              href="https://tiktok.com/@doghousekenya"
+              aria-label="Tiktok"
+              icon={<BsTiktok fontSize="1.25rem" />}
             />
           </ButtonGroup>
         </Stack>
