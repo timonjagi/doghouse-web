@@ -15,6 +15,7 @@ import { FiSearch } from "react-icons/fi";
 
 import BlogPostCard from "./BlogPostCard";
 import { posts } from "./data";
+import Footer from "lib/components/layout/Footer";
 // import client from "../../../../client";
 // import groq from "groq";
 
@@ -134,6 +135,7 @@ const Blog = () => {
           </Stack>
         </Stack>
       </Container>
+      <Footer />
     </Box>
   );
 };

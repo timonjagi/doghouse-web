@@ -211,6 +211,9 @@ export const Process = () => (
           }}
         >
           <Stack spacing="3" textAlign="center" align="center">
+            <Text fontSize={{ base: 'sm', md: 'md' }} color="accent" fontWeight="semibold">
+              Our Process
+            </Text>
             <Heading
               size={useBreakpointValue({
                 base: "sm",

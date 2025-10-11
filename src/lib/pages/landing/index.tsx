@@ -6,8 +6,8 @@ import Footer from "lib/components/layout/Footer";
 import { Blog } from "./Blog";
 import BreedTraits from "./BreedTraits";
 import Hero from "./Hero";
-import { Process } from "./Process";
-import { RecentLitters } from "./RecentLitters";
+import { Process } from "./OurProcess";
+import { OurBreeds } from "./Breeds";
 import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
 import WhyDoghouse from "./WhyDoghouse";
@@ -27,7 +27,7 @@ const Home = () => {
 
         <BreedTraits />
 
-        <RecentLitters />
+        <OurBreeds />
 
         <Process />
 

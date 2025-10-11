@@ -15,37 +15,25 @@ import { MdApartment, MdSick } from "react-icons/md";
 const features = [
   {
     name: "Apartment Dogs",
-    description: "",
+    description: "Breeds well-suited for apartment living due to their calm nature and low exercise needs.",
     icon: MdApartment,
   },
   {
     name: "Family Dogs",
-    description: "",
+    description: "Breeds perfect for families with children as they are gentle, loving, and patient.",
     icon: GiFamilyHouse,
   },
   {
     name: "Guard Dogs",
-    description: "",
+    description: "Breeds naturally protective of their family and territory, making them great watchdogs.",
     icon: BsShieldShaded,
   },
 
   {
     name: "Hypoallergenic Dogs",
-    description: "",
+    description: "Breeds with low-shedding or single-layered coats, making them ideal for people with allergies.",
     icon: MdSick,
   },
-  // {
-  //   name: 'Fully Responsive',
-  //   description:
-  //     'Responsive components that look great on mobile, tablet and desktop.',
-  //   icon: FaExpandAlt,
-  // },
-  // {
-  //   name: 'Accessible',
-  //   description:
-  //     "Accessibility first. That's why we pay attention to accessibility right from the start.",
-  //   icon: FaAccessibleIcon,
-  // },
 ];
 
 export default function BreedTraits() {
@@ -72,7 +60,7 @@ export default function BreedTraits() {
             textAlign="center"
           >
             <Stack spacing="3">
-              {/* <Text
+              <Text
                 fontSize={{
                   base: "sm",
                   md: "md",
@@ -80,8 +68,8 @@ export default function BreedTraits() {
                 fontWeight="semibold"
                 color="accent"
               >
-                Features
-              </Text> */}
+                Breeds
+              </Text>
               <Heading size={{ base: "sm", md: "md" }}>
                 Choose From 100+ Dog Breeds
               </Heading>
@@ -101,14 +89,13 @@ export default function BreedTraits() {
           <SimpleGrid
             columns={{
               base: 2,
-              sm: 2,
-
               lg: 4,
             }}
-            columnGap={8}
+            columnGap={{ base: 8, md: 16 }}
             rowGap={{
               base: 10,
               md: 16,
+              lg: 24
             }}
           >
             {features.map((feature) => (

@@ -6,10 +6,12 @@ import {
   Text,
   Icon,
   Center,
+  Image,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { FaHeartbeat } from "react-icons/fa";
-import { MdBlock, MdFindInPage } from "react-icons/md";
+import { MdBlock, } from "react-icons/md";
+import { GrUserExpert } from "react-icons/gr";
 
 export const steps = [
   {
@@ -25,10 +27,10 @@ export const steps = [
     icon: MdBlock,
   },
   {
-    name: "Personalized Offers",
+    name: "Expert Advice",
     description:
-      "Receive tailored recommendations from trusted breeders, and find your ideal furry companion with ease. Our personalized offers make the adoption process simple and stress-free.",
-    icon: MdFindInPage,
+      "Our expert team of dog experts will provide you with personalized advice on the best breed for you, your lifestyle, and your needs. We're here to guide you every step of the way.",
+    icon: GrUserExpert,
   },
 ];
 
@@ -135,13 +137,23 @@ const WhyDoghouse = () => {
                 md: "8",
               }}
               justify="center"
-              maxW={{ lg: "3xl" }}
+              maxW="xl"
             >
               {steps.map((step, id) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <WhyStep key={id} step={step} />
               ))}
             </Stack>
+
+            <Box width="full" overflow="hidden">
+              <Image
+                maxW="100%"
+                minH={{ base: '100%', lg: '560px' }}
+                objectFit="cover"
+                src="images/breeds/doghousekenya_curly_coated_retriever_1.jpg"
+                alt="Doghouse"
+              />
+            </Box>
           </Stack>
         </Stack>
       </Container>

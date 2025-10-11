@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 
-export const RecentLitters = () => {
+export const OurBreeds = () => {
   const breeds = [
     {
       name: "Golden Retriever",
