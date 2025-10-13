@@ -13,7 +13,7 @@ import {
   FormHelperText,
   Select,
 } from "@chakra-ui/react";
-import { Dropzone } from "lib/components/Dropzone";
+import { Dropzone } from "lib/components/ui/Dropzone";
 import React, { useState } from "react";
 
 type NewPostFormProps = {};
@@ -23,8 +23,8 @@ const NewPostForm: React.FC<NewPostFormProps> = (props) => {
   const [selectedFiles, setSelectedFiles] = useState([] as any);
   const [selectedPostType, setSelectedPostType] = useState("");
 
-  const onSelectImage = () => {};
-  const onRemoveImage = () => {};
+  const onSelectImage = () => { };
+  const onRemoveImage = () => { };
   const onSubmit = () => {
     // const activity = {
     //   title: "Pet listed",

@@ -20,8 +20,10 @@ import { FiHelpCircle } from "react-icons/fi";
 import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
 
-// import UserProfileMenu from "lib/components/auth/UserProfileMenu";
-// import { auth } from "lib/firebase/client";
+import UserProfileMenu from "lib/components/auth/UserProfileMenu";
+import { auth } from "lib/firebase/client";
+import { useAuthState } from "react-firebase-hooks/auth";
+
 import { ToggleButton } from "./ToggleButton";
 
 const Header = () => {
@@ -33,7 +35,7 @@ const Header = () => {
   const router = useRouter();
   const { pathname } = router;
 
-  // const [user] = useAuthState(auth);
+  const [user] = useAuthState(auth);
 
   return (
     <Box
@@ -66,16 +68,14 @@ const Header = () => {
                   icon={<FiSettings fontSize='1.25rem' />}
                   aria-label='Settings'
                 /> */}
-                {/* {user && ( */}
-                {/* <Button
+                <Button
                   rounded="full"
                   as={Link}
-                  aria-current={pathname.includes("home") ? "page" : false}
+                  aria-current={pathname.includes("/") ? "page" : false}
                   href="/"
                 >
                   Home
-                </Button> */}
-                {/* )} */}
+                </Button>
 
                 <Button
                   rounded="full"
@@ -123,7 +123,7 @@ const Header = () => {
                 )} */}
               </ButtonGroup>
 
-              {/* {user ? (
+              {user ? (
                 <UserProfileMenu
                   name={user?.displayName || ""}
                   image={user?.photoURL || ""}
@@ -140,7 +140,7 @@ const Header = () => {
                     Log in
                   </Button>
                 </HStack>
-              )} */}
+              )}
             </HStack>
           ) : (
             <Flex align="center">

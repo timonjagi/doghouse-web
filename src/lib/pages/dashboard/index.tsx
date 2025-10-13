@@ -22,9 +22,9 @@ import OnboardingModal from "../onboarding";
 import Welcome from "../onboarding/00-welcome";
 import { Success } from "../onboarding/05-success";
 import HeaderButtonGroup from "./HeaderButtonGroup";
-import { Loader } from "../../components/Loader";
+import { Loader } from "../../components/ui/Loader";
 
-const Home = ({ activities, userProfile }) => {
+const Home = () => {
   const [user, loading, error] = useAuthState(auth);
   const [selectedPost, setSelectedPost] = useState();
 
@@ -43,25 +43,30 @@ const Home = ({ activities, userProfile }) => {
     try {
       console.log("loading user profile", user?.uid);
 
-      const response = await fetch(
-        `/api/users/get-user?${new URLSearchParams({
-          uid: user.uid,
-        })}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log("Response status: ", response.status);
+      // const response = await fetch(
+      //   `/api/users/get-user?${new URLSearchParams({
+      //     uid: user.uid,
+      //   })}`,
+      //   {
+      //     method: "GET",
+      //     headers: { "Content-Type": "application/json" },
+      //   }
+      // );
+      // console.log("Response status: ", response.status);
 
-      if (response.status === 200) {
-        const profile = await response.json();
-        console.log("profile ", profile);
+      // if (response.status === 200) {
+      //   const profile = await response.json();
+      //   console.log("profile ", profile);
 
-        localStorage.setItem("profile", JSON.stringify(profile));
-      } else {
-        setShowOnboardingModal(true);
-        console.log("user profile not found");
+      //   localStorage.setItem("profile", JSON.stringify(profile));
+      // } else {
+      //   setShowOnboardingModal(true);
+      //   console.log("user profile not found");
+      // }
+
+      const profile = JSON.parse(localStorage.getItem("profile"));
+      if (!profile) {
+        setShowOnboardingModal
       }
       setLoadingUserProfile(false);
       return;
@@ -75,17 +80,17 @@ const Home = ({ activities, userProfile }) => {
   };
 
   useEffect(() => {
-    if (!loading && !error && !user) {
-      toast({
-        title: "You're not logged in",
-        description: "Please login to access your dashboard",
-        status: "info",
-      });
-      router.push("/");
-    } else if (!loading && user.uid) {
-      fetchUserProfile();
-    }
-  }, [loading, error, user]);
+    // if (!loading && !error && !user) {
+    //   toast({
+    //     title: "You're not logged in",
+    //     description: "Please login to access your dashboard",
+    //     status: "info",
+    //   });
+    //   router.push("/");
+    //} else if (!loading && user.uid) {
+    fetchUserProfile();
+    // }
+  }, []);
 
   const onViewPost = (post) => {
     setSelectedPost(post);
@@ -118,12 +123,12 @@ const Home = ({ activities, userProfile }) => {
                 w={{ base: "full", lg: "lg" }}
                 minW="sm"
               >
-                <ActivityFeedCard
+                {/* <ActivityFeedCard
                   activities={activities}
                   userProfile={userProfile}
                   isDesktop={isDesktop}
                   onViewPost={onViewPost}
-                />
+                /> */}
               </Stack>
 
               <Flex

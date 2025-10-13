@@ -63,11 +63,11 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
     setMountRecapture(false);
     setMountRecapture(true);
     const appVerifier = new RecaptchaVerifier(
+      auth,
       "recaptcha-container",
       {
         size: "invisible",
       },
-      auth
     );
 
     try {
@@ -112,7 +112,7 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
         setCodeVerified(true);
         onClose();
         localStorage.setItem("user", JSON.stringify(result.user));
-        router.push("/home");
+        router.push("/dashboard");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

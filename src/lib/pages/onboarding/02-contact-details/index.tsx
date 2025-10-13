@@ -18,7 +18,7 @@ import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
 import { MdOutlineLocationOn, MdPerson, MdPersonOutline } from "react-icons/md";
 
 import { auth, fireStore } from "lib/firebase/client";
-import { Dropzone } from "lib/components/Dropzone";
+import { Dropzone } from "lib/components/ui/Dropzone";
 import { UserProfile } from "lib/models/user-profile";
 
 type PageProps = {

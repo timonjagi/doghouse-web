@@ -30,8 +30,8 @@ import EthicalQuestionairreCard from "./EthicalQuestionairreCard";
 import { UserProfile } from "lib/components/auth/UserProfile";
 import UserProfileForm from "./UserProfileForm";
 import { doc, getDoc } from "firebase/firestore";
-import { CompleteProfileBanner } from "lib/pages/home/CompleteProfileBanner";
-import { NewsletterForm } from "lib/pages/home/NewsletterForm copy";
+import { CompleteProfileBanner } from "lib/pages/dashboard/CompleteProfileBanner";
+import { NewsletterForm } from "lib/pages/dashboard/NewsletterForm copy";
 
 const Profile = () => {
   const [user, loading, error] = useAuthState(auth);

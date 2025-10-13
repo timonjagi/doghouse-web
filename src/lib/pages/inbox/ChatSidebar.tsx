@@ -13,7 +13,7 @@ import { collection, query, where } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { auth, fireStore } from "../../firebase/client";
-import { Loader } from "../../components/Loader";
+import { Loader } from "../../components/ui/Loader";
 
 type ChatSidebarProps = {};
 

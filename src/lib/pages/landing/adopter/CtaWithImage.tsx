@@ -10,8 +10,12 @@ import {
 } from "@chakra-ui/react";
 import { auth } from "lib/firebase/client";
 import Link from "next/link";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 export const CtaWithImage = () => {
+
+  const [user] = useAuthState(auth);
+
   return (
     <Box>
       <Container
@@ -73,38 +77,25 @@ export const CtaWithImage = () => {
                 Learn more
               </Button>
 
-<<<<<<< HEAD
-  <Button variant="primary" size="lg" as={Link} href="">
-    Get the app
-=======
               <Button
-      variant="primary"
-      size="lg"
-      as={Link}
-      href={user ? "/home" : "/signup"}
-    >
-      Get Started
->>>>>>> parent of b0357f4 (feat(components): Remove app features)
-    </Button>
-  </Stack>
+                variant="primary"
+                size="lg"
+                as={Link}
+                href={user ? "/home" : "/signup"}
+              >
+                Get Started
+              </Button>
+            </Stack>
           </Stack >
-{/* <Image
+          <Image
             width="full"
             height={{
               base: "auto",
               md: "lg",
             }}
-<<<<<<< HEAD
-            objectFit="contain"
-            src="images/mockup.png"
-          />
-=======
             objectFit="cover"
             src={"images/screenshot.png"}
-          /> */}
-
-  < EmbeddedIframe />
->>>>>>> parent of b0357f4 (feat(components): Remove app features)
+          />
         </Stack >
       </Container >
     </Box >

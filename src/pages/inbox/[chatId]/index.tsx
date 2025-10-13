@@ -15,7 +15,7 @@ import ChatSidebar from "../../../lib/pages/inbox/ChatSidebar";
 import ChatInputBox from "../../../lib/pages/inbox/ChatInputBox";
 import ChatHeader from "../../../lib/pages/inbox/ChatHeader";
 import ChatBox from "../../../lib/pages/inbox/ChatBox";
-import { Loader } from "../../../lib/components/Loader";
+import { Loader } from "../../../lib/components/ui/Loader";
 
 export default function Chatroom() {
   const isMobile = useBreakpointValue({ base: true, md: false });

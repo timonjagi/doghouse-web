@@ -21,7 +21,7 @@ import { auth, fireStore, storage } from "lib/firebase/client";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/router";
-import { Dropzone } from "lib/components/Dropzone";
+import { Dropzone } from "lib/components/ui/Dropzone";
 
 const Profile = ({ userProfile, onClose }) => {
   const [firstName, setFirstName] = useState("");

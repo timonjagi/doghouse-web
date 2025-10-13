@@ -4,13 +4,13 @@ import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "lib/firebase/client";
 import { Box, Center, Flex, Spinner } from "@chakra-ui/react";
-import { Loader } from "../Loader";
+import { Loader } from "../ui/Loader";
 
 const RouteGuard = ({ children, ...rest }) => {
   const router = useRouter();
   const [user, loading] = useAuthState(auth);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const protectedRoutes = ["/dashoard", "profile", "account"];
+  const protectedRoutes = ["/dashboard", "profile", "account"];
   useEffect(() => {
     if (!loading) {
       // If the authentication state is loaded

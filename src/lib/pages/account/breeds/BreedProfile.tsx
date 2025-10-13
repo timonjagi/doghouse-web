@@ -13,7 +13,7 @@ import {
   Icon,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { Dropzone } from "lib/components/Dropzone";
+import { Dropzone } from "lib/components/ui/Dropzone";
 import React, { useEffect, useState } from "react";
 import breedData from "../../../data/breeds_with_group.json";
 

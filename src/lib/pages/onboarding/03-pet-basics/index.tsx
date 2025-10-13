@@ -16,8 +16,8 @@ import { useEffect, useState } from "react";
 import { Select } from "chakra-react-select";
 
 import breedData from "../../../data/breeds_with_group.json";
-import { RadioButton } from "lib/components/RadioButton";
-import { RadioButtonGroup } from "lib/components/RadioButtonGroup";
+import { RadioButton } from "lib/components/ui/RadioButton";
+import { RadioButtonGroup } from "lib/components/ui/RadioButtonGroup";
 
 // eslint-disable-next-line
 export const PetBasics = ({ currentStep, setStep }: any) => {
@@ -48,9 +48,9 @@ export const PetBasics = ({ currentStep, setStep }: any) => {
       setUserProfile(profile);
       setSelectedRole(profile.roles[0]);
 
-      if (profile.pet_profiles) {
-        const petProfile = profile.pet_profiles[0];
-        setSelectedBreed(petProfile.breed);
+      if (profile.user_breeds) {
+        const userBreed = profile.user_breeds[0];
+        setSelectedBreed(userBreed.breed);
       }
     }
   }, []);
@@ -71,12 +71,19 @@ export const PetBasics = ({ currentStep, setStep }: any) => {
     try {
       const payload = {
         ...userProfile,
-        pet_profiles: [
-          {
-            breed: selectedBreed,
-            sex: selectedSex,
-          },
-        ],
+        ...(userProfile.role === 'dog_owner' ? {
+          user_breeds: [
+            {
+              breed: selectedBreed,
+              sex: selectedSex,
+            },
+          ]
+        } : {
+          preferences: {
+            preferredBreed: selectedBreed,
+            preferredSex: selectedSex,
+          }
+        })
       };
 
       localStorage.setItem("profile", JSON.stringify(payload));

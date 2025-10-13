@@ -56,7 +56,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
         userProfile.name &&
         userProfile.location &&
         userProfile.roles &&
-        userProfile.pet_profiles
+        userProfile.user_breeds
       ) {
         setActiveStep(3);
       } else if (

@@ -12,7 +12,7 @@ import { BiCheckShield, BiPackage } from "react-icons/bi";
 import { FaStar } from "react-icons/fa";
 import { Ri24HoursLine } from "react-icons/ri";
 
-import { Share } from "lib/components/Share";
+import { Share } from "lib/components/ui/Share";
 import type { Breed } from "lib/models/breed";
 
 interface RatingProps {

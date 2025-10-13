@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
-import { Logo } from "../../layout/Logo";
+import { Logo } from "../../components/layout/Logo";
 
 import { LoginForm } from "lib/components/auth/LoginForm";
 import { useRouter } from "next/router";
@@ -33,13 +33,6 @@ type User = {
   uid: string;
 };
 
-type UserProfile = {
-  userId: string;
-  name: string;
-  location: string;
-  roles: any;
-  pet_profiles: any;
-};
 const Features = () => {
   return (
     <Box display={{ base: "none", md: "flex" }}>

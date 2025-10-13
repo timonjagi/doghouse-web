@@ -13,15 +13,15 @@ import { setDoc, doc, addDoc, collection, updateDoc } from "firebase/firestore";
 import { fireStore, storage } from "lib/firebase/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router.js";
-import { RadioButton } from "lib/components/RadioButton";
-import { RadioButtonGroup } from "lib/components/RadioButtonGroup";
-import { Dropzone } from "lib/components/Dropzone";
+import { RadioButton } from "lib/components/ui/RadioButton";
+import { RadioButtonGroup } from "lib/components/ui/RadioButtonGroup";
+import { Dropzone } from "lib/components/ui/Dropzone";
 import { useDropZone } from "lib/hooks/useDropZone";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 
 export const PetDetails = ({ currentStep, setStep, onClose }) => {
   const [userProfile, setUserProfile] = useState({} as any);
-  const [petProfile, setPetProfile] = useState({} as any);
+  const [userBreed, setUserBreed] = useState({} as any);
 
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -46,15 +46,15 @@ export const PetDetails = ({ currentStep, setStep, onClose }) => {
     if (profile) {
       setLoadingProfile(false);
       setUserProfile(profile);
-      setPetProfile(profile.pet_profiles[0]);
+      setUserBreed(profile.user_breeds[0]);
     }
   }, []);
 
   // const getBreedGroupDoc = async () => {
   //   try {
-  //     console.log(petProfile.breed);
+  //     console.log(userBreed.breed);
   //     const breedGroup = breedGroups.find(
-  //       (group) => group.slug === petProfile?.breed?.breedGroup
+  //       (group) => group.slug === userBreed?.breed?.breedGroup
   //     );
   //     console.log(breedGroup);
 
@@ -72,7 +72,7 @@ export const PetDetails = ({ currentStep, setStep, onClose }) => {
   const onSubmit = async (event) => {
     event.preventDefault();
     console.log(userProfile);
-    console.log(petProfile);
+    console.log(userBreed);
     // creat user profile
     // create pet profile
     // join group
@@ -81,15 +81,33 @@ export const PetDetails = ({ currentStep, setStep, onClose }) => {
     try {
       setSaving(true);
 
-      await Promise.all([createUserProfile(), createPetProfile()]);
+      //await Promise.all([createUserProfile(), createuserBreed()]);
+      const payload = {
+        ...userProfile,
+        ...(userProfile.role === "dog_owner" ?
+          { user_breeds: [{ ...userBreed, images: selectedImages }] }
+          :
+          {
+            preferences: {
+              ...userProfile.preferences,
+              ...userProfile.preferences,
+              age: selectedAge,
+              spayedOrNeutered: spayedOrNeutered,
+            }
+          }),
+      };
+
+      localStorage.setItem("profile", JSON.stringify(payload));
+
+      setStep(currentStep + 1);
 
       setSaving(false);
 
-      localStorage.removeItem("profile");
-      // toast({
-      //   title: "Profile created successfully",
-      //   status: "success",
-      // });
+      // localStorage.removeItem("profile");
+      toast({
+        title: "Profile created successfully",
+        status: "success",
+      });
 
       // router.push("/account/profile");
     } catch (error) {
@@ -105,63 +123,63 @@ export const PetDetails = ({ currentStep, setStep, onClose }) => {
   const createUserProfile = async () => {
     const userPayload = {
       ...userProfile,
-      groups: [petProfile.breed.breedGroup],
+      groups: [userBreed.breed.breedGroup],
     };
 
-    userPayload.breeds = userPayload.pet_profiles.reduce((acc, profile) => {
+    userPayload.breeds = userPayload.userBreeds.reduce((acc, profile) => {
       const breed: string = profile.breed.name;
       acc.push(breed);
       return acc;
     }, []);
 
-    delete userPayload.pet_profiles;
+    delete userPayload.userBreeds;
 
     await setDoc(doc(fireStore, "users", userProfile.userId), userPayload);
   };
 
-  const createPetProfile = async () => {
+  const createUserBreeds = async () => {
     const petPayload = userProfile.roles.includes("dog_seeker")
       ? {
-          breed: petProfile.breed.name,
-          sex: petProfile.sex || "",
-          age: selectedAge || "",
-          spayedOrNeutered: spayedOrNeutered,
-          [userProfile.roles.includes("dog_owner") ? "ownerId" : "seekerId"]:
-            userProfile.userId,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        }
-      : {
-          breed: petProfile.breed.name,
-          sex: petProfile.sex || "",
-          [userProfile.roles.includes("dog_owner") ? "ownerId" : "seekerId"]:
-            userProfile.userId,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-    const petDocRef = await addDoc(collection(fireStore, "pets"), petPayload);
-
-    if (selectedImages.length) {
-      const downloadUrls = [];
-      // store images in firebase/storage
-      selectedImages.map(async (image, index) => {
-        const imageRef = ref(storage, `pets/${petDocRef.id}/image${index + 1}`);
-        await uploadString(imageRef, image, "data_url");
-        // get download url from stroage
-        const downloadUrl = await getDownloadURL(imageRef);
-        console.log("downloadUrl", downloadUrl);
-        downloadUrls.push(downloadUrl);
-      });
-
-      if (downloadUrls.length) {
-        console.log("updating pet doc with image urls");
-        // update pet doc by adding image urls
-        await updateDoc(petDocRef, { images: [...downloadUrls] });
+        breed: userBreed.breed.name,
+        sex: userBreed.sex || "",
+        age: selectedAge || "",
+        spayedOrNeutered: spayedOrNeutered,
+        [userProfile.roles.includes("dog_owner") ? "ownerId" : "seekerId"]:
+          userProfile.userId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       }
+      : {
+        breed: userBreed.breed.name,
+        sex: userBreed.sex || "",
+        [userProfile.roles.includes("dog_owner") ? "ownerId" : "seekerId"]:
+          userProfile.userId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-      onClose();
-    }
+    // const petDocRef = await addDoc(collection(fireStore, "pets"), petPayload);
+
+    // if (selectedImages.length) {
+    //   const downloadUrls = [];
+    //   // store images in firebase/storage
+    //   selectedImages.map(async (image, index) => {
+    //     const imageRef = ref(storage, `pets/${petDocRef.id}/image${index + 1}`);
+    //     await uploadString(imageRef, image, "data_url");
+    //     // get download url from stroage
+    //     const downloadUrl = await getDownloadURL(imageRef);
+    //     console.log("downloadUrl", downloadUrl);
+    //     downloadUrls.push(downloadUrl);
+    //   });
+
+    //   if (downloadUrls.length) {
+    //     console.log("updating pet doc with image urls");
+    //     // update pet doc by adding image urls
+    //     await updateDoc(petDocRef, { images: [...downloadUrls] });
+    //   }
+
+    //   onClose();
+    // }
   };
 
   return (
@@ -171,7 +189,7 @@ export const PetDetails = ({ currentStep, setStep, onClose }) => {
           <Heading size="md">
             We love{" "}
             <span style={{ textTransform: "capitalize" }}>
-              {petProfile?.breed?.name}s!
+              {userBreed?.breed?.name}s!
             </span>{" "}
             {userProfile?.roles?.includes("dog_owner")
               ? "Let's see some pics 📷"

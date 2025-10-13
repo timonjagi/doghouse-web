@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import RouteGuard from "lib/components/auth/RouteGuard";
 import { Navbar } from "lib/components/layout/Navbar";
 import Header from "./Header";
-import Services from "lib/pages/services";
+
 import { Sidebar } from "./Sidebar";
 import {
   useBreakpointValue,
@@ -24,15 +24,13 @@ const Layout = ({ children }: LayoutProps) => {
 
   const routes: any = [
     { path: "/", layout: HeaderLayout },
-
+    { path: "/breeder", layout: HeaderLayout },
     { path: "/login", layout: HeaderLayout },
     { path: "/signup", layout: HeaderLayout },
-
-
     { path: "/breeds", layout: HeaderLayout },
     { path: "/breeds/[breedName]", layout: HeaderLayout },
 
-    { path: "/home", layout: DashboardLayout },
+    { path: "/dashboard", layout: DashboardLayout },
     { path: "/inbox", layout: DashboardLayout },
     { path: "/inbox/[chatId]", layout: DashboardLayout },
     { path: "/account/profile", layout: DashboardLayout },

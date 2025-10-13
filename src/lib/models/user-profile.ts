@@ -3,6 +3,6 @@ export interface UserProfile {
   name: string;
   location: string;
   roles: string[];
-  pet_profiles: Record<string, any>[];
+  user_breeds: Record<string, any>[];
   preferences: Record<string, any>;
 }
