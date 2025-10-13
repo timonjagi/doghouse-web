@@ -14,8 +14,8 @@ import {
 } from "@chakra-ui/react";
 import { FaArrowRight } from "react-icons/fa";
 
-import BlogPostCard from "../blog/BlogPostCard";
-import { posts } from "../blog/data";
+import BlogPostCard from "../../blog/BlogPostCard";
+import { posts } from "../../blog/data";
 
 export const Blog = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });

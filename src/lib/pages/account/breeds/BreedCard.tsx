@@ -9,12 +9,12 @@ import {
 import Link from "next/link";
 
 // eslint-disable-next-line
-export const PetCard = ({ pet }: any) => {
+export const BreedCard = ({ userBreed }: any) => {
   return (
-    <Box position="relative" key={pet.id} borderRadius="xl" overflow="hidden">
-      <Link href={`/my-breeds/${pet.breed.replace(" ", "-")}`}>
+    <Box position="relative" key={userBreed.id} borderRadius="xl" overflow="hidden">
+      <Link href={`/account/breeds/${userBreed.breed.replace(" ", "-")}`}>
         <AspectRatio ratio={1}>
-          <Image src={pet} alt={pet.name} fallback={<Skeleton />} />
+          <Image src={userBreed.featuredImage} alt={userBreed.name} fallback={<Skeleton />} />
         </AspectRatio>
         <Box
           position="absolute"
@@ -32,11 +32,11 @@ export const PetCard = ({ pet }: any) => {
         >
           <Stack spacing="1">
             <Text color="wpete" fontSize="lg" fontWeight="semibold" pb={0}>
-              {pet.breed}
+              {userBreed.breed}
             </Text>
 
             <Text color="wpete" fontSize="sm" fontWeight="light" pt={0}>
-              {pet.breedGroup} group
+              {userBreed.breedGroup} group
             </Text>
           </Stack>
         </Box>

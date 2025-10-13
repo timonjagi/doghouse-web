@@ -28,17 +28,17 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/login", layout: HeaderLayout },
     { path: "/signup", layout: HeaderLayout },
 
+
+    { path: "/breeds", layout: HeaderLayout },
+    { path: "/breeds/[breedName]", layout: HeaderLayout },
+
     { path: "/home", layout: DashboardLayout },
     { path: "/inbox", layout: DashboardLayout },
     { path: "/inbox/[chatId]", layout: DashboardLayout },
-
-    { path: "/breeds", layout: DashboardLayout },
-    { path: "/breeds/[breedName]", layout: DashboardLayout },
-    { path: "/my-breeds", layout: DashboardLayout },
-    { path: "/my-breeds/[petId]", layout: DashboardLayout },
-
     { path: "/account/profile", layout: DashboardLayout },
     { path: "/account/settings", layout: DashboardLayout },
+    { path: "/account/breeds", layout: DashboardLayout },
+    { path: "/account/breeds/[breedId]", layout: DashboardLayout },
   ];
 
   const matchedRoute = routes.find((route) => {

@@ -15,8 +15,8 @@ import { useEffect, useState } from "react";
 import { getDocs, query, collection, or, where } from "firebase/firestore";
 import { auth, fireStore } from "lib/firebase/client";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { PetCard } from "./BreedCard";
-import breedData from "../../data/breeds_with_group.json";
+import { BreedCard } from "./BreedCard";
+import breedData from "../../../data/breeds_with_group.json";
 import { FiPlus } from "react-icons/fi";
 
 type petsProps = {
@@ -26,20 +26,20 @@ type petsProps = {
 const Pets: React.FC<petsProps> = ({ petData }) => {
   const isVerified = false;
   const [user, loading, error] = useAuthState(auth);
-  const [loadingPets, setLoadingPets] = useState(false);
+  const [loadingBreeds, setLoadingBreeds] = useState(false);
   const [pets, setPets] = useState([] as any);
   const toast = useToast();
 
   const { isOpen, onToggle, onClose } = useDisclosure();
 
   useEffect(() => {
-    const fetchPets = async () => {
+    const fetchBreeds = async () => {
       try {
-        setLoadingPets(true);
+        setLoadingBreeds(true);
 
         const querySnapshot = await getDocs(
           query(
-            collection(fireStore, "pets"),
+            collection(fireStore, "userBreeds"),
             or(
               where("ownerId", "==", user.uid),
               where("seekerId", "==", user.uid)
@@ -47,12 +47,12 @@ const Pets: React.FC<petsProps> = ({ petData }) => {
           )
         );
 
-        let pets = querySnapshot.docs.map((doc) => ({
+        let userBreeds = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
-        pets = pets.map((pet) => {
+        userBreeds = userBreeds.map((pet) => {
           // @ts-ignore
           const breedInfo = breedData.find((breed) => breed.name === pet.breed);
           pet["breedGroup"] = breedInfo.breedGroup;
@@ -64,21 +64,21 @@ const Pets: React.FC<petsProps> = ({ petData }) => {
           localStorage.setItem("userBreeds", JSON.stringify(pets));
         }
 
-        setLoadingPets(false);
+        setLoadingBreeds(false);
       } catch (error) {
         toast({
-          title: "There was a problem loading pets",
+          title: "There was a problem loading breeds",
           description: error.message,
           status: "error",
           isClosable: true,
         });
 
-        setLoadingPets(false);
+        setLoadingBreeds(false);
       }
     };
 
     if (!loading && user) {
-      fetchPets();
+      fetchBreeds();
     }
   }, [loading, user]);
 
@@ -94,7 +94,7 @@ const Pets: React.FC<petsProps> = ({ petData }) => {
       </Box>
 
       <Box flex="1">
-        {loadingPets ? (
+        {loadingBreeds ? (
           <Box flex="1" h="full">
             <Center>
               <Spinner />
@@ -108,7 +108,7 @@ const Pets: React.FC<petsProps> = ({ petData }) => {
             >
               {" "}
               {pets.map((pet) => (
-                <PetCard pet={pet} />
+                <BreedCard pet={pet} />
               ))}
               <Flex
                 as={Button}

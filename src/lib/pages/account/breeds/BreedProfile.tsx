@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { Dropzone } from "lib/components/Dropzone";
 import React, { useEffect, useState } from "react";
-import breedData from "../../data/breeds_with_group.json";
+import breedData from "../../../data/breeds_with_group.json";
 
 import { Select } from "chakra-react-select";
 import { addDoc, collection, updateDoc } from "firebase/firestore";
@@ -26,9 +26,9 @@ import Link from "next/link";
 import { useDropZone } from "lib/hooks/useDropZone";
 import { useRouter } from "next/router";
 
-type PetProfileEditProps = {};
+type BreedProfileEditProps = {};
 
-const BreedProfile: React.FC<PetProfileEditProps> = () => {
+const BreedProfile: React.FC<BreedProfileEditProps> = () => {
   const router = useRouter();
 
   const [breeds, setBreeds] = useState([] as any[]);
@@ -47,8 +47,8 @@ const BreedProfile: React.FC<PetProfileEditProps> = () => {
   });
 
   const steps = [
-    { title: "Pet basics" },
-    { title: "Pet details" },
+    { title: "Breed basics" },
+    { title: "Breed details" },
     { title: "Vet information" },
   ];
 
@@ -85,9 +85,9 @@ const BreedProfile: React.FC<PetProfileEditProps> = () => {
     setSaving(true);
 
     try {
-      // update pet doc by adding image urls
+      // update Breed doc by adding image urls
 
-      const newPetDocRef = await addDoc(collection(fireStore, "pets"), {
+      const newDocRef = await addDoc(collection(fireStore, "userBreeds"), {
         breed: selectedBreed.name,
         age: selectedAge,
         sex: selectedSex,
@@ -100,21 +100,21 @@ const BreedProfile: React.FC<PetProfileEditProps> = () => {
 
       selectedImages.length
         ? selectedImages.forEach(async (file, index) => {
-            // store images in firebase/storage
-            const imageRef = ref(
-              storage,
-              `pets/${newPetDocRef.id}/image${index + 1}`
-            );
-            await uploadString(imageRef, file, "data_url");
+          // store images in firebase/storage
+          const imageRef = ref(
+            storage,
+            `userBreeds/${newDocRef.id}/image${index + 1}`
+          );
+          await uploadString(imageRef, file, "data_url");
 
-            // get download url from stroage
-            const downloadUrl = await getDownloadURL(imageRef);
-            downloadUrls.push(downloadUrl);
-          })
+          // get download url from stroage
+          const downloadUrl = await getDownloadURL(imageRef);
+          downloadUrls.push(downloadUrl);
+        })
         : null;
 
       // update doc with image urls
-      await updateDoc(newPetDocRef, {
+      await updateDoc(newDocRef, {
         images: downloadUrls,
       });
 
@@ -150,7 +150,7 @@ const BreedProfile: React.FC<PetProfileEditProps> = () => {
     );
 
     const userBreeds = JSON.parse(localStorage.getItem("userBreeds"));
-    const breedName = router.query.petId as string;
+    const breedName = router.query.userBreedId as string;
 
     const breed = userBreeds.find(
       (breed) => breed.breed === breedName.replace("-", " ")
