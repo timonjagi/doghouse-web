@@ -1,0 +1,245 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Database Schema and Implement Role-Based Auth",
+        "description": "Set up the foundational database structure using the provided Drizzle schema and configure Supabase for role-based authentication (Breeder, Seeker, Admin).",
+        "details": "Take the Drizzle schema from `db/schema.ts`, generate the SQL migration, and apply it to the Supabase PostgreSQL database. Implement sign-up and sign-in logic that correctly assigns a 'role' to the user in the 'users' table. Create RLS policies for the 'users' table allowing users to only access and modify their own data.",
+        "testStrategy": "Verify that `drizzle-kit push:pg` or `migrate` runs successfully. Test the sign-up flow for a new seeker and a new breeder, and confirm their roles are correctly set in the database via the Supabase table editor. Ensure a logged-in user cannot fetch data for another user.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "todo",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Finalize Drizzle Schema and Apply to Supabase Database",
+            "description": "Review the existing schema in `db/schema.ts`, ensuring all necessary tables (`users`, `litters`, etc.) and columns (like `users.role`) are correctly defined. Generate the SQL migration files using Drizzle Kit and apply them to the Supabase PostgreSQL database.",
+            "dependencies": [],
+            "details": "Use `drizzle-kit generate:pg` to create the migration script. Then, use `drizzle-kit push:pg` or a custom migration script to apply the schema changes to the remote Supabase database configured via environment variables. Verify table creation in the Supabase dashboard.",
+            "status": "pending",
+            "testStrategy": "Run the Drizzle Kit commands and ensure they complete without errors. Manually inspect the Supabase database via its web UI to confirm that all tables and columns from `db/schema.ts` have been created correctly."
+          },
+          {
+            "id": 2,
+            "title": "Decommission Existing Firebase Authentication Implementation",
+            "description": "Systematically remove all Firebase authentication logic from the codebase to prepare for the Supabase migration. This includes removing SDKs, configuration files, and references in UI components.",
+            "dependencies": [],
+            "details": "Delete `src/lib/firebase/client.ts` and `src/lib/firebase/server.ts`. Uninstall the `firebase` npm package. Go through auth-related components like `src/app/(auth)/login/page.tsx` and remove Firebase-specific function calls (`signInWithEmailAndPassword`, etc.). Remove Firebase-related environment variables from `.env` files.",
+            "status": "pending",
+            "testStrategy": "After removal, the application's login and sign-up pages should be broken or in a clean state, ready for new logic. The app should build without errors related to missing Firebase modules. Run `npm ls firebase` to ensure the package is gone."
+          },
+          {
+            "id": 3,
+            "title": "Implement Supabase User Authentication and Session Management",
+            "description": "Replace the decommissioned Firebase logic with Supabase for user sign-up, sign-in, sign-out, and session management. This includes creating a Supabase client and integrating it into the auth UI and server-side logic.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create Supabase clients in `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts`. Update `src/app/(auth)/signup/page.tsx` to use `supabase.auth.signUp`. On successful sign-up, insert a record into the public `users` table with the user's `id`, `email`, and selected `role`. Update the login page to use `supabase.auth.signInWithPassword`. Implement session management using Supabase's cookie-based helpers for Next.js.",
+            "status": "pending",
+            "testStrategy": "Test the full sign-up flow for both a 'seeker' and a 'breeder'. Verify that `auth.users` and the public `users` table are populated correctly in Supabase. Test login and logout functionality. Ensure user sessions persist across page reloads."
+          },
+          {
+            "id": 4,
+            "title": "Configure Initial Row-Level Security (RLS) Policies",
+            "description": "Implement the initial set of Row-Level Security (RLS) policies on core database tables like 'users' and 'litters' to enforce data access rules, ensuring users can only access and modify their own data.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "In the Supabase SQL editor, enable RLS for the `users` and `litters` tables. For `users`, create policies allowing users to SELECT and UPDATE only their own record (`uid() = id`). For `litters`, allow breeders to CUD their own litters (`uid() = breeder_id`) and all authenticated users to SELECT litters. Policies must be created using SQL statements in a new Supabase migration file.",
+            "status": "pending",
+            "testStrategy": "Log in as a user and use a client-side query to fetch all users; it should only return the current user's data. As a breeder, verify you can create/edit your litters. As a seeker, verify you can read litters but cannot create or edit them. Attempting to update another user's data should result in an RLS violation error."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Refactor Onboarding Flow to Use Supabase",
+        "description": "Migrate the multi-step onboarding process from Firebase to Supabase, ensuring user data is correctly captured in the new Drizzle schema.",
+        "details": "Refactor the components in `src/lib/pages/onboarding/` to use Supabase for user session management and data persistence. Replace `useAuthState` with a Supabase equivalent and update the logic that saves user profile information (`name`, `location`, `roles`, `user_breeds`) to write to the new PostgreSQL tables.",
+        "testStrategy": "Complete the onboarding flow as a new user. Verify that the user's role, contact details, and initial breed preferences are correctly saved to the 'users' and 'user_breeds' tables in Supabase. Ensure the user session is correctly managed by Supabase throughout the flow.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Refactor Dashboard Layout and Sidebar for Role-Based Views",
+        "description": "Update the main layout and sidebar navigation to dynamically display menu items based on the user's role (Breeder, Seeker, Admin) as defined in the PRD.",
+        "details": "Modify the layout components in `src/lib/components/layout/`, particularly `Sidebar.tsx`. The component should fetch the current user's role from the Supabase session and render different navigation links for 'Breeder', 'Seeker', and 'Admin' roles, matching the components outlined in the PRD's MVP Dashboard Summary.",
+        "testStrategy": "Log in as a Seeker and verify the sidebar shows links to 'Matches' and 'My Applications'. Log in as a Breeder and verify links for 'Breeds', 'Litters', and 'Inquiries'. Log in as an Admin and verify links for 'Verification' and 'Analytics'.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Develop User Profile Management Component",
+        "description": "Create a shared component for users of all roles to view and edit their profile information, including bio, photo, location, and contact details.",
+        "details": "Build a form in Next.js that populates with the current user's data from the 'users' table. Implement an update function that writes changes back to Supabase. Include functionality for uploading a profile photo to Supabase Storage and updating the `profile_photo_url` field. This component should be accessible from a user's dashboard.",
+        "testStrategy": "Log in as a user, navigate to the profile page, change the bio and display name, and verify the changes persist after a page refresh. Test the image upload functionality and confirm the new image is displayed. Check the Supabase Storage bucket to ensure the file was uploaded.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Build Admin Dashboard: Breeder Verification Panel",
+        "description": "Create a secure dashboard page for Admins to review and manage breeder verification requests.",
+        "details": "Develop a page accessible only to users with the 'admin' role. This page should fetch and display a list of breeders with `is_verified = false`. For each breeder, the admin should be able to view their submitted `verification_docs` (from `breeder_profiles`) and have 'Approve' and 'Reject' buttons. The 'Approve' action should set `users.is_verified` to true and populate `breeder_profiles.verified_at`.",
+        "testStrategy": "Log in as an admin and verify access to the panel. Log in as a breeder/seeker and verify access is denied. Create a test breeder account, submit mock verification data, and use the admin panel to approve the request. Verify the database fields are updated correctly.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          3
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Breeder Dashboard: Breed & Litter Management UI",
+        "description": "Implement the core functionality for verified breeders to manage the breeds they offer and create/edit their litters.",
+        "details": "Create a dashboard section for breeders. Implement a UI to add/remove breeds from their profile (populating the `user_breeds` table). Build a form to create a new litter, capturing all fields specified in the `litters` schema (name, DOB, number of puppies, etc.). Include image upload to Supabase Storage for litter photos. Display a list of the breeder's existing litters with options to edit or update their status.",
+        "testStrategy": "Log in as a verified breeder. Add a new breed to your profile and confirm it's saved. Create a new litter with multiple photos and verify it appears in the litter list. Edit the litter's details and confirm the changes are saved. Check Supabase tables (`user_breeds`, `litters`) to confirm data integrity.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          5
+        ],
+        "status": "todo",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Breeder Dashboard: Build 'My Breeds' Management UI",
+            "description": "Create a page or section in the breeder dashboard where verified breeders can add and remove the dog breeds they specialize in. This will interact with the `user_breeds` table.",
+            "dependencies": [],
+            "details": "Create a new route, likely `app/dashboard/breeds/page.tsx`. This component will fetch and display the breeder's currently associated breeds. Implement a multi-select component (e.g., shadcn/ui ComboBox) populated with all available breeds from the `breeds` table. Use server actions to update the `user_breeds` join table based on the breeder's selections.",
+            "status": "pending",
+            "testStrategy": "Log in as a breeder, navigate to the 'My Breeds' page. Add two breeds, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the `user_breeds` table in Supabase directly."
+          },
+          {
+            "id": 2,
+            "title": "Breeder Dashboard: Create 'My Litters' List View",
+            "description": "Develop the UI to display a list of a breeder's existing litters, providing a summary of each and entry points for creating new litters or editing existing ones.",
+            "dependencies": [],
+            "details": "Create a new route at `app/dashboard/litters/page.tsx`. This page will fetch and display all litters associated with the logged-in breeder. Use shadcn/ui Card components to display each litter's summary (name, photo, DOB). Include a prominent 'Create New Litter' button linking to the form page. Each litter card will have an 'Edit' button linking to the pre-filled form for that specific litter.",
+            "status": "pending",
+            "testStrategy": "Once a litter can be created, log in as the breeder and navigate to the 'My Litters' page. Verify all created litters are displayed correctly with key information. Confirm the 'Create New Litter' and 'Edit' buttons navigate to the correct URLs."
+          },
+          {
+            "id": 3,
+            "title": "Breeder Dashboard: Implement Add/Edit Litter Form with Image Upload",
+            "description": "Build the form for creating and editing a litter. This includes handling all fields from the `litters` schema and implementing multi-image uploads to Supabase Storage.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create a dynamic route, e.g., `app/dashboard/litters/[litter_id]/page.tsx`, to handle both creating ('new') and editing (UUID). Use `react-hook-form` and `zod` for validation. The form must include a dropdown for 'breed' populated from the breeder's managed breeds (from subtask 1). Implement a multi-image uploader that sends files to a 'litter-photos' Supabase Storage bucket and stores the public URLs in the `litters` table. Create server actions for creating and updating litter data.",
+            "status": "pending",
+            "testStrategy": "Navigate from the litters list to create a new litter. Fill out the form, upload several photos, and save. Verify redirection and the new litter's appearance on the list. Edit the litter's details and confirm the changes persist. Check Supabase Storage for the uploaded files and the `litters` table for correct data."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Public-Facing Breed & Litter Discovery Page",
+        "description": "Develop the public page where seekers can explore and filter available litters.",
+        "details": "Create a Next.js page that fetches and displays all litters with `status = 'available'`. Implement filter controls for breed, location (simple text search for now), and size. Each litter card should display key information and link to a detailed view. Ensure data is fetched using RLS policies that only allow public viewing of available litters.",
+        "testStrategy": "As a logged-out user, access the discovery page and verify that only litters marked 'available' are shown. Test the filtering functionality by breed and location. Ensure that clicking a litter card navigates to a placeholder detail page.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Seeker Application Submission Flow",
+        "description": "Create the functionality for a seeker to submit an application for a specific litter.",
+        "details": "On the litter detail page, add an 'Apply' button for logged-in seekers. This button should open a form where the seeker can provide their `application_data` (as a JSONB object). On submission, create a new record in the `applications` table with `status = 'submitted'`, linking the `seeker_id` and `litter_id`.",
+        "testStrategy": "Log in as a seeker, find a litter, and click 'Apply'. Fill out the application form and submit it. Verify that a new record is created in the `applications` table in Supabase with the correct data and status. Ensure non-logged-in users are prompted to sign in.",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Breeder Dashboard: Inquiry & Application Management",
+        "description": "Build the dashboard view for breeders to see and manage applications for their litters.",
+        "details": "Create an 'Inquiries' or 'Applications' tab in the breeder dashboard. Fetch all applications related to the breeder's litters. Display them in a list or table format, showing seeker info, application status, and date. Implement actions to update the application status (e.g., 'Approve', 'Reject'). Add a deep link to open a WhatsApp conversation with the seeker.",
+        "testStrategy": "Log in as the breeder who owns the litter from the previous test. Verify the new application appears in their dashboard. Change the application status and confirm the update in the database. Click the WhatsApp link and verify it attempts to open the correct chat.",
+        "priority": "high",
+        "dependencies": [
+          6,
+          8
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Seeker Dashboard: 'My Applications' Tracking",
+        "description": "Create a dashboard page for seekers to track the status of their submitted applications.",
+        "details": "Develop a 'My Applications' page for logged-in seekers. This page should fetch all applications where the `seeker_id` matches the current user's ID. Display each application's status (`Submitted`, `Approved`, etc.) and which litter it was for. The status should update in real-time if possible (or on page load).",
+        "testStrategy": "Log in as the seeker who applied in the previous test. Go to the 'My Applications' page and verify the application is listed with the status 'Submitted'. Log in as the breeder, change the application status to 'Approved', then log back in as the seeker and confirm the status has updated on their dashboard.",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Setup Notification Infrastructure with Supabase Edge Function",
+        "description": "Create a reusable Supabase Edge Function to handle the logic for creating notification records and triggering external services.",
+        "details": "Develop a new Edge Function (e.g., `process-notification`). This function will accept a payload (e.g., `userId`, `type`, `title`, `body`, `target`). Its job is to insert a new record into the `notifications` table. For now, it will just log the intent to send a push/WhatsApp message. This function will be invoked by database webhooks or directly from the client.",
+        "testStrategy": "Deploy the Edge Function to Supabase. Manually invoke it using the Supabase client or a cURL request with a sample payload. Check the function logs to ensure it executed correctly and verify that a new record was created in the `notifications` table.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement 'New Application' Notification Trigger",
+        "description": "Trigger a notification to the breeder when a seeker submits a new application for one of their litters.",
+        "details": "Modify the application submission logic from Task 8. After successfully inserting a new record into the `applications` table, invoke the `process-notification` Edge Function (from Task 11). The payload should include the breeder's user ID, a notification type of 'new_application', and relevant details about the application.",
+        "testStrategy": "Submit a new application as a seeker. Check the Edge Function logs to confirm it was invoked. Verify that a new record appears in the `notifications` table for the breeder, with the correct type and metadata linking to the new application.",
+        "priority": "medium",
+        "dependencies": [
+          8,
+          11
+        ],
+        "status": "todo",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-10-13T22:58:47.382Z",
+      "updated": "2025-10-13T22:58:47.382Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
