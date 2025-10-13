@@ -19,6 +19,9 @@ import { FiHelpCircle } from "react-icons/fi";
 
 import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
+
+// import UserProfileMenu from "lib/components/auth/UserProfileMenu";
+// import { auth } from "lib/firebase/client";
 import { ToggleButton } from "./ToggleButton";
 
 const Header = () => {
@@ -29,6 +32,8 @@ const Header = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
   const { pathname } = router;
+
+  // const [user] = useAuthState(auth);
 
   return (
     <Box
@@ -172,8 +177,8 @@ const Header = () => {
                     </HStack>
                   )}
                 </>
-              )} */}
-
+              )}
+               */}
               <Drawer
                 isOpen={isOpen}
                 placement="left"

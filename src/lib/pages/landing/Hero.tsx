@@ -10,8 +10,8 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { HiChevronRight } from "react-icons/hi";
-
-export default function Hero() {
+import Video from "next-video";
+export default function Hero({ user }) {
   return (
     <Box w="full" bg="gray.800" as="section" position="relative">
       <Box pt="16" py="32" position="relative" zIndex={1}>
@@ -83,7 +83,7 @@ export default function Hero() {
                   bg: "whiteAlpha.300",
                 }}
               >
-                <span>Learn more</span>
+                <span>Already a member? Log in</span>
                 <HiChevronRight />
               </HStack>
             </Stack>
@@ -102,14 +102,22 @@ export default function Hero() {
         align="center"
       >
         <Box position="relative" w="full" h="full">
-          <Img
-            src="images/hero.jpg"
+          {/* <Img
+            src="images/hero_2_2.png"
             alt="Main Image"
             w="full"
             h="full"
             objectFit="cover"
             objectPosition="90% center"
             position="absolute"
+          /> */}
+          <Video
+            autoPlay
+            muted
+            loop
+            controls={false}
+            src={require("../../../../videos/hero.mp4")}
+            className="video"
           />
           <Box position="absolute" w="full" h="full" bg="blackAlpha.400" />
         </Box>

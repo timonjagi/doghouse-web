@@ -8,6 +8,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { auth } from "lib/firebase/client";
 import Link from "next/link";
 
 export const CtaWithImage = () => {
@@ -72,22 +73,40 @@ export const CtaWithImage = () => {
                 Learn more
               </Button>
 
-              <Button variant="primary" size="lg" as={Link} href="">
-                Get the app
-              </Button>
-            </Stack>
-          </Stack>
-          <Image
+<<<<<<< HEAD
+  <Button variant="primary" size="lg" as={Link} href="">
+    Get the app
+=======
+              <Button
+      variant="primary"
+      size="lg"
+      as={Link}
+      href={user ? "/home" : "/signup"}
+    >
+      Get Started
+>>>>>>> parent of b0357f4 (feat(components): Remove app features)
+    </Button>
+  </Stack>
+          </Stack >
+{/* <Image
             width="full"
             height={{
               base: "auto",
               md: "lg",
             }}
+<<<<<<< HEAD
             objectFit="contain"
             src="images/mockup.png"
           />
-        </Stack>
-      </Container>
-    </Box>
+=======
+            objectFit="cover"
+            src={"images/screenshot.png"}
+          /> */}
+
+  < EmbeddedIframe />
+>>>>>>> parent of b0357f4 (feat(components): Remove app features)
+        </Stack >
+      </Container >
+    </Box >
   );
 };

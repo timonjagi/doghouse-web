@@ -13,8 +13,13 @@ export const BreedCard = ({ hit }: any) => {
   return (
     <Box position="relative" key={hit.name} borderRadius="xl" overflow="hidden">
       <Link
+<<<<<<< HEAD
         href={`/breeds/${hit.name.toLowerCase().replaceAll(" ", "-")}`}
         // as={`/breeds/${hit.name.replaceAll(" ", "-")}`}
+=======
+        href={`/breeds?breedName=${hit.name}`}
+        as={`/breeds/${hit.name.replaceAll(" ", "-")}`}
+>>>>>>> parent of b0357f4 (feat(components): Remove app features)
       >
         <AspectRatio ratio={1}>
           <Image src={hit.image} alt={hit.name} fallback={<Skeleton />} />
@@ -38,9 +43,15 @@ export const BreedCard = ({ hit }: any) => {
               {hit.name}
             </Text>
 
+<<<<<<< HEAD
             <Text color="white" fontSize="sm" fontWeight="light" pt={0}>
               {hit.breedGroup} group
             </Text>
+=======
+            {/* <Text color="white" fontSize="sm" fontWeight="light" pt={0}>
+              {hit.breedGroup} group
+            </Text> */}
+>>>>>>> parent of b0357f4 (feat(components): Remove app features)
           </Stack>
         </Box>
       </Link>
