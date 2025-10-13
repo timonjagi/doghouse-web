@@ -66,7 +66,61 @@
           1
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Refactor Onboarding Wrapper to Use Supabase Session",
+            "description": "Update the main onboarding wrapper component at `src/lib/pages/onboarding/index.tsx` to use Supabase for authentication and session management, replacing the existing Firebase implementation.",
+            "dependencies": [],
+            "details": "Replace the `useAuthState` hook from Firebase with a Supabase equivalent, likely using `@supabase/auth-helpers-nextjs`'s `useUser` and `useSupabaseClient` hooks. Ensure that the component correctly identifies the authenticated user and redirects unauthenticated users. The user object will be needed by all subsequent steps.",
+            "status": "pending",
+            "testStrategy": "Verify that a logged-out user is redirected from the onboarding page. Verify that a logged-in user can access the page and their Supabase user ID is available in the component's state."
+          },
+          {
+            "id": 2,
+            "title": "Migrate 'Select Path' Step to Update User Role in Supabase",
+            "description": "Refactor the `src/lib/pages/onboarding/steps/SelectPath.tsx` component to persist the user's chosen role ('Breeder' or 'Seeker') to the `users` table in the Supabase database.",
+            "dependencies": [
+              1
+            ],
+            "details": "Remove the existing Firestore `updateDoc` call. Create a new server action or tRPC mutation that takes the user's ID and the selected role. This function will use the Supabase client to update the `role` column for the corresponding record in the `users` table.",
+            "status": "pending",
+            "testStrategy": "As a new user, select a role on the 'Select Path' step. Check the `users` table in Supabase to confirm the `role` column for your user record has been updated correctly to either 'breeder' or 'seeker'."
+          },
+          {
+            "id": 3,
+            "title": "Refactor 'Contact Details' Step to Save User Info to Supabase",
+            "description": "Update the `src/lib/pages/onboarding/steps/ContactDetails.tsx` component to save the user's full name and location to the `users` table in Supabase.",
+            "dependencies": [
+              1
+            ],
+            "details": "Replace the current Firebase logic for saving contact information. Implement a new form submission handler that calls a server action or tRPC mutation. This endpoint will update the `full_name` and `location` columns in the `users` table for the authenticated user.",
+            "status": "pending",
+            "testStrategy": "In the 'Contact Details' step, enter a name and location and submit the form. Verify in the Supabase table editor that the `full_name` and `location` fields for your user have been correctly populated."
+          },
+          {
+            "id": 4,
+            "title": "Update 'Pet Basics' Step to Fetch Breeds from Supabase",
+            "description": "Refactor the `src/lib/pages/onboarding/steps/PetBasics.tsx` component to fetch the list of available dog breeds from the `breeds` table in Supabase instead of Firestore.",
+            "dependencies": [
+              1
+            ],
+            "details": "The component currently fetches data from a Firestore collection. Replace this data-fetching logic with a Supabase query to `select * from breeds`. The component should then manage the user's breed selections in local component state, preparing them to be saved in the final step.",
+            "status": "pending",
+            "testStrategy": "Load the 'Pet Basics' step of the onboarding flow. Verify that the breed selection dropdown or list is populated with data queried from the `breeds` table in your Supabase project. Ensure multi-select functionality works as expected."
+          },
+          {
+            "id": 5,
+            "title": "Implement Logic to Save Selected Breeds to 'user_breeds' Table",
+            "description": "In the final onboarding step, persist the user's selected breeds from the 'Pet Basics' step into the `user_breeds` table in Supabase, and mark the user's onboarding as complete.",
+            "dependencies": [
+              4
+            ],
+            "details": "Create a server action or tRPC mutation that accepts an array of breed IDs. This function will perform a bulk insert into the `user_breeds` table, creating a new row for each selected breed linking it to the current `user_id`. After the insert, update the `onboarding_complete` flag in the `users` table to `true`.",
+            "status": "pending",
+            "testStrategy": "Complete the onboarding flow by selecting several breeds. Check the `user_breeds` table in Supabase to confirm that a record exists for each selected breed, correctly associated with your user ID. Also, verify the `onboarding_complete` column in your `users` record is set to true."
+          }
+        ]
       },
       {
         "id": 3,
@@ -80,7 +134,60 @@
           2
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create 'useUserProfile' Hook to Fetch User Role",
+            "description": "Develop a custom React hook `useUserProfile` that fetches the current user's profile data, including their role, from the 'users' table in Supabase. This hook will encapsulate the logic for retrieving the session user and querying for their extended profile.",
+            "dependencies": [],
+            "details": "Create a new file `src/hooks/useUserProfile.ts`. The hook should use `useUser` from `@supabase/auth-helpers-react` to get the authenticated user's ID and `useSupabaseClient` to query the `users` table for the row matching that ID. It should return the user profile object (or null/undefined during loading/error states) and the user's role.",
+            "status": "pending",
+            "testStrategy": "Create a test page that uses the hook. Log in as a Breeder and verify the hook returns the full user profile with `role: 'Breeder'`. Test loading and unauthenticated states."
+          },
+          {
+            "id": 2,
+            "title": "Define Role-Based Navigation Link Configurations",
+            "description": "Create a centralized configuration object or file that defines the navigation links for each user role (Breeder, Seeker, Admin). This will decouple the link data from the rendering logic in the Sidebar component.",
+            "dependencies": [],
+            "details": "In a new file, e.g., `src/lib/config/navLinks.ts`, define a constant object. This object will have keys for 'SEEKER', 'BREEDER', and 'ADMIN'. Each key will hold an array of link objects, with each object containing `href`, `label`, and an `icon` component.",
+            "status": "pending",
+            "testStrategy": "Review the created configuration file to ensure it contains distinct, correct navigation links for each of the three roles as specified in the PRD's MVP Dashboard Summary."
+          },
+          {
+            "id": 3,
+            "title": "Integrate 'useUserProfile' Hook into DashboardLayout",
+            "description": "Modify the main `DashboardLayout.tsx` component to use the new `useUserProfile` hook. This component will be responsible for fetching the user's role and passing it down to its children, specifically the Sidebar.",
+            "dependencies": [
+              1
+            ],
+            "details": "In `src/lib/components/layout/DashboardLayout.tsx`, call the `useUserProfile` hook to get the user's role. Pass the retrieved role as a prop to the `<Sidebar />` component. Handle loading states by displaying a layout-level skeleton or spinner.",
+            "status": "pending",
+            "testStrategy": "Add a `console.log` in `DashboardLayout.tsx` to print the role received from the hook. Log in as a Seeker and verify that 'Seeker' is logged. Check that the layout shows a loading state while the profile is being fetched."
+          },
+          {
+            "id": 4,
+            "title": "Refactor Sidebar.tsx to Render Links Dynamically",
+            "description": "Update `Sidebar.tsx` to accept the user's role as a prop and dynamically render the appropriate navigation links based on the configuration created in the previous subtask.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Modify `src/lib/components/layout/Sidebar.tsx` to accept a `role` prop. Use this prop to look up the correct array of links from the `navLinks` configuration. Map over the retrieved array to render the `<Link>` components. If the `role` prop is null or undefined, render a skeleton version of the navigation.",
+            "status": "pending",
+            "testStrategy": "Log in as a Seeker and verify the sidebar shows 'Matches' and 'My Applications'. Log in as a Breeder and see 'Breeds', 'Litters', 'Inquiries'. Log in as an Admin and see 'Verification' and 'Analytics'."
+          },
+          {
+            "id": 5,
+            "title": "Create Placeholder Pages for New Dashboard Routes",
+            "description": "To prevent 404 errors from the new sidebar links, create basic placeholder pages for each new role-specific dashboard route.",
+            "dependencies": [
+              4
+            ],
+            "details": "Create files for each new route, such as `src/pages/dashboard/matches.tsx`, `src/pages/dashboard/litters.tsx`, `src/pages/dashboard/verification.tsx`, etc. Each page should be a simple React component that renders an `<h1>` tag with the page title (e.g., 'My Matches') and is wrapped in the `DashboardLayout`.",
+            "status": "pending",
+            "testStrategy": "After logging in as each role, click every link in the updated sidebar and verify that it navigates to a valid page with the correct title and does not result in a 404 error."
+          }
+        ]
       },
       {
         "id": 4,
@@ -94,7 +201,62 @@
           2
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Profile Page and Fetch User Data",
+            "description": "Create the main page component for user profile management, located at `/settings/profile`. This server component will be responsible for fetching the currently logged-in user's data from the Supabase 'users' table.",
+            "dependencies": [],
+            "details": "Create the file `src/app/(app)/settings/profile/page.tsx`. Use the `createServerComponentClient` from `@supabase/auth-helpers-nextjs` to fetch user session and profile data (name, bio, location, photo URL). The fetched data will be passed as props to a client component created in a subsequent task.",
+            "status": "pending",
+            "testStrategy": "Navigate to `/settings/profile` while logged in. Verify the page loads without errors. Log the fetched user data on the server to confirm it's being retrieved correctly."
+          },
+          {
+            "id": 2,
+            "title": "Build Profile Form UI Client Component",
+            "description": "Develop a client component that displays the user profile form. This component will receive the user's data as props and render a form with fields for display name, bio, and location.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a new client component file, e.g., `src/components/profile/profile-form.tsx`. Use `shadcn/ui` components (`Input`, `Textarea`, `Button`, `Label`) to build the form. Populate the form fields with the initial user data passed via props. Use `react-hook-form` and `zod` for form state management and validation, following existing patterns in the codebase.",
+            "status": "pending",
+            "testStrategy": "Render the component with mock user data. Verify that all form fields display the correct initial values. Check that the form layout is responsive and matches the site's design system."
+          },
+          {
+            "id": 3,
+            "title": "Implement Server Action for Profile Text Updates",
+            "description": "Create and connect a Next.js server action to handle updates for the text-based profile fields (display name, bio, location).",
+            "dependencies": [
+              2
+            ],
+            "details": "Create a new server action in a file like `src/lib/actions/user.ts`. The action will accept form data, validate it using a Zod schema, and use the Supabase client to update the corresponding record in the 'users' table. Connect this action to the `onSubmit` handler of the profile form.",
+            "status": "pending",
+            "testStrategy": "Log in, change the display name and bio, and submit the form. After a page refresh, the new values should persist. Check the 'users' table in Supabase directly to confirm the update. Test validation by submitting empty or invalid data."
+          },
+          {
+            "id": 4,
+            "title": "Add Profile Photo Display and Upload UI",
+            "description": "Enhance the profile form to include the user's current profile photo and a file input for uploading a new one. This involves only the UI and client-side state management for the selected file.",
+            "dependencies": [
+              2
+            ],
+            "details": "In `profile-form.tsx`, use the `next/image` component to display the current user's avatar using the `profile_photo_url`. Add a styled `<input type='file' accept='image/*' />` for selecting a new photo. Implement client-side logic to show a preview of the selected image before uploading.",
+            "status": "pending",
+            "testStrategy": "Verify the current profile photo (or a placeholder) is displayed correctly. Select a new image file from your local machine and confirm that a preview of the new image is shown, replacing the old one."
+          },
+          {
+            "id": 5,
+            "title": "Implement Server Action for Photo Upload and URL Update",
+            "description": "Create the server-side logic to handle the profile photo upload to Supabase Storage and update the user's record with the new photo URL.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Create a new server action that accepts `FormData`. This action will: 1. Extract the file from the form data. 2. Upload the file to a designated Supabase Storage bucket (e.g., 'avatars'). 3. Retrieve the public URL of the uploaded file. 4. Update the `profile_photo_url` column in the 'users' table for the current user. Ensure proper error handling for upload failures.",
+            "status": "pending",
+            "testStrategy": "Log in, upload a new profile picture, and submit. Verify that the new picture is displayed on the profile page after refresh. Check the Supabase Storage 'avatars' bucket to confirm the new file exists. Verify the `profile_photo_url` in the 'users' table has been updated."
+          }
+        ]
       },
       {
         "id": 5,
