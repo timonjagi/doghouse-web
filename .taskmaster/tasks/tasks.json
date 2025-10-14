@@ -26,7 +26,7 @@
             "description": "Systematically remove all Firebase authentication logic from the codebase to prepare for the Supabase migration. This includes removing SDKs, configuration files, and references in UI components.",
             "dependencies": [],
             "details": "Delete `src/lib/firebase/client.ts` and `src/lib/firebase/server.ts`. Uninstall the `firebase` npm package. Go through auth-related components like `src/app/(auth)/login/page.tsx` and remove Firebase-specific function calls (`signInWithEmailAndPassword`, etc.). Remove Firebase-related environment variables from `.env` files.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "After removal, the application's login and sign-up pages should be broken or in a clean state, ready for new logic. The app should build without errors related to missing Firebase modules. Run `npm ls firebase` to ensure the package is gone."
           },
           {
@@ -37,7 +37,7 @@
               1,
               2
             ],
-            "details": "Create Supabase clients in `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts`. Update `src/app/(auth)/signup/page.tsx` to use `supabase.auth.signUp`. On successful sign-up, insert a record into the public `users` table with the user's `id`, `email`, and selected `role`. Update the login page to use `supabase.auth.signInWithPassword`. Implement session management using Supabase's cookie-based helpers for Next.js.",
+            "details": "Create Supabase clients in `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts`. Update `src/pages/signup/index.tsx` to use `supabase.auth.signUp`. On successful sign-up, insert a record into the public `users` table with the user's `id`, `email`, and selected `role`. Update the login page `src/pages/login/index.tsx`  to use `supabase.auth.signInWithPassword`. Implement session management using Supabase's cookie-based helpers for Next.js.",
             "status": "pending",
             "testStrategy": "Test the full sign-up flow for both a 'seeker' and a 'breeder'. Verify that `auth.users` and the public `users` table are populated correctly in Supabase. Test login and logout functionality. Ensure user sessions persist across page reloads."
           },
@@ -469,7 +469,7 @@
     ],
     "metadata": {
       "created": "2025-10-13T22:58:47.382Z",
-      "updated": "2025-10-14T06:48:39.182Z",
+      "updated": "2025-10-14T07:14:17.937Z",
       "description": "Tasks for master context"
     }
   }

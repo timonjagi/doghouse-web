@@ -15,25 +15,24 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { LoginForm } from "lib/components/auth/LoginForm";
-import { auth } from "lib/firebase/client";
-// import * as React from "react";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 import { Logo } from "../../components/layout/Logo";
 
 const Login = () => {
   const router = useRouter();
-  const [user, loading, error] = useAuthState(auth);
+  const { user, loading } = useSupabaseAuth();
   const toast = useToast();
+
   useEffect(() => {
     if (!loading && user) {
       const fetchUserDoc = async () => {
         const response = await fetch(
           `/api/users/get-user?${new URLSearchParams({
-            uid: user.uid,
+            uid: user.id,
           })}`,
           {
             method: "GET",
@@ -55,7 +54,7 @@ const Login = () => {
 
       fetchUserDoc();
     }
-  }, [user, loading, error]);
+  }, [user, loading, router, toast]);
 
   return (
     <Flex

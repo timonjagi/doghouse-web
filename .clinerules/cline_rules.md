@@ -58,3 +58,4 @@ alwaysApply: true
  - Use Context7 MCP Tool to always gather latest documentation / knowledge about a library
  - Use Firecrawl MCP Tool to search / scrape web pages whenever necessary
  - Leverage the context7 API tool as your main discovery engine for UI primitives, tokens, and unknown packages. Cross-reference the context when you need more advanced usage access tutorials. If needed.
+ - Maintain a tasks.json file for high level tasks that need step by step implementation and always update task completion status after completing implementation of a task. 

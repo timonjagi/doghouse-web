@@ -16,7 +16,7 @@ import {
 import { NextSeo } from "next-seo";
 import { Logo } from "../../components/layout/Logo";
 
-import { LoginForm } from "lib/components/auth/LoginForm";
+import { SignupForm } from "lib/components/auth/SignupForm";
 import { useRouter } from "next/router";
 
 type User = {
@@ -170,7 +170,7 @@ const SignUp = () => {
           >
             <Heading size="lg">Let's create your account</Heading>
 
-            <LoginForm />
+            <SignupForm />
 
             <HStack justify="center" spacing="1">
               <Text color="muted">Already&apos;t have an account?</Text>
