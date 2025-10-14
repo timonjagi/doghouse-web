@@ -13,11 +13,10 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getDocs, query, collection, or, where } from "firebase/firestore";
-import { auth, fireStore } from "lib/firebase/client";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { BreedCard } from "./BreedCard";
 import breedData from "../../../data/breeds_with_group.json";
 import { FiPlus } from "react-icons/fi";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 type petsProps = {
   petData: any;
@@ -25,62 +24,62 @@ type petsProps = {
 
 const Pets: React.FC<petsProps> = ({ petData }) => {
   const isVerified = false;
-  const [user, loading, error] = useAuthState(auth);
+  const { user, loading } = useSupabaseAuth();
   const [loadingBreeds, setLoadingBreeds] = useState(false);
   const [pets, setPets] = useState([] as any);
   const toast = useToast();
 
   const { isOpen, onToggle, onClose } = useDisclosure();
 
-  useEffect(() => {
-    const fetchBreeds = async () => {
-      try {
-        setLoadingBreeds(true);
+  // useEffect(() => {
+  //   const fetchBreeds = async () => {
+  //     try {
+  //       setLoadingBreeds(true);
 
-        const querySnapshot = await getDocs(
-          query(
-            collection(fireStore, "userBreeds"),
-            or(
-              where("ownerId", "==", user.uid),
-              where("seekerId", "==", user.uid)
-            )
-          )
-        );
+  //       const querySnapshot = await getDocs(
+  //         query(
+  //           collection(fireStore, "userBreeds"),
+  //           or(
+  //             where("ownerId", "==", user.uid),
+  //             where("seekerId", "==", user.uid)
+  //           )
+  //         )
+  //       );
 
-        let userBreeds = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+  //       let userBreeds = querySnapshot.docs.map((doc) => ({
+  //         id: doc.id,
+  //         ...doc.data(),
+  //       }));
 
-        userBreeds = userBreeds.map((pet) => {
-          // @ts-ignore
-          const breedInfo = breedData.find((breed) => breed.name === pet.breed);
-          pet["breedGroup"] = breedInfo.breedGroup;
-          return pet;
-        });
+  //       userBreeds = userBreeds.map((pet) => {
+  //         // @ts-ignore
+  //         const breedInfo = breedData.find((breed) => breed.name === pet.breed);
+  //         pet["breedGroup"] = breedInfo.breedGroup;
+  //         return pet;
+  //       });
 
-        if (pets.length) {
-          setPets([...pets]);
-          localStorage.setItem("userBreeds", JSON.stringify(pets));
-        }
+  //       if (pets.length) {
+  //         setPets([...pets]);
+  //         localStorage.setItem("userBreeds", JSON.stringify(pets));
+  //       }
 
-        setLoadingBreeds(false);
-      } catch (error) {
-        toast({
-          title: "There was a problem loading breeds",
-          description: error.message,
-          status: "error",
-          isClosable: true,
-        });
+  //       setLoadingBreeds(false);
+  //     } catch (error) {
+  //       toast({
+  //         title: "There was a problem loading breeds",
+  //         description: error.message,
+  //         status: "error",
+  //         isClosable: true,
+  //       });
 
-        setLoadingBreeds(false);
-      }
-    };
+  //       setLoadingBreeds(false);
+  //     }
+  //   };
 
-    if (!loading && user) {
-      fetchBreeds();
-    }
-  }, [loading, user]);
+  //   if (!loading && user) {
+  //     fetchBreeds();
+  //   }
+  // }, [loading, user]);
 
   return (
     <Stack spacing={{ base: "5", lg: "6" }}>

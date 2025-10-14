@@ -16,12 +16,13 @@ import {
 } from "@chakra-ui/react";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
-import { auth, fireStore, storage } from "lib/firebase/client";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { ref, uploadString, getDownloadURL } from "firebase/storage";
+// import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
+// import { auth, fireStore, storage } from "lib/firebase/client";
+// import { doc, getDoc, updateDoc } from "firebase/firestore";
+// import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/router";
 import { Dropzone } from "lib/components/ui/Dropzone";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 const Profile = ({ userProfile, onClose }) => {
   const [firstName, setFirstName] = useState("");
@@ -30,8 +31,8 @@ const Profile = ({ userProfile, onClose }) => {
 
   const [selectedFiles, setSelectedFiles] = useState([] as any);
   const toast = useToast();
-  const [user, loading, error] = useAuthState(auth);
-  const [updateProfile] = useUpdateProfile(auth);
+  const { user, loading } = useSupabaseAuth();
+  // const [updateProfile] = useUpdateProfile(auth);
 
   const [saving, setSaving] = useState(false);
 
@@ -77,54 +78,54 @@ const Profile = ({ userProfile, onClose }) => {
   const onSubmit = async () => {
     setSaving(true);
 
-    try {
-      const userDocRef = doc(fireStore, "users", user.uid as string);
+    // try {
+    //   const userDocRef = doc(fireStore, "users", user.uid as string);
 
-      let downloadUrl = "";
-      if (selectedFiles.length) {
-        try {
-          // store images in firebase/storage
-          const imageRef = ref(storage, `users/${userDocRef.id}/profilePhoto`);
-          await uploadString(imageRef, selectedFiles[0], "data_url");
+    //   let downloadUrl = "";
+    //   if (selectedFiles.length) {
+    //     try {
+    //       // store images in firebase/storage
+    //       const imageRef = ref(storage, `users/${userDocRef.id}/profilePhoto`);
+    //       await uploadString(imageRef, selectedFiles[0], "data_url");
 
-          // get download url from stroage
-          downloadUrl = await getDownloadURL(imageRef);
+    //       // get download url from stroage
+    //       downloadUrl = await getDownloadURL(imageRef);
 
-          await updateProfile({ photoURL: downloadUrl });
-        } catch (error) {
-          toast({
-            title: "Error saving profile",
-            description: error.message,
-            status: "error",
-          });
-          setSaving(false);
-        }
-        // get user doc ref
-      }
-      // update pet doc by adding image urls
-      await updateDoc(userDocRef, {
-        name: `${firstName} ${lastName}`,
-        location: location,
-        profilePhotoUrl: downloadUrl
-          ? downloadUrl
-          : userProfile.profilePhotoUrl || "",
-      });
+    //       await updateProfile({ photoURL: downloadUrl });
+    //     } catch (error) {
+    //       toast({
+    //         title: "Error saving profile",
+    //         description: error.message,
+    //         status: "error",
+    //       });
+    //       setSaving(false);
+    //     }
+    //     // get user doc ref
+    //   }
+    //   // update pet doc by adding image urls
+    //   await updateDoc(userDocRef, {
+    //     name: `${firstName} ${lastName}`,
+    //     location: location,
+    //     profilePhotoUrl: downloadUrl
+    //       ? downloadUrl
+    //       : userProfile.profilePhotoUrl || "",
+    //   });
 
-      toast({
-        title: "Profile updated successfully",
-        status: "success",
-      });
-      // reset image  and reload profile
-      setSelectedFiles([]);
-      onClose();
-    } catch (error) {
-      toast({
-        title: "Error saving profile",
-        description: error.message,
-        status: "error",
-      });
-      setSaving(false);
-    }
+    //   toast({
+    //     title: "Profile updated successfully",
+    //     status: "success",
+    //   });
+    //   // reset image  and reload profile
+    //   setSelectedFiles([]);
+    //   onClose();
+    // } catch (error) {
+    //   toast({
+    //     title: "Error saving profile",
+    //     description: error.message,
+    //     status: "error",
+    //   });
+    //   setSaving(false);
+    // }
 
     setSaving(false);
   };

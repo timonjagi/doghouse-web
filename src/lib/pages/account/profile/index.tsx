@@ -18,10 +18,7 @@ import type { User } from "firebase/auth";
 import { useRouter } from "next/router";
 // import * as React from "react";
 import { useState, useEffect } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { HiPencilAlt } from "react-icons/hi";
-
-import { auth, fireStore } from "lib/firebase/client";
 
 import { CardContent } from "./CardContent";
 import { CardWithAvatar } from "./CardWithAvatar";
@@ -32,9 +29,10 @@ import UserProfileForm from "./UserProfileForm";
 import { doc, getDoc } from "firebase/firestore";
 import { CompleteProfileBanner } from "lib/pages/dashboard/CompleteProfileBanner";
 import { NewsletterForm } from "lib/pages/dashboard/NewsletterForm copy";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 const Profile = () => {
-  const [user, loading, error] = useAuthState(auth);
+  const { user, loading } = useSupabaseAuth();
   // eslint-disable-next-line
   const [isBreeder, setIsBreeder] = useState(false);
   const router = useRouter();
@@ -44,52 +42,52 @@ const Profile = () => {
   const [userProfile, setUserProfile] = useState({} as any);
   const [loadingUserProfile, setLoadingUserProfile] = useState(true);
 
-  const fetchUserProfile = async () => {
-    setLoadingUserProfile(true);
-    try {
-      const userDocRef = doc(fireStore, "users", user.uid as string);
+  // const fetchUserProfile = async () => {
+  //   setLoadingUserProfile(true);
+  //   try {
+  //     const userDocRef = doc(fireStore, "users", user.uid as string);
 
-      const userDoc = await getDoc(userDocRef);
-      setUserProfile({ id: userDoc.id, ...userDoc.data() });
-    } catch (error) {
-      toast({
-        title: "Error loading profile",
-        description: error.message,
-        status: "error",
-      });
-    }
+  //     const userDoc = await getDoc(userDocRef);
+  //     setUserProfile({ id: userDoc.id, ...userDoc.data() });
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error loading profile",
+  //       description: error.message,
+  //       status: "error",
+  //     });
+  //   }
 
-    setLoadingUserProfile(false);
-  };
+  //   setLoadingUserProfile(false);
+  // };
 
-  useEffect(() => {
-    if (!loading && user) {
-      fetchUserProfile();
-    }
-  }, [user, loading]);
+  // useEffect(() => {
+  //   if (!loading && user) {
+  //     fetchUserProfile();
+  //   }
+  // }, [user, loading]);
 
-  useEffect(() => {
-    if (!loading && (!user || error)) {
-      router.push("/login");
-      return;
-    }
+  // useEffect(() => {
+  //   if (!loading && (!user || error)) {
+  //     router.push("/login");
+  //     return;
+  //   }
 
-    const getClaims = async (authUser: User) => {
-      const tokenResult = await authUser.getIdTokenResult(true);
-      if (tokenResult) {
-        const { claims } = tokenResult;
-        setIsBreeder(claims.isBreeder);
-      }
-    };
+  //   const getClaims = async (authUser: User) => {
+  //     const tokenResult = await authUser.getIdTokenResult(true);
+  //     if (tokenResult) {
+  //       const { claims } = tokenResult;
+  //       setIsBreeder(claims.isBreeder);
+  //     }
+  //   };
 
-    if (user) {
-      getClaims(user);
-    }
-  }, [user, loading, error, router]);
+  //   if (user) {
+  //     getClaims(user);
+  //   }
+  // }, [user, loading, error, router]);
 
   const onCloseModal = () => {
     onClose();
-    fetchUserProfile();
+    //fetchUserProfile();
   };
 
   return (
@@ -123,13 +121,13 @@ const Profile = () => {
                   {userProfile && userProfile?.name}
                 </Heading>
                 <Text color={useColorModeValue("gray.600", "gray.400")}>
-                  {user && user?.phoneNumber}
+                  {user && user?.email}
                 </Text>
                 <UserInfo
                   location={"Nairobi, Kenya"}
                   website="esther.com"
                   memberSince={new Date(
-                    user?.metadata?.creationTime
+                    user?.created_at
                   ).toDateString()}
                 />
               </CardContent>

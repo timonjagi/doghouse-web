@@ -1,20 +1,19 @@
 import { HStack, Heading, IconButton } from "@chakra-ui/react";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import router from "next/router";
 import React from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { FiBell, FiUser, FiSettings } from "react-icons/fi";
-import { auth } from "../../firebase/client";
 
 type HeaderButtonGroupProps = {};
 
 const HeaderButtonGroup: React.FC<HeaderButtonGroupProps> = () => {
-  const onClickMenuLink = (link) => {};
-  const [user, loading, error] = useAuthState(auth);
+  const onClickMenuLink = (link) => { };
+  const { user, loading } = useSupabaseAuth();
 
   return (
     <HStack justify="space-between" align="start">
       <Heading pb="4" size={{ base: "xs", sm: "md" }}>
-        Hi, {user?.displayName} 👋
+        Hi, {user?.user_metadata.full_name} 👋
       </Heading>
 
       <HStack spacing="1" direction="row">

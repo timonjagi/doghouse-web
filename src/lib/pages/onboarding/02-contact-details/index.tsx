@@ -12,12 +12,10 @@ import {
   Icon,
   Heading,
 } from "@chakra-ui/react";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
 import { MdOutlineLocationOn, MdPerson, MdPersonOutline } from "react-icons/md";
-
-import { auth, fireStore } from "lib/firebase/client";
+import { supabase } from "lib/supabase/client";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { Dropzone } from "lib/components/ui/Dropzone";
 import { UserProfile } from "lib/models/user-profile";
 
@@ -28,13 +26,12 @@ type PageProps = {
 };
 
 export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
-  const [user] = useAuthState(auth);
+  const { user } = useSupabaseAuth();
   const toast = useToast();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
-  const [updateProfile] = useUpdateProfile(auth);
   const [userProfile, setUserProfile] = useState({} as any);
 
   useEffect(() => {
@@ -79,14 +76,26 @@ export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
     setLoading(true);
 
     try {
-      await updateProfile({ displayName });
-
       if (user) {
-        await assignBreederRole(user.uid);
+        // Update user profile in Supabase
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({
+            display_name: displayName,
+            location_text: location,
+          })
+          .eq('id', user.id);
+
+        if (updateError) {
+          console.error('Error updating profile:', updateError);
+        }
+
+        // Update role if needed (this would need to be handled differently in Supabase)
+        // await assignBreederRole(user.id);
       }
 
       const payload = {
-        userId: user?.uid,
+        userId: user?.id,
         name: displayName,
         location: location,
         ...userProfile,

@@ -1,6 +1,4 @@
 import { useRouter } from "next/router";
-// import { useAuthState } from "react-firebase-hooks/auth";
-// import { auth } from "lib/firebase/client";
 import RouteGuard from "lib/components/auth/RouteGuard";
 import { Navbar } from "lib/components/layout/Navbar";
 import Header from "./Header";

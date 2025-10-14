@@ -29,13 +29,12 @@ import { Logo } from "./Logo";
 import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
 import { useSignOut } from "react-firebase-hooks/auth";
-import { auth } from "lib/firebase/client";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 export const Sidebar = ({ onClose }) => {
-  const [user] = useAuthState(auth);
+  const { user, loading } = useSupabaseAuth();
 
-  const [signOut, loading, error] = useSignOut(auth);
+  const { signOut } = useSupabaseAuth();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const router = useRouter();
   const onClickMenuLink = (link) => {

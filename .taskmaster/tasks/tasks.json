@@ -9,7 +9,7 @@
         "testStrategy": "Verify that `drizzle-kit push:pg` or `migrate` runs successfully. Test the sign-up flow for a new seeker and a new breeder, and confirm their roles are correctly set in the database via the Supabase table editor. Ensure a logged-in user cannot fetch data for another user.",
         "priority": "high",
         "dependencies": [],
-        "status": "todo",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -52,6 +52,15 @@
             "details": "In the Supabase SQL editor, enable RLS for the `users` and `litters` tables. For `users`, create policies allowing users to SELECT and UPDATE only their own record (`uid() = id`). For `litters`, allow breeders to CUD their own litters (`uid() = breeder_id`) and all authenticated users to SELECT litters. Policies must be created using SQL statements in a new Supabase migration file.",
             "status": "done",
             "testStrategy": "Log in as a user and use a client-side query to fetch all users; it should only return the current user's data. As a breeder, verify you can create/edit your litters. As a seeker, verify you can read litters but cannot create or edit them. Attempting to update another user's data should result in an RLS violation error."
+          },
+          {
+            "id": 5,
+            "title": "Fix Remaining Firebase Authentication References",
+            "description": "Update all remaining components that use Firebase authentication hooks (useAuthState, useSignOut) to use the new Supabase authentication system",
+            "details": "Search through the codebase for any remaining Firebase authentication references and replace them with Supabase equivalents. Update Header.tsx, UserProfileMenu.tsx, and any other components that still import from 'lib/firebase/client' or use Firebase hooks.",
+            "status": "done",
+            "dependencies": "",
+            "testStrategy": "Run the application and verify that all Firebase authentication hooks are replaced with Supabase equivalents. Verify that the application still functions as expected."
           }
         ]
       },
@@ -65,7 +74,7 @@
         "dependencies": [
           1
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": [
           {
             "id": 1,
@@ -132,7 +141,7 @@
           1,
           2
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": [
           {
             "id": 1,
@@ -201,7 +210,7 @@
           2,
           3
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": [
           {
             "id": 1,
@@ -269,7 +278,7 @@
           2,
           3
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": [
           {
             "id": 1,
@@ -338,7 +347,7 @@
           1,
           4
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": []
       },
       {
@@ -352,7 +361,7 @@
           5,
           6
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": [
           {
             "id": 1,
@@ -396,7 +405,7 @@
         "dependencies": [
           7
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": []
       },
       {
@@ -409,7 +418,7 @@
         "dependencies": [
           8
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": []
       },
       {
@@ -423,7 +432,7 @@
           7,
           9
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": []
       },
       {
@@ -436,7 +445,7 @@
         "dependencies": [
           10
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": []
       },
       {
@@ -449,7 +458,7 @@
         "dependencies": [
           1
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": []
       },
       {
@@ -463,13 +472,13 @@
           9,
           12
         ],
-        "status": "todo",
+        "status": "pending",
         "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-10-13T22:58:47.382Z",
-      "updated": "2025-10-14T07:36:26.714Z",
+      "updated": "2025-10-14T08:24:57.151Z",
       "description": "Tasks for master context"
     }
   }

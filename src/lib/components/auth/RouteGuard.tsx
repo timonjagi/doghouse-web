@@ -1,14 +1,13 @@
 // components/PrivateRoute.tsx
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "lib/firebase/client";
 import { Box, Center, Flex, Spinner } from "@chakra-ui/react";
 import { Loader } from "../ui/Loader";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 const RouteGuard = ({ children, ...rest }) => {
   const router = useRouter();
-  const [user, loading] = useAuthState(auth);
+  const { user, loading } = useSupabaseAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const protectedRoutes = ["/dashboard", "profile", "account"];
   useEffect(() => {

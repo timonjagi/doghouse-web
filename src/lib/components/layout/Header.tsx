@@ -21,8 +21,7 @@ import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
 
 import UserProfileMenu from "lib/components/auth/UserProfileMenu";
-import { auth } from "lib/firebase/client";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 import { ToggleButton } from "./ToggleButton";
 
@@ -35,7 +34,7 @@ const Header = () => {
   const router = useRouter();
   const { pathname } = router;
 
-  const [user] = useAuthState(auth);
+  const { user } = useSupabaseAuth();
 
   return (
     <Box
@@ -125,9 +124,9 @@ const Header = () => {
 
               {user ? (
                 <UserProfileMenu
-                  name={user?.displayName || ""}
-                  image={user?.photoURL || ""}
-                  phoneNumber={user?.phoneNumber || ""}
+                  name={user?.user_metadata?.name || user?.email || ""}
+                  image={user?.user_metadata?.avatar_url || ""}
+                  email={user?.email || ""}
                 />
               ) : (
                 <HStack spacing="3">

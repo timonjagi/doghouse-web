@@ -14,51 +14,47 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import type React from "react";
-import { useSignOut } from "react-firebase-hooks/auth";
-
-import { auth } from "lib/firebase/client";
 import { useRouter } from "next/router";
 import { MdLogout, MdOutlineAccountCircle } from "react-icons/md";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 type UserProfileMenuProps = {
   name: string;
   image: string;
-  phoneNumber: string;
+  email: string;
 };
 
 const UserProfileMenu: React.FC<UserProfileMenuProps> = (
   props: UserProfileMenuProps
 ) => {
-  const { name, image, phoneNumber } = props;
+  const { name, image, email } = props;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [signOut, loading, error] = useSignOut(auth);
   const toast = useToast();
   const router = useRouter();
+  const { signOut } = useSupabaseAuth();
 
   const onLogout = async () => {
     try {
-      const success = await signOut();
+      await signOut();
 
-      if (success) {
-        toast({
-          title: "Logged out successfully",
-          description: "",
-          status: "success",
-          duration: 4000,
-          isClosable: true,
-        });
-      }
-      return success;
+      toast({
+        title: "Logged out successfully",
+        description: "",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
+
+      router.push("/");
     } catch (err) {
       toast({
-        title: error?.message,
+        title: "Logout failed",
+        description: "An unexpected error occurred",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
     }
-    return 0;
   };
 
   return (
@@ -86,7 +82,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
                 {name}
               </Text>
               <Text color="on-accent-muted" fontSize="sm">
-                {phoneNumber}
+                {email}
               </Text>
             </Box>
           </Center>

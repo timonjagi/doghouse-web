@@ -12,8 +12,6 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "lib/firebase/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import ActivityFeedCard from "./ActivityFeedCard";
@@ -23,9 +21,10 @@ import Welcome from "../onboarding/00-welcome";
 import { Success } from "../onboarding/05-success";
 import HeaderButtonGroup from "./HeaderButtonGroup";
 import { Loader } from "../../components/ui/Loader";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 const Home = () => {
-  const [user, loading, error] = useAuthState(auth);
+  const { user, loading } = useSupabaseAuth();
   const [selectedPost, setSelectedPost] = useState();
 
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
@@ -41,7 +40,7 @@ const Home = () => {
   const fetchUserProfile = async (): Promise<UserProfile> => {
     setLoadingUserProfile(true);
     try {
-      console.log("loading user profile", user?.uid);
+      console.log("loading user profile", user?.id);
 
       // const response = await fetch(
       //   `/api/users/get-user?${new URLSearchParams({

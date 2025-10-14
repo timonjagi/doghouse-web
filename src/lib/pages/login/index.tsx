@@ -27,35 +27,6 @@ const Login = () => {
   const { user, loading } = useSupabaseAuth();
   const toast = useToast();
 
-  useEffect(() => {
-    if (!loading && user) {
-      const fetchUserDoc = async () => {
-        const response = await fetch(
-          `/api/users/get-user?${new URLSearchParams({
-            uid: user.id,
-          })}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        if (response.status === 200) {
-          router.push("/home");
-        } else {
-          toast({
-            title: "Account created successfully",
-            description: "Let's finish creating your your profile",
-            status: "success",
-          });
-          router.push("/signup");
-        }
-      };
-
-      fetchUserDoc();
-    }
-  }, [user, loading, router, toast]);
-
   return (
     <Flex
       minH={{ base: "auto", md: "100vh" }}
