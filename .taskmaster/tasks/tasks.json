@@ -57,13 +57,80 @@
       },
       {
         "id": 2,
+        "title": "Setup React Query and State Management",
+        "description": "Establish a robust data fetching and state management foundation by integrating React Query and a global state manager like Zustand.",
+        "details": "Install React Query and its devtools. Configure a global QueryClientProvider in the main app layout. Create a centralized factory for query keys to ensure consistency. Set up a Zustand store for managing global UI state and the user session.",
+        "testStrategy": "Verify that the React Query devtools are visible in development mode. Create a simple test component that uses a query hook to fetch data and confirms the data is cached and available. Test that a Zustand store can be updated and its state is accessible from different components.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install React Query and Devtools packages",
+            "description": "Add `@tanstack/react-query` and `@tanstack/react-query-devtools` to the project's dependencies using npm or yarn.",
+            "dependencies": [],
+            "details": "Update the `package.json` file by adding the necessary React Query dependencies. Run `npm install` or `yarn add` to install them. This is a foundational step before any configuration.",
+            "status": "pending",
+            "testStrategy": "Verify the presence of `@tanstack/react-query` and `@tanstack/react-query-devtools` in `package.json` and `node_modules`."
+          },
+          {
+            "id": 2,
+            "title": "Configure QueryClientProvider globally",
+            "description": "Initialize a new `QueryClient` instance with default options and wrap the entire Next.js application with `QueryClientProvider`.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a `QueryClient` instance, potentially in a new file like `src/lib/queryClient.ts` or `src/utils/queryClient.ts`. Configure default options such as `staleTime` and `cacheTime`. Then, integrate `QueryClientProvider` in the root layout file (e.g., `src/app/layout.tsx` or a custom `_app.tsx` if using pages directory) to make React Query available throughout the app. Also, include `ReactQueryDevtools` for development environments.",
+            "status": "pending",
+            "testStrategy": "Verify that React Query Devtools are visible in the browser during development. Create a temporary page with a basic `useQuery` call to ensure the provider is correctly set up and no errors occur."
+          },
+          {
+            "id": 3,
+            "title": "Create a centralized query key factory",
+            "description": "Implement a utility file that provides a structured and consistent way to define query keys for different data entities.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create a new file, for example, `src/lib/queryKeys.ts`, which exports an object or functions to generate unique and descriptive query keys. For instance, `queryKeys.users.all`, `queryKeys.users.detail(userId)`, `queryKeys.profile.all`, `queryKeys.litters.all`, `queryKeys.litters.byBreeder(breederId)`. This ensures type safety and avoids key collisions.",
+            "status": "pending",
+            "testStrategy": "Write unit tests for the query key factory to ensure it generates correct and consistent key structures. Ensure that keys are deterministic for the same inputs."
+          },
+          {
+            "id": 4,
+            "title": "Set up Zustand store for global state management",
+            "description": "Initialize a Zustand store to manage global application state, including user session information and general UI state.",
+            "dependencies": [],
+            "details": "Install `zustand`. Create a new file (e.g., `src/stores/useAppStore.ts`). Define the store to hold global states such as `userSession` (e.g., `userId`, `role`, `isAuthenticated`), and UI states like `isSidebarOpen` or `isLoadingOverlayVisible`. Implement actions for updating these states.",
+            "status": "pending",
+            "testStrategy": "Create a temporary component that consumes and modifies the Zustand store state. Verify that changes to the store are reflected across different components without prop drilling. Ensure `userSession` can be updated correctly."
+          },
+          {
+            "id": 5,
+            "title": "Develop custom React Query hooks for Supabase integration",
+            "description": "Create reusable custom hooks that abstract common data fetching patterns from Supabase using React Query.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Develop custom hooks (e.g., `useUserProfile`, `useLitters`, `useBreederProfiles`) in a directory like `src/hooks/queries`. These hooks will encapsulate the logic of fetching data from Supabase using the Supabase client and `useQuery`, `useMutation` from React Query. Utilize the centralized query key factory (from subtask 3) for defining query keys within these hooks.",
+            "status": "pending",
+            "testStrategy": "Implement a simple component that uses one of the new custom hooks (e.g., `useUserProfile`). Verify that data is fetched and displayed correctly. Use React Query Devtools to confirm caching and query states (loading, success, error) are managed as expected. Simulate a data update to test `useMutation` if implemented."
+          }
+        ]
+      },
+      {
+        "id": 3,
         "title": "Refactor Onboarding Flow to Use Supabase",
         "description": "Migrate the multi-step onboarding process from Firebase to Supabase, ensuring user data is correctly captured in the new Drizzle schema.",
         "details": "Refactor the components in `src/lib/pages/onboarding/` to use Supabase for user session management and data persistence. Replace `useAuthState` with a Supabase equivalent and update the logic that saves user profile information (`name`, `location`, `roles`, `user_breeds`) to write to the new PostgreSQL tables.",
         "testStrategy": "Complete the onboarding flow as a new user. Verify that the user's role, contact details, and initial breed preferences are correctly saved to the 'users' and 'user_breeds' tables in Supabase. Ensure the user session is correctly managed by Supabase throughout the flow.",
         "priority": "high",
         "dependencies": [
-          1
+          1,
+          2
         ],
         "status": "todo",
         "subtasks": [
@@ -123,7 +190,7 @@
         ]
       },
       {
-        "id": 3,
+        "id": 4,
         "title": "Refactor Dashboard Layout and Sidebar for Role-Based Views",
         "description": "Update the main layout and sidebar navigation to dynamically display menu items based on the user's role (Breeder, Seeker, Admin) as defined in the PRD.",
         "details": "Modify the layout components in `src/lib/components/layout/`, particularly `Sidebar.tsx`. The component should fetch the current user's role from the Supabase session and render different navigation links for 'Breeder', 'Seeker', and 'Admin' roles, matching the components outlined in the PRD's MVP Dashboard Summary.",
@@ -131,7 +198,8 @@
         "priority": "high",
         "dependencies": [
           1,
-          2
+          2,
+          3
         ],
         "status": "todo",
         "subtasks": [
@@ -190,7 +258,7 @@
         ]
       },
       {
-        "id": 4,
+        "id": 5,
         "title": "Develop User Profile Management Component",
         "description": "Create a shared component for users of all roles to view and edit their profile information, including bio, photo, location, and contact details.",
         "details": "Build a form in Next.js that populates with the current user's data from the 'users' table. Implement an update function that writes changes back to Supabase. Include functionality for uploading a profile photo to Supabase Storage and updating the `profile_photo_url` field. This component should be accessible from a user's dashboard.",
@@ -198,7 +266,8 @@
         "priority": "high",
         "dependencies": [
           1,
-          2
+          2,
+          3
         ],
         "status": "todo",
         "subtasks": [
@@ -259,7 +328,7 @@
         ]
       },
       {
-        "id": 5,
+        "id": 6,
         "title": "Build Admin Dashboard: Breeder Verification Panel",
         "description": "Create a secure dashboard page for Admins to review and manage breeder verification requests.",
         "details": "Develop a page accessible only to users with the 'admin' role. This page should fetch and display a list of breeders with `is_verified = false`. For each breeder, the admin should be able to view their submitted `verification_docs` (from `breeder_profiles`) and have 'Approve' and 'Reject' buttons. The 'Approve' action should set `users.is_verified` to true and populate `breeder_profiles.verified_at`.",
@@ -267,21 +336,21 @@
         "priority": "high",
         "dependencies": [
           1,
-          3
+          4
         ],
         "status": "todo",
         "subtasks": []
       },
       {
-        "id": 6,
+        "id": 7,
         "title": "Breeder Dashboard: Breed & Litter Management UI",
         "description": "Implement the core functionality for verified breeders to manage the breeds they offer and create/edit their litters.",
         "details": "Create a dashboard section for breeders. Implement a UI to add/remove breeds from their profile (populating the `user_breeds` table). Build a form to create a new litter, capturing all fields specified in the `litters` schema (name, DOB, number of puppies, etc.). Include image upload to Supabase Storage for litter photos. Display a list of the breeder's existing litters with options to edit or update their status.",
         "testStrategy": "Log in as a verified breeder. Add a new breed to your profile and confirm it's saved. Create a new litter with multiple photos and verify it appears in the litter list. Edit the litter's details and confirm the changes are saved. Check Supabase tables (`user_breeds`, `litters`) to confirm data integrity.",
         "priority": "high",
         "dependencies": [
-          4,
-          5
+          5,
+          6
         ],
         "status": "todo",
         "subtasks": [
@@ -318,25 +387,12 @@
         ]
       },
       {
-        "id": 7,
+        "id": 8,
         "title": "Public-Facing Breed & Litter Discovery Page",
         "description": "Develop the public page where seekers can explore and filter available litters.",
         "details": "Create a Next.js page that fetches and displays all litters with `status = 'available'`. Implement filter controls for breed, location (simple text search for now), and size. Each litter card should display key information and link to a detailed view. Ensure data is fetched using RLS policies that only allow public viewing of available litters.",
         "testStrategy": "As a logged-out user, access the discovery page and verify that only litters marked 'available' are shown. Test the filtering functionality by breed and location. Ensure that clicking a litter card navigates to a placeholder detail page.",
         "priority": "medium",
-        "dependencies": [
-          6
-        ],
-        "status": "todo",
-        "subtasks": []
-      },
-      {
-        "id": 8,
-        "title": "Implement Seeker Application Submission Flow",
-        "description": "Create the functionality for a seeker to submit an application for a specific litter.",
-        "details": "On the litter detail page, add an 'Apply' button for logged-in seekers. This button should open a form where the seeker can provide their `application_data` (as a JSONB object). On submission, create a new record in the `applications` table with `status = 'submitted'`, linking the `seeker_id` and `litter_id`.",
-        "testStrategy": "Log in as a seeker, find a litter, and click 'Apply'. Fill out the application form and submit it. Verify that a new record is created in the `applications` table in Supabase with the correct data and status. Ensure non-logged-in users are prompted to sign in.",
-        "priority": "high",
         "dependencies": [
           7
         ],
@@ -345,13 +401,12 @@
       },
       {
         "id": 9,
-        "title": "Breeder Dashboard: Inquiry & Application Management",
-        "description": "Build the dashboard view for breeders to see and manage applications for their litters.",
-        "details": "Create an 'Inquiries' or 'Applications' tab in the breeder dashboard. Fetch all applications related to the breeder's litters. Display them in a list or table format, showing seeker info, application status, and date. Implement actions to update the application status (e.g., 'Approve', 'Reject'). Add a deep link to open a WhatsApp conversation with the seeker.",
-        "testStrategy": "Log in as the breeder who owns the litter from the previous test. Verify the new application appears in their dashboard. Change the application status and confirm the update in the database. Click the WhatsApp link and verify it attempts to open the correct chat.",
+        "title": "Implement Seeker Application Submission Flow",
+        "description": "Create the functionality for a seeker to submit an application for a specific litter.",
+        "details": "On the litter detail page, add an 'Apply' button for logged-in seekers. This button should open a form where the seeker can provide their `application_data` (as a JSONB object). On submission, create a new record in the `applications` table with `status = 'submitted'`, linking the `seeker_id` and `litter_id`.",
+        "testStrategy": "Log in as a seeker, find a litter, and click 'Apply'. Fill out the application form and submit it. Verify that a new record is created in the `applications` table in Supabase with the correct data and status. Ensure non-logged-in users are prompted to sign in.",
         "priority": "high",
         "dependencies": [
-          6,
           8
         ],
         "status": "todo",
@@ -359,12 +414,13 @@
       },
       {
         "id": 10,
-        "title": "Seeker Dashboard: 'My Applications' Tracking",
-        "description": "Create a dashboard page for seekers to track the status of their submitted applications.",
-        "details": "Develop a 'My Applications' page for logged-in seekers. This page should fetch all applications where the `seeker_id` matches the current user's ID. Display each application's status (`Submitted`, `Approved`, etc.) and which litter it was for. The status should update in real-time if possible (or on page load).",
-        "testStrategy": "Log in as the seeker who applied in the previous test. Go to the 'My Applications' page and verify the application is listed with the status 'Submitted'. Log in as the breeder, change the application status to 'Approved', then log back in as the seeker and confirm the status has updated on their dashboard.",
-        "priority": "medium",
+        "title": "Breeder Dashboard: Inquiry & Application Management",
+        "description": "Build the dashboard view for breeders to see and manage applications for their litters.",
+        "details": "Create an 'Inquiries' or 'Applications' tab in the breeder dashboard. Fetch all applications related to the breeder's litters. Display them in a list or table format, showing seeker info, application status, and date. Implement actions to update the application status (e.g., 'Approve', 'Reject'). Add a deep link to open a WhatsApp conversation with the seeker.",
+        "testStrategy": "Log in as the breeder who owns the litter from the previous test. Verify the new application appears in their dashboard. Change the application status and confirm the update in the database. Click the WhatsApp link and verify it attempts to open the correct chat.",
+        "priority": "high",
         "dependencies": [
+          7,
           9
         ],
         "status": "todo",
@@ -372,6 +428,19 @@
       },
       {
         "id": 11,
+        "title": "Seeker Dashboard: 'My Applications' Tracking",
+        "description": "Create a dashboard page for seekers to track the status of their submitted applications.",
+        "details": "Develop a 'My Applications' page for logged-in seekers. This page should fetch all applications where the `seeker_id` matches the current user's ID. Display each application's status (`Submitted`, `Approved`, etc.) and which litter it was for. The status should update in real-time if possible (or on page load).",
+        "testStrategy": "Log in as the seeker who applied in the previous test. Go to the 'My Applications' page and verify the application is listed with the status 'Submitted'. Log in as the breeder, change the application status to 'Approved', then log back in as the seeker and confirm the status has updated on their dashboard.",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 12,
         "title": "Setup Notification Infrastructure with Supabase Edge Function",
         "description": "Create a reusable Supabase Edge Function to handle the logic for creating notification records and triggering external services.",
         "details": "Develop a new Edge Function (e.g., `process-notification`). This function will accept a payload (e.g., `userId`, `type`, `title`, `body`, `target`). Its job is to insert a new record into the `notifications` table. For now, it will just log the intent to send a push/WhatsApp message. This function will be invoked by database webhooks or directly from the client.",
@@ -384,15 +453,15 @@
         "subtasks": []
       },
       {
-        "id": 12,
+        "id": 13,
         "title": "Implement 'New Application' Notification Trigger",
         "description": "Trigger a notification to the breeder when a seeker submits a new application for one of their litters.",
-        "details": "Modify the application submission logic from Task 8. After successfully inserting a new record into the `applications` table, invoke the `process-notification` Edge Function (from Task 11). The payload should include the breeder's user ID, a notification type of 'new_application', and relevant details about the application.",
+        "details": "Modify the application submission logic from Task 9. After successfully inserting a new record into the `applications` table, invoke the `process-notification` Edge Function (from Task 12). The payload should include the breeder's user ID, a notification type of 'new_application', and relevant details about the application.",
         "testStrategy": "Submit a new application as a seeker. Check the Edge Function logs to confirm it was invoked. Verify that a new record appears in the `notifications` table for the breeder, with the correct type and metadata linking to the new application.",
         "priority": "medium",
         "dependencies": [
-          8,
-          11
+          9,
+          12
         ],
         "status": "todo",
         "subtasks": []
