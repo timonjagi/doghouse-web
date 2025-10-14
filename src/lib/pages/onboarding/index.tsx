@@ -1,137 +1,142 @@
 import {
   Stack,
-  Stepper,
-  Step,
-  StepIndicator,
-  StepStatus,
-  StepIcon,
-  StepSeparator,
   Text,
-  useSteps,
   Flex,
   Box,
   Img,
   useBreakpointValue,
+  Spinner,
+  Center,
+  Heading,
+  VStack,
+  Icon,
+  Button,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { ContactDetails } from "./02-contact-details";
-import { SelectPath } from "./01-select-path";
-import { PetBasics } from "./03-pet-basics";
-import { PetDetails } from "./04-pet-details";
-import { Success } from "./05-success";
-import { UserProfile } from "lib/models/user-profile";
-import { auth } from "lib/firebase/client";
-import { useAuthState } from "react-firebase-hooks/auth";
-import Welcome from "./00-welcome";
+import { MdCheckCircle } from "react-icons/md";
+import { useCurrentUser } from "../../hooks/queries";
+import { BreederOnboardingFlow } from "./breeder";
+import { SeekerOnboardingFlow } from "./seeker";
+import { RadioButton } from "lib/components/ui/RadioButton";
+import { RadioButtonGroup } from "lib/components/ui/RadioButtonGroup";
 
 type OnboardingModalProps = {
-  userProfile?: UserProfile;
-  onClose: any;
+  onClose: () => void;
 };
 
-const OnboardingModal: React.FC<OnboardingModalProps> = ({
-  userProfile,
-  onClose,
-}) => {
-  const isMobile = useBreakpointValue({
-    base: true,
-    sm: false,
-  });
+const OnboardingModal: React.FC<OnboardingModalProps> = ({ onClose }) => {
+  const { data: user, isLoading: userLoading, error: userError } = useCurrentUser();
+  const [selectedRole, setSelectedRole] = useState<string>("");
 
-  const steps = [
-    { title: "Choose your journey", description: "Owner, Seeker" },
-    { title: "Contact info", description: "Name, Location" },
-    { title: "Pet basics", description: "Breed, Gender, Age" },
-    { title: "Pet details", description: "Breed, Gender, Age" },
+  // Show loading spinner while checking authentication
+  if (userLoading) {
+    return (
+      <Center h="400px">
+        <Spinner size="xl" color="brand.500" />
+      </Center>
+    );
+  }
+
+  // Redirect if not authenticated
+  if (userError || !user) {
+    return (
+      <Center h="400px">
+        <VStack spacing={4}>
+          <Text color="red.500" fontSize="lg">Please log in to continue with onboarding.</Text>
+          <Text color="gray.600">You need to be authenticated to complete the onboarding process.</Text>
+        </VStack>
+      </Center>
+    );
+  }
+
+  // If user already completed onboarding, show completion message
+  if (user.user_metadata?.onboarding_completed) {
+    return (
+      <Center h="400px">
+        <VStack spacing={6} textAlign="center">
+          <Icon as={MdCheckCircle} boxSize={16} color="green.500" />
+          <Heading size="lg">Welcome back! 🎉</Heading>
+          <Text color="gray.600">Your onboarding is already complete. You can start exploring the platform.</Text>
+          <Button onClick={onClose} colorScheme="brand">
+            Continue to Dashboard
+          </Button>
+        </VStack>
+      </Center>
+    );
+  }
+
+  // If no role selected yet, show role selection
+  if (!selectedRole && !user.user_metadata?.role) {
+    return (
+      <RoleSelectionStep onRoleSelect={setSelectedRole} />
+    );
+  }
+
+  // Route to appropriate onboarding flow based on role
+  if (selectedRole === "breeder" || user.user_metadata?.role === "breeder") {
+    return <BreederOnboardingFlow onClose={onClose} />;
+  }
+
+  if (selectedRole === "seeker" || user.user_metadata?.role === "seeker") {
+    return <SeekerOnboardingFlow onClose={onClose} />;
+  }
+
+  // Fallback
+  return <RoleSelectionStep onRoleSelect={setSelectedRole} />;
+};
+
+// Role selection component
+const RoleSelectionStep: React.FC<{ onRoleSelect: (role: string) => void }> = ({ onRoleSelect }) => {
+  const [selectedRole, setSelectedRole] = useState("");
+
+  const options = [
+    {
+      value: "seeker",
+      label: "Dog Seeker",
+      description: "I'm looking to adopt a dog",
+      icon: "🔍",
+    },
+    {
+      value: "breeder",
+      label: "Dog Breeder",
+      description: "I'm looking to rehome my dogs",
+      icon: "🏠",
+    },
   ];
 
-  const { activeStep, setActiveStep } = useSteps({
-    index: 0,
-    count: steps.length,
-  });
-
-  useEffect(() => {
-    if (userProfile) {
-      if (
-        userProfile.name &&
-        userProfile.location &&
-        userProfile.roles &&
-        userProfile.user_breeds
-      ) {
-        setActiveStep(3);
-      } else if (
-        userProfile.name &&
-        userProfile.location &&
-        userProfile.roles
-      ) {
-        setActiveStep(2);
-      } else if (userProfile.name && userProfile.location) {
-        setActiveStep(1);
-      }
-    }
-  }, [userProfile]);
-
   return (
-    <Box maxW="2xl">
-      {/* {isMobile && (
-        <Box position="relative" w="full" h="full" bg="brand.100">
-          <Img
-            src="images/doggo.png"
-            alt="Main Image"
-            w="full"
-            h={{ base: "120px", md: "100px" }}
-            borderRadius="0.5rem 0.5rem 0 0"
-            objectFit="cover"
-            objectPosition="90% center"
-          />
-        </Box>
-      )} */}
-      <Stack
-        spacing={{ base: 6, md: 9 }}
-        px={{ base: "6", sm: "8", lg: "16" }}
-        py={{ base: "6", md: "8" }}
-        align="center"
+    <Stack spacing="9" textAlign="center">
+      <VStack spacing={6}>
+        <Heading size="lg">Welcome to DogHouse Kenya! 🐕</Heading>
+        <Text fontSize="lg" color="gray.600">
+          How would you like to continue?
+        </Text>
+      </VStack>
+
+      <RadioButtonGroup
+        size="lg"
+        value={selectedRole}
+        onChange={(value) => {
+          setSelectedRole(value);
+          onRoleSelect(value);
+        }}
       >
-        <Stack mt={{ base: 4, md: 8 }} w="full">
-          <Stepper size="sm" index={activeStep} gap="0" colorScheme="brand">
-            {steps.map((step, index) => (
-              <Step key={index}>
-                <StepIndicator>
-                  <StepStatus complete={<StepIcon />} />
-                </StepIndicator>
-                <StepSeparator
-                  //@ts-ignore
-                  _horizontal={{ ml: "0" }}
-                />
-              </Step>
-            ))}
-          </Stepper>
-          <Text>
-            {activeStep + 1}: <b>{steps[activeStep].title}</b>
-          </Text>
-        </Stack>
+        {options.map((option) => (
+          <RadioButton key={option.value} value={option.value}>
+            <VStack spacing={2} align="center" p={4}>
+              <Text fontSize="2xl">{option.icon}</Text>
+              <Text fontWeight="bold" fontSize="lg">{option.label}</Text>
+              <Text color="gray.600" fontSize="sm">{option.description}</Text>
+            </VStack>
+          </RadioButton>
+        ))}
+      </RadioButtonGroup>
 
-        {activeStep === 0 && (
-          <SelectPath currentStep={activeStep} setStep={setActiveStep} />
-        )}
-
-        {activeStep === 1 && (
-          <ContactDetails currentStep={activeStep} setStep={setActiveStep} />
-        )}
-
-        {activeStep === 2 && (
-          <PetBasics currentStep={activeStep} setStep={setActiveStep} />
-        )}
-
-        {activeStep === 3 && (
-          <PetDetails
-            currentStep={activeStep}
-            setStep={setActiveStep}
-            onClose={onClose}
-          />
-        )}
-      </Stack>
-    </Box>
+      <Text fontSize="sm" color="gray.500">
+        You can always change your role later in your profile settings.
+      </Text>
+    </Stack>
   );
 };
-export default OnboardingModal;
+
+export { OnboardingModal };

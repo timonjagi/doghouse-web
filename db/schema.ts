@@ -26,6 +26,12 @@ export const users = pgTable("users", {
   location_text: varchar("location_text", { length: 255 }),
   location_lat: numeric("location_lat", { precision: 9, scale: 6 }), // lat/lng as decimals
   location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
+  // Enhanced profile fields
+  living_situation: text("living_situation"),
+  experience_level: varchar("experience_level", { length: 50 }),
+  kennel_name: varchar("kennel_name", { length: 255 }),
+  kennel_location: varchar("kennel_location", { length: 255 }),
+  facility_type: varchar("facility_type", { length: 100 }),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -76,6 +82,7 @@ export const user_breeds = pgTable("user_breeds", {
   breed_id: uuid("breed_id").notNull().references(() => breeds.id),
   is_owner: boolean("is_owner").notNull().default(true),
   notes: text("notes"),
+  images: jsonb("images").$default(() => []),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -109,6 +116,14 @@ export const wanted_listings = pgTable("wanted_listings", {
   location_lat: numeric("location_lat", { precision: 9, scale: 6 }),
   location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
   is_active: boolean("is_active").notNull().default(true),
+  // Enhanced preference fields
+  preferred_age: varchar("preferred_age", { length: 50 }),
+  preferred_sex: varchar("preferred_sex", { length: 50 }),
+  spay_neuter_preference: varchar("spay_neuter_preference", { length: 50 }),
+  activity_level: varchar("activity_level", { length: 50 }),
+  has_allergies: boolean("has_allergies").default(false),
+  has_children: boolean("has_children").default(false),
+  has_other_pets: boolean("has_other_pets").default(false),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });

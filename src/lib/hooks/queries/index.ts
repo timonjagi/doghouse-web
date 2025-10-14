@@ -5,3 +5,4 @@ export * from './useLitters';
 export * from './useApplications';
 export * from './useNotifications';
 export * from './useUserProfile';
+export * from './useUserBreed';

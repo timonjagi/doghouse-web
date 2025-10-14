@@ -145,56 +145,68 @@
         "subtasks": [
           {
             "id": 1,
-            "title": "Refactor Onboarding Wrapper to Use Supabase Session",
-            "description": "Update the main onboarding wrapper component at `src/lib/pages/onboarding/index.tsx` to use Supabase for authentication and session management, replacing the existing Firebase implementation.",
+            "title": "Restructure Onboarding with Role-Specific Flows",
+            "description": "Create separate onboarding directories for breeders and seekers with role-specific components and flows.",
             "dependencies": [],
-            "details": "Replace the `useAuthState` hook from Firebase with a Supabase equivalent, likely using `@supabase/auth-helpers-nextjs`'s `useUser` and `useSupabaseClient` hooks. Ensure that the component correctly identifies the authenticated user and redirects unauthenticated users. The user object will be needed by all subsequent steps.",
+            "details": "Create `src/lib/pages/onboarding/breeder/` and `src/lib/pages/onboarding/seeker/` directories. Move existing components to appropriate directories and create new role-specific components for unique requirements.",
             "status": "pending",
-            "testStrategy": "Verify that a logged-out user is redirected from the onboarding page. Verify that a logged-in user can access the page and their Supabase user ID is available in the component's state."
+            "testStrategy": "Verify that the new directory structure exists and components are properly organized by role."
           },
           {
             "id": 2,
-            "title": "Migrate 'Select Path' Step to Update User Role in Supabase",
-            "description": "Refactor the `src/lib/pages/onboarding/steps/SelectPath.tsx` component to persist the user's chosen role ('Breeder' or 'Seeker') to the `users` table in the Supabase database.",
-            "dependencies": [
-              1
-            ],
-            "details": "Remove the existing Firestore `updateDoc` call. Create a new API route that takes the user's ID and the selected role. This function will use the Supabase client to update the `role` column for the corresponding record in the `users` table.",
+            "title": "Update Database Schema for Enhanced Profiles",
+            "description": "Add new fields to users and wanted_listings tables to support enhanced onboarding features.",
+            "dependencies": [],
+            "details": "Add living_situation, experience_level, kennel_name, kennel_location, facility_type to users table. Add preference fields to wanted_listings table.",
             "status": "pending",
-            "testStrategy": "As a new user, select a role on the 'Select Path' step. Check the `users` table in Supabase to confirm the `role` column for your user record has been updated correctly to either 'breeder' or 'seeker'."
+            "testStrategy": "Run database migration and verify new columns exist in Supabase tables."
           },
           {
             "id": 3,
-            "title": "Refactor 'Contact Details' Step to Save User Info to Supabase",
-            "description": "Update the `src/lib/pages/onboarding/steps/ContactDetails.tsx` component to save the user's full name and location to the `users` table in Supabase.",
+            "title": "Create Role-Specific React Query Hooks",
+            "description": "Develop hooks for wanted listings, enhanced user profiles, and breed image uploads.",
             "dependencies": [
-              1
+              2
             ],
-            "details": "Replace the current Firebase logic for saving contact information. Implement a new form submission handler that calls an api route. This endpoint will update the `full_name` and `location` columns in the `users` table for the authenticated user.",
+            "details": "Create useWantedListings, useCreateWantedListing, useUploadBreedImage, and enhanced useUpdateUserProfile hooks.",
             "status": "pending",
-            "testStrategy": "In the 'Contact Details' step, enter a name and location and submit the form. Verify in the Supabase table editor that the `full_name` and `location` fields for your user have been correctly populated."
+            "testStrategy": "Test hooks individually to ensure they properly interact with the updated database schema."
           },
           {
             "id": 4,
-            "title": "Update 'Pet Basics' Step to Fetch Breeds from Supabase",
-            "description": "Refactor the `src/lib/pages/onboarding/steps/PetBasics.tsx` component to fetch the list of available dog breeds from the `breeds` table in Supabase instead of Firestore.",
+            "title": "Implement Seeker Onboarding Flow",
+            "description": "Build complete seeker onboarding with preferences and wanted listing creation.",
             "dependencies": [
-              1
+              1,
+              3
             ],
-            "details": "The component currently fetches data from a Firestore collection. Replace this data-fetching logic with a Supabase query to `select * from breeds`. The component should then manage the user's breed selections in local component state, preparing them to be saved in the final step.",
+            "details": "Create SeekerContactDetails, SeekerPreferences, and WantedListing components that save to wanted_listings table.",
             "status": "pending",
-            "testStrategy": "Load the 'Pet Basics' step of the onboarding flow. Verify that the breed selection dropdown or list is populated with data queried from the `breeds` table in your Supabase project. Ensure multi-select functionality works as expected."
+            "testStrategy": "Complete seeker onboarding flow and verify wanted_listing is created with all preferences."
           },
           {
             "id": 5,
-            "title": "Implement Logic to Save Selected Breeds to 'user_breeds' Table",
-            "description": "In the final onboarding step, persist the user's selected breeds from the 'Pet Basics' step into the `user_breeds` table in Supabase, and mark the user's onboarding as complete.",
+            "title": "Implement Breeder Onboarding Flow",
+            "description": "Build complete breeder onboarding with kennel info and breed image upload.",
             "dependencies": [
-              4
+              1,
+              3
             ],
-            "details": "Create an api route that accepts an array of breed IDs. This function will perform a bulk insert into the `user_breeds` table, creating a new row for each selected breed linking it to the current `user_id`. After the insert, update the `onboarding_complete` flag in the `users` table to `true`.",
+            "details": "Create BreederContactDetails, BreedSelection, and BreedImages components with image upload functionality.",
             "status": "pending",
-            "testStrategy": "Complete the onboarding flow by selecting several breeds. Check the `user_breeds` table in Supabase to confirm that a record exists for each selected breed, correctly associated with your user ID. Also, verify the `onboarding_complete` column in your `users` record is set to true."
+            "testStrategy": "Complete breeder onboarding flow and verify kennel information and breed images are properly saved."
+          },
+          {
+            "id": 6,
+            "title": "Update Onboarding Router Logic",
+            "description": "Modify main onboarding component to route users to appropriate role-specific flows.",
+            "dependencies": [
+              4,
+              5
+            ],
+            "details": "Update src/lib/pages/onboarding/index.tsx to detect user role and render appropriate flow components.",
+            "status": "pending",
+            "testStrategy": "Test role detection and routing to ensure users see the correct onboarding flow."
           }
         ]
       },

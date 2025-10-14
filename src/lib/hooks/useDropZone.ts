@@ -1,45 +1,84 @@
 import { useToast } from "@chakra-ui/react";
+import { useState } from "react";
 
-export const useDropZone = ({ selectedImages, setSelectedImages }) => {
+interface UseDropZoneProps {
+  selectedImages: File[];
+  setSelectedImages: (images: File[]) => void;
+  maxFiles?: number;
+  acceptedTypes?: string[];
+}
+
+export const useDropZone = ({
+  selectedImages,
+  setSelectedImages,
+  maxFiles = 5,
+  acceptedTypes = ['image/jpeg', 'image/png', 'image/webp']
+}: UseDropZoneProps) => {
   const toast = useToast();
 
   const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { files },
-    } = event;
-    const reader = new FileReader();
+    const files = Array.from(event.target.files || []);
 
-    if (files?.length) {
-      reader.readAsDataURL(files[0]);
+    // Validate file types
+    const validFiles = files.filter(file => acceptedTypes.includes(file.type));
 
-      reader.onload = (readerEvent) => {
-        const newFile = readerEvent.target?.result;
-        if (newFile) {
-          if (selectedImages.includes(newFile)) {
-            toast({
-              title: "Image already selected",
-              description: "Please select a different image",
-              status: "error",
-              duration: 4000,
-            });
-            return;
-          }
-          setSelectedImages([...selectedImages, newFile]);
-        }
-      };
+    if (validFiles.length < files.length) {
+      toast({
+        title: "Invalid file format",
+        description: "Please select only image files (JPEG, PNG, WebP)",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });
     }
+
+    // Check max files limit
+    const totalFiles = selectedImages.length + validFiles.length;
+    if (totalFiles > maxFiles) {
+      toast({
+        title: "Too many files",
+        description: `Maximum ${maxFiles} images allowed`,
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    // Check for duplicates
+    const newFiles = validFiles.filter(file => {
+      return !selectedImages.some(existingFile =>
+        existingFile.name === file.name && existingFile.size === file.size
+      );
+    });
+
+    if (newFiles.length < validFiles.length) {
+      toast({
+        title: "Duplicate files removed",
+        description: "Some files were already selected",
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+
+    setSelectedImages([...selectedImages, ...newFiles]);
   };
 
-  const onRemoveImage = (file) => {
-    const files = selectedImages.filter(
-      (selectedFile) => selectedFile !== file
-    );
+  const onRemoveImage = (index: number) => {
+    const files = selectedImages.filter((_, i) => i !== index);
     setSelectedImages(files);
+  };
+
+  const clearImages = () => {
+    setSelectedImages([]);
   };
 
   return {
     onSelectImage,
     onRemoveImage,
+    clearImages,
     selectedImages,
+    isMaxFiles: selectedImages.length >= maxFiles,
   };
 };

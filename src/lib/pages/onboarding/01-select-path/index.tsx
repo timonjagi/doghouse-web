@@ -18,9 +18,10 @@ import {
   Spacer,
   useToast,
 } from "@chakra-ui/react";
-import { auth } from "lib/firebase/client";
 import React, { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useCurrentUser } from "../../../hooks/queries";
+import { useUpdateUserProfile } from "../../../hooks/queries";
+import { supabase } from "../../../supabase/client";
 
 interface RadioCardGroupProps<T> extends Omit<StackProps, "onChange"> {
   name?: string;
@@ -111,12 +112,14 @@ const CheckIcon = createIcon({
 });
 
 // eslint-disable-next-line
-export const SelectPath = ({ currentStep, setStep, user }: any) => {
-  const [userProfile, setUserProfile] = useState({} as any);
-
+export const SelectPath = ({ currentStep, setStep }: any) => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
+
+  // Get current user and update profile mutation
+  const { data: user } = useCurrentUser();
+  const updateUserProfile = useUpdateUserProfile();
 
   const options = [
     {
@@ -129,32 +132,51 @@ export const SelectPath = ({ currentStep, setStep, user }: any) => {
       description: "I'm looking to rehome my dogs",
       slug: "dog_owner",
     },
-    // {
-    //   label: "Dog Professional ",
-    //   description: "I'm looking to provide care for dogs 🐾",
-    //   slug: "dog_professional",
-    // },
   ];
-
-  useEffect(() => {
-    const profile = JSON.parse(localStorage.getItem("profile"));
-    setUserProfile(profile);
-  }, []);
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to continue",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const profile = { ...userProfile, roles: [selectedRole] };
-      localStorage.setItem("profile", JSON.stringify(profile));
+      // Map the selected role to database format
+      const dbRole = selectedRole === "dog_seeker" ? "seeker" : "breeder";
+
+      // Update user role directly in the users table
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({
+          role: dbRole,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Also update the role in user metadata for consistency
+      await supabase.auth.updateUser({
+        data: {
+          role: dbRole,
+        },
+      });
 
       setStep(currentStep + 1);
-      // eslint-disable-next-line
     } catch (err: any) {
       toast({
-        title: err.message,
+        title: "Error saving role",
+        description: err.message,
         status: "error",
         duration: 5000,
         isClosable: true,

@@ -14,10 +14,9 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { MdOutlineLocationOn, MdPerson, MdPersonOutline } from "react-icons/md";
-import { supabase } from "lib/supabase/client";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
-import { Dropzone } from "lib/components/ui/Dropzone";
-import { UserProfile } from "lib/models/user-profile";
+import { useCurrentUser } from "../../../hooks/queries";
+import { useUpdateUserProfile } from "../../../hooks/queries";
+import { supabase } from "../../../supabase/client";
 
 type PageProps = {
   currentStep: number;
@@ -26,89 +25,48 @@ type PageProps = {
 };
 
 export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
-  const { user } = useSupabaseAuth();
+  const { data: user } = useCurrentUser();
+  const updateUserProfile = useUpdateUserProfile();
   const toast = useToast();
   const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
-  const [userProfile, setUserProfile] = useState({} as any);
 
-  useEffect(() => {
-    const profile = JSON.parse(localStorage.getItem("profile"));
-    setUserProfile(profile);
-  }, []);
+  // Get user role from user metadata
+  const userRole = user?.user_metadata?.role;
 
   const onBack = () => {
     setStep(currentStep - 1);
   };
 
-  const assignBreederRole = async (uid: string) => {
-    try {
-      const response = await fetch("/api/users/set-custom-claims", {
-        method: "POST",
-        body: JSON.stringify({
-          uid,
-          isOwner: userProfile.roles.includes("dog_owner") ? true : false,
-        }),
-        headers: { "Content-Type": "application/json" },
-      });
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-      if (response.status === 200) {
-        setStep(currentStep + 1);
-      }
-      // eslint-disable-next-line
-    } catch (err: any) {
+    if (!user) {
       toast({
-        title: err.message,
+        title: "Authentication required",
+        description: "Please log in to continue",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
-
-      setLoading(false);
+      return;
     }
-  };
-
-  const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
 
     setLoading(true);
 
     try {
-      if (user) {
-        // Update user profile in Supabase
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({
-            display_name: displayName,
-            location_text: location,
-          })
-          .eq('id', user.id);
-
-        if (updateError) {
-          console.error('Error updating profile:', updateError);
-        }
-
-        // Update role if needed (this would need to be handled differently in Supabase)
-        // await assignBreederRole(user.id);
-      }
-
-      const payload = {
-        userId: user?.id,
-        name: displayName,
+      // Update user profile in Supabase using React Query mutation
+      await updateUserProfile.mutateAsync({
+        display_name: displayName,
         location: location,
-        ...userProfile,
-      };
-
-      await localStorage.setItem("profile", JSON.stringify(payload));
+      });
 
       setStep(currentStep + 1);
-
-      // eslint-disable-next-line
     } catch (err: any) {
       toast({
-        title: err.message,
+        title: "Error saving contact details",
+        description: err.message,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -125,9 +83,9 @@ export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
   return (
     <Stack as="form" spacing="9" onSubmit={(event) => onSubmit(event)}>
       <Heading size="md">
-        {userProfile?.roles?.includes("dog_seeker")
+        {userRole === "seeker"
           ? "Great! Please tell us a bit about yourself"
-          : "Great! Please tell us a bit about kennel"}
+          : "Great! Please tell us a bit about your kennel"}
       </Heading>
 
       <Stack spacing="4">
@@ -145,7 +103,7 @@ export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
               name="userName"
               type="text"
               placeholder={
-                userProfile?.roles?.includes("dog_seeker")
+                userRole === "seeker"
                   ? "Your name"
                   : "Your kennel's name"
               }
@@ -166,7 +124,7 @@ export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
               id="location"
               name="location"
               placeholder={
-                userProfile?.roles?.includes("dog_seeker")
+                userRole === "seeker"
                   ? "Your location"
                   : "Your kennel's location"
               }

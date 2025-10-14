@@ -22,6 +22,13 @@ interface UpdateProfileData {
   bio?: string;
   location?: string;
   avatar_url?: string;
+  // Enhanced profile fields
+  living_situation?: string;
+  experience_level?: string;
+  kennel_name?: string;
+  kennel_location?: string;
+  facility_type?: string;
+  onboarding_completed?: boolean;
 }
 
 // Query to get current user profile from database
