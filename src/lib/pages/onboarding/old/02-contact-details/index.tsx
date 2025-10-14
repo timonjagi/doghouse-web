@@ -14,9 +14,9 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { MdOutlineLocationOn, MdPerson, MdPersonOutline } from "react-icons/md";
-import { useCurrentUser } from "../../../hooks/queries";
-import { useUpdateUserProfile } from "../../../hooks/queries";
-import { supabase } from "../../../supabase/client";
+import { useCurrentUser } from "../../../../hooks/queries";
+import { useUpdateUserProfile } from "../../../../hooks/queries";
+import { supabase } from "../../../../supabase/client";
 
 type PageProps = {
   currentStep: number;

@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import type React from "react";
 import { useRouter } from "next/router";
-import { MdLogout, MdOutlineAccountCircle } from "react-icons/md";
+import { MdDashboard, MdLogout, MdOutlineAccountCircle } from "react-icons/md";
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 type UserProfileMenuProps = {
@@ -87,6 +87,15 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
             </Box>
           </Center>
           <MenuDivider />
+          <MenuItem
+            icon={<MdDashboard />}
+            cursor="pointer"
+            as="a"
+            href="/dashboard"
+          >
+            Go to Dashboard
+          </MenuItem>
+
           <MenuItem
             icon={<MdOutlineAccountCircle />}
             cursor="pointer"

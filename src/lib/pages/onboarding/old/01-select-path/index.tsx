@@ -19,9 +19,9 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { useCurrentUser } from "../../../hooks/queries";
-import { useUpdateUserProfile } from "../../../hooks/queries";
-import { supabase } from "../../../supabase/client";
+import { useCurrentUser } from "../../../../hooks/queries";
+import { useUpdateUserProfile } from "../../../../hooks/queries";
+import { supabase } from "../../../../supabase/client";
 
 interface RadioCardGroupProps<T> extends Omit<StackProps, "onChange"> {
   name?: string;

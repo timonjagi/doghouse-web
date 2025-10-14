@@ -49,31 +49,7 @@ export const breeds = pgTable("breeds", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
-// BREEDER PROFILE (extended user info)
-export const breeder_profiles = pgTable("breeder_profiles", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  user_id: uuid("user_id").notNull().references(() => users.id),
-  kennel_name: varchar("kennel_name", { length: 255 }),
-  kennel_location: varchar("kennel_location", { length: 255 }),
-  verification_docs: jsonb("verification_docs"), // references to storage keys
-  verified_at: timestamp("verified_at"),
-  rating: numeric("rating", { precision: 3, scale: 2 }).default(0),
-  created_at: timestamp("created_at").notNull().defaultNow(),
-  updated_at: timestamp("updated_at").notNull().defaultNow(),
-});
-
-// KENNELS (optional)
-export const kennels = pgTable("kennels", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  user_id: uuid("user_id").notNull().references(() => users.id),
-  name: varchar("name", { length: 255 }).notNull(),
-  location: varchar("location", { length: 255 }),
-  location_lat: numeric("location_lat", { precision: 9, scale: 6 }),
-  location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
-  photos: jsonb("photos"),
-  created_at: timestamp("created_at").notNull().defaultNow(),
-  updated_at: timestamp("updated_at").notNull().defaultNow(),
-});
+// Removed breeder_profiles and kennels tables - consolidating into users and user_breeds
 
 // USER_BREEDS (breeder offers or owns these breeds)
 export const user_breeds = pgTable("user_breeds", {

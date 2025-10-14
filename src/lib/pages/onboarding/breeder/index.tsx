@@ -16,7 +16,7 @@ import { BreedSelection } from './breed-selection';
 import { BreedImages } from './breed-images';
 import { BreederSuccess } from './success';
 
-export const BreederOnboardingFlow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export const BreederOnboardingFlow: React.FC = () => {
   const steps = [
     { title: 'Contact Details', description: 'Kennel information' },
     { title: 'Breed Selection', description: 'Choose your breeds' },
@@ -60,11 +60,11 @@ export const BreederOnboardingFlow: React.FC<{ onClose: () => void }> = ({ onClo
         )}
 
         {activeStep === 2 && (
-          <BreedImages currentStep={activeStep} setStep={setActiveStep} onClose={onClose} />
+          <BreedImages currentStep={activeStep} setStep={setActiveStep} />
         )}
 
         {activeStep === 3 && (
-          <BreederSuccess onClose={onClose} />
+          <BreederSuccess />
         )}
       </Stack>
     </Box>

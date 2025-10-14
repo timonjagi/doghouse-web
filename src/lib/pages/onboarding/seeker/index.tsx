@@ -16,7 +16,7 @@ import { SeekerPreferences } from './preferences';
 import { WantedListing } from './wanted-listing';
 import { SeekerSuccess } from './success';
 
-export const SeekerOnboardingFlow: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export const SeekerOnboardingFlow: React.FC = () => {
   const steps = [
     { title: 'Contact Details', description: 'Personal information' },
     { title: 'Preferences', description: 'Your ideal dog' },
@@ -60,11 +60,11 @@ export const SeekerOnboardingFlow: React.FC<{ onClose: () => void }> = ({ onClos
         )}
 
         {activeStep === 2 && (
-          <WantedListing currentStep={activeStep} setStep={setActiveStep} onClose={onClose} />
+          <WantedListing currentStep={activeStep} setStep={setActiveStep} />
         )}
 
         {activeStep === 3 && (
-          <SeekerSuccess onClose={onClose} />
+          <SeekerSuccess />
         )}
       </Stack>
     </Box>

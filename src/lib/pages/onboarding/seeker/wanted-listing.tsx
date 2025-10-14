@@ -22,10 +22,9 @@ import { supabase } from "../../../supabase/client";
 type PageProps = {
   currentStep: number;
   setStep: (step: number) => void;
-  onClose: () => void;
 };
 
-export const WantedListing: React.FC<PageProps> = ({ currentStep, setStep, onClose }) => {
+export const WantedListing: React.FC<PageProps> = ({ currentStep, setStep }) => {
   const { data: user } = useCurrentUser();
   const updateUserProfile = useUpdateUserProfile();
   const toast = useToast();

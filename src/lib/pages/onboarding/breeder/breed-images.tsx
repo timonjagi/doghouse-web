@@ -22,10 +22,9 @@ import { Dropzone } from "../../../components/ui/Dropzone";
 type PageProps = {
   currentStep: number;
   setStep: (step: number) => void;
-  onClose: () => void;
 };
 
-export const BreedImages: React.FC<PageProps> = ({ currentStep, setStep, onClose }) => {
+export const BreedImages: React.FC<PageProps> = ({ currentStep, setStep }) => {
   const { data: user } = useCurrentUser();
   const updateUserProfile = useUpdateUserProfile();
   const toast = useToast();

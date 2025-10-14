@@ -12,10 +12,9 @@ import React from "react";
 import { MdCheckCircle } from "react-icons/md";
 
 type SuccessProps = {
-  onClose: () => void;
 };
 
-export const BreederSuccess: React.FC<SuccessProps> = ({ onClose }) => {
+export const BreederSuccess: React.FC<SuccessProps> = () => {
   return (
     <VStack spacing="8" textAlign="center">
       <Alert

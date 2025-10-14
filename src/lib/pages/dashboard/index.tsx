@@ -1,180 +1,165 @@
 import {
   Box,
+  Button,
+  ButtonGroup,
   Center,
   Container,
   Flex,
+  Heading,
+  Img,
   Modal,
   ModalBody,
   ModalContent,
   ModalOverlay,
   Stack,
-  useBreakpointValue,
+  Text,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import ActivityFeedCard from "./ActivityFeedCard";
-import { UserProfile } from "lib/models/user-profile";
-import OnboardingModal from "../onboarding";
-import Welcome from "../onboarding/00-welcome";
-import { Success } from "../onboarding/05-success";
+import { Success } from "../onboarding/old/05-success";
 import HeaderButtonGroup from "./HeaderButtonGroup";
 import { Loader } from "../../components/ui/Loader";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+import { useUserProfile } from "lib/hooks/queries";
 
-const Home = () => {
-  const { user, loading } = useSupabaseAuth();
+const DashboardHome = () => {
   const [selectedPost, setSelectedPost] = useState();
-
-  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [showOnboardingSteps, setShowOnboardingSteps] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const [loadingUserProfile, setLoadingUserProfile] = useState(false);
-
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const router = useRouter();
-  const { isOpen, onToggle, onClose } = useDisclosure();
-  const isDesktop = useBreakpointValue({ base: false, md: true });
-  const toast = useToast();
 
-  const fetchUserProfile = async (): Promise<UserProfile> => {
-    setLoadingUserProfile(true);
-    try {
-      console.log("loading user profile", user?.id);
+  const { onClose } = useDisclosure();
 
-      // const response = await fetch(
-      //   `/api/users/get-user?${new URLSearchParams({
-      //     uid: user.uid,
-      //   })}`,
-      //   {
-      //     method: "GET",
-      //     headers: { "Content-Type": "application/json" },
-      //   }
-      // );
-      // console.log("Response status: ", response.status);
-
-      // if (response.status === 200) {
-      //   const profile = await response.json();
-      //   console.log("profile ", profile);
-
-      //   localStorage.setItem("profile", JSON.stringify(profile));
-      // } else {
-      //   setShowOnboardingModal(true);
-      //   console.log("user profile not found");
-      // }
-
-      const profile = JSON.parse(localStorage.getItem("profile"));
-      if (!profile) {
-        setShowOnboardingModal
-      }
-      setLoadingUserProfile(false);
-      return;
-    } catch (error) {
-      toast({
-        title: error.message,
-        status: "error",
-      });
-      setLoadingUserProfile(false);
-    }
-  };
-
-  useEffect(() => {
-    // if (!loading && !error && !user) {
-    //   toast({
-    //     title: "You're not logged in",
-    //     description: "Please login to access your dashboard",
-    //     status: "info",
-    //   });
-    //   router.push("/");
-    //} else if (!loading && user.uid) {
-    fetchUserProfile();
-    // }
-  }, []);
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
 
   const onViewPost = (post) => {
     setSelectedPost(post);
   };
 
-  const onCloseOnboardingModal = () => {
-    setShowOnboardingModal(false);
-    setShowSuccessAlert(true);
-  };
+
+  useEffect(() => {
+    if (!profile?.onboarding_completed) {
+      setShowOnboardingModal(true);
+    }
+  }, [profile]);
+
+  if (profileLoading) {
+    <Center h="full">
+      <Loader />
+    </Center>
+  }
 
   return (
     <Container h="full">
       <Box h="full">
-        {loadingUserProfile ? (
-          <Center h="full">
-            <Loader />
-          </Center>
-        ) : (
-          <Box>
-            <HeaderButtonGroup />
+        <Box>
+          {profile?.onboarding_completed && <HeaderButtonGroup />}
+          <Stack
+            direction={{ base: "column", lg: "row" }}
+            spacing={{ base: "5", lg: "8" }}
+            justify="space-between"
+          >
             <Stack
-              direction={{ base: "column", lg: "row" }}
-              spacing={{ base: "5", lg: "8" }}
-              justify="space-between"
+              spacing="4"
+              flex="1"
+              direction="column"
+              w={{ base: "full", lg: "lg" }}
+              minW="sm"
             >
-              <Stack
-                spacing="4"
-                flex="1"
-                direction="column"
-                w={{ base: "full", lg: "lg" }}
-                minW="sm"
-              >
-                {/* <ActivityFeedCard
+              {/* <ActivityFeedCard
                   activities={activities}
                   userProfile={userProfile}
                   isDesktop={isDesktop}
                   onViewPost={onViewPost}
                 /> */}
-              </Stack>
-
-              <Flex
-                direction="column"
-                flex="1"
-                maxW={{ base: "none", lg: "sm" }}
-              >
-                {/* <CompleteProfileBanner />*/}
-                {/* <NewsletterForm /> */}
-              </Flex>
             </Stack>
-          </Box>
-        )}
+
+            <Flex
+              direction="column"
+              flex="1"
+              maxW={{ base: "none", lg: "sm" }}
+            >
+              {/* <CompleteProfileBanner />*/}
+              {/* <NewsletterForm /> */}
+            </Flex>
+          </Stack>
+        </Box>
       </Box>
 
       <Modal
         onClose={onClose}
         isOpen={showOnboardingModal}
         size={{ base: "sm", sm: "md", md: "lg" }}
-        scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>
           <ModalBody p="0">
-            {!showOnboardingSteps && (
-              <Welcome setShowOnboardingSteps={setShowOnboardingSteps} />
-            )}
-            {showOnboardingSteps && (
-              <OnboardingModal
-                userProfile={JSON.parse(localStorage.getItem("profile"))}
-                onClose={() => onCloseOnboardingModal()}
-              />
-            )}
+            <Welcome />
           </ModalBody>
         </ModalContent>
       </Modal>
 
-      <Modal onClose={onClose} isOpen={showSuccessAlert} size="sm">
+      {/* <Modal onClose={onClose} isOpen={showSuccessAlert} size="sm">
         <ModalOverlay />
         <ModalContent>
           <ModalBody p="0">
             <Success setShowSuccessAlert={setShowSuccessAlert} />
           </ModalBody>
         </ModalContent>
-      </Modal>
+      </Modal> */}
     </Container>
   );
 };
 
-export default Home;
+const Welcome: React.FC = () => {
+  const router = useRouter();
+  return (
+    <Box>
+      <Stack
+        direction="column"
+        mt="16"
+        justifyContent="center"
+        justify="center"
+        spacing={{ base: 6, md: 9 }}
+        px={{ base: "6", sm: "8", lg: "16" }}
+        py={{ base: "6", md: "8", lg: "16" }}
+        align="center"
+      >
+        <Box position="relative" mx="auto">
+          <Img
+            src="images/logo.png"
+            alt="Main Image"
+            w="150"
+            h="150"
+            borderRadius="0.5rem 0.5rem 0 0"
+            objectFit="cover"
+            objectPosition="90% center"
+          />
+        </Box>
+
+        <Stack mx="auto" textAlign="center">
+          <Heading size="md" letterSpacing="tight">
+            Welcome to Doghouse
+          </Heading>
+          <Text color="muted">
+            We are happy to have you here! Before you get started, please take a few minutes to answer a few questions.
+          </Text>
+        </Stack>
+
+        <ButtonGroup w="full">
+          <Button
+            type="submit"
+            size="lg"
+            w="full"
+            variant="primary"
+            onClick={() => router.push('/onboarding')}
+          >
+            <span>Get Started</span>
+          </Button>
+        </ButtonGroup>
+      </Stack>
+    </Box>
+  );
+};
+
+export default DashboardHome;

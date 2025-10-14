@@ -25,8 +25,12 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/breeder", layout: HeaderLayout },
     { path: "/login", layout: HeaderLayout },
     { path: "/signup", layout: HeaderLayout },
+    { path: "/onboarding", layout: HeaderLayout },
+
     { path: "/breeds", layout: HeaderLayout },
     { path: "/breeds/[breedName]", layout: HeaderLayout },
+    { path: "/contact", layout: HeaderLayout },
+    { path: "/about", layout: HeaderLayout },
 
     { path: "/dashboard", layout: DashboardLayout },
     { path: "/inbox", layout: DashboardLayout },
@@ -70,7 +74,7 @@ const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <>
-      {["/login", "/signup"].includes(router.pathname) ? (
+      {["/login", "/signup", "/onboarding"].includes(router.pathname) ? (
         <>
           {isMobile && <Header />}
           <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
