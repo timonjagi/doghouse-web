@@ -25,7 +25,7 @@
             "title": "Decommission Existing Firebase Authentication Implementation",
             "description": "Systematically remove all Firebase authentication logic from the codebase to prepare for the Supabase migration. This includes removing SDKs, configuration files, and references in UI components.",
             "dependencies": [],
-            "details": "Delete `src/lib/firebase/client.ts` and `src/lib/firebase/server.ts`. Uninstall the `firebase` npm package. Go through auth-related components like `src/app/(auth)/login/page.tsx` and remove Firebase-specific function calls (`signInWithEmailAndPassword`, etc.). Remove Firebase-related environment variables from `.env` files.",
+            "details": "Delete `src/lib/firebase/client.ts` and `src/lib/firebase/server.ts`. Uninstall the `firebase` npm package. Go through auth-related components like `src/app/(auth)/login/index.tsx` and remove Firebase-specific function calls (`signInWithEmailAndPassword`, etc.). Remove Firebase-related environment variables from `.env` files.",
             "status": "done",
             "testStrategy": "After removal, the application's login and sign-up pages should be broken or in a clean state, ready for new logic. The app should build without errors related to missing Firebase modules. Run `npm ls firebase` to ensure the package is gone."
           },
@@ -74,7 +74,7 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -82,7 +82,7 @@
             "description": "Add `@tanstack/react-query` and `@tanstack/react-query-devtools` to the project's dependencies using npm or yarn.",
             "dependencies": [],
             "details": "Update the `package.json` file by adding the necessary React Query dependencies. Run `npm install` or `yarn add` to install them. This is a foundational step before any configuration.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify the presence of `@tanstack/react-query` and `@tanstack/react-query-devtools` in `package.json` and `node_modules`."
           },
           {
@@ -93,7 +93,7 @@
               1
             ],
             "details": "Create a `QueryClient` instance, potentially in a new file like `src/lib/queryClient.ts` or `src/utils/queryClient.ts`. Configure default options such as `staleTime` and `cacheTime`. Then, integrate `QueryClientProvider` in the root layout file (e.g., `src/app/layout.tsx` or a custom `_app.tsx` if using pages directory) to make React Query available throughout the app. Also, include `ReactQueryDevtools` for development environments.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify that React Query Devtools are visible in the browser during development. Create a temporary page with a basic `useQuery` call to ensure the provider is correctly set up and no errors occur."
           },
           {
@@ -104,7 +104,7 @@
               2
             ],
             "details": "Create a new file, for example, `src/lib/queryKeys.ts`, which exports an object or functions to generate unique and descriptive query keys. For instance, `queryKeys.users.all`, `queryKeys.users.detail(userId)`, `queryKeys.profile.all`, `queryKeys.litters.all`, `queryKeys.litters.byBreeder(breederId)`. This ensures type safety and avoids key collisions.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Write unit tests for the query key factory to ensure it generates correct and consistent key structures. Ensure that keys are deterministic for the same inputs."
           },
           {
@@ -113,7 +113,7 @@
             "description": "Initialize a Zustand store to manage global application state, including user session information and general UI state.",
             "dependencies": [],
             "details": "Install `zustand`. Create a new file (e.g., `src/stores/useAppStore.ts`). Define the store to hold global states such as `userSession` (e.g., `userId`, `role`, `isAuthenticated`), and UI states like `isSidebarOpen` or `isLoadingOverlayVisible`. Implement actions for updating these states.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Create a temporary component that consumes and modifies the Zustand store state. Verify that changes to the store are reflected across different components without prop drilling. Ensure `userSession` can be updated correctly."
           },
           {
@@ -125,7 +125,7 @@
               3
             ],
             "details": "Develop custom hooks (e.g., `useUserProfile`, `useLitters`, `useBreederProfiles`) in a directory like `src/hooks/queries`. These hooks will encapsulate the logic of fetching data from Supabase using the Supabase client and `useQuery`, `useMutation` from React Query. Utilize the centralized query key factory (from subtask 3) for defining query keys within these hooks.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Implement a simple component that uses one of the new custom hooks (e.g., `useUserProfile`). Verify that data is fetched and displayed correctly. Use React Query Devtools to confirm caching and query states (loading, success, error) are managed as expected. Simulate a data update to test `useMutation` if implemented."
           }
         ]
@@ -159,7 +159,7 @@
             "dependencies": [
               1
             ],
-            "details": "Remove the existing Firestore `updateDoc` call. Create a new server action or tRPC mutation that takes the user's ID and the selected role. This function will use the Supabase client to update the `role` column for the corresponding record in the `users` table.",
+            "details": "Remove the existing Firestore `updateDoc` call. Create a new API route that takes the user's ID and the selected role. This function will use the Supabase client to update the `role` column for the corresponding record in the `users` table.",
             "status": "pending",
             "testStrategy": "As a new user, select a role on the 'Select Path' step. Check the `users` table in Supabase to confirm the `role` column for your user record has been updated correctly to either 'breeder' or 'seeker'."
           },
@@ -170,7 +170,7 @@
             "dependencies": [
               1
             ],
-            "details": "Replace the current Firebase logic for saving contact information. Implement a new form submission handler that calls a server action or tRPC mutation. This endpoint will update the `full_name` and `location` columns in the `users` table for the authenticated user.",
+            "details": "Replace the current Firebase logic for saving contact information. Implement a new form submission handler that calls an api route. This endpoint will update the `full_name` and `location` columns in the `users` table for the authenticated user.",
             "status": "pending",
             "testStrategy": "In the 'Contact Details' step, enter a name and location and submit the form. Verify in the Supabase table editor that the `full_name` and `location` fields for your user have been correctly populated."
           },
@@ -192,7 +192,7 @@
             "dependencies": [
               4
             ],
-            "details": "Create a server action or tRPC mutation that accepts an array of breed IDs. This function will perform a bulk insert into the `user_breeds` table, creating a new row for each selected breed linking it to the current `user_id`. After the insert, update the `onboarding_complete` flag in the `users` table to `true`.",
+            "details": "Create an api route that accepts an array of breed IDs. This function will perform a bulk insert into the `user_breeds` table, creating a new row for each selected breed linking it to the current `user_id`. After the insert, update the `onboarding_complete` flag in the `users` table to `true`.",
             "status": "pending",
             "testStrategy": "Complete the onboarding flow by selecting several breeds. Check the `user_breeds` table in Supabase to confirm that a record exists for each selected breed, correctly associated with your user ID. Also, verify the `onboarding_complete` column in your `users` record is set to true."
           }
@@ -285,7 +285,7 @@
             "title": "Create Profile Page and Fetch User Data",
             "description": "Create the main page component for user profile management, located at `/settings/profile`. This server component will be responsible for fetching the currently logged-in user's data from the Supabase 'users' table.",
             "dependencies": [],
-            "details": "Create the file `src/app/(app)/settings/profile/page.tsx`. Use the `createServerComponentClient` from `@supabase/auth-helpers-nextjs` to fetch user session and profile data (name, bio, location, photo URL). The fetched data will be passed as props to a client component created in a subsequent task.",
+            "details": "Create the file `src/app/(app)/settings/profile/index.tsx`. Use the `createServerComponentClient` from `@supabase/auth-helpers-nextjs` to fetch user session and profile data (name, bio, location, photo URL). The fetched data will be passed as props to a client component created in a subsequent task.",
             "status": "pending",
             "testStrategy": "Navigate to `/settings/profile` while logged in. Verify the page loads without errors. Log the fetched user data on the server to confirm it's being retrieved correctly."
           },
@@ -296,18 +296,18 @@
             "dependencies": [
               1
             ],
-            "details": "Create a new client component file, e.g., `src/components/profile/profile-form.tsx`. Use `shadcn/ui` components (`Input`, `Textarea`, `Button`, `Label`) to build the form. Populate the form fields with the initial user data passed via props. Use `react-hook-form` and `zod` for form state management and validation, following existing patterns in the codebase.",
+            "details": "Create a new client component file, e.g., `src/components/profile/profile-form.tsx`. Use `Chakra UI` components (`Input`, `Textarea`, `Button`, `Label`) to build the form. Populate the form fields with the initial user data passed via props. Use `react-hook-form` and `zod` for form state management and validation, following existing patterns in the codebase.",
             "status": "pending",
             "testStrategy": "Render the component with mock user data. Verify that all form fields display the correct initial values. Check that the form layout is responsive and matches the site's design system."
           },
           {
             "id": 3,
-            "title": "Implement Server Action for Profile Text Updates",
-            "description": "Create and connect a Next.js server action to handle updates for the text-based profile fields (display name, bio, location).",
+            "title": "Implement API Route for Profile Text Updates",
+            "description": "Create a Next.js API route to handle updates for the text-based profile fields (display name, bio, location).",
             "dependencies": [
               2
             ],
-            "details": "Create a new server action in a file like `src/lib/actions/user.ts`. The action will accept form data, validate it using a Zod schema, and use the Supabase client to update the corresponding record in the 'users' table. Connect this action to the `onSubmit` handler of the profile form.",
+            "details": "Create a new api route in `src/pages/api/users/`. The API route will accept form data, validate it using a Zod schema, and use the Supabase client to update the corresponding record in the 'users' table. Connect this action to the `onSubmit` handler of the profile form.",
             "status": "pending",
             "testStrategy": "Log in, change the display name and bio, and submit the form. After a page refresh, the new values should persist. Check the 'users' table in Supabase directly to confirm the update. Test validation by submitting empty or invalid data."
           },
@@ -324,13 +324,13 @@
           },
           {
             "id": 5,
-            "title": "Implement Server Action for Photo Upload and URL Update",
+            "title": "Implement API Route for Photo Upload and URL Update",
             "description": "Create the server-side logic to handle the profile photo upload to Supabase Storage and update the user's record with the new photo URL.",
             "dependencies": [
               3,
               4
             ],
-            "details": "Create a new server action that accepts `FormData`. This action will: 1. Extract the file from the form data. 2. Upload the file to a designated Supabase Storage bucket (e.g., 'avatars'). 3. Retrieve the public URL of the uploaded file. 4. Update the `profile_photo_url` column in the 'users' table for the current user. Ensure proper error handling for upload failures.",
+            "details": "Create a new API route that accepts `FormData`. This API route will: 1. Extract the file from the form data. 2. Upload the file to a designated Supabase Storage bucket (e.g., 'avatars'). 3. Retrieve the public URL of the uploaded file. 4. Update the `profile_photo_url` column in the 'users' table for the current user. Ensure proper error handling for upload failures.",
             "status": "pending",
             "testStrategy": "Log in, upload a new profile picture, and submit. Verify that the new picture is displayed on the profile page after refresh. Check the Supabase Storage 'avatars' bucket to confirm the new file exists. Verify the `profile_photo_url` in the 'users' table has been updated."
           }
@@ -368,7 +368,7 @@
             "title": "Breeder Dashboard: Build 'My Breeds' Management UI",
             "description": "Create a page or section in the breeder dashboard where verified breeders can add and remove the dog breeds they specialize in. This will interact with the `user_breeds` table.",
             "dependencies": [],
-            "details": "Create a new route, likely `app/dashboard/breeds/page.tsx`. This component will fetch and display the breeder's currently associated breeds. Implement a multi-select component (e.g., shadcn/ui ComboBox) populated with all available breeds from the `breeds` table. Use server actions to update the `user_breeds` join table based on the breeder's selections.",
+            "details": "Create a new route, likely `app/dashboard/breeds/index.tsx`. This component will fetch and display the breeder's currently associated breeds. Implement a multi-select component populated with all available breeds from the `breeds` table. Use the API route to update the `user_breeds` join table based on the breeder's selections.",
             "status": "pending",
             "testStrategy": "Log in as a breeder, navigate to the 'My Breeds' page. Add two breeds, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the `user_breeds` table in Supabase directly."
           },
@@ -377,7 +377,7 @@
             "title": "Breeder Dashboard: Create 'My Litters' List View",
             "description": "Develop the UI to display a list of a breeder's existing litters, providing a summary of each and entry points for creating new litters or editing existing ones.",
             "dependencies": [],
-            "details": "Create a new route at `app/dashboard/litters/page.tsx`. This page will fetch and display all litters associated with the logged-in breeder. Use shadcn/ui Card components to display each litter's summary (name, photo, DOB). Include a prominent 'Create New Litter' button linking to the form page. Each litter card will have an 'Edit' button linking to the pre-filled form for that specific litter.",
+            "details": "Create a new route at `app/dashboard/litters/index.tsx`. This page will fetch and display all litters associated with the logged-in breeder. Use Chakra UI Card components to display each litter's summary (name, photo, DOB). Include a prominent 'Create New Litter' button linking to the form page. Each litter card will have an 'Edit' button linking to the pre-filled form for that specific litter.",
             "status": "pending",
             "testStrategy": "Once a litter can be created, log in as the breeder and navigate to the 'My Litters' page. Verify all created litters are displayed correctly with key information. Confirm the 'Create New Litter' and 'Edit' buttons navigate to the correct URLs."
           },
@@ -389,7 +389,7 @@
               1,
               2
             ],
-            "details": "Create a dynamic route, e.g., `app/dashboard/litters/[litter_id]/page.tsx`, to handle both creating ('new') and editing (UUID). Use `react-hook-form` and `zod` for validation. The form must include a dropdown for 'breed' populated from the breeder's managed breeds (from subtask 1). Implement a multi-image uploader that sends files to a 'litter-photos' Supabase Storage bucket and stores the public URLs in the `litters` table. Create server actions for creating and updating litter data.",
+            "details": "Create a dynamic route, e.g., `app/dashboard/litters/[litter_id]/index.tsx`, to handle both creating ('new') and editing (UUID). Use `react-hook-form` and `zod` for validation. The form must include a dropdown for 'breed' populated from the breeder's managed breeds (from subtask 1). Implement a multi-image uploader that sends files to a 'litter-photos' Supabase Storage bucket and stores the public URLs in the `litters` table. Create an API route for creating and updating litter data.",
             "status": "pending",
             "testStrategy": "Navigate from the litters list to create a new litter. Fill out the form, upload several photos, and save. Verify redirection and the new litter's appearance on the list. Edit the litter's details and confirm the changes persist. Check Supabase Storage for the uploaded files and the `litters` table for correct data."
           }
