@@ -15,6 +15,13 @@
       "when": 1760443039506,
       "tag": "0001_uneven_the_stranger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760454587945,
+      "tag": "0002_spicy_mattie_franklin",
+      "breakpoints": true
     }
   ]
 }

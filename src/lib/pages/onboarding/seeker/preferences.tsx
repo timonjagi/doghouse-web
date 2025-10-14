@@ -15,6 +15,7 @@ import {
 import React, { useState } from "react";
 import { useBreeds } from "../../../hooks/queries";
 import { useCurrentUser } from "../../../hooks/queries";
+import { useUpsertSeekerProfile } from "../../../hooks/queries/useSeekerProfile";
 import { RadioButton } from "lib/components/ui/RadioButton";
 import { RadioButtonGroup } from "lib/components/ui/RadioButtonGroup";
 
@@ -26,6 +27,7 @@ type PageProps = {
 export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep }) => {
   const { data: user } = useCurrentUser();
   const { data: breeds, isLoading: breedsLoading } = useBreeds();
+  const upsertSeekerProfile = useUpsertSeekerProfile();
   const toast = useToast();
 
   const [selectedBreed, setSelectedBreed] = useState<string>("");
@@ -88,7 +90,14 @@ export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep })
     setLoading(true);
 
     try {
-      // Store preferences in sessionStorage for now (will be saved to wanted_listings in next step)
+      // Save seeker profile preferences to seeker_profiles table
+      await upsertSeekerProfile.mutateAsync({
+        has_allergies: hasAllergies === "yes",
+        has_children: hasChildren === "yes",
+        has_other_pets: hasOtherPets === "yes",
+      });
+
+      // Store preferences in sessionStorage for wanted_listings creation
       const preferences = {
         selectedBreed,
         preferredAge,

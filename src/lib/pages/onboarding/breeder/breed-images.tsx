@@ -48,18 +48,18 @@ export const BreedImages: React.FC<PageProps> = ({ currentStep, setStep }) => {
     onUploadComplete: async (urls) => {
       console.log('Images uploaded successfully:', urls);
 
-      // // Update the user_breed record with image URLs
-      // if (userBreeds && userBreeds.length > 0) {
-      //   const userBreed = userBreeds[0]; // Only one breed since we select one
-      //   await updateUserBreed({
-      //     id: userBreed.id,
-      //     updates: { images: urls }
-      //   });
-      // }
+      // Update the user_breed record with image URLs
+      if (userBreeds && userBreeds.length > 0) {
+        const userBreed = userBreeds[0]; // Most recently created breed
+        await updateUserBreed.mutateAsync({
+          id: userBreed.id,
+          updates: { images: urls }
+        });
+      }
     }
   });
 
-  const { mutateAsync: updateUserBreed } = useUpdateUserBreed();
+  const updateUserBreed = useUpdateUserBreed();
 
   // Convert File objects to URLs for Dropzone component
   const imageUrls = selectedImages.map(file => URL.createObjectURL(file));
@@ -97,16 +97,13 @@ export const BreedImages: React.FC<PageProps> = ({ currentStep, setStep }) => {
       if (selectedImages.length > 0) {
         const uploadedUrls = await uploadImages(selectedImages);
 
-
-
         const selectedUserBreed = userBreeds?.[0]
         if (uploadedUrls.length > 0 && selectedUserBreed?.id) {
-          await updateUserBreed({
+          await updateUserBreed.mutateAsync({
             id: selectedUserBreed.id,
             updates: { images: uploadedUrls }
           });
         }
-
 
         // Mark onboarding as complete
         await updateUserProfile.mutateAsync({

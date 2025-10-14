@@ -17,6 +17,7 @@ import { useState } from "react";
 import { MdOutlineLocationOn, MdBusiness, MdHome, MdApartment } from "react-icons/md";
 import { useCurrentUser } from "../../../hooks/queries";
 import { useUpdateUserProfile } from "../../../hooks/queries";
+import { useUpsertBreederProfile } from "../../../hooks/queries/useBreederProfile";
 import { supabase } from "../../../supabase/client";
 
 type PageProps = {
@@ -27,6 +28,7 @@ type PageProps = {
 export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setStep }) => {
   const { data: user } = useCurrentUser();
   const updateUserProfile = useUpdateUserProfile();
+  const upsertBreederProfile = useUpsertBreederProfile();
   const toast = useToast();
 
   const [kennelName, setKennelName] = useState("");
@@ -68,13 +70,20 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
     setLoading(true);
 
     try {
-      // Update user profile with breeder-specific information
-      await updateUserProfile.mutateAsync({
-        kennel_name: kennelName,
-        kennel_location: kennelLocation,
-        facility_type: facilityType,
-        experience_level: experienceLevel,
-      });
+      // Save to both users table (universal data) and breeder_profiles table (role-specific data)
+      await Promise.all([
+        // Save universal user data to users table
+        updateUserProfile.mutateAsync({
+          display_name: kennelName, // Use kennel name as display name for breeders
+          location: kennelLocation,
+        }),
+        // Save breeder-specific data to breeder_profiles table
+        upsertBreederProfile.mutateAsync({
+          kennel_name: kennelName,
+          kennel_location: kennelLocation,
+          facility_type: facilityType,
+        }),
+      ]);
 
       setStep(currentStep + 1);
     } catch (err: any) {
@@ -176,7 +185,7 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
           isLoading={loading}
           type="submit"
           variant="primary"
-          isDisabled={!kennelName || !kennelLocation || !facilityType || !experienceLevel}
+          isDisabled={!kennelName || !kennelLocation || !facilityType}
         >
           Next
         </Button>

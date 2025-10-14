@@ -18,6 +18,7 @@ import { useState } from "react";
 import { MdOutlineLocationOn, MdPerson, MdHome, MdApartment } from "react-icons/md";
 import { useCurrentUser } from "../../../hooks/queries";
 import { useUpdateUserProfile } from "../../../hooks/queries";
+import { useUpsertSeekerProfile } from "../../../hooks/queries/useSeekerProfile";
 
 type PageProps = {
   currentStep: number;
@@ -27,6 +28,7 @@ type PageProps = {
 export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep }) => {
   const { data: user } = useCurrentUser();
   const updateUserProfile = useUpdateUserProfile();
+  const upsertSeekerProfile = useUpsertSeekerProfile();
   const toast = useToast();
 
   const [displayName, setDisplayName] = useState("");
@@ -70,13 +72,19 @@ export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep
     setLoading(true);
 
     try {
-      // Update user profile with seeker-specific information
-      await updateUserProfile.mutateAsync({
-        display_name: displayName,
-        location: location,
-        living_situation: livingSituation,
-        experience_level: experienceLevel,
-      });
+      // Save to both users table (universal data) and seeker_profiles table (role-specific data)
+      await Promise.all([
+        // Save universal user data to users table
+        updateUserProfile.mutateAsync({
+          display_name: displayName,
+          location: location,
+        }),
+        // Save seeker-specific data to seeker_profiles table
+        upsertSeekerProfile.mutateAsync({
+          living_situation: livingSituation,
+          experience_level: experienceLevel,
+        }),
+      ]);
 
       setStep(currentStep + 1);
     } catch (err: any) {

@@ -13,7 +13,7 @@ import {
   time,
 } from "drizzle-orm/pg-core";
 
-// USERS
+// USERS (clean - only universal fields)
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: varchar("email", { length: 255 }).notNull().unique(),
@@ -26,12 +26,6 @@ export const users = pgTable("users", {
   location_text: varchar("location_text", { length: 255 }),
   location_lat: numeric("location_lat", { precision: 9, scale: 6 }), // lat/lng as decimals
   location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
-  // Enhanced profile fields
-  living_situation: text("living_situation"),
-  experience_level: varchar("experience_level", { length: 50 }),
-  kennel_name: varchar("kennel_name", { length: 255 }),
-  kennel_location: varchar("kennel_location", { length: 255 }),
-  facility_type: varchar("facility_type", { length: 100 }),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -49,7 +43,45 @@ export const breeds = pgTable("breeds", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
-// Removed breeder_profiles and kennels tables - consolidating into users and user_breeds
+// SEEKER PROFILES (new table for seeker-specific data)
+export const seeker_profiles = pgTable("seeker_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  user_id: uuid("user_id").notNull().references(() => users.id),
+  living_situation: text("living_situation"),
+  experience_level: varchar("experience_level", { length: 50 }),
+  has_allergies: boolean("has_allergies").default(false),
+  has_children: boolean("has_children").default(false),
+  has_other_pets: boolean("has_other_pets").default(false),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// BREEDER PROFILES (enhanced existing)
+export const breeder_profiles = pgTable("breeder_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  user_id: uuid("user_id").notNull().references(() => users.id),
+  kennel_name: varchar("kennel_name", { length: 255 }),
+  kennel_location: varchar("kennel_location", { length: 255 }),
+  facility_type: varchar("facility_type", { length: 100 }),
+  verification_docs: jsonb("verification_docs"), // references to storage keys
+  verified_at: timestamp("verified_at"),
+  rating: numeric("rating", { precision: 3, scale: 2 }).default(0),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// KENNELS (enhanced for multiple facilities)
+export const kennels = pgTable("kennels", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  breeder_profile_id: uuid("breeder_profile_id").notNull().references(() => breeder_profiles.id),
+  name: varchar("name", { length: 255 }).notNull(),
+  location: varchar("location", { length: 255 }),
+  location_lat: numeric("location_lat", { precision: 9, scale: 6 }),
+  location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
+  photos: jsonb("photos"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
 
 // USER_BREEDS (breeder offers or owns these breeds)
 export const user_breeds = pgTable("user_breeds", {
@@ -58,7 +90,7 @@ export const user_breeds = pgTable("user_breeds", {
   breed_id: uuid("breed_id").notNull().references(() => breeds.id),
   is_owner: boolean("is_owner").notNull().default(true),
   notes: text("notes"),
-  images: jsonb("images").$default(() => []),
+  images: jsonb("images").$default(() => "[]"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });

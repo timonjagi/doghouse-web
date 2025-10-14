@@ -6,3 +6,5 @@ export * from './useApplications';
 export * from './useNotifications';
 export * from './useUserProfile';
 export * from './useUserBreed';
+export * from './useSeekerProfile';
+export * from './useBreederProfile';
