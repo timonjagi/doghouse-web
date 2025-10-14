@@ -17,7 +17,7 @@
             "description": "Review the existing schema in `db/schema.ts`, ensuring all necessary tables (`users`, `litters`, etc.) and columns (like `users.role`) are correctly defined. Generate the SQL migration files using Drizzle Kit and apply them to the Supabase PostgreSQL database.",
             "dependencies": [],
             "details": "Use `drizzle-kit generate:pg` to create the migration script. Then, use `drizzle-kit push:pg` or a custom migration script to apply the schema changes to the remote Supabase database configured via environment variables. Verify table creation in the Supabase dashboard.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run the Drizzle Kit commands and ensure they complete without errors. Manually inspect the Supabase database via its web UI to confirm that all tables and columns from `db/schema.ts` have been created correctly."
           },
           {
@@ -469,7 +469,7 @@
     ],
     "metadata": {
       "created": "2025-10-13T22:58:47.382Z",
-      "updated": "2025-10-13T22:58:47.382Z",
+      "updated": "2025-10-14T06:48:39.182Z",
       "description": "Tasks for master context"
     }
   }

@@ -51,3 +51,10 @@ alwaysApply: true
   - Include both DO and DON'T examples
   - Reference actual code over theoretical examples
   - Use consistent formatting across rules 
+
+**Project Rules**
+ - Always use Chakra UI (v2) for component markup, never v3.
+ - Always keep the design minimal but good looking
+ - Use Context7 MCP Tool to always gather latest documentation / knowledge about a library
+ - Use Firecrawl MCP Tool to search / scrape web pages whenever necessary
+ - Leverage the context7 API tool as your main discovery engine for UI primitives, tokens, and unknown packages. Cross-reference the context when you need more advanced usage access tutorials. If needed.
