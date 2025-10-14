@@ -38,7 +38,7 @@
               2
             ],
             "details": "Create Supabase clients in `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts`. Update `src/pages/signup/index.tsx` to use `supabase.auth.signUp`. On successful sign-up, insert a record into the public `users` table with the user's `id`, `email`, and selected `role`. Update the login page `src/pages/login/index.tsx`  to use `supabase.auth.signInWithPassword`. Implement session management using Supabase's cookie-based helpers for Next.js.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test the full sign-up flow for both a 'seeker' and a 'breeder'. Verify that `auth.users` and the public `users` table are populated correctly in Supabase. Test login and logout functionality. Ensure user sessions persist across page reloads."
           },
           {
@@ -50,7 +50,7 @@
               3
             ],
             "details": "In the Supabase SQL editor, enable RLS for the `users` and `litters` tables. For `users`, create policies allowing users to SELECT and UPDATE only their own record (`uid() = id`). For `litters`, allow breeders to CUD their own litters (`uid() = breeder_id`) and all authenticated users to SELECT litters. Policies must be created using SQL statements in a new Supabase migration file.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Log in as a user and use a client-side query to fetch all users; it should only return the current user's data. As a breeder, verify you can create/edit your litters. As a seeker, verify you can read litters but cannot create or edit them. Attempting to update another user's data should result in an RLS violation error."
           }
         ]
@@ -469,7 +469,7 @@
     ],
     "metadata": {
       "created": "2025-10-13T22:58:47.382Z",
-      "updated": "2025-10-14T07:14:17.937Z",
+      "updated": "2025-10-14T07:36:26.714Z",
       "description": "Tasks for master context"
     }
   }
