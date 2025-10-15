@@ -78,28 +78,54 @@ export const SignupForm = () => {
       } else if (data.user) {
         toast({
           title: "Account created successfully",
-          description: "Please check your email to verify your account, then complete your profile",
+          description: "Logging you in and setting up your profile...",
           status: "success",
-          duration: 5000,
+          duration: 3000,
         });
 
-        // Create basic user profile in the users table (role will be set during onboarding)
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: data.user.id,
-              email: email,
-              role: 'seeker', // Default role, will be updated during onboarding
-              is_verified: false,
-            },
-          ]);
+        // Auto-login the user after signup
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-        if (profileError) {
-          console.error('Error creating user profile:', profileError);
+        if (signInError) {
+          console.error('Auto-login failed:', signInError);
+          toast({
+            title: "Login failed",
+            description: "Account created but login failed. Please log in manually.",
+            status: "warning",
+            duration: 5000,
+          });
+          router.push("/login");
+          return;
         }
 
-        router.push("/login");
+        if (signInData.user) {
+          // Create basic user profile in the users table while authenticated
+          const { error: profileError } = await supabase
+            .from('users')
+            .insert([
+              {
+                id: signInData.user.id,
+                email: email,
+                is_verified: false,
+              },
+            ]);
+
+          if (profileError) {
+            console.error('Error creating user profile:', profileError);
+            toast({
+              title: "Profile creation warning",
+              description: "Account created but profile setup incomplete. You can complete this in onboarding.",
+              status: "warning",
+              duration: 5000,
+            });
+          }
+
+          // Redirect to onboarding instead of login
+          router.push("/onboarding");
+        }
       }
     } catch (error) {
       toast({
@@ -109,9 +135,13 @@ export const SignupForm = () => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
     }
 
-    setLoading(false);
   };
 
   const handleGoogleSignup = async () => {

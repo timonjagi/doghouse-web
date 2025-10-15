@@ -19,7 +19,7 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   phone: varchar("phone", { length: 32 }),
   display_name: varchar("display_name", { length: 200 }),
-  role: varchar("role", { length: 32 }).notNull(), // 'seeker' | 'breeder' | 'admin'
+  role: varchar("role", { length: 32 }), // 'seeker' | 'breeder' | 'admin'
   is_verified: boolean("is_verified").notNull().default(false),
   profile_photo_url: text("profile_photo_url"),
   bio: text("bio"),

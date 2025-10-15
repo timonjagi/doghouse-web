@@ -77,7 +77,7 @@ export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep
         // Save universal user data to users table
         updateUserProfile.mutateAsync({
           display_name: displayName,
-          location: location,
+          location_text: location,
         }),
         // Save seeker-specific data to seeker_profiles table
         upsertSeekerProfile.mutateAsync({

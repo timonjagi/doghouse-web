@@ -29,7 +29,7 @@ const Login = () => {
 
   return (
     <Flex
-      minH={{ base: "auto", md: "100vh" }}
+      minH="100vh"
       bgGradient={useBreakpointValue({
         md: mode(
           "linear(to-r, brand.600 50%, white 50%)",

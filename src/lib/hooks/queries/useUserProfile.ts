@@ -9,7 +9,9 @@ interface UserProfile {
   email: string;
   display_name?: string;
   bio?: string;
-  location?: string;
+  location_text?: string;
+  location_lat?: number;
+  location_lng?: number;
   avatar_url?: string;
   role: 'breeder' | 'seeker' | 'admin';
   onboarding_completed: boolean;
@@ -20,14 +22,11 @@ interface UserProfile {
 interface UpdateProfileData {
   display_name?: string;
   bio?: string;
-  location?: string;
+  location_text?: string;
+  location_lat?: number;
+  location_lng?: number;
   avatar_url?: string;
-  // Enhanced profile fields
-  living_situation?: string;
-  experience_level?: string;
-  kennel_name?: string;
-  kennel_location?: string;
-  facility_type?: string;
+  role?: string;
   onboarding_completed?: boolean;
 }
 
@@ -48,7 +47,6 @@ export const useUserProfile = () => {
       if (error) throw error;
       return data;
     },
-    enabled: false, // Only run when explicitly needed
   });
 };
 
@@ -77,6 +75,7 @@ export const useUpdateUserProfile = () => {
   return useMutation({
     mutationFn: async (updates: UpdateProfileData) => {
       const { data: { user } } = await supabase.auth.getUser();
+
       if (!user) throw new Error('No authenticated user');
 
       const { data, error } = await supabase
@@ -100,9 +99,9 @@ export const useUpdateUserProfile = () => {
         avatarUrl: data.avatar_url,
       });
 
-      // Invalidate relevant queries
+      // Invalidate relevant queries - avoid infinite recursion
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.profile() });
     },
   });
 };

@@ -12,27 +12,26 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { BreederContactDetails } from './contact-details';
-import { BreedSelection } from './breed-selection';
-import { BreedImages } from './breed-images';
+import { BreederKennelDetails } from './kennel-details';
+import { BreederBreedDetails } from './breed-details';
 import { BreederSuccess } from './success';
 
 export const BreederOnboardingFlow: React.FC = () => {
   const steps = [
-    { title: 'Contact Details', description: 'Kennel information' },
-    { title: 'Breed Selection', description: 'Choose your breeds' },
-    { title: 'Breed Images', description: 'Upload breed photos' },
-    { title: 'Complete Setup', description: 'Finish registration' },
+    { title: 'Contact Details', description: 'Basic information' },
+    { title: 'Kennel Details', description: 'Kennel information' },
+    { title: 'Breed Details', description: 'Breeds and photos' },
   ];
 
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
-    count: steps.length,
+    count: steps.length + 1,
   });
 
   return (
     <Box maxW="2xl">
       <Stack spacing={{ base: 6, md: 9 }} px={{ base: "6", sm: "8", lg: "16" }} py={{ base: "6", md: "8" }} align="center">
-        <Stack mt={{ base: 4, md: 8 }} w="full">
+        <Stack w="full">
           <Stepper size="sm" index={activeStep} gap="0" colorScheme="brand">
             {steps.map((step, index) => (
               <Step key={index}>
@@ -56,11 +55,11 @@ export const BreederOnboardingFlow: React.FC = () => {
         )}
 
         {activeStep === 1 && (
-          <BreedSelection currentStep={activeStep} setStep={setActiveStep} />
+          <BreederKennelDetails currentStep={activeStep} setStep={setActiveStep} />
         )}
 
         {activeStep === 2 && (
-          <BreedImages currentStep={activeStep} setStep={setActiveStep} />
+          <BreederBreedDetails currentStep={activeStep} setStep={setActiveStep} />
         )}
 
         {activeStep === 3 && (

@@ -59,7 +59,7 @@ export const ContactDetails = ({ currentStep, setStep }: PageProps) => {
       // Update user profile in Supabase using React Query mutation
       await updateUserProfile.mutateAsync({
         display_name: displayName,
-        location: location,
+        location_text: location,
       });
 
       setStep(currentStep + 1);

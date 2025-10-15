@@ -12,13 +12,14 @@ import {
   Icon,
   Heading,
   Select,
+  Center,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineLocationOn, MdBusiness, MdHome, MdApartment } from "react-icons/md";
-import { useCurrentUser } from "../../../hooks/queries";
+import { useCurrentUser, useUserProfile } from "../../../hooks/queries";
 import { useUpdateUserProfile } from "../../../hooks/queries";
-import { useUpsertBreederProfile } from "../../../hooks/queries/useBreederProfile";
 import { supabase } from "../../../supabase/client";
+import { Loader } from "lib/components/ui/Loader";
 
 type PageProps = {
   currentStep: number;
@@ -27,31 +28,24 @@ type PageProps = {
 
 export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setStep }) => {
   const { data: user } = useCurrentUser();
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
   const updateUserProfile = useUpdateUserProfile();
-  const upsertBreederProfile = useUpsertBreederProfile();
   const toast = useToast();
 
-  const [kennelName, setKennelName] = useState("");
-  const [kennelLocation, setKennelLocation] = useState("");
-  const [facilityType, setFacilityType] = useState("");
-  const [experienceLevel, setExperienceLevel] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const facilityOptions = [
-    { value: "home_based", label: "Home-based", icon: MdHome },
-    { value: "dedicated_facility", label: "Dedicated Facility", icon: MdBusiness },
-    { value: "mixed", label: "Mixed", icon: MdApartment },
-  ];
-
-  const experienceOptions = [
-    { value: "first_time", label: "First Time Breeder" },
-    { value: "experienced", label: "Experienced Breeder" },
-    { value: "professional", label: "Professional Breeder" },
-  ];
 
   const onBack = () => {
     setStep(currentStep - 1);
   };
+
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name);
+      setLocation(profile.location_text);
+    }
+  }, [profile]);
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -70,20 +64,11 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
     setLoading(true);
 
     try {
-      // Save to both users table (universal data) and breeder_profiles table (role-specific data)
-      await Promise.all([
-        // Save universal user data to users table
-        updateUserProfile.mutateAsync({
-          display_name: kennelName, // Use kennel name as display name for breeders
-          location: kennelLocation,
-        }),
-        // Save breeder-specific data to breeder_profiles table
-        upsertBreederProfile.mutateAsync({
-          kennel_name: kennelName,
-          kennel_location: kennelLocation,
-          facility_type: facilityType,
-        }),
-      ]);
+      // Save universal user data to users table
+      await updateUserProfile.mutateAsync({
+        display_name: displayName,
+        location_text: location,
+      });
 
       setStep(currentStep + 1);
     } catch (err: any) {
@@ -99,15 +84,24 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
     setLoading(false);
   };
 
+  if (profileLoading) {
+    return (
+      <Center h="100%">
+        <Loader />
+      </Center>
+    );
+  }
+
+
   return (
     <Stack as="form" spacing="9" onSubmit={onSubmit}>
-      <Heading size="md">
-        Great choice! Let's set up your kennel information 🏠
+      <Heading size={{ base: "sm", lg: "md" }}>
+        Awesome! Tell us a bit about yourself.
       </Heading>
 
       <Stack spacing="4">
-        <FormControl id="kennelName">
-          <FormLabel htmlFor="kennelName">Kennel Name</FormLabel>
+        <FormControl id="displayName">
+          <FormLabel htmlFor="displayName">Your Name</FormLabel>
           <InputGroup size="lg">
             <InputLeftElement pointerEvents="none">
               <Icon as={MdBusiness} color="gray.300" boxSize={5} />
@@ -115,18 +109,18 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
             <Input
               size="lg"
               required
-              id="kennelName"
-              name="kennelName"
+              id="displayName"
+              name="displayName"
               type="text"
-              placeholder="Your kennel's name"
-              value={kennelName}
-              onChange={(e) => setKennelName(e.target.value)}
+              placeholder="Your full name"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
             />
           </InputGroup>
         </FormControl>
 
-        <FormControl id="kennelLocation">
-          <FormLabel htmlFor="kennelLocation">Kennel Location</FormLabel>
+        <FormControl id="location">
+          <FormLabel htmlFor="location">Location</FormLabel>
           <InputGroup size="lg">
             <InputLeftElement pointerEvents="none">
               <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
@@ -134,45 +128,13 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
             <Input
               size="lg"
               required
-              id="kennelLocation"
-              name="kennelLocation"
+              id="location"
+              name="location"
               placeholder="City, Country"
-              value={kennelLocation}
-              onChange={(e) => setKennelLocation(e.target.value)}
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
             />
           </InputGroup>
-        </FormControl>
-
-        <FormControl id="facilityType">
-          <FormLabel htmlFor="facilityType">Facility Type</FormLabel>
-          <Select
-            size="lg"
-            placeholder="Select your facility type"
-            value={facilityType}
-            onChange={(e) => setFacilityType(e.target.value)}
-          >
-            {facilityOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl id="experienceLevel">
-          <FormLabel htmlFor="experienceLevel">Experience Level</FormLabel>
-          <Select
-            size="lg"
-            placeholder="Select your experience level"
-            value={experienceLevel}
-            onChange={(e) => setExperienceLevel(e.target.value)}
-          >
-            {experienceOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
         </FormControl>
       </Stack>
 
@@ -185,7 +147,7 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
           isLoading={loading}
           type="submit"
           variant="primary"
-          isDisabled={!kennelName || !kennelLocation || !facilityType}
+          isDisabled={!displayName || !location}
         >
           Next
         </Button>

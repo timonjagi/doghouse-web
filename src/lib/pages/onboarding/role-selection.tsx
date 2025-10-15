@@ -15,7 +15,7 @@ import { RadioCardGroup } from "lib/components/ui/RadioCardGroup";
 import { RadioCard } from "lib/components/ui/RadioCard";
 
 // eslint-disable-next-line
-const RoleSelectionStep = ({ onRoleSelect }) => {
+const RoleSelectionStep = () => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
@@ -40,43 +40,14 @@ const RoleSelectionStep = ({ onRoleSelect }) => {
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to continue",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
-
     setLoading(true);
 
     try {
       // Map the selected role to database format
       const dbRole = selectedRole === "dog_seeker" ? "seeker" : "breeder";
 
-      // await updateUserProfile.mutateAsync({ role: dbRole });
-      // Update user role directly in the users table
-      // const { error: updateError } = await supabase
-      //   .from('users')
-      //   .update({
-      //     role: dbRole,
-      //     updated_at: new Date().toISOString(),
-      //   })
-      //   .eq('id', user.id);
+      await updateUserProfile.mutateAsync({ role: dbRole });
 
-      // if (updateError) throw updateError;
-
-      // // Also update the role in user metadata for consistency
-      await supabase.auth.updateUser({
-        data: {
-          role: dbRole,
-        },
-      });
-
-      onRoleSelect(dbRole)
     } catch (err: any) {
       toast({
         title: "Error saving role",
@@ -92,7 +63,7 @@ const RoleSelectionStep = ({ onRoleSelect }) => {
 
   return (
     <Stack as="form" spacing="9" onSubmit={(event) => onSubmit(event)}>
-      <Heading size="md">How would you like to continue?</Heading>
+      <Heading size={{ base: "sm", md: "md" }}>How would you like to continue?</Heading>
       <RadioCardGroup
         defaultValue={selectedRole}
         spacing="3"
