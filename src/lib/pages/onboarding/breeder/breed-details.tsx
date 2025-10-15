@@ -18,7 +18,8 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { MdCheckCircle } from "react-icons/md";
-import { useCurrentUser, useBreeds, useUpdateUserBreed, useUserBreedsFromUser } from "../../../hooks/queries";
+import { useCurrentUser, useUpdateUserBreed, useUserBreedsFromUser } from "../../../hooks/queries";
+import breedsData from "../../../data/breeds_with_group_and_traits.json";
 import { useDropZone } from "../../../hooks/useDropZone";
 import { useBreedImageUpload } from "../../../hooks/useBreedImageUpload";
 import { Dropzone } from "../../../components/ui/Dropzone";
@@ -33,7 +34,6 @@ type PageProps = {
 
 export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep }) => {
   const { data: user } = useCurrentUser();
-  const { data: breeds, isLoading: breedsLoading } = useBreeds();
   const { data: userBreeds, isLoading: userBreedsLoading } = useUserBreedsFromUser(user?.id || '');
   const toast = useToast();
 
@@ -41,11 +41,12 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const breedOptions = breeds?.map((breed) => ({
+  // Use local breeds data for better performance
+  const breedOptions = breedsData.map((breed) => ({
     label: breed.name,
-    value: breed.id,
+    value: breed.name, // Use name as value for selection
     breed: breed,
-  })) || [];
+  }));
 
   const onSelectBreed = (selectedOption: any) => {
     if (selectedOption) {
@@ -104,12 +105,21 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
     setLoading(true);
 
     try {
-      // First create the user_breed record
+      // First find the breed in the database by name
+      const { data: dbBreed, error: findError } = await supabase
+        .from('breeds')
+        .select('id')
+        .eq('name', selectedBreed.name)
+        .single();
+
+      if (findError) throw new Error(`Breed not found: ${selectedBreed.name}`);
+
+      // Create the user_breed record with the database ID
       const { data: newUserBreed, error: breedError } = await supabase
         .from('user_breeds')
         .insert([{
           user_id: user.id,
-          breed_id: selectedBreed,
+          breed_id: dbBreed.id,
           is_owner: true,
         }])
         .select()
@@ -150,8 +160,8 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
     }
   };
 
-  // Show loading spinner while fetching breeds
-  if (breedsLoading || userBreedsLoading) {
+  // Show loading spinner while fetching user breeds (breeds data is now local)
+  if (userBreedsLoading) {
     return (
       <Center h="200px">
         <Spinner size="xl" color="brand.500" />

@@ -51,6 +51,8 @@ const OnboardingPage = () => {
     <Flex
       minH="100vh"
       bgImage="url('/images/doggo.png')"
+      bgSize="cover"
+      bgRepeat="no-repeat"
     // bgGradient={{
     //   md: mode(
     //     "linear(to-r, brand.200 10%, gray.100 50%)"
