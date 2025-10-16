@@ -36,12 +36,10 @@ const Layout = ({ children }: LayoutProps) => {
 
     // Dashboard routes
     { path: "/dashboard", layout: DashboardLayout },
-    { path: "/dashboard/browse", layout: DashboardLayout },
     { path: "/dashboard/matches", layout: DashboardLayout },
-    { path: "/dashboard/my-applications", layout: DashboardLayout },
-    { path: "/dashboard/my-breeds", layout: DashboardLayout },
-    { path: "/dashboard/my-listings", layout: DashboardLayout },
     { path: "/dashboard/applications", layout: DashboardLayout },
+    { path: "/dashboard/breeds", layout: DashboardLayout },
+    { path: "/dashboard/listings", layout: DashboardLayout },
     { path: "/dashboard/profile", layout: DashboardLayout },
     { path: "/dashboard/settings", layout: DashboardLayout },
 

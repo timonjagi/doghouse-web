@@ -14,6 +14,7 @@ import {
   ListItem,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalOverlay,
   Stack,
@@ -118,6 +119,7 @@ const DashboardHome = () => {
       >
         <ModalOverlay />
         <ModalContent>
+          <ModalCloseButton />
           <ModalBody p="0">
             <WhatsNext userRole={profile?.role} router={router} onClose={onClose} />
           </ModalBody>
@@ -181,21 +183,21 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
   const [selectedAction, setSelectedAction] = useState(null);
 
   const seekerNextSteps = [
+
     {
-      title: 'See Matching Puppies',
-      description: 'Browse matching puppies from verified breeders and start applying for them',
+      title: 'Explore Breeds',
+      description: 'Start exploring the different dog breeds available for adoption',
+      icon: <Icon as={MdCheckCircle} color='green.500' />,
+      href: '/dashboard/breeds'
+    },
+    {
+      title: 'View Matches',
+      description: 'Browse through matches made by our algorithm based on your preferences',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
       href: '/dashboard/matches'
     },
     {
-      title: 'View Breeders Near You',
-      description: 'Find breeders near you and start connecting with them',
-      icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/dashboard/breeders'
-    },
-
-    {
-      title: 'Complete your Profile',
+      title: 'Complete Profile',
       description: 'Upload your profile picture and other details about yourself',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
       href: '/account/profile'
@@ -204,22 +206,16 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
 
   const breederNextSteps = [
     {
-      title: 'Add Breeds',
-      description: 'Add more breeds to your Profile',
+      title: 'Manage Breeds',
+      description: 'Update your existing breeds and add more breeds to your profile',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/account/breeds'
+      href: '/dashboard/breeds'
     },
     {
-      title: 'Add Your First Litter',
-      description: 'Add your first litter or puppy for sale',
+      title: 'Add Listings',
+      description: 'Add new listings of dogs that you would like to rehome',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/account/litters'
-    },
-    {
-      title: 'Manage Your Listings',
-      description: 'Manage your listings in your dashboard',
-      icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/account/listings'
+      href: '/dashboard/listings'
     },
   ]
 
@@ -235,17 +231,6 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
         px={{ base: "6", sm: "8", lg: "16" }}
         py={{ base: "6", md: "8", lg: "16" }}
       >
-        {/* <Box position="relative" mx="auto">
-          <Img
-            src="images/logo.png"
-            alt="Main Image"
-            w="100"
-            h="100"
-            borderRadius="0.5rem 0.5rem 0 0"
-            objectFit="cover"
-            objectPosition="90% center"
-          />
-        </Box> */}
         <Stack mx="auto" textAlign="center">
           <Heading size="md" letterSpacing="tight" colorScheme="brand">
             What's Next?
