@@ -11,6 +11,12 @@ interface SeekerProfile {
   has_allergies: boolean;
   has_children: boolean;
   has_other_pets: boolean;
+  preferred_breed_id?: string;
+  preferred_breed_name?: string;
+  preferred_age?: string;
+  preferred_sex?: string;
+  spay_neuter_preference?: string;
+  activity_level?: string;
   created_at: string;
   updated_at: string;
 }
@@ -21,6 +27,12 @@ interface CreateSeekerProfileData {
   has_allergies?: boolean;
   has_children?: boolean;
   has_other_pets?: boolean;
+  preferred_breed_id?: string;
+  preferred_breed_name?: string;
+  preferred_age?: string;
+  preferred_sex?: string;
+  spay_neuter_preference?: string;
+  activity_level?: string;
 }
 
 interface UpdateSeekerProfileData {
@@ -29,6 +41,11 @@ interface UpdateSeekerProfileData {
   has_allergies?: boolean;
   has_children?: boolean;
   has_other_pets?: boolean;
+  preferred_breed?: string;
+  preferred_age?: string;
+  preferred_sex?: string;
+  spay_neuter_preference?: string;
+  activity_level?: string;
 }
 
 // Query to get seeker's profile

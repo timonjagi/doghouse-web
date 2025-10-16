@@ -50,6 +50,20 @@
       "when": 1760609744022,
       "tag": "0006_shallow_warstar",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1760613437666,
+      "tag": "0007_deep_polaris",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1760613494131,
+      "tag": "0008_living_tana_nile",
+      "breakpoints": true
     }
   ]
 }

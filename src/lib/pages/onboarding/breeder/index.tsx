@@ -30,7 +30,12 @@ export const BreederOnboardingFlow: React.FC = () => {
 
   return (
     <Box maxW="2xl">
-      <Stack spacing={{ base: 6, md: 9 }} px={{ base: "6", sm: "8", lg: "16" }} py={{ base: "6", md: "8" }} align="center">
+      <Stack
+        spacing={{ base: 6, md: 9 }}
+        px={{ base: "6", sm: "8", lg: "16" }}
+        py={{ base: "6", md: "8" }}
+        align="center"
+      >
         <Stack w="full">
           <Stepper size="sm" index={activeStep} gap="0" colorScheme="brand">
             {steps.map((step, index) => (

@@ -55,6 +55,12 @@ export const seeker_profiles = pgTable("seeker_profiles", {
   has_allergies: boolean("has_allergies").default(false),
   has_children: boolean("has_children").default(false),
   has_other_pets: boolean("has_other_pets").default(false),
+  preferred_breed_id: uuid("preferred_breed_id").references(() => breeds.id),
+  preferred_breed_name: varchar("preferred_breed_name", { length: 255 }),
+  preferred_age: varchar("preferred_age", { length: 50 }),
+  preferred_sex: varchar("preferred_sex", { length: 50 }),
+  spay_neuter_preference: varchar("spay_neuter_preference", { length: 50 }),
+  activity_level: varchar("activity_level", { length: 50 }),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -68,7 +74,7 @@ export const breeder_profiles = pgTable("breeder_profiles", {
   facility_type: varchar("facility_type", { length: 100 }),
   verification_docs: jsonb("verification_docs"), // references to storage keys
   verified_at: timestamp("verified_at"),
-  rating: numeric("rating", { precision: 3, scale: 2 }).default(0),
+  rating: numeric("rating", { precision: 3, scale: 2 }).default('0'),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -115,29 +121,6 @@ export const litters = pgTable("litters", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
-// WANTED LISTINGS (seekers)
-export const wanted_listings = pgTable("wanted_listings", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  seeker_id: uuid("seeker_id").notNull().references(() => users.id),
-  pet_type: varchar("pet_type", { length: 50 }).notNull(), // dog, cat, bird...
-  preferred_breed: varchar("preferred_breed", { length: 255 }),
-  experience_level: varchar("experience_level", { length: 50 }),
-  living_situation: text("living_situation"),
-  notes: text("notes"),
-  location_lat: numeric("location_lat", { precision: 9, scale: 6 }),
-  location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
-  is_active: boolean("is_active").notNull().default(true),
-  // Enhanced preference fields
-  preferred_age: varchar("preferred_age", { length: 50 }),
-  preferred_sex: varchar("preferred_sex", { length: 50 }),
-  spay_neuter_preference: varchar("spay_neuter_preference", { length: 50 }),
-  activity_level: varchar("activity_level", { length: 50 }),
-  has_allergies: boolean("has_allergies").default(false),
-  has_children: boolean("has_children").default(false),
-  has_other_pets: boolean("has_other_pets").default(false),
-  created_at: timestamp("created_at").notNull().defaultNow(),
-  updated_at: timestamp("updated_at").notNull().defaultNow(),
-});
 
 // APPLICATIONS (adoption requests)
 export const applications = pgTable("applications", {
@@ -203,10 +186,11 @@ export const transactions = pgTable("transactions", {
 
 export type User = typeof users.$inferSelect;
 export type BreederProfile = typeof breeder_profiles.$inferSelect;
+export type SeekerProfile = typeof seeker_profiles.$inferSelect;
+export type Breed = typeof breeds.$inferSelect;
+export type UserBreed = typeof user_breeds.$inferSelect;
 export type Kennel = typeof kennels.$inferSelect;
 export type Litter = typeof litters.$inferSelect;
-export type WantedListing = typeof wanted_listings.$inferSelect;
-export type UserBreed = typeof user_breeds.$inferSelect;
 export type Application = typeof applications.$inferSelect;
 export type Message = typeof messages.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;

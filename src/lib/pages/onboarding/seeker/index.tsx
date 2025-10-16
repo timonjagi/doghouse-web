@@ -13,26 +13,31 @@ import {
 } from '@chakra-ui/react';
 import { SeekerContactDetails } from './contact-details';
 import { SeekerPreferences } from './preferences';
-import { WantedListing } from './wanted-listing';
+import { SeekerLivingSituation } from './living-situation';
 import { SeekerSuccess } from './success';
 
 export const SeekerOnboardingFlow: React.FC = () => {
   const steps = [
     { title: 'Contact Details', description: 'Personal information' },
     { title: 'Preferences', description: 'Your ideal dog' },
-    { title: 'Wanted Listing', description: 'Create your request' },
-    { title: 'Complete Setup', description: 'Welcome to DogHouse!' },
+    { title: 'Living Situation', description: 'Home environment' },
+    // { title: 'Complete Setup', description: 'Welcome to DogHouse!' },
   ];
 
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
-    count: steps.length,
+    count: steps.length + 1,
   });
 
   return (
     <Box maxW="2xl">
-      <Stack spacing={{ base: 6, md: 9 }} px={{ base: "6", sm: "8", lg: "16" }} py={{ base: "6", md: "8" }} align="center">
-        <Stack mt={{ base: 4, md: 8 }} w="full">
+      <Stack
+        spacing={{ base: 6, md: 9 }}
+        px={{ base: "6", sm: "8", lg: "16" }}
+        py={{ base: "6", md: "8" }}
+        align="center"
+      >
+        <Stack w="full">
           <Stepper size="sm" index={activeStep} gap="0" colorScheme="brand">
             {steps.map((step, index) => (
               <Step key={index}>
@@ -43,12 +48,12 @@ export const SeekerOnboardingFlow: React.FC = () => {
               </Step>
             ))}
           </Stepper>
-          <Text>
+          {/* <Text>
             Step {activeStep + 1} of {steps.length}: <b>{steps[activeStep].title}</b>
           </Text>
           <Text fontSize="sm" color="gray.600">
             {steps[activeStep].description}
-          </Text>
+          </Text> */}
         </Stack>
 
         {activeStep === 0 && (
@@ -60,7 +65,7 @@ export const SeekerOnboardingFlow: React.FC = () => {
         )}
 
         {activeStep === 2 && (
-          <WantedListing currentStep={activeStep} setStep={setActiveStep} />
+          <SeekerLivingSituation currentStep={activeStep} setStep={setActiveStep} />
         )}
 
         {activeStep === 3 && (

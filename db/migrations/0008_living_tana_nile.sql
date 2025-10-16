@@ -1,0 +1,1 @@
+ALTER TABLE "seeker_profiles" RENAME COLUMN "preferred_breed" TO "preferred_breed_name";

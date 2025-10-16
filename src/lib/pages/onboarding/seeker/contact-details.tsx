@@ -12,13 +12,15 @@ import {
   Icon,
   Heading,
   Select,
-  Textarea,
+  Text,
+  Center,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineLocationOn, MdPerson, MdHome, MdApartment } from "react-icons/md";
-import { useCurrentUser } from "../../../hooks/queries";
+import { useCurrentUser, useUserProfile } from "../../../hooks/queries";
 import { useUpdateUserProfile } from "../../../hooks/queries";
-import { useUpsertSeekerProfile } from "../../../hooks/queries/useSeekerProfile";
+import { useSeekerProfile, useUpsertSeekerProfile } from "../../../hooks/queries/useSeekerProfile";
+import { Loader } from "lib/components/ui/Loader";
 
 type PageProps = {
   currentStep: number;
@@ -27,13 +29,14 @@ type PageProps = {
 
 export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep }) => {
   const { data: user } = useCurrentUser();
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const { data: seekerProfile, isLoading: seekerProfileLoading } = useSeekerProfile(user?.id);
   const updateUserProfile = useUpdateUserProfile();
   const upsertSeekerProfile = useUpsertSeekerProfile();
   const toast = useToast();
 
   const [displayName, setDisplayName] = useState("");
   const [location, setLocation] = useState("");
-  const [livingSituation, setLivingSituation] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -54,6 +57,18 @@ export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep
   const onBack = () => {
     setStep(currentStep - 1);
   };
+
+
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name ?? "");
+      setLocation(profile.location_text ?? "");
+    }
+
+    if (seekerProfile) {
+      setExperienceLevel(seekerProfile.experience_level ?? "");
+    }
+  }, [profile, seekerProfile]);
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -81,7 +96,6 @@ export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep
         }),
         // Save seeker-specific data to seeker_profiles table
         upsertSeekerProfile.mutateAsync({
-          living_situation: livingSituation,
           experience_level: experienceLevel,
         }),
       ]);
@@ -101,96 +115,89 @@ export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep
   };
 
   return (
-    <Stack as="form" spacing="9" onSubmit={onSubmit}>
-      <Heading size="md">
-        Great choice! Tell us about yourself 🏠
-      </Heading>
+    <>
+      {(profileLoading || seekerProfileLoading) && <Center h="100%" position="absolute" flex="1">
+        <Loader />
+      </Center>
+      }
 
-      <Stack spacing="4">
-        <FormControl id="displayName">
-          <FormLabel htmlFor="displayName">Your Name</FormLabel>
-          <InputGroup size="lg">
-            <InputLeftElement pointerEvents="none">
-              <Icon as={MdPerson} color="gray.300" boxSize={5} />
-            </InputLeftElement>
-            <Input
-              size="lg"
-              required
-              id="displayName"
-              name="displayName"
-              type="text"
-              placeholder="Your full name"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-            />
-          </InputGroup>
-        </FormControl>
+      <Stack as="form" spacing="9" onSubmit={onSubmit}>
+        <Heading size={{ base: "sm", lg: "md" }}>
+          Great choice! Tell us about yourself 🏠
+        </Heading>
 
-        <FormControl id="location">
-          <FormLabel htmlFor="location">Location</FormLabel>
-          <InputGroup size="lg">
-            <InputLeftElement pointerEvents="none">
-              <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
-            </InputLeftElement>
-            <Input
-              size="lg"
-              required
-              id="location"
-              name="location"
-              placeholder="City, Country"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-          </InputGroup>
-        </FormControl>
+        <Stack spacing="4">
+          <FormControl id="displayName">
+            <FormLabel htmlFor="displayName">Your Name</FormLabel>
+            <InputGroup size="lg">
+              <InputLeftElement pointerEvents="none">
+                <Icon as={MdPerson} color="gray.300" boxSize={5} />
+              </InputLeftElement>
+              <Input
+                size="md"
+                required
+                id="displayName"
+                name="displayName"
+                type="text"
+                placeholder="Your full name"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+              />
+            </InputGroup>
+          </FormControl>
 
-        <FormControl id="livingSituation">
-          <FormLabel htmlFor="livingSituation">Living Situation</FormLabel>
-          <Select
-            size="lg"
-            placeholder="Select your living situation"
-            value={livingSituation}
-            onChange={(e) => setLivingSituation(e.target.value)}
+          <FormControl id="location">
+            <FormLabel htmlFor="location">Location</FormLabel>
+            <InputGroup size="lg">
+              <InputLeftElement pointerEvents="none">
+                <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
+              </InputLeftElement>
+              <Input
+                size="md"
+                required
+                id="location"
+                name="location"
+                placeholder="City, Country"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </InputGroup>
+          </FormControl>
+
+
+
+          <FormControl id="experienceLevel">
+            <FormLabel htmlFor="experienceLevel">Experience with Dogs</FormLabel>
+            <Select
+              size="md"
+              placeholder="Select your experience level"
+              value={experienceLevel}
+              onChange={(e) => setExperienceLevel(e.target.value)}
+            >
+              {experienceOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  <Text>{option.label}</Text>
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
+
+        <ButtonGroup width="100%">
+          <Button onClick={onBack} variant="ghost">
+            Back
+          </Button>
+          <Spacer />
+          <Button
+            isLoading={loading}
+            type="submit"
+            variant="primary"
+            isDisabled={!displayName || !location || !experienceLevel}
           >
-            {livingSituationOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl id="experienceLevel">
-          <FormLabel htmlFor="experienceLevel">Experience with Dogs</FormLabel>
-          <Select
-            size="lg"
-            placeholder="Select your experience level"
-            value={experienceLevel}
-            onChange={(e) => setExperienceLevel(e.target.value)}
-          >
-            {experienceOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+            Next
+          </Button>
+        </ButtonGroup>
       </Stack>
-
-      <ButtonGroup width="100%">
-        <Button onClick={onBack} variant="ghost">
-          Back
-        </Button>
-        <Spacer />
-        <Button
-          isLoading={loading}
-          type="submit"
-          variant="primary"
-          isDisabled={!displayName || !location || !livingSituation || !experienceLevel}
-        >
-          Next
-        </Button>
-      </ButtonGroup>
-    </Stack>
+    </>
   );
 };

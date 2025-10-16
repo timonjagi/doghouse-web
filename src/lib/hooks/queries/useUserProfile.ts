@@ -2,22 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { useAppStore } from '../../stores/useAppStore';
-
-// Types
-interface UserProfile {
-  id: string;
-  email: string;
-  display_name?: string;
-  bio?: string;
-  location_text?: string;
-  location_lat?: number;
-  location_lng?: number;
-  avatar_url?: string;
-  role: 'breeder' | 'seeker' | 'admin';
-  onboarding_completed: boolean;
-  created_at: string;
-  updated_at: string;
-}
+import { User } from '../../../../db/schema';
 
 interface UpdateProfileData {
   display_name?: string;
@@ -34,7 +19,7 @@ interface UpdateProfileData {
 export const useUserProfile = () => {
   return useQuery({
     queryKey: queryKeys.users.currentProfile(),
-    queryFn: async (): Promise<UserProfile | null> => {
+    queryFn: async (): Promise<User | null> => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
@@ -54,7 +39,7 @@ export const useUserProfile = () => {
 export const useUserProfileById = (userId: string) => {
   return useQuery({
     queryKey: queryKeys.users.profile(userId),
-    queryFn: async (): Promise<UserProfile | null> => {
+    queryFn: async (): Promise<User | null> => {
       const { data, error } = await supabase
         .from('users')
         .select('*')

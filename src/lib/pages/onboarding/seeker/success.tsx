@@ -7,6 +7,10 @@ import {
   VStack,
   Text,
   Icon,
+  List,
+  ListIcon,
+  ListItem,
+  Heading,
 } from "@chakra-ui/react";
 import React from "react";
 import { MdCheckCircle } from "react-icons/md";
@@ -17,45 +21,22 @@ type SuccessProps = {
 export const SeekerSuccess: React.FC<SuccessProps> = () => {
   return (
     <VStack spacing="8" textAlign="center">
-      <Alert
-        status="success"
-        variant="success"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        textAlign="center"
-        height="300px"
-        borderRadius="lg"
-      >
-        <AlertIcon as={MdCheckCircle} boxSize="40px" mr={0} color="green.500" />
-        <AlertTitle mt={4} mb={2} fontSize="2xl">
-          Welcome to DogHouse Kenya! 🎉
-        </AlertTitle>
-        <AlertDescription maxWidth="md" fontSize="lg">
-          Your profile and wanted listing have been created successfully. Breeders can now find and contact you about available puppies.
-        </AlertDescription>
-      </Alert>
-
-      <VStack spacing={4}>
-        <Text fontSize="md" color="gray.600">
-          <strong>What's next?</strong>
-        </Text>
-        <VStack spacing={2} fontSize="sm" color="gray.500" align="start">
-          <Text>• Browse available litters from verified breeders</Text>
-          <Text>• Receive notifications when matching puppies are available</Text>
-          <Text>• Connect with breeders via WhatsApp</Text>
-          <Text>• Track your applications in your dashboard</Text>
-        </VStack>
-      </VStack>
+      <Icon as={MdCheckCircle} boxSize="40px" mr={0} color="green.500" />
+      <Heading size="md">
+        Profile Created 🎉
+      </Heading>
+      <Text fontSize="md" color="gray.600">
+        Your profile has been created successfully. You can now start searching for litters and connecting with verified breeders.
+      </Text>
 
       <Button
-        onClick={() => window.location.href = '/dashboard'}
+        onClick={() => window.location.href = '/dashboard?onboarding=true&user_type=seeker'}
         w="full"
         colorScheme="brand"
         size="lg"
       >
         Start Exploring
       </Button>
-    </VStack>
+    </VStack >
   );
 };

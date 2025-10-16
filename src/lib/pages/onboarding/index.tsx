@@ -33,11 +33,11 @@ const OnboardingPage = () => {
   console.log("profile", profile);
   const router = useRouter();
 
-  useEffect(() => {
-    if (profile?.onboarding_completed) {
-      router.push('/dashboard');
-    }
-  }, [profile, router]);
+  // useEffect(() => {
+  //   if (profile?.onboarding_completed) {
+  //     router.push('/dashboard');
+  //   }
+  // }, [profile, router]);
 
   if (profileLoading) {
     return (
@@ -73,6 +73,8 @@ const OnboardingPage = () => {
             {profile?.role === "breeder" && <BreederOnboardingFlow />}
 
             {profile?.role === "seeker" && <SeekerOnboardingFlow />}
+
+
 
           </Card>
         </Center>
