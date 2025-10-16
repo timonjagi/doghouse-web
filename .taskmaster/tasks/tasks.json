@@ -141,7 +141,7 @@
           1,
           2
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -149,7 +149,7 @@
             "description": "Create separate onboarding directories for breeders and seekers with role-specific components and flows.",
             "dependencies": [],
             "details": "Create `src/lib/pages/onboarding/breeder/` and `src/lib/pages/onboarding/seeker/` directories. Move existing components to appropriate directories and create new role-specific components for unique requirements.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify that the new directory structure exists and components are properly organized by role."
           },
           {
@@ -158,7 +158,7 @@
             "description": "Add new fields to users and wanted_listings tables to support enhanced onboarding features.",
             "dependencies": [],
             "details": "Add living_situation, experience_level, kennel_name, kennel_location, facility_type to users table. Add preference fields to wanted_listings table.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run database migration and verify new columns exist in Supabase tables."
           },
           {
@@ -169,7 +169,7 @@
               2
             ],
             "details": "Create useWantedListings, useCreateWantedListing, useUploadBreedImage, and enhanced useUpdateUserProfile hooks.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test hooks individually to ensure they properly interact with the updated database schema."
           },
           {
@@ -181,7 +181,7 @@
               3
             ],
             "details": "Create SeekerContactDetails, SeekerPreferences, and WantedListing components that save to wanted_listings table.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Complete seeker onboarding flow and verify wanted_listing is created with all preferences."
           },
           {
@@ -193,7 +193,7 @@
               3
             ],
             "details": "Create BreederContactDetails, BreedSelection, and BreedImages components with image upload functionality.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Complete breeder onboarding flow and verify kennel information and breed images are properly saved."
           },
           {
@@ -205,7 +205,7 @@
               5
             ],
             "details": "Update src/lib/pages/onboarding/index.tsx to detect user role and render appropriate flow components.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test role detection and routing to ensure users see the correct onboarding flow."
           }
         ]
@@ -280,6 +280,104 @@
       },
       {
         "id": 5,
+        "title": "Breeder Dashboard: Breed & Litter Management UI",
+        "description": "Implement the core functionality for verified breeders to manage the breeds they offer and create/edit their litters.",
+        "details": "Create a dashboard section for breeders. Implement a UI to add/remove breeds from their profile (populating the `user_breeds` table). Build a form to create a new litter, capturing all fields specified in the `litters` schema (name, DOB, number of puppies, etc.). Include image upload to Supabase Storage for litter photos. Display a list of the breeder's existing litters with options to edit or update their status.",
+        "testStrategy": "Log in as a verified breeder. Add a new breed to your profile and confirm it's saved. Create a new litter with multiple photos and verify it appears in the litter list. Edit the litter's details and confirm the changes are saved. Check Supabase tables (`user_breeds`, `litters`) to confirm data integrity.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Breeder Dashboard: Build 'My Breeds' Management UI",
+            "description": "Create a page or section in the breeder dashboard where verified breeders can add and remove the dog breeds they specialize in. This will interact with the `user_breeds` table.",
+            "dependencies": [],
+            "details": "Create a new route, likely `app/dashboard/breeds/index.tsx`. This component will fetch and display the breeder's currently associated breeds. Implement a multi-select component populated with all available breeds from the `breeds` table. Use the API route to update the `user_breeds` join table based on the breeder's selections.",
+            "status": "pending",
+            "testStrategy": "Log in as a breeder, navigate to the 'My Breeds' page. Add two breeds, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the `user_breeds` table in Supabase directly."
+          },
+          {
+            "id": 2,
+            "title": "Breeder Dashboard: Create 'My Litters' List View",
+            "description": "Develop the UI to display a list of a breeder's existing litters, providing a summary of each and entry points for creating new litters or editing existing ones.",
+            "dependencies": [],
+            "details": "Create a new route at `app/dashboard/litters/index.tsx`. This page will fetch and display all litters associated with the logged-in breeder. Use Chakra UI Card components to display each litter's summary (name, photo, DOB). Include a prominent 'Create New Litter' button linking to the form page. Each litter card will have an 'Edit' button linking to the pre-filled form for that specific litter.",
+            "status": "pending",
+            "testStrategy": "Once a litter can be created, log in as the breeder and navigate to the 'My Litters' page. Verify all created litters are displayed correctly with key information. Confirm the 'Create New Litter' and 'Edit' buttons navigate to the correct URLs."
+          },
+          {
+            "id": 3,
+            "title": "Breeder Dashboard: Implement Add/Edit Litter Form with Image Upload",
+            "description": "Build the form for creating and editing a litter. This includes handling all fields from the `litters` schema and implementing multi-image uploads to Supabase Storage.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create a dynamic route, e.g., `app/dashboard/litters/[litter_id]/index.tsx`, to handle both creating ('new') and editing (UUID). Use `react-hook-form` and `zod` for validation. The form must include a dropdown for 'breed' populated from the breeder's managed breeds (from subtask 1). Implement a multi-image uploader that sends files to a 'litter-photos' Supabase Storage bucket and stores the public URLs in the `litters` table. Create an API route for creating and updating litter data.",
+            "status": "pending",
+            "testStrategy": "Navigate from the litters list to create a new litter. Fill out the form, upload several photos, and save. Verify redirection and the new litter's appearance on the list. Edit the litter's details and confirm the changes persist. Check Supabase Storage for the uploaded files and the `litters` table for correct data."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Public-Facing Breed & Litter Discovery Page",
+        "description": "Develop the public page where seekers can explore and filter available litters.",
+        "details": "Create a Next.js page that fetches and displays all litters with `status = 'available'`. Implement filter controls for breed, location (simple text search for now), and size. Each litter card should display key information and link to a detailed view. Ensure data is fetched using RLS policies that only allow public viewing of available litters.",
+        "testStrategy": "As a logged-out user, access the discovery page and verify that only litters marked 'available' are shown. Test the filtering functionality by breed and location. Ensure that clicking a litter card navigates to a placeholder detail page.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement Seeker Application Submission Flow",
+        "description": "Create the functionality for a seeker to submit an application for a specific litter.",
+        "details": "On the litter detail page, add an 'Apply' button for logged-in seekers. This button should open a form where the seeker can provide their `application_data` (as a JSONB object). On submission, create a new record in the `applications` table with `status = 'submitted'`, linking the `seeker_id` and `litter_id`.",
+        "testStrategy": "Log in as a seeker, find a litter, and click 'Apply'. Fill out the application form and submit it. Verify that a new record is created in the `applications` table in Supabase with the correct data and status. Ensure non-logged-in users are prompted to sign in.",
+        "priority": "high",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Breeder Dashboard: Inquiry & Application Management",
+        "description": "Build the dashboard view for breeders to see and manage applications for their litters.",
+        "details": "Create an 'Inquiries' or 'Applications' tab in the breeder dashboard. Fetch all applications related to the breeder's litters. Display them in a list or table format, showing seeker info, application status, and date. Implement actions to update the application status (e.g., 'Approve', 'Reject'). Add a deep link to open a WhatsApp conversation with the seeker.",
+        "testStrategy": "Log in as the breeder who owns the litter from the previous test. Verify the new application appears in their dashboard. Change the application status and confirm the update in the database. Click the WhatsApp link and verify it attempts to open the correct chat.",
+        "priority": "high",
+        "dependencies": [
+          7,
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Seeker Dashboard: 'My Applications' Tracking",
+        "description": "Create a dashboard page for seekers to track the status of their submitted applications.",
+        "details": "Develop a 'My Applications' page for logged-in seekers. This page should fetch all applications where the `seeker_id` matches the current user's ID. Display each application's status (`Submitted`, `Approved`, etc.) and which litter it was for. The status should update in real-time if possible (or on page load).",
+        "testStrategy": "Log in as the seeker who applied in the previous test. Go to the 'My Applications' page and verify the application is listed with the status 'Submitted'. Log in as the breeder, change the application status to 'Approved', then log back in as the seeker and confirm the status has updated on their dashboard.",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
         "title": "Develop User Profile Management Component",
         "description": "Create a shared component for users of all roles to view and edit their profile information, including bio, photo, location, and contact details.",
         "details": "Build a form in Next.js that populates with the current user's data from the 'users' table. Implement an update function that writes changes back to Supabase. Include functionality for uploading a profile photo to Supabase Storage and updating the `profile_photo_url` field. This component should be accessible from a user's dashboard.",
@@ -349,7 +447,7 @@
         ]
       },
       {
-        "id": 6,
+        "id": 11,
         "title": "Build Admin Dashboard: Breeder Verification Panel",
         "description": "Create a secure dashboard page for Admins to review and manage breeder verification requests.",
         "details": "Develop a page accessible only to users with the 'admin' role. This page should fetch and display a list of breeders with `is_verified = false`. For each breeder, the admin should be able to view their submitted `verification_docs` (from `breeder_profiles`) and have 'Approve' and 'Reject' buttons. The 'Approve' action should set `users.is_verified` to true and populate `breeder_profiles.verified_at`.",
@@ -358,104 +456,6 @@
         "dependencies": [
           1,
           4
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 7,
-        "title": "Breeder Dashboard: Breed & Litter Management UI",
-        "description": "Implement the core functionality for verified breeders to manage the breeds they offer and create/edit their litters.",
-        "details": "Create a dashboard section for breeders. Implement a UI to add/remove breeds from their profile (populating the `user_breeds` table). Build a form to create a new litter, capturing all fields specified in the `litters` schema (name, DOB, number of puppies, etc.). Include image upload to Supabase Storage for litter photos. Display a list of the breeder's existing litters with options to edit or update their status.",
-        "testStrategy": "Log in as a verified breeder. Add a new breed to your profile and confirm it's saved. Create a new litter with multiple photos and verify it appears in the litter list. Edit the litter's details and confirm the changes are saved. Check Supabase tables (`user_breeds`, `litters`) to confirm data integrity.",
-        "priority": "high",
-        "dependencies": [
-          5,
-          6
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Breeder Dashboard: Build 'My Breeds' Management UI",
-            "description": "Create a page or section in the breeder dashboard where verified breeders can add and remove the dog breeds they specialize in. This will interact with the `user_breeds` table.",
-            "dependencies": [],
-            "details": "Create a new route, likely `app/dashboard/breeds/index.tsx`. This component will fetch and display the breeder's currently associated breeds. Implement a multi-select component populated with all available breeds from the `breeds` table. Use the API route to update the `user_breeds` join table based on the breeder's selections.",
-            "status": "pending",
-            "testStrategy": "Log in as a breeder, navigate to the 'My Breeds' page. Add two breeds, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the `user_breeds` table in Supabase directly."
-          },
-          {
-            "id": 2,
-            "title": "Breeder Dashboard: Create 'My Litters' List View",
-            "description": "Develop the UI to display a list of a breeder's existing litters, providing a summary of each and entry points for creating new litters or editing existing ones.",
-            "dependencies": [],
-            "details": "Create a new route at `app/dashboard/litters/index.tsx`. This page will fetch and display all litters associated with the logged-in breeder. Use Chakra UI Card components to display each litter's summary (name, photo, DOB). Include a prominent 'Create New Litter' button linking to the form page. Each litter card will have an 'Edit' button linking to the pre-filled form for that specific litter.",
-            "status": "pending",
-            "testStrategy": "Once a litter can be created, log in as the breeder and navigate to the 'My Litters' page. Verify all created litters are displayed correctly with key information. Confirm the 'Create New Litter' and 'Edit' buttons navigate to the correct URLs."
-          },
-          {
-            "id": 3,
-            "title": "Breeder Dashboard: Implement Add/Edit Litter Form with Image Upload",
-            "description": "Build the form for creating and editing a litter. This includes handling all fields from the `litters` schema and implementing multi-image uploads to Supabase Storage.",
-            "dependencies": [
-              1,
-              2
-            ],
-            "details": "Create a dynamic route, e.g., `app/dashboard/litters/[litter_id]/index.tsx`, to handle both creating ('new') and editing (UUID). Use `react-hook-form` and `zod` for validation. The form must include a dropdown for 'breed' populated from the breeder's managed breeds (from subtask 1). Implement a multi-image uploader that sends files to a 'litter-photos' Supabase Storage bucket and stores the public URLs in the `litters` table. Create an API route for creating and updating litter data.",
-            "status": "pending",
-            "testStrategy": "Navigate from the litters list to create a new litter. Fill out the form, upload several photos, and save. Verify redirection and the new litter's appearance on the list. Edit the litter's details and confirm the changes persist. Check Supabase Storage for the uploaded files and the `litters` table for correct data."
-          }
-        ]
-      },
-      {
-        "id": 8,
-        "title": "Public-Facing Breed & Litter Discovery Page",
-        "description": "Develop the public page where seekers can explore and filter available litters.",
-        "details": "Create a Next.js page that fetches and displays all litters with `status = 'available'`. Implement filter controls for breed, location (simple text search for now), and size. Each litter card should display key information and link to a detailed view. Ensure data is fetched using RLS policies that only allow public viewing of available litters.",
-        "testStrategy": "As a logged-out user, access the discovery page and verify that only litters marked 'available' are shown. Test the filtering functionality by breed and location. Ensure that clicking a litter card navigates to a placeholder detail page.",
-        "priority": "medium",
-        "dependencies": [
-          7
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 9,
-        "title": "Implement Seeker Application Submission Flow",
-        "description": "Create the functionality for a seeker to submit an application for a specific litter.",
-        "details": "On the litter detail page, add an 'Apply' button for logged-in seekers. This button should open a form where the seeker can provide their `application_data` (as a JSONB object). On submission, create a new record in the `applications` table with `status = 'submitted'`, linking the `seeker_id` and `litter_id`.",
-        "testStrategy": "Log in as a seeker, find a litter, and click 'Apply'. Fill out the application form and submit it. Verify that a new record is created in the `applications` table in Supabase with the correct data and status. Ensure non-logged-in users are prompted to sign in.",
-        "priority": "high",
-        "dependencies": [
-          8
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 10,
-        "title": "Breeder Dashboard: Inquiry & Application Management",
-        "description": "Build the dashboard view for breeders to see and manage applications for their litters.",
-        "details": "Create an 'Inquiries' or 'Applications' tab in the breeder dashboard. Fetch all applications related to the breeder's litters. Display them in a list or table format, showing seeker info, application status, and date. Implement actions to update the application status (e.g., 'Approve', 'Reject'). Add a deep link to open a WhatsApp conversation with the seeker.",
-        "testStrategy": "Log in as the breeder who owns the litter from the previous test. Verify the new application appears in their dashboard. Change the application status and confirm the update in the database. Click the WhatsApp link and verify it attempts to open the correct chat.",
-        "priority": "high",
-        "dependencies": [
-          7,
-          9
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 11,
-        "title": "Seeker Dashboard: 'My Applications' Tracking",
-        "description": "Create a dashboard page for seekers to track the status of their submitted applications.",
-        "details": "Develop a 'My Applications' page for logged-in seekers. This page should fetch all applications where the `seeker_id` matches the current user's ID. Display each application's status (`Submitted`, `Approved`, etc.) and which litter it was for. The status should update in real-time if possible (or on page load).",
-        "testStrategy": "Log in as the seeker who applied in the previous test. Go to the 'My Applications' page and verify the application is listed with the status 'Submitted'. Log in as the breeder, change the application status to 'Approved', then log back in as the seeker and confirm the status has updated on their dashboard.",
-        "priority": "medium",
-        "dependencies": [
-          10
         ],
         "status": "pending",
         "subtasks": []

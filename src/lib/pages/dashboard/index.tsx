@@ -183,12 +183,12 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
       icon: <Icon as={MdCheckCircle} color='green.500' />,
       href: '/dashboard/explore'
     },
-    {
-      title: 'Add a Wanted Listing',
-      description: `Can&apos;t find a puppy you like? Create a wanted listing for the perfect pup`,
-      icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/dashboard/listings/create'
-    },
+    // {
+    //   title: 'Add a Wanted Listing',
+    //   description: `Can&apos;t find a puppy you like? Create a wanted listing for the perfect pup`,
+    //   icon: <Icon as={MdCheckCircle} color='green.500' />,
+    //   href: '/dashboard/listings/create'
+    // },
     {
       title: 'Complete your Profile',
       description: 'Upload your profile picture and other details about yourself',
