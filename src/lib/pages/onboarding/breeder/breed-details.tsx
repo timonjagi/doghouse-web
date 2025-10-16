@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { MdCheckCircle } from "react-icons/md";
-import { useCurrentUser, useUpdateUserBreed, useUserBreedsFromUser } from "../../../hooks/queries";
+import { useCreateUserBreed, useCurrentUser, useDeleteUserBreed, useUpdateUserBreed, useUpdateUserProfile, useUserBreedsFromUser } from "../../../hooks/queries";
 import breedsData from "../../../data/breeds_with_group_and_traits.json";
 import { useDropZone } from "../../../hooks/useDropZone";
 import { useBreedImageUpload } from "../../../hooks/useBreedImageUpload";
@@ -26,6 +26,7 @@ import { Dropzone } from "../../../components/ui/Dropzone";
 import { supabase } from "../../../supabase/client";
 import { BsInfoCircle, BsInfoCircleFill } from "react-icons/bs";
 import { Select } from "chakra-react-select";
+import { Loader } from "lib/components/ui/Loader";
 
 type PageProps = {
   currentStep: number;
@@ -34,7 +35,11 @@ type PageProps = {
 
 export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep }) => {
   const { data: user } = useCurrentUser();
-  const { data: userBreeds, isLoading: userBreedsLoading } = useUserBreedsFromUser(user?.id || '');
+  const { data: userBreeds, isLoading: userBreedsLoading } = useUserBreedsFromUser(user?.id);
+  const { mutateAsync: createUserBreed } = useCreateUserBreed();
+  const { mutateAsync: updateUserBreed } = useUpdateUserBreed();
+  const { mutateAsync: updateUserProfile } = useUpdateUserProfile();
+
   const toast = useToast();
 
   const [selectedBreed, setSelectedBreed] = useState<any>(null);
@@ -71,8 +76,6 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
     }
   });
 
-  const { mutateAsync: updateUserBreed } = useUpdateUserBreed();
-
   // Convert File objects to URLs for Dropzone component
   const imageUrls = selectedImages.map(file => URL.createObjectURL(file));
 
@@ -102,6 +105,17 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
       return;
     }
 
+    if (selectedImages.length === 0) {
+      toast({
+        title: "Image selection required",
+        description: "Please select at least one image",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -115,29 +129,22 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
       if (findError) throw new Error(`Breed not found: ${selectedBreed.name}`);
 
       // Create the user_breed record with the database ID
-      const { data: newUserBreed, error: breedError } = await supabase
-        .from('user_breeds')
-        .insert([{
-          user_id: user.id,
-          breed_id: dbBreed.id,
-          is_owner: true,
-        }])
-        .select()
-        .single();
+      const newUserBreed = await createUserBreed({
+        breed_id: dbBreed.id,
+        is_owner: true
+      });
 
-      if (breedError) throw breedError;
+      const uploadedUrls = await uploadImages(selectedImages);
 
-      // Upload breed images if any selected
-      if (selectedImages.length > 0) {
-        const uploadedUrls = await uploadImages(selectedImages);
-
-        if (uploadedUrls.length > 0 && newUserBreed?.id) {
-          await updateUserBreed({
-            id: newUserBreed.id,
-            updates: { images: uploadedUrls }
-          });
-        }
+      if (uploadedUrls.length > 0 && newUserBreed?.id) {
+        await updateUserBreed({
+          id: newUserBreed.id,
+          updates: { images: uploadedUrls }
+        });
       }
+      await updateUserProfile({
+        onboarding_completed: true,
+      });
 
       toast({
         title: "Breed details saved successfully!",
@@ -160,78 +167,77 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
     }
   };
 
-  // Show loading spinner while fetching user breeds (breeds data is now local)
-  if (userBreedsLoading) {
-    return (
-      <Center h="200px">
-        <Spinner size="xl" color="brand.500" />
-      </Center>
-    );
-  }
 
   return (
-    <Stack as="form" spacing="8" onSubmit={onSubmit}>
-      <VStack spacing={6} textAlign="center">
-        <Heading size={{ base: "sm", lg: "md" }}>
-          Tell us about your primary breed
-        </Heading>
+    <>
+      {userBreedsLoading && <Center h="100%" flex="1" position="absolute" bg="white">
+        <Loader />
+      </Center>
+      }
+      <Stack as="form" spacing="8" onSubmit={onSubmit}>
+        <VStack spacing={6} textAlign="center">
+          <Heading size={{ base: "sm", lg: "md" }}>
+            Tell us about your primary breed
+          </Heading>
 
-        <Stack spacing={4} w="full">
-          <FormControl>
-            <FormLabel htmlFor="breed" fontWeight="semibold">
-              Primary Breed
-            </FormLabel>
-            <Select
-              placeholder="Select breed..."
-              colorScheme="brand"
-              options={breedOptions}
-              value={selectedBreed ? { label: selectedBreed.name, value: selectedBreed.id } : null}
-              onChange={onSelectBreed}
-            />
-          </FormControl>
+          <Stack spacing={4} w="full">
+            <FormControl>
+              <FormLabel htmlFor="breed" fontWeight="semibold">
+                Primary Breed
+              </FormLabel>
+              <Select
+                placeholder="Select breed..."
+                colorScheme="brand"
+                options={breedOptions}
+                value={selectedBreed ? { label: selectedBreed.name, value: selectedBreed.id } : null}
+                onChange={onSelectBreed}
+              />
+            </FormControl>
 
-          <Box>
-            <FormLabel fontWeight="semibold" mb={4}>
-              Breed Photos
-            </FormLabel>
-            <Text color="subtle" mb={4} fontSize="xs">
-              Upload up to 4 photos of your breed
-            </Text>
+            <Box>
+              <FormLabel fontWeight="semibold" mb={4}>
+                Breed Photos
+              </FormLabel>
+              <Text color="subtle" mb={4} fontSize="xs">
+                Upload up to 4 photos of your breed
+              </Text>
 
-            <Dropzone
-              selectedFiles={imageUrls}
-              onChange={handleImageSelect}
-              onRemove={(fileUrl) => {
-                const index = selectedImages.findIndex(file => URL.createObjectURL(file) === fileUrl);
-                if (index !== -1) {
-                  handleRemoveImage(index);
-                }
-              }}
-              maxUploads={4}
-            />
-          </Box>
-        </Stack>
+              <Dropzone
+                selectedFiles={imageUrls}
+                onChange={handleImageSelect}
+                onRemove={(fileUrl) => {
+                  const index = selectedImages.findIndex(file => URL.createObjectURL(file) === fileUrl);
+                  if (index !== -1) {
+                    handleRemoveImage(index);
+                  }
+                }}
+                maxUploads={4}
+              />
+            </Box>
+          </Stack>
 
-        <HStack justify="start">
-          <Icon as={BsInfoCircle} color="subtle" size="sm"></Icon>
-          <Text fontSize="xs" color="subtle">If you have multiple breeds, you can add  more later from your dashboard.</Text>
-        </HStack>
-      </VStack>
+          <HStack justify="start">
+            <Icon as={BsInfoCircle} color="subtle" size="sm"></Icon>
+            <Text fontSize="xs" color="subtle">You can add more breeds later from your dashboard.</Text>
+          </HStack>
+        </VStack>
 
-      <ButtonGroup width="100%">
-        <Button onClick={onBack} variant="ghost">
-          Back
-        </Button>
-        <Spacer />
-        <Button
-          isLoading={loading || uploading}
-          type="submit"
-          variant="primary"
-          isDisabled={!selectedBreed || loading || uploading}
-        >
-          Complete Setup
-        </Button>
-      </ButtonGroup>
-    </Stack>
+        <ButtonGroup width="100%">
+          <Button onClick={onBack} variant="ghost">
+            Back
+          </Button>
+          <Spacer />
+          <Button
+            isLoading={loading || uploading}
+            type="submit"
+            variant="primary"
+            isDisabled={loading || uploading || userBreedsLoading}
+          >
+            Complete Setup
+          </Button>
+        </ButtonGroup>
+      </Stack>
+    </>
+
   );
 };

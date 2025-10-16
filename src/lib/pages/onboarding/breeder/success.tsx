@@ -29,9 +29,9 @@ export const BreederSuccess: React.FC<SuccessProps> = () => {
       >
         <AlertIcon as={MdCheckCircle} boxSize="40px" mr={0} color="green.500" />
         <AlertTitle mt={4} mb={2} fontSize="2xl">
-          Welcome to DogHouse Kenya! 🎉
+          Profile Created 🎉
         </AlertTitle>
-        <AlertDescription maxWidth="md" fontSize="lg">
+        <AlertDescription maxWidth="md" fontSize="sm">
           Your breeder profile has been created successfully. You can now start adding your breeds and connecting with dog seekers.
         </AlertDescription>
       </Alert>
@@ -41,8 +41,8 @@ export const BreederSuccess: React.FC<SuccessProps> = () => {
           <strong>What's next?</strong>
         </Text>
         <VStack spacing={2} fontSize="sm" color="gray.500" align="start">
-          <Text>• Upload photos of your breeds</Text>
-          <Text>• Add your first litter</Text>
+          <Text>• Add more breeds to your profile</Text>
+          <Text>• Add your first litter or puppy for sale</Text>
           <Text>• Start receiving inquiries from seekers</Text>
         </VStack>
       </VStack>

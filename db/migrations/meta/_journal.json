@@ -29,6 +29,27 @@
       "when": 1760539273696,
       "tag": "0003_cheerful_ravenous",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1760603354355,
+      "tag": "0004_adorable_absorbing_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1760603598325,
+      "tag": "0005_abandoned_warbound",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1760609744022,
+      "tag": "0006_shallow_warstar",
+      "breakpoints": true
     }
   ]
 }

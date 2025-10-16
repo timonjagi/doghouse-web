@@ -24,7 +24,6 @@ import { useUserProfile } from "lib/hooks/queries";
 
 const DashboardHome = () => {
   const [selectedPost, setSelectedPost] = useState();
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const router = useRouter();
 
@@ -38,7 +37,8 @@ const DashboardHome = () => {
 
 
   useEffect(() => {
-    if (!profile?.onboarding_completed) {
+    console.log(profile)
+    if (profile && !profile?.onboarding_completed) {
       setShowOnboardingModal(true);
     }
   }, [profile]);
@@ -53,7 +53,7 @@ const DashboardHome = () => {
     <Container h="full">
       <Box h="full">
         <Box>
-          {profile?.onboarding_completed && <HeaderButtonGroup />}
+          {profile?.onboarding_completed && <HeaderButtonGroup profile={profile} />}
           <Stack
             direction={{ base: "column", lg: "row" }}
             spacing={{ base: "5", lg: "8" }}

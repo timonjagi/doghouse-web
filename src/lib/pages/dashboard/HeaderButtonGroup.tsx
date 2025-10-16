@@ -1,19 +1,20 @@
 import { HStack, Heading, IconButton } from "@chakra-ui/react";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import router from "next/router";
 import React from "react";
 import { FiBell, FiUser, FiSettings } from "react-icons/fi";
+import { User } from "../../../../db/schema";
 
-type HeaderButtonGroupProps = {};
+type HeaderButtonGroupProps = {
+  profile?: User;
+};
 
-const HeaderButtonGroup: React.FC<HeaderButtonGroupProps> = () => {
+const HeaderButtonGroup: React.FC<HeaderButtonGroupProps> = ({ profile }) => {
   const onClickMenuLink = (link) => { };
-  const { user, loading } = useSupabaseAuth();
 
   return (
     <HStack justify="space-between" align="start">
       <Heading pb="4" size={{ base: "xs", sm: "md" }}>
-        Hi, {user?.user_metadata.full_name} 👋
+        Hi, {profile?.display_name} 👋
       </Heading>
 
       <HStack spacing="1" direction="row">

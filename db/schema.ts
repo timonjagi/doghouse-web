@@ -26,6 +26,7 @@ export const users = pgTable("users", {
   location_text: varchar("location_text", { length: 255 }),
   location_lat: numeric("location_lat", { precision: 9, scale: 6 }), // lat/lng as decimals
   location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
+  onboarding_completed: boolean("onboarding_completed").notNull().default(false),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -35,10 +36,12 @@ export const breeds = pgTable("breeds", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 200 }).notNull(),
   group: varchar("group", { length: 100 }), // e.g. 'sporting', 'toy'
-  size: varchar("size", { length: 50 }), // small/medium/large
+  height: text("height"),
+  weight: text("weight"),
+  life_span: text("life_span"),
   description: text("description"),
   traits: jsonb("traits"), // temperament etc.
-  image_url: text("image_url"),
+  featured_image_url: text("featured_image_url"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -197,3 +200,15 @@ export const transactions = pgTable("transactions", {
   meta: jsonb("meta"),
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
+
+export type User = typeof users.$inferSelect;
+export type BreederProfile = typeof breeder_profiles.$inferSelect;
+export type Kennel = typeof kennels.$inferSelect;
+export type Litter = typeof litters.$inferSelect;
+export type WantedListing = typeof wanted_listings.$inferSelect;
+export type UserBreed = typeof user_breeds.$inferSelect;
+export type Application = typeof applications.$inferSelect;
+export type Message = typeof messages.$inferSelect;
+export type Notification = typeof notifications.$inferSelect;
+export type ActivityLog = typeof activity_logs.$inferSelect;
+export type Transaction = typeof transactions.$inferSelect;

@@ -83,89 +83,100 @@ export const BreederKennelDetails: React.FC<PageProps> = ({ currentStep, setStep
   };
 
 
-  if (breederProfileLoading) {
-    return (
-      <Center h="100%">
-        <Loader />
-      </Center>
-    );
-  }
+  // if (breederProfileLoading) {
+  //   return (
+  //     <Center h="100%">
+  //       <Loader />
+  //     </Center>
+  //   );
+  // }
 
   return (
-    <Stack as="form" spacing="9" onSubmit={onSubmit}>
-      <Heading size={{ base: "sm", lg: "md" }}>
-        Great! Now let's set up your kennel.
-      </Heading>
+    <>
+      {breederProfileLoading && <Center h="100%" flex="1" position="absolute" bg="white">
+        <Loader />
+      </Center>
+      }
 
-      <Stack spacing="4">
-        <FormControl id="kennelName">
-          <FormLabel htmlFor="kennelName">Kennel Name</FormLabel>
-          <InputGroup size="lg">
-            <InputLeftElement pointerEvents="none">
-              <Icon as={MdBusiness} color="gray.300" boxSize={5} />
-            </InputLeftElement>
-            <Input
+      <Stack as="form" spacing="9" onSubmit={onSubmit}>
+        <Heading size={{ base: "sm", lg: "md" }}>
+          Great! Now let's set up your kennel.
+        </Heading>
+
+        <Stack spacing="4">
+          <FormControl id="kennelName">
+            <FormLabel htmlFor="kennelName">Kennel Name</FormLabel>
+            <InputGroup size="lg">
+              <InputLeftElement pointerEvents="none">
+                <Icon as={MdBusiness} color="gray.300" boxSize={5} />
+              </InputLeftElement>
+              <Input
+                size="lg"
+                required
+                id="kennelName"
+                name="kennelName"
+                type="text"
+                placeholder="Your kennel's name"
+                value={kennelName}
+                onChange={(e) => setKennelName(e.target.value)}
+              />
+            </InputGroup>
+          </FormControl>
+
+          <FormControl id="kennelLocation">
+            <FormLabel htmlFor="kennelLocation">Kennel Location</FormLabel>
+            <InputGroup size="lg">
+              <InputLeftElement pointerEvents="none">
+                <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
+              </InputLeftElement>
+              <Input
+                size="lg"
+                required
+                id="kennelLocation"
+                name="kennelLocation"
+                placeholder="City, Country"
+                value={kennelLocation}
+                onChange={(e) => setKennelLocation(e.target.value)}
+              />
+            </InputGroup>
+          </FormControl>
+
+          <FormControl id="facilityType">
+            <FormLabel htmlFor="facilityType">Facility Type</FormLabel>
+            <Select
               size="lg"
-              required
-              id="kennelName"
-              name="kennelName"
-              type="text"
-              placeholder="Your kennel's name"
-              value={kennelName}
-              onChange={(e) => setKennelName(e.target.value)}
-            />
-          </InputGroup>
-        </FormControl>
+              placeholder="Select your facility type"
+              value={facilityType}
+              onChange={(e) => setFacilityType(e.target.value)}
+            >
+              {facilityOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
 
-        <FormControl id="kennelLocation">
-          <FormLabel htmlFor="kennelLocation">Kennel Location</FormLabel>
-          <InputGroup size="lg">
-            <InputLeftElement pointerEvents="none">
-              <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
-            </InputLeftElement>
-            <Input
-              size="lg"
-              required
-              id="kennelLocation"
-              name="kennelLocation"
-              placeholder="City, Country"
-              value={kennelLocation}
-              onChange={(e) => setKennelLocation(e.target.value)}
-            />
-          </InputGroup>
-        </FormControl>
-
-        <FormControl id="facilityType">
-          <FormLabel htmlFor="facilityType">Facility Type</FormLabel>
-          <Select
-            size="lg"
-            placeholder="Select your facility type"
-            value={facilityType}
-            onChange={(e) => setFacilityType(e.target.value)}
+        <ButtonGroup width="100%">
+          <Button onClick={onBack} variant="ghost">
+            Back
+          </Button>
+          <Spacer />
+          <Button
+            isLoading={loading}
+            type="submit"
+            variant="primary"
+            isDisabled={!kennelName || !kennelLocation || !facilityType}
           >
-            {facilityOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+            Next
+          </Button>
+        </ButtonGroup>
       </Stack>
 
-      <ButtonGroup width="100%">
-        <Button onClick={onBack} variant="ghost">
-          Back
-        </Button>
-        <Spacer />
-        <Button
-          isLoading={loading}
-          type="submit"
-          variant="primary"
-          isDisabled={!kennelName || !kennelLocation || !facilityType}
-        >
-          Next
-        </Button>
-      </ButtonGroup>
-    </Stack>
+
+    </>
+
+
   );
 };

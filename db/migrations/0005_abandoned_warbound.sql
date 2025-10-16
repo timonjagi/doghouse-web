@@ -1,0 +1,1 @@
+ALTER TABLE "breeds" RENAME COLUMN "image_url" TO "featured_image_url";

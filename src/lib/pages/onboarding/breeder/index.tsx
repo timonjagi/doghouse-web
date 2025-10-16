@@ -42,12 +42,15 @@ export const BreederOnboardingFlow: React.FC = () => {
               </Step>
             ))}
           </Stepper>
-          <Text>
-            Step {activeStep + 1} of {steps.length}: <b>{steps[activeStep].title}</b>
-          </Text>
-          <Text fontSize="sm" color="gray.600">
-            {steps[activeStep].description}
-          </Text>
+          {/* <Stack>
+            <Text>
+              {steps[activeStep].title}
+            </Text>
+            <Text fontSize="sm" color="muted">
+              {steps[activeStep].description}
+            </Text>
+          </Stack> */}
+
         </Stack>
 
         {activeStep === 0 && (
