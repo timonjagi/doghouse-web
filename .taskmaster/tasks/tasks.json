@@ -222,7 +222,7 @@
           2,
           3
         ],
-        "status": "pending",
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
@@ -230,17 +230,17 @@
             "description": "Develop a custom React hook `useUserProfile` that fetches the current user's profile data, including their role, from the 'users' table in Supabase. This hook will encapsulate the logic for retrieving the session user and querying for their extended profile.",
             "dependencies": [],
             "details": "Create a new file `src/hooks/useUserProfile.ts`. The hook should use `useUser` from `@supabase/auth-helpers-react` to get the authenticated user's ID and `useSupabaseClient` to query the `users` table for the row matching that ID. It should return the user profile object (or null/undefined during loading/error states) and the user's role.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Create a test page that uses the hook. Log in as a Breeder and verify the hook returns the full user profile with `role: 'Breeder'`. Test loading and unauthenticated states."
           },
           {
             "id": 2,
             "title": "Define Role-Based Navigation Link Configurations",
-            "description": "Create a centralized configuration object or file that defines the navigation links for each user role (Breeder, Seeker, Admin). This will decouple the link data from the rendering logic in the Sidebar component.",
+            "description": "Create a centralized configuration object that defines the navigation links for each user role with clean groupings: Dashboard, Browse/Matches, Applications, Profile sections.",
             "dependencies": [],
-            "details": "In a new file, e.g., `src/lib/config/navLinks.ts`, define a constant object. This object will have keys for 'SEEKER', 'BREEDER', and 'ADMIN'. Each key will hold an array of link objects, with each object containing `href`, `label`, and an `icon` component.",
+            "details": "In a new file `src/lib/config/navLinks.ts`, define navigation configurations for each role: BREEDER (Dashboard, My Breeds, My Listings, Applications, Profile), SEEKER (Dashboard, Browse, Matches, Applications, Profile), ADMIN (Dashboard, Verification, Users, Listings, Analytics, Profile).",
             "status": "pending",
-            "testStrategy": "Review the created configuration file to ensure it contains distinct, correct navigation links for each of the three roles as specified in the PRD's MVP Dashboard Summary."
+            "testStrategy": "Review the created configuration file to ensure it contains the correct navigation structure with proper groupings and icons for each role."
           },
           {
             "id": 3,
@@ -263,7 +263,7 @@
             ],
             "details": "Modify `src/lib/components/layout/Sidebar.tsx` to accept a `role` prop. Use this prop to look up the correct array of links from the `navLinks` configuration. Map over the retrieved array to render the `<Link>` components. If the `role` prop is null or undefined, render a skeleton version of the navigation.",
             "status": "pending",
-            "testStrategy": "Log in as a Seeker and verify the sidebar shows 'Matches' and 'My Applications'. Log in as a Breeder and see 'Breeds', 'Litters', 'Inquiries'. Log in as an Admin and see 'Verification' and 'Analytics'."
+            "testStrategy": "Log in as a Seeker and verify the sidebar shows 'Browse', 'Matches', and 'Applications'. Log in as a Breeder and see 'My Breeds', 'My Listings', 'Applications'. Log in as an Admin and see 'Verification', 'Users', 'Listings', 'Analytics'."
           },
           {
             "id": 5,
@@ -272,7 +272,7 @@
             "dependencies": [
               4
             ],
-            "details": "Create files for each new route, such as `src/pages/dashboard/matches.tsx`, `src/pages/dashboard/litters.tsx`, `src/pages/dashboard/verification.tsx`, etc. Each page should be a simple React component that renders an `<h1>` tag with the page title (e.g., 'My Matches') and is wrapped in the `DashboardLayout`.",
+            "details": "Create files for each new route, such as `src/pages/dashboard/browse.tsx`, `src/pages/dashboard/matches.tsx`, `src/pages/dashboard/my-listings.tsx`, `src/pages/dashboard/verification.tsx`, `src/pages/dashboard/users.tsx`, `src/pages/dashboard/listings.tsx`, `src/pages/dashboard/analytics.tsx`, etc. Each page should be a simple React component that renders an `<h1>` tag with the page title and is wrapped in the `DashboardLayout`.",
             "status": "pending",
             "testStrategy": "After logging in as each role, click every link in the updated sidebar and verify that it navigates to a valid page with the correct title and does not result in a 404 error."
           }
@@ -280,104 +280,186 @@
       },
       {
         "id": 5,
-        "title": "Breeder Dashboard: Breed & Litter Management UI",
-        "description": "Implement the core functionality for verified breeders to manage the breeds they offer and create/edit their litters.",
-        "details": "Create a dashboard section for breeders. Implement a UI to add/remove breeds from their profile (populating the `user_breeds` table). Build a form to create a new litter, capturing all fields specified in the `litters` schema (name, DOB, number of puppies, etc.). Include image upload to Supabase Storage for litter photos. Display a list of the breeder's existing litters with options to edit or update their status.",
-        "testStrategy": "Log in as a verified breeder. Add a new breed to your profile and confirm it's saved. Create a new litter with multiple photos and verify it appears in the litter list. Edit the litter's details and confirm the changes are saved. Check Supabase tables (`user_breeds`, `litters`) to confirm data integrity.",
+        "title": "Implement Breeds Page (Complete flow for both breeders and seekers)",
+        "description": "Create a unified breeds page that adapts based on user role. For breeders: manage their breeds, add/remove breeds they offer with multi-select interface. For seekers: browse available breeds, filter by preferences. Integrate with user_breeds table and existing hooks.",
+        "details": "Build a role-aware breeds page component that shows different content based on user role. For breeders: implement multi-select breed management interface that updates user_breeds table. For seekers: create breed browsing interface with filters for size, temperament, etc. Use existing useBreeds, useUserBreeds hooks and breeds table for data.",
+        "testStrategy": "Log in as a breeder and verify you can add/remove breeds with multi-select interface. Log in as a seeker and verify you can browse and filter breeds. Test that breed selections persist in user_breeds table and breed filtering works correctly.",
         "priority": "high",
         "dependencies": [
-          5,
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Role-Aware Breeds Page Component",
+            "description": "Build main breeds page that adapts based on user role (breeder vs seeker).",
+            "dependencies": [],
+            "details": "Create src/lib/pages/dashboard/breeds.tsx with conditional rendering based on user role. Use existing useUserProfile hook to determine role and show appropriate content. For breeders: show breed management interface. For seekers: show breed browsing interface.",
+            "status": "pending",
+            "testStrategy": "Verify page loads for both roles and shows appropriate content based on user role."
+          },
+          {
+            "id": 2,
+            "title": "Implement Breeder Breed Management",
+            "description": "For breeders: add/remove breeds, manage their offerings with multi-select interface populated from breeds table.",
+            "dependencies": [
+              1
+            ],
+            "details": "Integrate with useBreeds and useUserBreeds hooks. Create breed selection interface that updates user_breeds table. Implement multi-select component populated with all available breeds from the breeds table. Use API routes to update the user_breeds join table based on breeder's selections.",
+            "status": "pending",
+            "testStrategy": "As a breeder, add two breeds using multi-select, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the user_breeds table in Supabase directly to verify data integrity."
+          },
+          {
+            "id": 3,
+            "title": "Implement Seeker Breed Discovery",
+            "description": "For seekers: browse breeds with filtering and search capabilities for size, temperament, etc.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create breed browsing interface with filters for size, temperament, breed group, etc. Use breeds table for data. Implement search functionality and breed cards showing key information like description, traits, and featured images.",
+            "status": "pending",
+            "testStrategy": "As a seeker, browse and filter breeds by different criteria, verify all breeds are displayed correctly with proper information. Test search functionality and ensure breed cards show all relevant details."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Listings Page (Complete flow for both breeders and seekers)",
+        "description": "Create a unified listings page for litters and single pet listings. For breeders: create/edit listings with image upload to Supabase Storage. For seekers: browse available listings with advanced filtering and search capabilities.",
+        "details": "Build role-aware listings page using litters table and existing hooks. For breeders: implement listing creation forms with multi-image upload functionality. For seekers: create browsing interface with filters for breed, location, price, availability status. Use react-hook-form and zod for validation.",
+        "testStrategy": "Test as breeder: create listings with photos, edit existing listings, verify image upload to Supabase Storage. Test as seeker: browse and filter listings by different criteria, verify all available listings are shown correctly.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Role-Aware Listings Page Component",
+            "description": "Build main listings page that adapts based on user role with conditional rendering.",
+            "dependencies": [],
+            "details": "Create src/lib/pages/dashboard/listings.tsx with role-based content. For breeders: show listing management interface with 'Create New Listing' button. For seekers: show browsing interface with filter controls. Use existing useUserProfile hook for role detection.",
+            "status": "pending",
+            "testStrategy": "Verify page loads correctly for both roles and shows appropriate interface based on user role."
+          },
+          {
+            "id": 2,
+            "title": "Implement Breeder Listing Management",
+            "description": "For breeders: create/edit litters and single pet listings with multi-image upload to Supabase Storage.",
+            "dependencies": [
+              1
+            ],
+            "details": "Integrate with useLitters hook and create comprehensive listing forms. Implement multi-image uploader that sends files to 'litter-photos' Supabase Storage bucket. Include form fields for name, birth_date, available_date, number_of_puppies, reservation_fee, description. Use react-hook-form and zod for validation.",
+            "status": "pending",
+            "testStrategy": "As a breeder, create a new listing with multiple photos, fill out all form fields, and save. Verify redirection to listings list and that new listing appears. Edit existing listing and confirm changes persist. Check Supabase Storage for uploaded files."
+          },
+          {
+            "id": 3,
+            "title": "Implement Seeker Listing Discovery",
+            "description": "For seekers: browse listings with advanced filtering for breed, location, price, availability status.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create listing browsing interface with filter controls for breed (dropdown from breeds table), location (text search), price range, availability status. Use Chakra UI Card components to display each listing's summary with photos, key information, and link to detail view. Ensure RLS policies allow public viewing of available listings.",
+            "status": "pending",
+            "testStrategy": "As a seeker, browse listings and test all filter combinations. Verify that only listings marked 'available' are shown. Test that filter controls work correctly and results update in real-time. Ensure clicking a listing card navigates to appropriate detail view."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Applications Page (Complete flow for both breeders and seekers)",
+        "description": "Create unified applications page. For breeders: manage applications for their listings. For seekers: submit and track applications.",
+        "details": "Build role-aware applications page using applications table and existing hooks. Include application forms, status tracking, and management interfaces.",
+        "testStrategy": "Test as seeker: submit applications. Test as breeder: manage received applications.",
+        "priority": "high",
+        "dependencies": [
           6
         ],
         "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Breeder Dashboard: Build 'My Breeds' Management UI",
-            "description": "Create a page or section in the breeder dashboard where verified breeders can add and remove the dog breeds they specialize in. This will interact with the `user_breeds` table.",
+            "title": "Create Role-Aware Applications Page Component",
+            "description": "Build main applications page that adapts based on user role.",
             "dependencies": [],
-            "details": "Create a new route, likely `app/dashboard/breeds/index.tsx`. This component will fetch and display the breeder's currently associated breeds. Implement a multi-select component populated with all available breeds from the `breeds` table. Use the API route to update the `user_breeds` join table based on the breeder's selections.",
+            "details": "Create src/lib/pages/dashboard/applications.tsx with role-based content.",
             "status": "pending",
-            "testStrategy": "Log in as a breeder, navigate to the 'My Breeds' page. Add two breeds, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the `user_breeds` table in Supabase directly."
+            "testStrategy": "Verify page loads correctly for both roles."
           },
           {
             "id": 2,
-            "title": "Breeder Dashboard: Create 'My Litters' List View",
-            "description": "Develop the UI to display a list of a breeder's existing litters, providing a summary of each and entry points for creating new litters or editing existing ones.",
-            "dependencies": [],
-            "details": "Create a new route at `app/dashboard/litters/index.tsx`. This page will fetch and display all litters associated with the logged-in breeder. Use Chakra UI Card components to display each litter's summary (name, photo, DOB). Include a prominent 'Create New Litter' button linking to the form page. Each litter card will have an 'Edit' button linking to the pre-filled form for that specific litter.",
+            "title": "Implement Seeker Application Submission",
+            "description": "For seekers: submit applications for listings with detailed forms.",
+            "dependencies": [
+              1
+            ],
+            "details": "Integrate with useApplications hook and create comprehensive application forms.",
             "status": "pending",
-            "testStrategy": "Once a litter can be created, log in as the breeder and navigate to the 'My Litters' page. Verify all created litters are displayed correctly with key information. Confirm the 'Create New Litter' and 'Edit' buttons navigate to the correct URLs."
+            "testStrategy": "As a seeker, submit applications and verify they appear in database."
           },
           {
             "id": 3,
-            "title": "Breeder Dashboard: Implement Add/Edit Litter Form with Image Upload",
-            "description": "Build the form for creating and editing a litter. This includes handling all fields from the `litters` schema and implementing multi-image uploads to Supabase Storage.",
+            "title": "Implement Breeder Application Management",
+            "description": "For breeders: view, approve, reject applications for their listings.",
             "dependencies": [
-              1,
-              2
+              1
             ],
-            "details": "Create a dynamic route, e.g., `app/dashboard/litters/[litter_id]/index.tsx`, to handle both creating ('new') and editing (UUID). Use `react-hook-form` and `zod` for validation. The form must include a dropdown for 'breed' populated from the breeder's managed breeds (from subtask 1). Implement a multi-image uploader that sends files to a 'litter-photos' Supabase Storage bucket and stores the public URLs in the `litters` table. Create an API route for creating and updating litter data.",
+            "details": "Create application management interface with status updates and communication features.",
             "status": "pending",
-            "testStrategy": "Navigate from the litters list to create a new litter. Fill out the form, upload several photos, and save. Verify redirection and the new litter's appearance on the list. Edit the litter's details and confirm the changes persist. Check Supabase Storage for the uploaded files and the `litters` table for correct data."
+            "testStrategy": "As a breeder, view and manage applications, verify status changes work correctly."
           }
         ]
       },
       {
-        "id": 6,
-        "title": "Public-Facing Breed & Litter Discovery Page",
-        "description": "Develop the public page where seekers can explore and filter available litters.",
-        "details": "Create a Next.js page that fetches and displays all litters with `status = 'available'`. Implement filter controls for breed, location (simple text search for now), and size. Each litter card should display key information and link to a detailed view. Ensure data is fetched using RLS policies that only allow public viewing of available litters.",
-        "testStrategy": "As a logged-out user, access the discovery page and verify that only litters marked 'available' are shown. Test the filtering functionality by breed and location. Ensure that clicking a litter card navigates to a placeholder detail page.",
+        "id": 8,
+        "title": "Implement Matches Page (Complete flow for both breeders and seekers)",
+        "description": "Create intelligent matching system. For breeders: see matching seekers. For seekers: see matching breeders/listings.",
+        "details": "Build role-aware matches page with matching algorithm. Include preference settings, match notifications, and communication features.",
+        "testStrategy": "Test matching algorithm for both roles, verify notifications work correctly.",
         "priority": "medium",
         "dependencies": [
           7
         ],
         "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 7,
-        "title": "Implement Seeker Application Submission Flow",
-        "description": "Create the functionality for a seeker to submit an application for a specific litter.",
-        "details": "On the litter detail page, add an 'Apply' button for logged-in seekers. This button should open a form where the seeker can provide their `application_data` (as a JSONB object). On submission, create a new record in the `applications` table with `status = 'submitted'`, linking the `seeker_id` and `litter_id`.",
-        "testStrategy": "Log in as a seeker, find a litter, and click 'Apply'. Fill out the application form and submit it. Verify that a new record is created in the `applications` table in Supabase with the correct data and status. Ensure non-logged-in users are prompted to sign in.",
-        "priority": "high",
-        "dependencies": [
-          8
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 8,
-        "title": "Breeder Dashboard: Inquiry & Application Management",
-        "description": "Build the dashboard view for breeders to see and manage applications for their litters.",
-        "details": "Create an 'Inquiries' or 'Applications' tab in the breeder dashboard. Fetch all applications related to the breeder's litters. Display them in a list or table format, showing seeker info, application status, and date. Implement actions to update the application status (e.g., 'Approve', 'Reject'). Add a deep link to open a WhatsApp conversation with the seeker.",
-        "testStrategy": "Log in as the breeder who owns the litter from the previous test. Verify the new application appears in their dashboard. Change the application status and confirm the update in the database. Click the WhatsApp link and verify it attempts to open the correct chat.",
-        "priority": "high",
-        "dependencies": [
-          7,
-          9
-        ],
-        "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Role-Aware Matches Page Component",
+            "description": "Build main matches page that adapts based on user role.",
+            "dependencies": [],
+            "details": "Create src/lib/pages/dashboard/matches.tsx with role-based matching interface.",
+            "status": "pending",
+            "testStrategy": "Verify page loads correctly for both roles."
+          },
+          {
+            "id": 2,
+            "title": "Implement Matching Algorithm",
+            "description": "Create logic to match seekers with breeders based on preferences and offerings.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build matching algorithm using breed preferences, location, and other criteria.",
+            "status": "pending",
+            "testStrategy": "Test matching results, verify correct matches are shown for both roles."
+          },
+          {
+            "id": 3,
+            "title": "Implement Match Notifications",
+            "description": "Add notification system for new matches and updates.",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate with notifications system to alert users of new matches.",
+            "status": "pending",
+            "testStrategy": "Verify notifications are sent and received correctly for new matches."
+          }
+        ]
       },
       {
         "id": 9,
-        "title": "Seeker Dashboard: 'My Applications' Tracking",
-        "description": "Create a dashboard page for seekers to track the status of their submitted applications.",
-        "details": "Develop a 'My Applications' page for logged-in seekers. This page should fetch all applications where the `seeker_id` matches the current user's ID. Display each application's status (`Submitted`, `Approved`, etc.) and which litter it was for. The status should update in real-time if possible (or on page load).",
-        "testStrategy": "Log in as the seeker who applied in the previous test. Go to the 'My Applications' page and verify the application is listed with the status 'Submitted'. Log in as the breeder, change the application status to 'Approved', then log back in as the seeker and confirm the status has updated on their dashboard.",
-        "priority": "medium",
-        "dependencies": [
-          10
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 10,
         "title": "Develop User Profile Management Component",
         "description": "Create a shared component for users of all roles to view and edit their profile information, including bio, photo, location, and contact details.",
         "details": "Build a form in Next.js that populates with the current user's data from the 'users' table. Implement an update function that writes changes back to Supabase. Include functionality for uploading a profile photo to Supabase Storage and updating the `profile_photo_url` field. This component should be accessible from a user's dashboard.",
@@ -447,7 +529,7 @@
         ]
       },
       {
-        "id": 11,
+        "id": 10,
         "title": "Build Admin Dashboard: Breeder Verification Panel",
         "description": "Create a secure dashboard page for Admins to review and manage breeder verification requests.",
         "details": "Develop a page accessible only to users with the 'admin' role. This page should fetch and display a list of breeders with `is_verified = false`. For each breeder, the admin should be able to view their submitted `verification_docs` (from `breeder_profiles`) and have 'Approve' and 'Reject' buttons. The 'Approve' action should set `users.is_verified` to true and populate `breeder_profiles.verified_at`.",
@@ -456,33 +538,6 @@
         "dependencies": [
           1,
           4
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 12,
-        "title": "Setup Notification Infrastructure with Supabase Edge Function",
-        "description": "Create a reusable Supabase Edge Function to handle the logic for creating notification records and triggering external services.",
-        "details": "Develop a new Edge Function (e.g., `process-notification`). This function will accept a payload (e.g., `userId`, `type`, `title`, `body`, `target`). Its job is to insert a new record into the `notifications` table. For now, it will just log the intent to send a push/WhatsApp message. This function will be invoked by database webhooks or directly from the client.",
-        "testStrategy": "Deploy the Edge Function to Supabase. Manually invoke it using the Supabase client or a cURL request with a sample payload. Check the function logs to ensure it executed correctly and verify that a new record was created in the `notifications` table.",
-        "priority": "medium",
-        "dependencies": [
-          1
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 13,
-        "title": "Implement 'New Application' Notification Trigger",
-        "description": "Trigger a notification to the breeder when a seeker submits a new application for one of their litters.",
-        "details": "Modify the application submission logic from Task 9. After successfully inserting a new record into the `applications` table, invoke the `process-notification` Edge Function (from Task 12). The payload should include the breeder's user ID, a notification type of 'new_application', and relevant details about the application.",
-        "testStrategy": "Submit a new application as a seeker. Check the Edge Function logs to confirm it was invoked. Verify that a new record appears in the `notifications` table for the breeder, with the correct type and metadata linking to the new application.",
-        "priority": "medium",
-        "dependencies": [
-          9,
-          12
         ],
         "status": "pending",
         "subtasks": []

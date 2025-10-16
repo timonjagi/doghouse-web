@@ -12,6 +12,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
+import { useUserProfile } from "lib/hooks/queries";
+import { getNavigationForRole } from "lib/config/navLinks";
 
 type LayoutProps = {
   children: ReactNode;
@@ -32,7 +34,26 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/contact", layout: HeaderLayout },
     { path: "/about", layout: HeaderLayout },
 
+    // Dashboard routes
     { path: "/dashboard", layout: DashboardLayout },
+    { path: "/dashboard/browse", layout: DashboardLayout },
+    { path: "/dashboard/matches", layout: DashboardLayout },
+    { path: "/dashboard/my-applications", layout: DashboardLayout },
+    { path: "/dashboard/my-breeds", layout: DashboardLayout },
+    { path: "/dashboard/my-listings", layout: DashboardLayout },
+    { path: "/dashboard/applications", layout: DashboardLayout },
+    { path: "/dashboard/profile", layout: DashboardLayout },
+    { path: "/dashboard/settings", layout: DashboardLayout },
+
+    // Admin dashboard routes
+    { path: "/dashboard/admin", layout: DashboardLayout },
+    { path: "/dashboard/admin/verification", layout: DashboardLayout },
+    { path: "/dashboard/admin/users", layout: DashboardLayout },
+    { path: "/dashboard/admin/listings", layout: DashboardLayout },
+    { path: "/dashboard/admin/analytics", layout: DashboardLayout },
+    { path: "/dashboard/admin/profile", layout: DashboardLayout },
+
+    // Legacy routes (for backward compatibility)
     { path: "/inbox", layout: DashboardLayout },
     { path: "/inbox/[chatId]", layout: DashboardLayout },
     { path: "/account/profile", layout: DashboardLayout },
@@ -97,6 +118,10 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   const isDesktop = useBreakpointValue({ base: false, md: true });
   const isMobile = useBreakpointValue({ base: true, md: false });
   const { isOpen, onToggle, onClose } = useDisclosure();
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
+
+  // Get navigation config for the user's role
+  const navigationSections = getNavigationForRole(profile?.role as any);
 
   return (
     <>
@@ -113,7 +138,11 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
       >
         {isDesktop ? (
           <>
-            <Sidebar onClose={onClose} />
+            <Sidebar
+              onClose={onClose}
+              role={profile?.role as any}
+              navigationSections={navigationSections}
+            />
           </>
         ) : (
           <></>

@@ -101,7 +101,7 @@ const DashboardHome = () => {
       <Modal
         onClose={onClose}
         isOpen={showWelcomeModal}
-        size={{ base: "sm", sm: "md", md: "lg" }}
+        size={{ base: "sm", lg: "md" }}
       >
         <ModalOverlay />
         <ModalContent>
@@ -111,7 +111,11 @@ const DashboardHome = () => {
         </ModalContent>
       </Modal>
 
-      <Modal onClose={onClose} isOpen={showWhatsNextModal} size="sm">
+      <Modal
+        onClose={onClose}
+        isOpen={showWhatsNextModal}
+        size={{ base: "sm", lg: "md" }}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalBody p="0">
@@ -178,17 +182,18 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
 
   const seekerNextSteps = [
     {
-      title: 'View Matching Puppies',
+      title: 'See Matching Puppies',
       description: 'Browse matching puppies from verified breeders and start applying for them',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/dashboard/explore'
+      href: '/dashboard/matches'
     },
-    // {
-    //   title: 'Add a Wanted Listing',
-    //   description: `Can&apos;t find a puppy you like? Create a wanted listing for the perfect pup`,
-    //   icon: <Icon as={MdCheckCircle} color='green.500' />,
-    //   href: '/dashboard/listings/create'
-    // },
+    {
+      title: 'View Breeders Near You',
+      description: 'Find breeders near you and start connecting with them',
+      icon: <Icon as={MdCheckCircle} color='green.500' />,
+      href: '/dashboard/breeders'
+    },
+
     {
       title: 'Complete your Profile',
       description: 'Upload your profile picture and other details about yourself',
@@ -224,14 +229,13 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
     <Box>
       <Stack
         direction="column"
-        mt="16"
         justifyContent="center"
         justify="center"
         spacing={{ base: 6, md: 9 }}
         px={{ base: "6", sm: "8", lg: "16" }}
         py={{ base: "6", md: "8", lg: "16" }}
       >
-        <Box position="relative" mx="auto">
+        {/* <Box position="relative" mx="auto">
           <Img
             src="images/logo.png"
             alt="Main Image"
@@ -241,14 +245,14 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
             objectFit="cover"
             objectPosition="90% center"
           />
-        </Box>
+        </Box> */}
         <Stack mx="auto" textAlign="center">
-          <Heading size="md" letterSpacing="tight">
+          <Heading size="md" letterSpacing="tight" colorScheme="brand">
             What's Next?
           </Heading>
-          {/* <Text color="muted">
-            We are happy to have you here! Before you get started, please take a few minutes to answer a few questions.
-          </Text> */}
+          <Text color="muted" fontSize="sm">
+            Looks like you're all set up! Let us know what you want to do next.
+          </Text>
         </Stack>
 
         <RadioCardGroup

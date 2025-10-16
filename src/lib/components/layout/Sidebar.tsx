@@ -28,24 +28,30 @@ import {
 import { Logo } from "./Logo";
 import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
-import { useSignOut } from "react-firebase-hooks/auth";
+
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+import { UserRole, NavSection } from "lib/config/navLinks";
 
-export const Sidebar = ({ onClose }) => {
+interface SidebarProps {
+  onClose: () => void;
+  role?: UserRole | null;
+  navigationSections?: NavSection[];
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ onClose, role, navigationSections = [] }) => {
   const { user, loading } = useSupabaseAuth();
-
   const { signOut } = useSupabaseAuth();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const router = useRouter();
-  const onClickMenuLink = (link) => {
+
+  const onClickMenuLink = (link: string) => {
     router.push(link);
     if (isMobile) onClose();
   };
 
   const onLogout = () => {
     signOut();
-    if (!loading)
-      router.push("/login");
+    if (!loading) router.push("/login");
     onClose();
   };
   return (
@@ -64,86 +70,59 @@ export const Sidebar = ({ onClose }) => {
           <Logo />
 
 
-          {user ?
+          {user ? (
             <Stack flex="1">
-              <Stack spacing="1">
-                <NavButton
-                  label="Home"
-                  icon={FiHome}
-                  onClick={() => onClickMenuLink("/home")}
-                  aria-current={router.pathname.includes("home") ? "page" : "false"}
-                />
-                <NavButton
-                  label="Inbox"
-                  icon={FiMessageSquare}
-                  onClick={() => onClickMenuLink("/inbox")}
-                  aria-current={
-                    router.pathname.includes("inbox") ? "page" : "false"
-                  }
-                />
-              </Stack>
-              <Stack>
-                <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-                  Breeds
-                </Text>
-                <Stack spacing="1">
-                  <NavButton
-                    label="Explore"
-                    icon={FiSearch}
-                    onClick={() => onClickMenuLink("/breeds")}
-                    aria-current={router.pathname === "/breeds" ? "page" : "false"}
-                  />
-                  <NavButton
-                    label="Manage"
-                    icon={FiCheckSquare}
-                    onClick={() => onClickMenuLink("/my-breeds")}
-                    aria-current={
-                      router.pathname.includes("my-breeds") ? "page" : "false"
-                    }
-                  />
+              {/* Render dynamic navigation sections */}
+              {navigationSections.map((section) => (
+                <Stack key={section.title} spacing="1">
+                  <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
+                    {section.title}
+                  </Text>
+                  <Stack spacing="1">
+                    {section.items.map((item) => (
+                      <NavButton
+                        key={item.href}
+                        label={item.label}
+                        icon={item.icon}
+                        onClick={() => onClickMenuLink(item.href)}
+                        aria-current={
+                          router.pathname === item.href ? "page" : "false"
+                        }
+                      />
+                    ))}
+                  </Stack>
                 </Stack>
-              </Stack>
+              ))}
 
               <Spacer />
 
+              {/* Common Account Section for all roles */}
               <Stack>
                 <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-                  Account
+                  ACCOUNT
                 </Text>
                 <Stack spacing="1">
                   <NavButton
                     label="Profile"
                     icon={FiUser}
                     aria-current={
-                      router.pathname.includes("account/profile") ? "page" : "false"
+                      router.pathname.includes("/profile") ? "page" : "false"
                     }
-                    onClick={() => onClickMenuLink("/account/profile")}
-                  />
-
-                  <NavButton
-                    label="Billing"
-                    icon={FiCreditCard}
-                    aria-current={
-                      router.pathname.includes("account/billing") ? "page" : "false"
-                    }
-                    onClick={() => onClickMenuLink("/account/billing")}
+                    onClick={() => onClickMenuLink("/dashboard/profile")}
                   />
                   <NavButton
                     label="Settings"
                     icon={FiSettings}
-                    onClick={() => onClickMenuLink("/account/settings")}
+                    onClick={() => onClickMenuLink("/dashboard/settings")}
                     aria-current={
-                      router.pathname.includes("account/settings")
-                        ? "page"
-                        : "false"
+                      router.pathname.includes("/settings") ? "page" : "false"
                     }
                   />
-
                   <NavButton label="Logout" icon={FiLogOut} onClick={onLogout} />
-
                 </Stack>
               </Stack>
             </Stack>
+          )
             :
             <>
               <Stack spacing="1">
