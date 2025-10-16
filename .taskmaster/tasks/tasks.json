@@ -302,24 +302,35 @@
           {
             "id": 2,
             "title": "Implement Breeder Breed Management",
-            "description": "For breeders: add/remove breeds, manage their offerings with multi-select interface populated from breeds table.",
+            "description": "For breeders: add/remove breeds, manage their offerings with select interface populated from breeds table.",
             "dependencies": [
               1
             ],
-            "details": "Integrate with useBreeds and useUserBreeds hooks. Create breed selection interface that updates user_breeds table. Implement multi-select component populated with all available breeds from the breeds table. Use API routes to update the user_breeds join table based on breeder's selections.",
+            "details": "Integrate with useBreeds and useUserBreeds hooks. Create breed selection interface that updates user_breeds table. Implement select component populated with all available breeds from the breeds table. Use API routes to update the user_breeds join table based on breeder's selections.",
             "status": "pending",
-            "testStrategy": "As a breeder, add two breeds using multi-select, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the user_breeds table in Supabase directly to verify data integrity."
+            "testStrategy": "As a breeder, add a breed using select, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the user_breeds table in Supabase directly to verify data integrity."
           },
           {
             "id": 3,
             "title": "Implement Seeker Breed Discovery",
-            "description": "For seekers: browse breeds with filtering and search capabilities for size, temperament, etc.",
+            "description": "For seekers: browse breeds with filtering and search capabilities for availability size, temperament, etc.",
             "dependencies": [
               1
             ],
-            "details": "Create breed browsing interface with filters for size, temperament, breed group, etc. Use breeds table for data. Implement search functionality and breed cards showing key information like description, traits, and featured images.",
+            "details": "Create breed browsing interface with filters for availability (based on user_breeds), size, temperament, breed group, etc. Use breeds table for data. Implement search functionality and breed cards showing key information like description, traits, and featured images.",
             "status": "pending",
             "testStrategy": "As a seeker, browse and filter breeds by different criteria, verify all breeds are displayed correctly with proper information. Test search functionality and ensure breed cards show all relevant details."
+          },
+          {
+            "id": 4,
+            "title": "Implement Breed Detail Page (Complete flow for both breeders and seekers)",
+            "description": "Create a unified breed detail page that adapts based on user role. For breeders: edit breed details with image upload to Supabase Storage. For seekers: view breed details with image gallery along with availability status. Integrate with breeds table and existing hooks.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "status": "pending",
+            "testStrategy": "As a seeker, view breed details and check that images load correctly. As a breeder, edit breed details and verify changes persist."
           }
         ]
       },
@@ -365,6 +376,17 @@
             "details": "Create listing browsing interface with filter controls for breed (dropdown from breeds table), location (text search), price range, availability status. Use Chakra UI Card components to display each listing's summary with photos, key information, and link to detail view. Ensure RLS policies allow public viewing of available listings.",
             "status": "pending",
             "testStrategy": "As a seeker, browse listings and test all filter combinations. Verify that only listings marked 'available' are shown. Test that filter controls work correctly and results update in real-time. Ensure clicking a listing card navigates to appropriate detail view."
+          },
+          {
+            "id": 4,
+            "title": "Implement Listing Detail Page (Complete flow for both breeders and seekers)",
+            "description": "Create a unified listing detail page that adapts based on user role. For breeders: edit listing details with image upload to Supabase Storage. For seekers: view listing details with image gallery along with availability status. Integrate with listings table and existing hooks.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "status": "pending",
+            "testStrategy": "As a seeker, view listing details and check that images load correctly. As a breeder, edit listing details and verify changes persist."
           }
         ]
       },
