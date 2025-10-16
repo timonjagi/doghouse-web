@@ -131,19 +131,31 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "BREEDS",
+      title: "MANAGE",
       items: [
+        {
+          label: "Users",
+          href: "/dashboard/admin/users",
+          icon: FiUsers,
+          ariaLabel: "Manage all users"
+        },
         {
           label: "Verification",
           href: "/dashboard/admin/verification",
           icon: FiShield,
           ariaLabel: "Breeder verification"
         },
+
+      ]
+    },
+    {
+      title: "CONTENT",
+      items: [
         {
-          label: "Users",
-          href: "/dashboard/admin/users",
-          icon: FiUsers,
-          ariaLabel: "Manage all users"
+          label: "Breeds",
+          href: "/dashboard/admin/breeds",
+          icon: FiList,
+          ariaLabel: "Manage all listings"
         },
         {
           label: "Listings",
@@ -152,22 +164,23 @@ export const navigationConfig: NavigationConfig = {
           ariaLabel: "Manage all listings"
         },
         {
+          label: "Applications",
+          href: "/dashboard/admin/applications",
+          icon: FiClipboard,
+          ariaLabel: "My applications"
+        },
+      ]
+    },
+    {
+      title: "ANALYTICS",
+      items: [
+        {
           label: "Analytics",
           href: "/dashboard/admin/analytics",
           icon: FiBarChart,
           ariaLabel: "Platform analytics"
-        }
-      ]
-    },
-    {
-      title: "PROFILE",
-      items: [
-        {
-          label: "Account",
-          href: "/dashboard/admin/profile",
-          icon: FiSettings,
-          ariaLabel: "Account settings"
-        }
+        },
+
       ]
     }
   ]

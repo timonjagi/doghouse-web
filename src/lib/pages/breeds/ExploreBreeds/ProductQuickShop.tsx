@@ -28,7 +28,7 @@ import { QuantityPicker } from "./QuantityPicker";
 import { SizePicker } from "./SizePicker";
 import { Product } from "./_data";
 import Link from "next/link";
-import EthicalQuestionairreCard from "../../account/profile/EthicalQuestionairreCard";
+import EthicalQuestionairreCard from "../../dashboard/profile/EthicalQuestionairreCard";
 
 interface ProductQuickShopProps {
   product: Product;

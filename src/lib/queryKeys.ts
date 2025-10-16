@@ -26,7 +26,20 @@ export const queryKeys = {
     userBreeds: (userId?: string): readonly string[] => ['breeds', 'user-breeds', userId].filter(Boolean) as any,
   },
 
-  // Litter related queries
+  // Listing related queries (unified litters + wanted listings)
+  listings: {
+    all: (): readonly string[] => ['listings'] as const,
+    lists: (): readonly string[] => ['listings', 'list'] as const,
+    list: (filters?: Record<string, unknown>): readonly string[] => ['listings', 'list', filters].filter(Boolean) as any,
+    details: (): readonly string[] => ['listings', 'detail'] as const,
+    detail: (id: string): readonly string[] => ['listings', 'detail', id] as const,
+    byOwner: (ownerId: string): readonly string[] => ['listings', 'owner', ownerId] as const,
+    featured: (): readonly string[] => ['listings', 'featured'] as const,
+    byType: (type: string): readonly string[] => ['listings', 'type', type] as const,
+    byBreed: (breedId: string): readonly string[] => ['listings', 'breed', breedId] as const,
+  },
+
+  // Legacy litter queries (for backward compatibility)
   litters: {
     all: (): readonly string[] => ['litters'] as const,
     lists: (): readonly string[] => ['litters', 'list'] as const,

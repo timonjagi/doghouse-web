@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { useUserProfile } from "lib/hooks/queries";
-import { getNavigationForRole } from "lib/config/navLinks";
+import { getNavigationForRole } from "lib/components/layout/navLinks";
 
 type LayoutProps = {
   children: ReactNode;
@@ -54,10 +54,6 @@ const Layout = ({ children }: LayoutProps) => {
     // Legacy routes (for backward compatibility)
     { path: "/inbox", layout: DashboardLayout },
     { path: "/inbox/[chatId]", layout: DashboardLayout },
-    { path: "/account/profile", layout: DashboardLayout },
-    { path: "/account/settings", layout: DashboardLayout },
-    { path: "/account/breeds", layout: DashboardLayout },
-    { path: "/account/breeds/[breedId]", layout: DashboardLayout },
   ];
 
   const matchedRoute = routes.find((route) => {
@@ -116,14 +112,11 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   const isDesktop = useBreakpointValue({ base: false, md: true });
   const isMobile = useBreakpointValue({ base: true, md: false });
   const { isOpen, onToggle, onClose } = useDisclosure();
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
 
-  // Get navigation config for the user's role
-  const navigationSections = getNavigationForRole(profile?.role as any);
 
   return (
     <>
-      {isMobile ? <Navbar /> : <></>}
+      {isMobile && <Navbar />}
       <Flex
         as="section"
         direction={{ base: "column", md: "row" }}
@@ -134,21 +127,16 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         maxH="100vh"
         maxW="100vw"
       >
-        {isDesktop ? (
-          <>
-            <Sidebar
-              onClose={onClose}
-              role={profile?.role as any}
-              navigationSections={navigationSections}
-            />
-          </>
-        ) : (
-          <></>
-        )}
+        {isDesktop &&
+          <Sidebar
+            onClose={onClose}
+          />
+        }
 
         <Box bg="bg-canvas" flex="1" overflow="auto" w="full">
           <Box height="full">
             <Container py="8" height="full">
+              {isDesktop && <Navbar />}
               <RouteGuard>{children}</RouteGuard>
             </Container>
           </Box>

@@ -66,7 +66,6 @@ const DashboardHome = () => {
     <Container h="full">
       <Box h="full">
         <Box>
-          {profile?.onboarding_completed && <HeaderButtonGroup profile={profile} />}
           <Stack
             direction={{ base: "column", lg: "row" }}
             spacing={{ base: "5", lg: "8" }}

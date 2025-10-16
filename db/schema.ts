@@ -104,19 +104,48 @@ export const user_breeds = pgTable("user_breeds", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
-// LITTERS (breeder litters)
-export const litters = pgTable("litters", {
+// LISTINGS (unified table for all types of listings)
+export const listings = pgTable("listings", {
   id: uuid("id").primaryKey().defaultRandom(),
-  breeder_id: uuid("breeder_id").notNull().references(() => users.id),
+  // Core listing information
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  type: varchar("type", { length: 50 }).notNull(), // 'litter' | 'single_pet' | 'wanted'
+
+  // Owner information
+  owner_id: uuid("owner_id").notNull().references(() => users.id),
+  owner_type: varchar("owner_type", { length: 32 }).notNull(), // 'breeder' | 'seeker'
+
+  // Breed information
+  breed_id: uuid("breed_id").references(() => breeds.id),
   user_breed_id: uuid("user_breed_id").references(() => user_breeds.id),
-  name: varchar("name", { length: 255 }), // optional name like 'Litter A'
+
+  // Litter-specific fields (only for type = 'litter')
   birth_date: timestamp("birth_date"),
   available_date: timestamp("available_date"),
   number_of_puppies: integer("number_of_puppies"),
+
+  // Single pet fields (only for type = 'single_pet')
+  pet_name: varchar("pet_name", { length: 255 }),
+  pet_age: varchar("pet_age", { length: 50 }),
+  pet_gender: varchar("pet_gender", { length: 20 }),
+
+  // Common fields
+  price: numeric("price", { precision: 10, scale: 2 }),
   reservation_fee: numeric("reservation_fee", { precision: 10, scale: 2 }),
-  status: varchar("status", { length: 50 }).notNull().default("available"), // available/reserved/adopted
-  photos: jsonb("photos"),
-  description: text("description"),
+  status: varchar("status", { length: 50 }).notNull().default("available"), // available/reserved/sold/completed
+  photos: jsonb("photos").$default(() => "[]"),
+
+  // Location
+  location_text: varchar("location_text", { length: 255 }),
+  location_lat: numeric("location_lat", { precision: 9, scale: 6 }),
+  location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
+
+  // Metadata
+  is_featured: boolean("is_featured").notNull().default(false),
+  view_count: integer("view_count").notNull().default(0),
+  tags: jsonb("tags").$default(() => "[]"), // flexible tagging system
+
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -125,7 +154,7 @@ export const litters = pgTable("litters", {
 // APPLICATIONS (adoption requests)
 export const applications = pgTable("applications", {
   id: uuid("id").primaryKey().defaultRandom(),
-  litter_id: uuid("litter_id").references(() => litters.id),
+  listing_id: uuid("listing_id").references(() => listings.id),
   seeker_id: uuid("seeker_id").notNull().references(() => users.id),
   status: varchar("status", { length: 50 }).notNull().default("submitted"), // submitted/pending/approved/rejected/completed
   application_data: jsonb("application_data"), // full answers, contact prefs
@@ -190,7 +219,7 @@ export type SeekerProfile = typeof seeker_profiles.$inferSelect;
 export type Breed = typeof breeds.$inferSelect;
 export type UserBreed = typeof user_breeds.$inferSelect;
 export type Kennel = typeof kennels.$inferSelect;
-export type Litter = typeof litters.$inferSelect;
+export type Listing = typeof listings.$inferSelect;
 export type Application = typeof applications.$inferSelect;
 export type Message = typeof messages.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
