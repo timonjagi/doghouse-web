@@ -49,7 +49,7 @@ export const navigationConfig: NavigationConfig = {
       items: [
         {
           label: "Manage",
-          href: "/dashboard/breeds",
+          href: "/dashboard/breed/manage",
           icon: FiHeart,
           ariaLabel: "Manage breeds and listings"
         },
@@ -92,7 +92,7 @@ export const navigationConfig: NavigationConfig = {
       items: [
         {
           label: "Browse",
-          href: "/dashboard/breeds",
+          href: "/dashboard/breeds/browse",
           icon: FiSearch,
           ariaLabel: "Browse breeds and listings"
         },

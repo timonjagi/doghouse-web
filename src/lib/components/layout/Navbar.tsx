@@ -1,5 +1,8 @@
 import {
   Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
   Button,
   ButtonGroup,
   Drawer,
@@ -54,10 +57,18 @@ export const Navbar = () => {
       }
 
       {!isMobile && <HStack justify="space-between" align="start">
-        <Heading pb="4" size={{ base: "xs", lg: "md" }}>
-          {currentRoute === "/dashboard" ? <span>Hi, {profile?.display_name} 👋</span>
-            : <span>{router.pathname.split("/")[2]}</span>}
-        </Heading>
+
+        <Breadcrumb>
+          {router.pathname.split("/").map((item, index) => (
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/${item}`}>{item}</BreadcrumbLink>
+            </BreadcrumbItem>
+          ))}
+        </Breadcrumb>
+
+        {/* <Heading pb="4" size={{ base: "xs", lg: "md" }}>
+          <span>{router.pathname.split("/")[2]}</span>
+        </Heading> */}
 
         <HStack spacing="1" flex="1">
           <Spacer />

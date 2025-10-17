@@ -52,15 +52,13 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
   }
 
   const handleCardClick = () => {
-    router.push(`/dashboard/breeds/${userBreed.id}`);
-  };
-
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onClick) {
-      onClick();
+    if (userRole === 'seeker') {
+      router.push(`/dashboard/breeds/browse/${userBreed.breeds.name}`)
+    } else {
+      router.push(`/dashboard/breeds/manage/${userBreed.id}`);
     }
   };
+
 
   const featuredImage = userRole === 'seeker' ? breed.featured_image_url : userBreed?.images && userBreed?.images[0] || '/images/placeholder-breed.jpg';
   return (

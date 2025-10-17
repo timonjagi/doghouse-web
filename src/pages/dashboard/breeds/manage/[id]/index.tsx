@@ -1,28 +1,21 @@
 import { useRouter } from 'next/router';
 import { useUserProfile } from 'lib/hooks/queries/useUserProfile';
-import { useUserBreed } from 'lib/hooks/queries/useUserBreed';
-import { useBreed } from 'lib/hooks/queries/useBreeds';
-import { Container, Spinner, Center, Alert, AlertIcon } from '@chakra-ui/react';
-import { BreedDetailView } from 'lib/pages/dashboard/breeds/BreedDetailView';
+import { useUserBreed } from 'lib/hooks/queries/useUserBreeds';
+import { Container, Center, Alert, AlertIcon } from '@chakra-ui/react';
+import { ManageBreedDetailView } from 'lib/pages/dashboard/breeds/manage/ManageBreedDetailView';
 import { Loader } from 'lib/components/ui/Loader';
 
 export default function BreedDetailPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data: userProfile, isLoading: isLoadingProfile } = useUserProfile();
-
-  // For seekers, we need to get all breeders offering this breed
-  // For breeders, we need to get their specific user_breed record
   const {
     data: userBreed,
     isLoading: isLoadingUserBreed,
     error: userBreedError,
   } = useUserBreed(id as string);
 
-  const isLoading = isLoadingProfile || isLoadingUserBreed;
-
-  if (isLoading) {
+  if (userBreedError) {
     return (
       <Container maxW="7xl">
         <Center height="100vh">
@@ -45,9 +38,6 @@ export default function BreedDetailPage() {
   }
 
   return (
-    <BreedDetailView
-      userBreed={userBreed}
-      userRole={userProfile?.role}
-    />
+    <ManageBreedDetailView userBreed={userBreed} />
   );
 }

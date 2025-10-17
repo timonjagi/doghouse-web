@@ -167,6 +167,38 @@ export const useFeaturedListings = () => {
   });
 };
 
+// Query to get listings for a specific breed
+export const useListingsForBreed = (breedId: string) => {
+  return useQuery({
+    queryKey: queryKeys.listings.byBreed(breedId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('listings')
+        .select(`
+          id,
+          title,
+          description,
+          price,
+          location_text,
+          photos,
+          status,
+          created_at,
+          users (
+            display_name,
+            profile_photo_url
+          )
+        `)
+        .eq('breed_id', breedId)
+        .eq('status', 'available');
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!breedId,
+  });
+};
+
+
 // Mutation to create a new listing
 export const useCreateListing = () => {
   const queryClient = useQueryClient();

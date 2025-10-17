@@ -13,7 +13,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useUserProfile } from "../../../hooks/queries/useUserProfile";
-import { useUserBreedsFromUser } from "../../../hooks/queries/useUserBreed";
+import { useUserBreedsFromUser } from "../../../hooks/queries/useUserBreeds";
 import { useAllAvailableUserBreeds } from "../../../hooks/queries/useAvailableBreeds";
 import { BreedList } from "./BreedList";
 import { BreedForm } from "./BreedForm";
@@ -48,7 +48,6 @@ const DashboardBreedsPage = () => {
         <BreedForm
           isOpen={isFormOpen}
           onClose={onFormClose}
-          userRole={userRole}
         />
       </Box>
     </Container>

@@ -16,13 +16,13 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useCreateUserBreed, useUpdateUserBreed, useDeleteUserBreed } from "../../../hooks/queries/useUserBreed";
-import { useCurrentUser } from "../../../hooks/queries/useAuth";
-import { useDropZone } from "../../../hooks/useDropZone";
-import { useBreedImageUpload } from "../../../hooks/useBreedImageUpload";
-import { Dropzone } from "../../../components/ui/Dropzone";
+import { useCreateUserBreed, useUpdateUserBreed, useDeleteUserBreed } from "../../../../hooks/queries/useUserBreeds";
+import { useCurrentUser } from "../../../../hooks/queries/useAuth";
+import { useDropZone } from "../../../../hooks/useDropZone";
+import { useBreedImageUpload } from "../../../../hooks/useBreedImageUpload";
+import { Dropzone } from "../../../../components/ui/Dropzone";
 import { supabase } from "lib/supabase/client";
-import breedsData from "../../../data/breeds_with_group_and_traits.json";
+import breedsData from "../../../../data/breeds_with_group_and_traits.json";
 import { Select } from "chakra-react-select";
 
 // Local types for now - will fix imports later
@@ -48,14 +48,12 @@ interface UserBreed {
 interface BreedFormProps {
   isOpen: boolean;
   onClose: () => void;
-  userRole?: string;
   editingBreed?: UserBreed | null;
 }
 
 export const BreedForm = ({
   isOpen,
   onClose,
-  userRole,
   editingBreed
 }: BreedFormProps) => {
   const toast = useToast();

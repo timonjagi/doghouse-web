@@ -69,6 +69,7 @@ const Layout = ({ children }: LayoutProps) => {
   });
 
   if (!matchedRoute) {
+    //router.replace('/404');
     return <div>Route not found</div>; // Handle not found routes
   }
 
@@ -92,21 +93,10 @@ const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <>
-      {["/login", "/signup", "/onboarding"].includes(router.pathname) ? (
-        <>
-          {isMobile && <Header />}
-          <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
-            {children}{" "}
-          </Box>
-        </>
-      ) : (
-        <>
-          <Header />
-          <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
-            {children}
-          </Box>
-        </>
-      )}
+      {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header />}
+      <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
+        {children}{" "}
+      </Box>
     </>
   );
 };
@@ -114,8 +104,9 @@ const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
 const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   const isDesktop = useBreakpointValue({ base: false, md: true });
   const isMobile = useBreakpointValue({ base: true, md: false });
-  const { isOpen, onToggle, onClose } = useDisclosure();
+  const { onClose } = useDisclosure();
 
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
 
   return (
     <>
@@ -132,6 +123,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
       >
         {isDesktop &&
           <Sidebar
+            role={profile?.role}
             onClose={onClose}
           />
         }
@@ -139,7 +131,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         <Box bg="bg-canvas" flex="1" overflow="auto" w="full">
           <Box height="full">
             <Container py="8" height="full">
-              {isDesktop && <HeaderButtonGroup />}
+              {isDesktop && <Navbar />}
               <RouteGuard>{children}</RouteGuard>
             </Container>
           </Box>

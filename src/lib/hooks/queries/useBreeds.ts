@@ -1,16 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-
-// Types
-interface Breed {
-  id: string;
-  name: string;
-  description?: string;
-  breed_group?: string;
-  created_at: string;
-}
-
+import { Breed } from '../../../../db/schema';
 // Query to get all breeds
 export const useBreeds = () => {
   return useQuery({
@@ -43,6 +34,23 @@ export const useBreed = (id: string) => {
       return data;
     },
     enabled: !!id,
+  });
+};
+
+export const useBreedByName = (name: string) => {
+  return useQuery({
+    queryKey: queryKeys.breeds.detail(name),
+    queryFn: async (): Promise<Breed | null> => {
+      const { data, error } = await supabase
+        .from('breeds')
+        .select('*')
+        .eq('name', name)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!name,
   });
 };
 

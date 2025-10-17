@@ -28,17 +28,16 @@ import { useUserProfile } from "lib/hooks/queries/useUserProfile";
 
 interface SidebarProps {
   onClose: () => void;
-  role?: UserRole | null;
+  role?: string;
   navigationSections?: NavSection[];
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ role, onClose }) => {
   const { user, loading } = useSupabaseAuth();
   const { signOut } = useSupabaseAuth();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const router = useRouter();
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
-  const navigationSections = getNavigationForRole(profile?.role as any);
+  const navigationSections = getNavigationForRole(role as any);
 
   const onClickMenuLink = (link: string) => {
     router.push(link);
@@ -50,27 +49,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
     if (!loading) router.push("/login");
     onClose();
   };
-
-  if (loading || profileLoading) {
-    return (
-      <Flex
-        flex="1"
-        bg="bg-accent"
-        color="on-accent"
-        overflowY="auto"
-        maxW={{ base: "full", sm: "xs" }}
-        maxH="100vh"
-        py={{ base: "6", sm: "8" }}
-        px={{ base: "4", sm: "6" }}
-      >
-        <Stack justify="space-between" spacing="1" width="full" h="full">
-          <Stack spacing="8" shouldWrapChildren h="full">
-            <Logo />
-          </Stack>
-        </Stack>
-      </Flex>
-    );
-  }
 
   return (
     <Flex
@@ -86,8 +64,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
       <Stack justify="space-between" spacing="1" width="full" h="full">
         <Stack spacing="8" shouldWrapChildren h="full">
           <Logo />
-
-
 
           {!loading && user && (
             <Stack flex="1">
