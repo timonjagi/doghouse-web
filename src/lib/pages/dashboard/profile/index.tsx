@@ -27,8 +27,8 @@ import EthicalQuestionairreCard from "./EthicalQuestionairreCard";
 import { UserProfile } from "lib/components/auth/UserProfile";
 import UserProfileForm from "./UserProfileForm";
 import { doc, getDoc } from "firebase/firestore";
-import { CompleteProfileBanner } from "lib/pages/dashboard/CompleteProfileBanner";
-import { NewsletterForm } from "lib/pages/dashboard/NewsletterForm copy";
+import { CompleteProfileBanner } from "lib/pages/dashboard/overview/CompleteProfileBanner";
+import { NewsletterForm } from "lib/pages/dashboard/overview/NewsletterForm copy";
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 const Profile = () => {

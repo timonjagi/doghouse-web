@@ -24,7 +24,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import HeaderButtonGroup from "./HeaderButtonGroup";
-import { Loader } from "../../components/ui/Loader";
+import { Loader } from "../../../components/ui/Loader";
 import { useUserProfile } from "lib/hooks/queries";
 import { MdCheckCircle } from "react-icons/md";
 import { useSearchParams } from "next/navigation";

@@ -2,7 +2,7 @@ import { HStack, Heading, IconButton } from "@chakra-ui/react";
 import router from "next/router";
 import React from "react";
 import { FiBell, FiUser, FiSettings } from "react-icons/fi";
-import { User } from "../../../../db/schema";
+import { User } from "../../../../../db/schema";
 
 type HeaderButtonGroupProps = {
   profile?: User;

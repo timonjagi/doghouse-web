@@ -39,12 +39,6 @@ export const Navbar = () => {
 
           <HStack spacing="4">
             <ButtonGroup variant="ghost-on-accent" spacing="1">
-              <IconButton
-                fontSize="1.25rem"
-                aria-label="Notifications"
-                icon={<FiBell />}
-                variant="ghost-on-accent"
-              />
 
               <ToggleButton
                 isOpen={isOpen}

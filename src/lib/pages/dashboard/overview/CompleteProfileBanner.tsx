@@ -20,7 +20,7 @@ import {
 import Link from "next/link";
 import * as React from "react";
 import { FiArrowRight, FiMail, FiUser } from "react-icons/fi";
-import UserProfileForm from "./profile/UserProfileForm";
+import UserProfileForm from "../profile/UserProfileForm";
 import { useState } from "react";
 import { user } from "firebase-functions/v1/auth";
 import { doc, getDoc } from "firebase/firestore";

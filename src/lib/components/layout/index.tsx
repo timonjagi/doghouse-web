@@ -14,6 +14,7 @@ import {
 import { ReactNode } from "react";
 import { useUserProfile } from "lib/hooks/queries";
 import { getNavigationForRole } from "lib/components/layout/navLinks";
+import HeaderButtonGroup from "lib/pages/dashboard/overview/HeaderButtonGroup";
 
 type LayoutProps = {
   children: ReactNode;
@@ -136,7 +137,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         <Box bg="bg-canvas" flex="1" overflow="auto" w="full">
           <Box height="full">
             <Container py="8" height="full">
-              {isDesktop && <Navbar />}
+              {isDesktop && <HeaderButtonGroup />}
               <RouteGuard>{children}</RouteGuard>
             </Container>
           </Box>
