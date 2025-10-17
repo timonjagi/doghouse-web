@@ -42,7 +42,6 @@ const DashboardHome = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    console.log(profile);
     if (profile && !profile?.onboarding_completed) {
       setShowWelcomeModal(true);
     }

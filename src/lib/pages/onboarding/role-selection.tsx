@@ -21,7 +21,6 @@ const RoleSelectionStep = () => {
   const [selectedRole, setSelectedRole] = useState("");
 
   // Get current user and update profile mutation
-  const { data: user } = useCurrentUser();
   const updateUserProfile = useUpdateUserProfile();
 
   const options = [

@@ -1,23 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-
-// Types
-interface UserBreed {
-  id: string;
-  user_id: string;
-  breed_id: string;
-  is_owner: boolean;
-  notes?: string;
-  images?: string[];
-  created_at: string;
-  updated_at: string;
-}
+import { UserBreed } from '../../../../db/schema';
 
 interface CreateUserBreedData {
   breed_id: string;
   is_owner?: boolean;
   notes?: string;
+  images?: string[];
 }
 
 interface UpdateUserBreedData {
@@ -30,18 +20,35 @@ interface UpdateUserBreedData {
 export const useUserBreedsFromUser = (userId?: string) => {
   return useQuery({
     queryKey: queryKeys.breeds.userBreeds(userId),
-    queryFn: async (): Promise<UserBreed[]> => {
+    queryFn: async () => {
       if (!userId) return [];
-
       const { data, error } = await supabase
         .from('user_breeds')
         .select(`
-          *,
-          breeds (*)
+          id,
+          user_id,
+          breed_id,
+          is_owner,
+          notes,
+          images,
+          created_at,
+          updated_at,
+          breeds (
+            id,
+            name,
+            description,
+            group,
+            featured_image_url,
+            height,
+            weight,
+            life_span,
+            traits
+          )
         `)
         .eq('user_id', userId);
 
       if (error) throw error;
+      console.log(error)
       return data || [];
     },
     enabled: !!userId,
@@ -56,14 +63,31 @@ export const useUserBreed = (breedId: string) => {
       const { data, error } = await supabase
         .from('user_breeds')
         .select(`
-          *,
-          breeds (*)
+          id,
+          user_id,
+          breed_id,
+          is_owner,
+          notes,
+          images,
+          created_at,
+          updated_at,
+          breeds (
+            id,
+            name,
+            description,
+            group,
+            featured_image_url,
+            height,
+            weight,
+            life_span,
+            traits
+          )
         `)
         .eq('id', breedId)
-        .single();
+      //.single();
 
       if (error) throw error;
-      return data;
+      return data[0]
     },
     enabled: !!breedId,
   });

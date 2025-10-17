@@ -24,6 +24,8 @@ export const queryKeys = {
     details: (): readonly string[] => ['breeds', 'detail'] as const,
     detail: (id: string): readonly string[] => ['breeds', 'detail', id] as const,
     userBreeds: (userId?: string): readonly string[] => ['breeds', 'user-breeds', userId].filter(Boolean) as any,
+    available: (): readonly string[] => ['breeds', 'available'] as const,
+    breedBreeders: (breedId: string): readonly string[] => ['breeds', 'breed-breeders', breedId] as const,
   },
 
   // Listing related queries (unified litters + wanted listings)

@@ -12,19 +12,16 @@ import {
   Icon,
   Box,
   Center,
-  Spinner,
-  Badge,
   HStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { MdCheckCircle } from "react-icons/md";
-import { useCreateUserBreed, useCurrentUser, useDeleteUserBreed, useUpdateUserBreed, useUpdateUserProfile, useUserBreedsFromUser } from "../../../hooks/queries";
+import { useCreateUserBreed, useCurrentUser, useUpdateUserBreed, useUpdateUserProfile, useUserBreedsFromUser } from "../../../hooks/queries";
 import breedsData from "../../../data/breeds_with_group_and_traits.json";
 import { useDropZone } from "../../../hooks/useDropZone";
 import { useBreedImageUpload } from "../../../hooks/useBreedImageUpload";
 import { Dropzone } from "../../../components/ui/Dropzone";
 import { supabase } from "../../../supabase/client";
-import { BsInfoCircle, BsInfoCircleFill } from "react-icons/bs";
+import { BsInfoCircle } from "react-icons/bs";
 import { Select } from "chakra-react-select";
 import { Loader } from "lib/components/ui/Loader";
 
@@ -43,7 +40,7 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
   const toast = useToast();
 
   const [selectedBreed, setSelectedBreed] = useState<any>(null);
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [breedImages, setBreedImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Use local breeds data for better performance
@@ -61,9 +58,9 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
     }
   };
   // Use the reusable hooks
-  const { onSelectImage, onRemoveImage, isMaxFiles } = useDropZone({
-    selectedImages,
-    setSelectedImages,
+  const { onSelectImage, onRemoveImage, isMaxFiles, selectedImages } = useDropZone({
+    selectedImages: breedImages,
+    setSelectedImages: setBreedImages,
     maxFiles: 5,
     acceptedTypes: ['image/jpeg', 'image/png', 'image/webp']
   });
@@ -76,16 +73,7 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
     }
   });
 
-  // Convert File objects to URLs for Dropzone component
   const imageUrls = selectedImages.map(file => URL.createObjectURL(file));
-
-  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onSelectImage(event);
-  };
-
-  const handleRemoveImage = (index: number) => {
-    onRemoveImage(index);
-  };
 
   const onBack = () => {
     setStep(currentStep - 1);
@@ -204,13 +192,8 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
 
               <Dropzone
                 selectedFiles={imageUrls}
-                onChange={handleImageSelect}
-                onRemove={(fileUrl) => {
-                  const index = selectedImages.findIndex(file => URL.createObjectURL(file) === fileUrl);
-                  if (index !== -1) {
-                    handleRemoveImage(index);
-                  }
-                }}
+                onChange={onSelectImage}
+                onRemove={onRemoveImage}
                 maxUploads={4}
               />
             </Box>

@@ -30,15 +30,6 @@ import { Loader } from "lib/components/ui/Loader";
 const OnboardingPage = () => {
   const { data: profile, isLoading: profileLoading } = useUserProfile();
 
-  console.log("profile", profile);
-  const router = useRouter();
-
-  // useEffect(() => {
-  //   if (profile?.onboarding_completed) {
-  //     router.push('/dashboard');
-  //   }
-  // }, [profile, router]);
-
   if (profileLoading) {
     return (
       <Center h="100vh">

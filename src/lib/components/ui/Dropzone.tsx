@@ -34,6 +34,7 @@ export const Dropzone = ({
   const selectedFileRef = useRef<HTMLInputElement>(null);
   const bg = useColorModeValue("white", "gray.800");
 
+
   return (
     <>
       {selectedFiles.length ? (

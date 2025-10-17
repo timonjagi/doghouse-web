@@ -1,3 +1,3 @@
-import MyBreedsPage from "lib/pages/dashboard/breeds/breeds";
+import BreedsPage from "lib/pages/dashboard/breeds"
 
-export default MyBreedsPage;
+export default BreedsPage;
