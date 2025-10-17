@@ -8,16 +8,12 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { auth } from "lib/firebase/client";
 import Link from "next/link";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 export const CtaWithImage = () => {
 
-  const [user] = useAuthState(auth);
-
   return (
-    <Box>
+    <Box w="full">
       <Container
         py={{
           base: "16",
@@ -81,13 +77,13 @@ export const CtaWithImage = () => {
                 variant="primary"
                 size="lg"
                 as={Link}
-                href={user ? "/home" : "/signup"}
+                href="/signup"
               >
                 Get Started
               </Button>
             </Stack>
           </Stack >
-          <Image
+          {/* <Image
             width="full"
             height={{
               base: "auto",
@@ -95,7 +91,7 @@ export const CtaWithImage = () => {
             }}
             objectFit="cover"
             src={"images/screenshot.png"}
-          />
+          /> */}
         </Stack >
       </Container >
     </Box >

@@ -1,126 +1,105 @@
 import {
-  Flex,
+  Box,
+  Button,
+  Circle,
   Heading,
+  Img,
+  LightMode,
   Stack,
   Text,
-  Button,
-  Box,
-  HStack,
-  Img,
-  Link,
-} from "@chakra-ui/react";
-import { HiChevronRight } from "react-icons/hi";
-export default function Hero() {
+  VisuallyHidden,
+} from '@chakra-ui/react'
+import * as React from 'react'
+import { FaPlay } from 'react-icons/fa'
+
+export const Hero = () => {
   return (
-    <Box w="full" bg="gray.800" as="section" position="relative">
-      <Box pt="16" py="32" position="relative" zIndex={1}>
-        <Box
-          maxW={{
-            base: "xl",
-            md: "7xl",
-          }}
-          mx="auto"
-          px={{
-            base: "6",
-            md: "8",
-          }}
-          color="white"
+    <Box as="section" bg="brand.600" color="white" py="7.5rem" w="full">
+      <Box maxW={{ base: 'xl', md: '5xl' }} mx="auto" px={{ base: '6', md: '8' }}>
+        <Box textAlign="center">
+          <Heading
+            as="h1"
+            size="3xl"
+            fontWeight="bold"
+            maxW="48rem"
+            mx="auto"
+            lineHeight="1.2"
+            letterSpacing="tight"
+          >
+            Find Your Perfect Furry Friend
+          </Heading>
+          <Text fontSize="xl" mt="4" maxW="xl" mx="auto">
+            Discover your ideal furry companion and start a journey of love and
+            companionship.
+          </Text>
+        </Box>
+
+        <Stack
+          justify="center"
+          direction={{ base: 'column', md: 'row' }}
+          mt="10"
+          mb="20"
+          spacing="4"
         >
-          <Box maxW="xl">
-            <Heading as="h1" size="3xl" fontWeight="bold">
-              Find Your Perfect Furry Friend
-            </Heading>
-            <Text
-              fontSize={{
-                base: "xl",
-                md: "2xl",
-              }}
-              mt="4"
-              maxW="lg"
+          <LightMode>
+            <Button
+              as="a"
+              href="/signup"
+              size="lg"
+              colorScheme="brand"
+              px="8"
+              fontWeight="bold"
+              fontSize="md"
             >
-              Discover your ideal furry companion and start a journey of love
-              and companionship
-            </Text>
-            <Stack
-              direction={{
-                base: "column",
-                md: "row",
-              }}
-              mt="10"
-              spacing={{ base: 4, md: 2 }}
+              Get started
+            </Button>
+            <Button
+              as="a"
+              href="/features"
+              size="lg"
+              colorScheme="brand-on-accent"
+              px="8"
+              fontWeight="bold"
+              fontSize="md"
             >
-              <Button
-                as={Link}
-                href="/breeds"
-                variant="primary"
-                color="brand.500"
-                backgroundColor="brand.500"
-                colorScheme="brand"
-                px="8"
-                py="4"
-                rounded="full"
-                size="lg"
-                fontSize="md"
-                fontWeight="bold"
-              >
-                <Text color="white">View Breeds</Text>
-              </Button>
-              <HStack
-                as={Link}
-                href="/about"
-                transition="background 0.2s"
-                justify={{
-                  base: "center",
-                  md: "flex-start",
-                }}
-                color="white"
-                rounded="full"
-                fontWeight="bold"
-                px="6"
-                py="3"
-                _hover={{
-                  bg: "whiteAlpha.300",
-                }}
-              >
-                <span>Learn more</span>
-                <HiChevronRight />
-              </HStack>
-            </Stack>
-          </Box>
+              Learn more
+            </Button>
+          </LightMode>
+        </Stack>
+
+        <Box
+          className="group"
+          cursor="pointer"
+          position="relative"
+          rounded="lg"
+          overflow="hidden"
+        >
+          <Img
+            alt="Screenshot of Doghouse App"
+            src="/images/screenshot.png"
+
+          />
+          <Circle
+            size="20"
+            as="button"
+            bg="white"
+            shadow="lg"
+            color="brand.600"
+            position="absolute"
+            top="50%"
+            left="50%"
+            transform="translate3d(-50%, -50%, 0)"
+            fontSize="xl"
+            transition="all 0.2s"
+            _groupHover={{
+              transform: 'translate3d(-50%, -50%, 0) scale(1.05)',
+            }}
+          >
+            <VisuallyHidden>Play demo video</VisuallyHidden>
+            <FaPlay />
+          </Circle>
         </Box>
       </Box>
-
-      <Flex
-        id="image-wrapper"
-        position="absolute"
-        insetX="0"
-        insetY="0"
-        w="full"
-        h="full"
-        overflow="hidden"
-        align="center"
-      >
-        <Box position="relative" w="full" h="full">
-          <Img
-            src="images/hero_2_2.png"
-            alt="Main Image"
-            w="full"
-            h="full"
-            objectFit="cover"
-            objectPosition="90% center"
-            position="absolute"
-          />
-          {/* <Video
-            autoPlay
-            muted
-            loop
-            controls={false}
-            src={require("../../../../videos/hero.mp4")}
-            className="video"
-          /> */}
-          <Box position="absolute" w="full" h="full" bg="blackAlpha.400" />
-        </Box>
-      </Flex>
     </Box>
-  );
+  )
 }

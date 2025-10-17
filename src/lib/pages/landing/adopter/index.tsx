@@ -5,12 +5,14 @@ import Footer from "lib/components/layout/Footer";
 
 import { Blog } from "./Blog";
 import BreedTraits from "./BreedTraits";
-import Hero from "./Hero";
+import { Hero } from "./Hero";
 import { Process } from "./OurProcess";
 import { OurBreeds } from "./Breeds";
 import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
 import WhyDoghouse from "./WhyDoghouse";
+import { CtaWithImage } from "./CtaWithImage";
+import { Cta } from "./Cta";
 
 const Home = () => {
   return (
@@ -19,26 +21,26 @@ const Home = () => {
         direction="column"
         alignItems="center"
         justifyContent="center"
-        minHeight="70vh"
         w="full"
       >
-        <NextSeo title="Home" />
+        <NextSeo title="Doghouse - Quality Breeds" />
+
         <Hero />
 
-        <BreedTraits />
-
-        <OurBreeds />
+        {/* <BreedTraits /> */}
+        {/* 
+        <OurBreeds /> */}
 
         <Process />
 
         <Stats />
 
         <WhyDoghouse />
+        {/* 
+        <Testimonials /> */}
 
-        <Testimonials />
 
-
-        {/* <CtaWithImage /> */}
+        <Cta />
         {/* <LogoGrid /> */}
 
         <Blog />

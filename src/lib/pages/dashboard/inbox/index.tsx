@@ -9,7 +9,7 @@ type indexProps = {
 const index: React.FC<indexProps> = ({ children }) => {
   return (
     <Container alignItems="flex-start" height="100vh">
-      <ChatSidebar />
+      {/* <ChatSidebar /> */}
 
       {children}
     </Container>

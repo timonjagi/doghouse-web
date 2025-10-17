@@ -12,6 +12,7 @@ import {
 import { Loader } from "lib/components/ui/Loader";
 import { BreedList } from "../manage/BreedList";
 import { useAllAvailableUserBreeds } from "lib/hooks/queries/useUserBreeds";
+import { NextSeo } from "next-seo";
 
 const DashboardBrowsePage = () => {
   const {
@@ -43,17 +44,20 @@ const DashboardBrowsePage = () => {
 
   return (
     <Container maxW="7xl" py={8} px={0}>
+
+      <NextSeo title="Browse Breeds " />
+
       <Box>
         <VStack spacing={6} align="stretch">
 
-          <Stack>
+          {/* <Stack>
             <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
               Browse Available Breeds
             </Heading>
             <Text color="gray.600">
               Explore dog breeds available from verified breeders in your area.
             </Text>
-          </Stack>
+          </Stack> */}
 
           <BreedList
             breeds={allAvailableBreeds || []}

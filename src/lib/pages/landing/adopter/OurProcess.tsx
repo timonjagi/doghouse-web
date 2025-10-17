@@ -15,28 +15,42 @@ import {
   useBreakpointValue,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
-import { BsCheckCircleFill } from "react-icons/bs";
+import { useRouter } from "next/router";
+// import * as React from "react";
+import { BsBookmarkHeartFill, BsCheckCircleFill } from "react-icons/bs";
+import { ImProfile } from "react-icons/im";
+import { FaSearch } from "react-icons/fa";
 import { FiCheck } from "react-icons/fi";
 import { GoListOrdered } from "react-icons/go";
-import { ImProfile } from "react-icons/im";
 
 export const steps = [
   {
-    name: "Submit Your Application",
+    name: "Create your profile",
     description:
-      "Tell us about yourself, your lifestyle, and your preferred dog breed to help us understand your unique needs",
+      "Tell us about your lifestyle, preferences, and what breed you're looking for to help us understand your unique needs",
     icon: ImProfile,
   },
   {
-    name: "Meet Your New Pet",
+    name: "Explore tailored matches.",
     description:
-      "If a dog is available, we'll schedule a visit for you to meet your new furry friend and spend time with them to see if it's the perfect match",
-    icon: GoListOrdered,
+      "Explore a curated list of breeds from verified breeders that align perfectly with your lifestyle and preferences ",
+    icon: FaSearch,
+  },
+  // {
+  //   name: "Submit your application",
+  //   description: "Once you find the perfect match, submit your application to start the adoption process",
+  //   icon: ImProfile,
+  // },
+  {
+    name: "Reserve your pet",
+    description:
+      "Secure your pet with a reservation fee to ensure both your commitment and the breeder's dedication to providing a loving home",
+    icon: BsBookmarkHeartFill,
   },
   {
     name: "Finalize the Adoption",
     description:
-      "Once you've found your perfect match, we'll guide you through the adoption process",
+      "Schedule a visit to meet your new pet and sign the adoption contract to complete the adoption process",
     icon: BsCheckCircleFill,
   },
 ];
@@ -103,6 +117,7 @@ const features = [
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const FeatureCard = (props: any) => {
+  const router = useRouter();
   return (
     <Box
       bg="bg-surface"
@@ -132,6 +147,15 @@ const FeatureCard = (props: any) => {
           md: "8",
         }}
       >
+        {/* <Stack spacing="1">
+          <Heading size="xs">Welcome Your New Family Member</Heading>
+
+          <Text color="muted">
+            Our community is here to support you every step of the way as you
+            embark on this exciting journey together.
+          </Text>
+        </Stack> */}
+
         <Stack spacing="8" divider={<StackDivider />}>
           <Stack spacing="6">
             <Stack spacing="1">
@@ -184,7 +208,7 @@ const FeatureCard = (props: any) => {
               width="full"
               rounded="full"
               as={Link}
-              href="/contact/adoption"
+              href="/signup"
             >
               Start Your Journey
             </Button>
@@ -196,8 +220,14 @@ const FeatureCard = (props: any) => {
 };
 
 export const Process = () => (
-  <Box as="section" py={{ base: "8", lg: "16" }}>
-    <Container py="md">
+  <Box as="section" maxW="6xl">
+    <Container
+      pt="16"
+      pb={{
+        base: "16",
+        md: "32",
+      }}
+    >
       <Stack
         spacing={{
           base: "8",
@@ -206,36 +236,36 @@ export const Process = () => (
       >
         <Stack
           spacing={{
-            base: "8",
-            md: "16",
+            base: "4",
+            md: "6",
           }}
         >
-          <Stack spacing="3" textAlign="center" align="center">
-            <Text fontSize={{ base: 'sm', md: 'md' }} color="accent" fontWeight="semibold">
-              Our Process
-            </Text>
+          <Stack spacing="3">
+            {/* <Text color="accent" fontWeight="semibold">
+              Pricing
+            </Text> */}
             <Heading
               size={useBreakpointValue({
-                base: "sm",
-                md: "md",
+                base: "md",
+                md: "lg",
               })}
             >
-              Our Adoption Process
+              How it works
             </Heading>
-
-            <Text
-              fontSize={{
-                base: "lg",
-                md: "xl",
-              }}
-              maxW="3xl"
-              color="muted"
-            >
-              From personalized recommendations to secure reservations,
-              we&apos;ve got you covered at every step.
-            </Text>
           </Stack>
+          <Text
+            fontSize={{
+              base: "lg",
+              md: "xl",
+            }}
+            color="muted"
+            maxW="3xl"
+          >
+            From personalized recommendations to secure reservations, we've got
+            you covered at every step.
+          </Text>
         </Stack>
+
         <Stack
           direction={{
             base: "column",

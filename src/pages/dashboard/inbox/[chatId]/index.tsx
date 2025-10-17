@@ -11,10 +11,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { useDocument } from "react-firebase-hooks/firestore";
-import ChatSidebar from "../../../lib/pages/inbox/ChatSidebar";
-import ChatInputBox from "../../../lib/pages/inbox/ChatInputBox";
-import ChatHeader from "../../../lib/pages/inbox/ChatHeader";
-import ChatBox from "../../../lib/pages/inbox/ChatBox";
+import ChatSidebar from "../../../lib/pages/dashboard/inbox/ChatSidebar";
+import ChatInputBox from "../../../lib/pages/dashboard/inbox/ChatInputBox";
+import ChatHeader from "../../../lib/pages/dashboard/inbox/ChatHeader";
+import ChatBox from "../../../lib/pages/dashboard/inbox/ChatBox";
 import { Loader } from "../../../lib/components/ui/Loader";
 
 export default function Chatroom() {

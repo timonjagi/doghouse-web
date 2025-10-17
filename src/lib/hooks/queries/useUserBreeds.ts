@@ -162,13 +162,14 @@ export const useBreedersForBreed = (breedId: string) => {
           created_at,
           users (
             id,
-            profile_photo_url
-          ),
-          breeder_profiles (
-            id,
-            kennel_name,
-            kennel_location,
-            rating
+            profile_photo_url,
+            display_name,
+            breeder_profiles (
+              id,
+              kennel_name,
+              kennel_location,
+              rating
+            )
           )
         `)
         .eq('breed_id', breedId)

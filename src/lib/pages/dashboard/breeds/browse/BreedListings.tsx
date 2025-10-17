@@ -1,9 +1,37 @@
-import { Card, CardHeader, Heading, CardBody, SimpleGrid, VStack, Button, Image, Text } from "@chakra-ui/react";
+import { Card, CardHeader, Heading, CardBody, SimpleGrid, VStack, Button, Image, Text, Alert, AlertIcon, Center } from "@chakra-ui/react";
+import { Loader } from "lib/components/ui/Loader";
 import { useListingsForBreed } from "lib/hooks/queries/useListings";
 
 export const BreedListings = ({ breedId }) => {
 
-  const { data: listingsForBreed, isLoading: isLoadingListings } = useListingsForBreed(breedId);
+  const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForBreed(breedId);
+
+  if (isLoadingListings) {
+    return (
+      <Center height="200px">
+        <Loader />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        Error loading breeders data. Please try again later.
+        {error.message}
+      </Alert>
+    );
+  }
+
+  if (listingsForBreed?.length === 0) {
+    return (
+      <Alert status="info">
+        <AlertIcon />
+        No listings found for this breed.
+      </Alert>
+    );
+  }
 
   return (
     <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>

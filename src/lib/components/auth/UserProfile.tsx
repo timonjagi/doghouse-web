@@ -7,25 +7,21 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { useRouter } from "next/router";
 // import * as React from "react";
-import { useSignOut } from "react-firebase-hooks/auth";
 import { FiLogOut } from "react-icons/fi";
 
-import { auth } from "lib/firebase/client";
 
 interface UserProfileProps {
-  name: string;
-  image: string;
-  phoneNumber: string;
+  profile: any;
   onClose: () => void;
 }
 
-export const UserProfile = (props: UserProfileProps) => {
-  const { name, image, phoneNumber, onClose } = props;
+export const UserProfile = ({ profile, onClose }) => {
+  const { user, signOut } = useSupabaseAuth();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [signOut, loading, error] = useSignOut(auth);
   const toast = useToast();
   const router = useRouter();
 
@@ -33,19 +29,17 @@ export const UserProfile = (props: UserProfileProps) => {
     onClose();
 
     try {
-      const success = await signOut();
-      if (success) {
-        toast({
-          title: "Logged out successfully",
-          description: "",
-          status: "success",
-          duration: 4000,
-          isClosable: true,
-        });
+      await signOut();
+      toast({
+        title: "Logged out successfully",
+        description: "",
+        status: "success",
+        duration: 4000,
+        isClosable: true,
+      });
+      router.replace("/login");
 
-        await router.push("/");
-      }
-    } catch (err) {
+    } catch (error) {
       toast({
         title: error?.message,
         status: "error",
@@ -58,19 +52,19 @@ export const UserProfile = (props: UserProfileProps) => {
   };
 
   return (
-    <HStack spacing="3" ps="2">
-      <Avatar name={name} src={image} boxSize="10" />
+    <HStack spacing="3" px="2">
+      <Avatar name={profile?.display_name} src={profile?.avatar_url} boxSize="10" />
       <Box>
         <Text color="on-accent" fontWeight="medium" fontSize="sm">
-          {name}
+          {profile?.display_name}
         </Text>
         <Text color="on-accent-muted" fontSize="sm">
-          {phoneNumber}
+          {profile?.email}
         </Text>
       </Box>
       <Spacer />
       <IconButton
-        variant="on-accent"
+        colorScheme="brand-on-accent"
         aria-label="Logout"
         icon={<FiLogOut />}
         onClick={onLogout}

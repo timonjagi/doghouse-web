@@ -70,7 +70,6 @@ const Header = () => {
                 <Button
                   rounded="full"
                   as={Link}
-                  aria-current={pathname.includes("/") ? "page" : false}
                   href="/"
                 >
                   Home
@@ -84,14 +83,14 @@ const Header = () => {
                 >
                   About
                 </Button>
-                <Button
+                {/* <Button
                   rounded="full"
                   as={Link}
                   aria-current={pathname.includes("breeds") ? "page" : false}
                   href="/breeds"
                 >
                   Breeds
-                </Button>
+                </Button> */}
                 <Button
                   rounded="full"
                   as={Link}

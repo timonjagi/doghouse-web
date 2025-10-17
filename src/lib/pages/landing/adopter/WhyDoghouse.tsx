@@ -85,8 +85,12 @@ const WhyStep = (props: any) => {
 
 const WhyDoghouse = () => {
   return (
-    <Box as="section" py={{ base: "6", md: "8", lg: "16" }}>
-      <Container>
+    <Box as="section" py={{ base: "6", md: "8", lg: "16" }} maxW="6xl">
+      <Container pt="16"
+        pb={{
+          base: "16",
+          md: "32",
+        }}>
         <Stack
           spacing={{
             base: "8",
@@ -95,13 +99,13 @@ const WhyDoghouse = () => {
           maxW="7xl"
         >
           <Stack spacing="3" textAlign="center">
-            {/* <Text color="accent" fontWeight="semibold">
-              Pricing
-            </Text> */}
+            <Text color="accent" fontWeight="semibold">
+              Benefits
+            </Text>
             <Heading
               size={useBreakpointValue({
-                base: "sm",
-                md: "md",
+                base: "md",
+                md: "lg",
               })}
             >
               Why Choose Us?
@@ -113,6 +117,7 @@ const WhyDoghouse = () => {
                 md: "xl",
               }}
               color="muted"
+              maxW="3xl"
             >
               Finding a quality dog breed can be difficult, but Doghouse makes
               it easy to find the perfect pup for your needs
@@ -144,7 +149,7 @@ const WhyDoghouse = () => {
                 <WhyStep key={id} step={step} />
               ))}
             </Stack>
-
+            {/* 
             <Box width="full" overflow="hidden">
               <Image
                 maxW="100%"
@@ -153,7 +158,7 @@ const WhyDoghouse = () => {
                 src="images/breeds/doghousekenya_curly_coated_retriever_1.jpg"
                 alt="Doghouse"
               />
-            </Box>
+            </Box> */}
           </Stack>
         </Stack>
       </Container>

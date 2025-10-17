@@ -88,7 +88,7 @@ export const Navbar = () => {
       >
         <DrawerOverlay />
         <DrawerContent>
-          {isMobile && <Sidebar onClose={onClose} role={profile?.role}
+          {isMobile && <Sidebar onClose={onClose} profile={profile}
           />}
         </DrawerContent>
       </Drawer>

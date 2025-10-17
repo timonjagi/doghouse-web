@@ -1,5 +1,11 @@
 import {
+  Box,
+  Button,
+  Divider,
   Flex,
+  HStack,
+  Progress,
+  Spacer,
   Stack,
   Text,
   useBreakpointValue,
@@ -9,6 +15,7 @@ import {
   FiBook,
   FiFacebook,
   FiGitlab,
+  FiHelpCircle,
   FiInfo,
   FiInstagram,
   FiLogOut,
@@ -22,19 +29,21 @@ import { useRouter } from "next/router";
 
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { NavSection, getNavigationForRole } from "lib/components/layout/navLinks";
+import { UserProfile } from "../auth/UserProfile";
+import { User } from "../../../../db/schema";
 
 interface SidebarProps {
   onClose: () => void;
-  role?: string;
+  profile: User
   navigationSections?: NavSection[];
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ role, onClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
   const { user, loading } = useSupabaseAuth();
   const { signOut } = useSupabaseAuth();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const router = useRouter();
-  const navigationSections = getNavigationForRole(role as any);
+  const navigationSections = getNavigationForRole(profile?.role as any);
 
   const onClickMenuLink = (link: string) => {
     router.push(link);
@@ -59,11 +68,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, onClose }) => {
       px={{ base: "4", sm: "6" }}
     >
       <Stack justify="space-between" spacing="1" width="full" h="full">
-        <Stack spacing="8" shouldWrapChildren h="full">
+        <Stack spacing="4" shouldWrapChildren h="full">
           <Logo />
 
           {!loading && user && (
-            <Stack flex="1" spacing="8">
+            <Stack flex="1" spacing="4">
               {/* Render dynamic navigation sections */}
               {navigationSections.map((section) => (
                 <Stack key={section.title} spacing="2">
@@ -86,31 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, onClose }) => {
                 </Stack>
               ))}
 
-              {/* Common Account Section for all roles */}
-              <Stack>
-                <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-                  ACCOUNT
-                </Text>
-                <Stack spacing="1">
-                  <NavButton
-                    label="Profile"
-                    icon={FiUser}
-                    aria-current={
-                      router.pathname.includes("/profile") ? "page" : "false"
-                    }
-                    onClick={() => onClickMenuLink("/dashboard/profile")}
-                  />
-                  <NavButton
-                    label="Settings"
-                    icon={FiSettings}
-                    onClick={() => onClickMenuLink("/dashboard/settings")}
-                    aria-current={
-                      router.pathname.includes("/settings") ? "page" : "false"
-                    }
-                  />
-                  <NavButton label="Logout" icon={FiLogOut} onClick={onLogout} />
-                </Stack>
-              </Stack>
+
             </Stack>
           )}
 
@@ -158,6 +143,37 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, onClose }) => {
             </Stack>
           </>}
         </Stack>
+
+        {/* Common Account Section for all roles */}
+        {!loading && user && (<Stack spacing="4">
+
+          <Divider borderColor="bg-accent-subtle" />
+
+          <Stack spacing="1">
+            <NavButton
+              label="Help Center"
+              icon={FiHelpCircle}
+              aria-current={
+                router.pathname.includes("/help-center") ? "page" : "false"
+              }
+              onClick={() => onClickMenuLink("/dashboard/help-center")}
+            />
+            <NavButton
+              label="Settings"
+              icon={FiSettings}
+              onClick={() => onClickMenuLink("/dashboard/settings")}
+              aria-current={
+                router.pathname.includes("/settings") ? "page" : "false"
+              }
+            />
+
+          </Stack>
+
+
+          <Divider borderColor="bg-accent-subtle" />
+          <UserProfile profile={profile} onClose={onClose} />
+        </Stack>
+        )}
       </Stack>
     </Flex>
   );

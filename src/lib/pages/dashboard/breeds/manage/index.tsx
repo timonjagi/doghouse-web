@@ -19,6 +19,7 @@ import { BreedList } from "./BreedList";
 import { BreedForm } from "./BreedForm";
 import { AddIcon } from "@chakra-ui/icons";
 import { Loader } from "lib/components/ui/Loader";
+import { NextSeo } from "next-seo";
 
 const DashboardBreedsPage = () => {
 
@@ -37,6 +38,8 @@ const DashboardBreedsPage = () => {
 
   return (
     <Container maxW="7xl" py={8} px={0}>
+      <NextSeo title="Manage Breeds " />
+
       <Box>
         <UserBreeds userProfile={userProfile} onFormOpen={onFormOpen} />
 

@@ -21,7 +21,7 @@ import Footer from "lib/components/layout/Footer";
 
 const Blog = () => {
   return (
-    <Box bg="bg-surface">
+    <Box bg="bg-surface" >
       <Box bg="bg-accent" color="on-accent">
         <Container
           pt={{
@@ -94,6 +94,7 @@ const Blog = () => {
         </Container>
       </Box>
       <Container
+        maxW="6xl"
         pb={{
           base: "16",
           md: "24",

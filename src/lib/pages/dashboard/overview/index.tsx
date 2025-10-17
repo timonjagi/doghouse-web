@@ -31,6 +31,7 @@ import { useSearchParams } from "next/navigation";
 import { RadioCard } from "lib/components/ui/RadioCard";
 import { RadioCardGroup } from "lib/components/ui/RadioCardGroup";
 import next from "next";
+import { NextSeo } from "next-seo";
 
 const DashboardHome = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -63,6 +64,9 @@ const DashboardHome = () => {
 
   return (
     <Container h="full">
+
+      <NextSeo title="Dashboard" />
+
       <Box h="full">
         <Box>
           <Stack

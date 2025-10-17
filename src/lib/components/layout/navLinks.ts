@@ -11,6 +11,7 @@ import {
   FiHeart,
   FiList,
   FiEdit,
+  FiMessageSquare,
 } from "react-icons/fi";
 
 export type UserRole = 'breeder' | 'seeker' | 'admin';
@@ -35,18 +36,24 @@ export interface NavigationConfig {
 export const navigationConfig: NavigationConfig = {
   breeder: [
     {
-      title: "DASHBOARD",
+      title: "Dashboard",
       items: [
         {
           label: "Overview",
           href: "/dashboard",
           icon: FiHome,
           ariaLabel: "Dashboard home"
-        }
+        },
+        {
+          label: "Inbox",
+          href: "/dashboard/inbox",
+          icon: FiMessageSquare,
+          ariaLabel: "Inbox"
+        },
       ]
     },
     {
-      title: "BREEDS",
+      title: "Breeds",
       items: [
         {
           label: "Manage",
@@ -78,18 +85,24 @@ export const navigationConfig: NavigationConfig = {
 
   seeker: [
     {
-      title: "DASHBOARD",
+      title: "Dashboard",
       items: [
         {
           label: "Overview",
           href: "/dashboard",
           icon: FiHome,
           ariaLabel: "Dashboard home"
-        }
+        },
+        {
+          label: "Inbox",
+          href: "/dashboard/inbox",
+          icon: FiMessageSquare,
+          ariaLabel: "Inbox"
+        },
       ]
     },
     {
-      title: "BREEDS",
+      title: "Breeds",
       items: [
         {
           label: "Browse",
@@ -121,7 +134,7 @@ export const navigationConfig: NavigationConfig = {
 
   admin: [
     {
-      title: "DASHBOARD",
+      title: "Dashboard",
       items: [
         {
           label: "Overview",
@@ -132,7 +145,7 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "MANAGE",
+      title: "Manage",
       items: [
         {
           label: "Users",

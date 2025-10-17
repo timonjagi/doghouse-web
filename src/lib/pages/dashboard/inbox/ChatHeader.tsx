@@ -12,7 +12,7 @@ import { doc } from "firebase/firestore";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { useDocument } from "react-firebase-hooks/firestore";
-import { auth, fireStore } from "../../firebase/client";
+import { auth, fireStore } from "../../../firebase/client";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect, useState } from "react";
 import { object } from "firebase-functions/v1/storage";

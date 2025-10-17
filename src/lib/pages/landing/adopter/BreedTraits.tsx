@@ -38,7 +38,7 @@ const features = [
 
 export default function BreedTraits() {
   return (
-    <Box as="section">
+    <Box as="section" maxW="5xl">
       <Container
         py={{
           base: "8",

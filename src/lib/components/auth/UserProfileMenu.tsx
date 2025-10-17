@@ -96,14 +96,14 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
             Go to Dashboard
           </MenuItem>
 
-          <MenuItem
+          {/* <MenuItem
             icon={<MdOutlineAccountCircle />}
             cursor="pointer"
             as="a"
             href="/account"
           >
             Account
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem
             icon={<MdLogout />}
             cursor="pointer"

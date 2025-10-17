@@ -21,7 +21,7 @@ export const Blog = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const brandColor = useColorModeValue("brand.600", "brand.900");
   return (
-    <Box bg="bg-surface">
+    <Box bg="bg-surface" maxW="6xl">
       <Container py={{ base: "16", md: "24" }}>
         <Stack spacing={{ base: "12", md: "16" }}>
           <Stack direction="row" justify="space-between">
@@ -30,16 +30,16 @@ export const Blog = () => {
                 <Text
                   color="accent"
                   fontWeight="semibold"
-                  fontSize={{ base: "sm", md: "md" }}
+                  fontSize={{ base: "md", md: "lg" }}
                 >
                   Our Blog
                 </Text>
-                <Heading size={useBreakpointValue({ base: "sm", md: "md" })}>
+                <Heading size={useBreakpointValue({ base: "md", md: "lg" })}>
                   Latest blog posts
                 </Heading>
               </Stack>
               <Text color="muted" fontSize={{ base: "lg", md: "xl" }}>
-                Ice cream pudding dragée macaroon donut marzipan chocolate
+                Read our blog for the latest news and updates
               </Text>
             </Stack>
             {!isMobile && (

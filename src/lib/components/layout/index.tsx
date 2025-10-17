@@ -13,8 +13,6 @@ import {
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { useUserProfile } from "lib/hooks/queries";
-import { getNavigationForRole } from "lib/components/layout/navLinks";
-import HeaderButtonGroup from "lib/pages/dashboard/overview/HeaderButtonGroup";
 
 type LayoutProps = {
   children: ReactNode;
@@ -29,20 +27,24 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/login", layout: HeaderLayout },
     { path: "/signup", layout: HeaderLayout },
     { path: "/onboarding", layout: HeaderLayout },
-
     { path: "/breeds", layout: HeaderLayout },
     { path: "/breeds/[breedName]", layout: HeaderLayout },
     { path: "/contact", layout: HeaderLayout },
     { path: "/about", layout: HeaderLayout },
+    { path: '/blog', layout: HeaderLayout },
+    { path: '/blog/[slug]', layout: HeaderLayout },
+    { path: "/terms", layout: HeaderLayout },
+    { path: "/privacy", layout: HeaderLayout },
 
     // Dashboard routes
     { path: "/dashboard", layout: DashboardLayout },
-    { path: "/dashboard/matches", layout: DashboardLayout },
-    { path: "/dashboard/applications", layout: DashboardLayout },
+    { path: "/dashboard/inbox", layout: DashboardLayout },
+    { path: "/dashboard/inbox/[chatId]", layout: DashboardLayout },
     { path: "/dashboard/breeds", layout: DashboardLayout },
     { path: "/dashboard/breeds/[id]", layout: DashboardLayout },
-
     { path: "/dashboard/listings", layout: DashboardLayout },
+    { path: "/dashboard/matches", layout: DashboardLayout },
+    { path: "/dashboard/applications", layout: DashboardLayout },
     { path: "/dashboard/profile", layout: DashboardLayout },
     { path: "/dashboard/settings", layout: DashboardLayout },
 
@@ -55,8 +57,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/admin/profile", layout: DashboardLayout },
 
     // Legacy routes (for backward compatibility)
-    { path: "/inbox", layout: DashboardLayout },
-    { path: "/inbox/[chatId]", layout: DashboardLayout },
+
   ];
 
   const matchedRoute = routes.find((route) => {
@@ -123,7 +124,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
       >
         {isDesktop &&
           <Sidebar
-            role={profile?.role}
+            profile={profile}
             onClose={onClose}
           />
         }
