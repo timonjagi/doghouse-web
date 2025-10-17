@@ -11,10 +11,10 @@ import {
   Alert,
   AlertIcon,
   Box,
+  Stack,
 } from "@chakra-ui/react";
-import { useUserProfile } from "../../../hooks/queries/useUserProfile";
-import { useUserBreedsFromUser } from "../../../hooks/queries/useUserBreeds";
-import { useAllAvailableUserBreeds } from "../../../hooks/queries/useAvailableBreeds";
+import { useUserProfile } from "../../../../hooks/queries/useUserProfile";
+import { useUserBreedsFromUser } from "../../../../hooks/queries/useUserBreeds";
 import { BreedList } from "./BreedList";
 import { BreedForm } from "./BreedForm";
 import { AddIcon } from "@chakra-ui/icons";
@@ -24,8 +24,6 @@ const DashboardBreedsPage = () => {
 
   const { data: userProfile, isLoading: isLoadingProfile } = useUserProfile();
   const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
-
-  const userRole = userProfile?.role;
 
   if (isLoadingProfile) {
     return (
@@ -40,11 +38,8 @@ const DashboardBreedsPage = () => {
   return (
     <Container maxW="7xl" py={8} px={0}>
       <Box>
-        {userRole === 'breeder' ? (
-          <BreederBreeds userProfile={userProfile} onFormOpen={onFormOpen} />
-        ) : (
-          <SeekerBreeds />
-        )}
+        <UserBreeds userProfile={userProfile} onFormOpen={onFormOpen} />
+
         <BreedForm
           isOpen={isFormOpen}
           onClose={onFormClose}
@@ -54,7 +49,7 @@ const DashboardBreedsPage = () => {
   );
 };
 
-const BreederBreeds = ({ userProfile, onFormOpen }) => {
+const UserBreeds = ({ userProfile, onFormOpen }) => {
 
   const {
     data: userBreeds,
@@ -75,7 +70,7 @@ const BreederBreeds = ({ userProfile, onFormOpen }) => {
 
   if (userBreedsError) {
     return (
-      <Container maxW="7xl" py={8}>
+      <Container maxW="7xl" >
         <Alert status="error">
           <AlertIcon />
           Error loading breeds data. Please try again later.
@@ -86,22 +81,28 @@ const BreederBreeds = ({ userProfile, onFormOpen }) => {
   }
   return (
     <VStack spacing={6} align="stretch">
-      <HStack justify="space-between" align="center">
-        <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
-          Manage Breeds
-        </Heading>
-        <Button
-          leftIcon={<AddIcon />}
-          colorScheme="brand"
-          onClick={onFormOpen}
-          size="md"
-        >
-          Add Breed
-        </Button>
-      </HStack>
-      <Text color="gray.600">
-        Manage the dog breeds you offer. Add new breeds, update information, and track inquiries for each breed.
-      </Text>
+      <Stack>
+        <HStack justify="space-between" align="center">
+          <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
+            Manage Breeds
+          </Heading>
+          <Button
+            leftIcon={<AddIcon />}
+            colorScheme="brand"
+            onClick={onFormOpen}
+            size="md"
+          >
+            Add Breed
+          </Button>
+        </HStack>
+        <Box maxW="xl">
+          <Text color="gray.600" >
+            View and manage your breeds. Add, edit, and delete breeds as needed.
+          </Text>
+        </Box>
+
+      </Stack>
+
       <BreedList
         breeds={userBreeds as []}
         userRole="breeder"
@@ -111,48 +112,4 @@ const BreederBreeds = ({ userProfile, onFormOpen }) => {
   )
 }
 
-const SeekerBreeds = () => {
-
-  const {
-    data: allAvailableBreeds,
-    isLoading: isLoadingAvailableBreeds,
-    error: availableBreedsError
-  } = useAllAvailableUserBreeds()
-
-  if (isLoadingAvailableBreeds) {
-    return (
-      <Container maxW="7xl" py={8}>
-        <Center height="200px">
-          <Loader />
-        </Center>
-      </Container>
-    );
-  }
-
-  if (availableBreedsError) {
-    return (
-      <Container maxW="7xl">
-        <Alert status="error">
-          <AlertIcon />
-          Error loading breeds data. Please try again later.
-        </Alert>
-      </Container>
-    );
-  }
-
-  return (
-    <VStack spacing={6} align="stretch">
-      <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
-        Browse Available Breeds
-      </Heading>
-      <Text color="gray.600">
-        Explore dog breeds available from verified breeders in your area.
-      </Text>
-      <BreedList
-        breeds={allAvailableBreeds || []}
-        userRole="seeker"
-      />
-    </VStack>
-  )
-}
 export default DashboardBreedsPage;

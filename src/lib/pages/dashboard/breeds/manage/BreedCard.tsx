@@ -32,6 +32,7 @@ interface UserBreed {
   created_at: string;
   updated_at: string;
   breeds?: Breed;
+  breeder_count: any
 }
 
 interface BreedCardProps {
@@ -119,13 +120,16 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
         )}
 
         {userRole === 'seeker' && (
-          <Text fontSize="xs" color="brand.600" fontWeight="medium">
-            Available from breeders
-          </Text>
+          <HStack spacing={1}>
+            <StarIcon color="yellow.400" boxSize={3} />
+            <Text fontSize="xs" color="brand.600" fontWeight="medium">
+              Available from {userBreed.breeder_count} breeder{userBreed.breeder_count !== 1 ? 's' : ''}
+            </Text>
+          </HStack>
         )}
 
         {/* Image count indicator */}
-        {userBreed.images && userBreed.images.length > 0 && (
+        {userRole === 'breeder' && userBreed.images && userBreed.images.length > 0 && (
           <HStack spacing={1}>
             <StarIcon color="yellow.400" boxSize={3} />
             <Text fontSize="xs" color="gray.500">

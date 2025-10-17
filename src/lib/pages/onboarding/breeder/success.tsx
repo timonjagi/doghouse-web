@@ -23,7 +23,7 @@ export const BreederSuccess: React.FC<SuccessProps> = () => {
       </Text>
 
       <Button
-        onClick={() => window.location.href = '/dashboard'}
+        onClick={() => window.location.href = '/dashboard?onboarding_completed=true'}
         w="full"
         colorScheme="brand"
         size="lg"

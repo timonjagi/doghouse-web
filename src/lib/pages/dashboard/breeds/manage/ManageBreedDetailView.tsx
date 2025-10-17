@@ -74,7 +74,7 @@ export const ManageBreedDetailView = ({
         isClosable: true,
       });
 
-      handleBack();
+      router.replace('/dashboard/breeds/manage');
     } catch (error) {
       toast({
         title: "Error",
@@ -87,131 +87,102 @@ export const ManageBreedDetailView = ({
   };
 
 
-  const handleBack = () => {
-    router.push("/dashboard/breeds");
-  };
-
   return (
     <Container maxW="7xl" py={8}>
       <VStack spacing={6} align="stretch">
-        {/* Breadcrumb */}
-        <HStack spacing={2}>
-          <Button
-            leftIcon={<ArrowBackIcon />}
-            variant="ghost"
-            onClick={handleBack}
-            p={0}
-            m={0}
-          >
-            <Text color="gray.600">breeds</Text>
-          </Button>
+        <VStack align="stretch" spacing={4}>
+          <HStack justify="space-between" align="center">
+            <Heading size={{ base: 'sm', lg: 'md' }} color="brand.500">
+              Manage {userBreed?.breeds.name}
+            </Heading>
 
-          <ChevronRightIcon color="gray.400" />
-          <Text color="gray.600">{userBreed?.breeds.name}</Text>
-        </HStack>
+            <ButtonGroup>
 
-        {/* Role-based content */}
-        <VStack spacing={6} align="stretch">
-          <VStack align="stretch" spacing={4}>
-            <HStack justify="space-between" align="center">
-              <Heading size={{ base: 'sm', lg: 'md' }} color="brand.500">
-                Manage {userBreed?.breeds.name}
-              </Heading>
+              <Button
+                leftIcon={<DeleteIcon />}
+                colorScheme="red"
+                onClick={handleDelete}
+                isLoading={deleteUserBreed.isPending}
+              >
+                Delete
+              </Button>
+            </ButtonGroup>
 
-              <ButtonGroup>
-                <Button
-                  leftIcon={<EditIcon />}
-                  colorScheme="brand"
-                  onClick={onFormOpen}
-                >
-                  Edit
+
+          </HStack>
+
+          <Text color="gray.600">
+            Manage your {userBreed?.breeds.name} breed information, photos, and availability.
+          </Text>
+        </VStack>
+
+        {/* Breed Images */}
+        {userBreed?.images && userBreed.images.length > 0 && (
+          <Card>
+            <CardHeader>
+              <Heading size={{ base: 'xs', lg: 'sm' }}>Breed Photos</Heading>
+            </CardHeader>
+            <CardBody>
+              <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
+                {userBreed.images.map((image, index) => (
+                  <Image
+                    key={index}
+                    src={image}
+                    alt={`${userBreed.breeds.name} ${index + 1}`}
+                    borderRadius="md"
+                    objectFit="cover"
+                    height="200px"
+                  />
+                ))}
+              </SimpleGrid>
+            </CardBody>
+          </Card>
+        )}
+
+        {/* Breed Notes */}
+        {userBreed?.notes && (
+          <Card>
+            <CardHeader>
+              <Heading size="md">Notes</Heading>
+            </CardHeader>
+            <CardBody>
+              <Text color="gray.600">{userBreed.notes}</Text>
+            </CardBody>
+          </Card>
+        )}
+
+        <BreedForm
+          isOpen={isFormOpen}
+          onClose={onFormClose}
+          editingBreed={userBreed}
+        />
+
+        <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                Delete Breed
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                Are you sure? You can't undo this action afterwards.
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
                 </Button>
-                <Button
-                  leftIcon={<DeleteIcon />}
-                  colorScheme="red"
-                  onClick={handleDelete}
-                  isLoading={deleteUserBreed.isPending}
-                >
+                <Button colorScheme='red' onClick={handleDelete} ml={3}>
                   Delete
                 </Button>
-              </ButtonGroup>
-
-
-            </HStack>
-
-            <Text color="gray.600">
-              Manage your {userBreed?.breeds.name} breed information, photos, and availability.
-            </Text>
-          </VStack>
-
-          {/* Breed Images */}
-          {userBreed?.images && userBreed.images.length > 0 && (
-            <Card>
-              <CardHeader>
-                <Heading size="md">Breed Photos</Heading>
-              </CardHeader>
-              <CardBody>
-                <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
-                  {userBreed.images.map((image, index) => (
-                    <Image
-                      key={index}
-                      src={image}
-                      alt={`${userBreed.breeds.name} ${index + 1}`}
-                      borderRadius="md"
-                      objectFit="cover"
-                      height="150px"
-                    />
-                  ))}
-                </SimpleGrid>
-              </CardBody>
-            </Card>
-          )}
-
-          {/* Breed Notes */}
-          {userBreed?.notes && (
-            <Card>
-              <CardHeader>
-                <Heading size="md">Notes</Heading>
-              </CardHeader>
-              <CardBody>
-                <Text color="gray.600">{userBreed.notes}</Text>
-              </CardBody>
-            </Card>
-          )}
-
-          <BreedForm
-            isOpen={isFormOpen}
-            onClose={onFormClose}
-            editingBreed={userBreed}
-          />
-
-          <AlertDialog
-            isOpen={isOpen}
-            leastDestructiveRef={cancelRef}
-            onClose={onClose}
-          >
-            <AlertDialogOverlay>
-              <AlertDialogContent>
-                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                  Delete Breed
-                </AlertDialogHeader>
-
-                <AlertDialogBody>
-                  Are you sure? You can't undo this action afterwards.
-                </AlertDialogBody>
-
-                <AlertDialogFooter>
-                  <Button ref={cancelRef} onClick={onClose}>
-                    Cancel
-                  </Button>
-                  <Button colorScheme='red' onClick={handleDelete} ml={3}>
-                    Delete
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialogOverlay>
-          </AlertDialog>
-        </VStack>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
       </VStack>
     </Container>
   );

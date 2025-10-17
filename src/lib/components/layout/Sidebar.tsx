@@ -1,6 +1,5 @@
 import {
   Flex,
-  Spacer,
   Stack,
   Text,
   useBreakpointValue,
@@ -22,9 +21,7 @@ import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
 
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
-import { UserRole, NavSection, getNavigationForRole } from "lib/components/layout/navLinks";
-import { Loader } from "../ui/Loader";
-import { useUserProfile } from "lib/hooks/queries/useUserProfile";
+import { NavSection, getNavigationForRole } from "lib/components/layout/navLinks";
 
 interface SidebarProps {
   onClose: () => void;
@@ -66,10 +63,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, onClose }) => {
           <Logo />
 
           {!loading && user && (
-            <Stack flex="1">
+            <Stack flex="1" spacing="8">
               {/* Render dynamic navigation sections */}
               {navigationSections.map((section) => (
-                <Stack key={section.title} spacing="1">
+                <Stack key={section.title} spacing="2">
                   <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
                     {section.title}
                   </Text>
@@ -88,8 +85,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, onClose }) => {
                   </Stack>
                 </Stack>
               ))}
-
-              <Spacer />
 
               {/* Common Account Section for all roles */}
               <Stack>
@@ -167,7 +162,3 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, onClose }) => {
     </Flex>
   );
 };
-
-const signedOutView = () => {
-
-}

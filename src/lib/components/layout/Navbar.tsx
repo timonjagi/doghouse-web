@@ -3,16 +3,12 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  Button,
   ButtonGroup,
   Drawer,
   DrawerContent,
-  DrawerFooter,
   DrawerOverlay,
   Flex,
-  Heading,
   HStack,
-  Icon,
   IconButton,
   Spacer,
   useBreakpointValue,
@@ -50,8 +46,6 @@ export const Navbar = () => {
               />
             </ButtonGroup>
           </HStack>
-
-
         </Flex>
       </Box>
       }
@@ -80,8 +74,6 @@ export const Navbar = () => {
             }
             onClick={onToggle}
           />
-
-
         </HStack>
       </HStack>}
 
@@ -96,7 +88,8 @@ export const Navbar = () => {
       >
         <DrawerOverlay />
         <DrawerContent>
-          {isMobile && <Sidebar onClose={onClose} />}
+          {isMobile && <Sidebar onClose={onClose} role={profile?.role}
+          />}
         </DrawerContent>
       </Drawer>
     </>)

@@ -10,6 +10,7 @@ import {
   FiLogOut,
   FiHeart,
   FiList,
+  FiEdit,
 } from "react-icons/fi";
 
 export type UserRole = 'breeder' | 'seeker' | 'admin';
@@ -49,8 +50,8 @@ export const navigationConfig: NavigationConfig = {
       items: [
         {
           label: "Manage",
-          href: "/dashboard/breed/manage",
-          icon: FiHeart,
+          href: "/dashboard/breeds/manage",
+          icon: FiEdit,
           ariaLabel: "Manage breeds and listings"
         },
         {

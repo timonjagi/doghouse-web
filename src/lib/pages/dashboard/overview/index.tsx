@@ -186,19 +186,13 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
       title: 'Explore Breeds',
       description: 'Start exploring the different dog breeds available for adoption',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/dashboard/breeds'
+      href: '/dashboard/breeds/browse'
     },
     {
       title: 'View Matches',
       description: 'Browse through matches made by our algorithm based on your preferences',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
       href: '/dashboard/matches'
-    },
-    {
-      title: 'Complete Profile',
-      description: 'Upload your profile picture and other details about yourself',
-      icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/account/profile'
     },
   ]
 
@@ -207,7 +201,7 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
       title: 'Manage Breeds',
       description: 'Update your existing breeds and add more breeds to your profile',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/dashboard/breeds'
+      href: '/dashboard/breeds/manage'
     },
     {
       title: 'Add Listings',

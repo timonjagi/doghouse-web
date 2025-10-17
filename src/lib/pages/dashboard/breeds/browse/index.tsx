@@ -7,6 +7,7 @@ import {
   Alert,
   AlertIcon,
   Box,
+  Stack,
 } from "@chakra-ui/react";
 import { Loader } from "lib/components/ui/Loader";
 import { BreedList } from "../manage/BreedList";
@@ -44,12 +45,15 @@ const DashboardBrowsePage = () => {
     <Container maxW="7xl" py={8} px={0}>
       <Box>
         <VStack spacing={6} align="stretch">
-          <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
-            Browse Available Breeds
-          </Heading>
-          <Text color="gray.600">
-            Explore dog breeds available from verified breeders in your area.
-          </Text>
+
+          <Stack>
+            <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
+              Browse Available Breeds
+            </Heading>
+            <Text color="gray.600">
+              Explore dog breeds available from verified breeders in your area.
+            </Text>
+          </Stack>
 
           <BreedList
             breeds={allAvailableBreeds || []}
