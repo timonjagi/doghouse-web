@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Center, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Icon, SimpleGrid, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableCaption, TableContainer, Th, Thead, Tr, Tbody, Td } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Center, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Icon, SimpleGrid, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableCaption, TableContainer, Th, Thead, Tr, Tbody, Td, Button } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -12,6 +12,8 @@ import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import { Rating } from "lib/pages/breeds/breed-details/BreedInfo";
 import { BiPackage, BiCheckShield } from "react-icons/bi";
 import { Ri24HoursLine } from "react-icons/ri";
+import { useListingsForBreed } from "lib/hooks/queries/useListings";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 interface Breed {
   id: string;
@@ -27,6 +29,7 @@ const BreedDetailPage = () => {
 
   const { data: breed, isLoading: isLoadingBreed, error: errorLoadingBreed } = useBreedByName(breedName);
 
+  const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForBreed(breed?.id);
 
 
   if (isLoadingBreed) {
@@ -63,14 +66,23 @@ const BreedDetailPage = () => {
       </Head>
       <Box as="section" h="100vh">
         <Container
-          pt={{
-            base: "4",
-            lg: "8",
-          }}
+
         >
+          <Button
+            leftIcon={<ArrowBackIcon />}
+            variant="ghost"
+            onClick={() => router.back()}
+            mb={4}
+            p={0}
+          >
+            Back to Breeds
+          </Button>
           <Stack
             spacing={{ base: "6", lg: "12", xl: "16" }}
           >
+
+
+
             <Stack
               direction={{ base: "column-reverse", lg: "row" }}
               spacing={{ base: "6", lg: "12", xl: "16" }}
@@ -95,19 +107,19 @@ const BreedDetailPage = () => {
 
             </Stack>
 
-
-
             <Tabs variant='soft-rounded' colorScheme='brand'>
               <TabList>
-                <Tab>Breeders</Tab>
                 <Tab>Listings</Tab>
+
+                <Tab>Breeders</Tab>
               </TabList>
               <TabPanels>
+
                 <TabPanel>
-                  <BreedersList breed={breed} />
+                  <BreedListings listings={listingsForBreed} loading={isLoadingListings} error={error} isManaging={true} />
                 </TabPanel>
                 <TabPanel>
-                  <BreedListings breedId={breed.id} />
+                  <BreedersList breed={breed} />
                 </TabPanel>
               </TabPanels>
             </Tabs>

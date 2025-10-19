@@ -19,6 +19,11 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   ButtonGroup,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
 } from "@chakra-ui/react";
 import { ChevronRightIcon, EditIcon, ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
@@ -26,6 +31,7 @@ import { useRef } from "react";
 import { BreedForm } from "./BreedForm";
 import { useDeleteUserBreed } from "lib/hooks/queries/useUserBreeds";
 import { BreedListings } from "../browse/BreedListings";
+import { useListingsForUserBreed } from "lib/hooks/queries/useListings";
 
 interface Breed {
   id: string;
@@ -61,6 +67,8 @@ export const ManageBreedDetailView = ({
 
   const deleteUserBreed = useDeleteUserBreed();
   const cancelRef = useRef()
+
+  const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForUserBreed(userBreed?.id);
 
   const handleDelete = async () => {
     try {
@@ -101,7 +109,7 @@ export const ManageBreedDetailView = ({
               <Button
                 leftIcon={<DeleteIcon />}
                 colorScheme="red"
-                onClick={handleDelete}
+                onClick={onOpen}
                 isLoading={deleteUserBreed.isPending}
               >
                 Delete
@@ -116,28 +124,44 @@ export const ManageBreedDetailView = ({
           </Text>
         </VStack>
 
-        {/* Breed Images */}
-        {userBreed?.images && userBreed.images.length > 0 && (
-          <Card>
-            <CardHeader>
-              <Heading size={{ base: 'xs', lg: 'sm' }}>Breed Photos</Heading>
-            </CardHeader>
-            <CardBody>
-              <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
-                {userBreed.images.map((image, index) => (
-                  <Image
-                    key={index}
-                    src={image}
-                    alt={`${userBreed.breeds.name} ${index + 1}`}
-                    borderRadius="md"
-                    objectFit="cover"
-                    height="200px"
-                  />
-                ))}
-              </SimpleGrid>
-            </CardBody>
-          </Card>
-        )}
+
+        <Tabs variant='soft-rounded' colorScheme='brand'>
+          <TabList>
+            <Tab>Photos</Tab>
+
+            <Tab>Listings</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel px={0}>
+              {/* Breed Images */}
+              {userBreed?.images && userBreed.images.length > 0 && (
+                <Card>
+
+                  <CardBody>
+                    <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
+                      {userBreed.images.map((image, index) => (
+                        <Image
+                          key={index}
+                          src={image}
+                          alt={`${userBreed.breeds.name} ${index + 1}`}
+                          borderRadius="md"
+                          objectFit="cover"
+                          height="200px"
+                        />
+                      ))}
+                    </SimpleGrid>
+                  </CardBody>
+                </Card>
+              )}
+            </TabPanel>
+
+            <TabPanel px={0}>
+              <BreedListings listings={listingsForBreed} loading={isLoadingListings} error={error} isManaging={true} />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+
+
 
         {/* Breed Notes */}
         {userBreed?.notes && (
@@ -156,33 +180,6 @@ export const ManageBreedDetailView = ({
           onClose={onFormClose}
           editingBreed={userBreed}
         />
-
-        <AlertDialog
-          isOpen={isOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={onClose}
-        >
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                Delete Breed
-              </AlertDialogHeader>
-
-              <AlertDialogBody>
-                Are you sure? You can't undo this action afterwards.
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button colorScheme='red' onClick={handleDelete} ml={3}>
-                  Delete
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
       </VStack>
     </Container>
   );

@@ -162,12 +162,13 @@ export const useBreedersForBreed = (breedId: string) => {
           notes,
           images,
           created_at,
-          users (
+          users(
             id,
             profile_photo_url,
             display_name,
-            breeder_profiles (
+            breeder_profiles(
               id,
+              user_id,
               kennel_name,
               kennel_location,
               rating

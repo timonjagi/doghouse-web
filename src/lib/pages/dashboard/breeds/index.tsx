@@ -12,8 +12,9 @@ import {
 import { useUserProfile } from '../../../hooks/queries';
 import { useRouter } from 'next/router';
 import { NextSeo } from 'next-seo';
+import { Loader } from 'lib/components/ui/Loader';
 
-const ListingsPage: React.FC = () => {
+const BreedsPage: React.FC = () => {
   const { data: profile, isLoading: profileLoading } = useUserProfile();
   const router = useRouter();
 
@@ -21,21 +22,18 @@ const ListingsPage: React.FC = () => {
     if (profile && !profileLoading) {
       // Redirect to appropriate page based on role
       if (profile.role === 'breeder') {
-        router.push('/dashboard/listings/manage');
+        router.push('/dashboard/breeds/manage');
       } else if (profile.role === 'seeker') {
-        router.push('/dashboard/listings/browse');
+        router.push('/dashboard/breeds/browse');
       }
     }
   }, [profile, profileLoading, router]);
-
-  const handleCreateListing = () => {
-    router.push('/dashboard/listings/create');
-  };
+  ;
 
   if (profileLoading) {
     return (
       <Center h="400px">
-        <Spinner size="xl" />
+        <Loader />
       </Center>
     );
   }
@@ -60,16 +58,13 @@ const ListingsPage: React.FC = () => {
     <>
       <NextSeo title="Listings - DogHouse Kenya" />
 
-      <Container maxW="7xl" py={8}>
-        <Center h="400px">
-          <VStack spacing={4}>
-            <Spinner size="lg" />
-            <Text>Redirecting...</Text>
-          </VStack>
+      <Container maxW="7xl">
+        <Center h="full">
+          <Loader />
         </Center>
       </Container>
     </>
   );
 };
 
-export default ListingsPage;
+export default BreedsPage;

@@ -9,7 +9,7 @@ const RouteGuard = ({ children, ...rest }) => {
   const router = useRouter();
   const { user, loading } = useSupabaseAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const protectedRoutes = ["onboarding", "/dashboard", "profile", "account"];
+  const protectedRoutes = ["onboarding", "dashboard", "profile", "account"];
   useEffect(() => {
     if (!loading) {
       // If the authentication state is loaded

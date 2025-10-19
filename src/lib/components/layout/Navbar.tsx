@@ -52,13 +52,13 @@ export const Navbar = () => {
 
       {!isMobile && <HStack justify="space-between" align="start">
 
-        <Breadcrumb>
+        {/* <Breadcrumb>
           {router.pathname.split("/").map((item, index) => (
             <BreadcrumbItem>
               <BreadcrumbLink href={`/${item}`}>{item}</BreadcrumbLink>
             </BreadcrumbItem>
           ))}
-        </Breadcrumb>
+        </Breadcrumb> */}
 
         {/* <Heading pb="4" size={{ base: "xs", lg: "md" }}>
           <span>{router.pathname.split("/")[2]}</span>

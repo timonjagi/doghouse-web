@@ -167,7 +167,6 @@ export const useFeaturedListings = () => {
   });
 };
 
-// Query to get listings for a specific breed
 export const useListingsForBreed = (breedId: string) => {
   return useQuery({
     queryKey: queryKeys.listings.byBreed(breedId),
@@ -195,6 +194,36 @@ export const useListingsForBreed = (breedId: string) => {
       return data || [];
     },
     enabled: !!breedId,
+  });
+};
+// Query to get listings for a specific breed
+export const useListingsForUserBreed = (userBreedId: string) => {
+  return useQuery({
+    queryKey: queryKeys.listings.byBreed(userBreedId),
+    queryFn: async (): Promise<Partial<Listing>[]> => {
+      const { data, error } = await supabase
+        .from('listings')
+        .select(`
+          id,
+          title,
+          description,
+          price,
+          location_text,
+          photos,
+          status,
+          created_at,
+          users (
+            display_name,
+            profile_photo_url
+          )
+        `)
+        .eq('user_breed_id', userBreedId)
+        .eq('status', 'available');
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!userBreedId,
   });
 };
 
@@ -306,7 +335,7 @@ export const useUploadListingPhotos = ({ userId }: { userId: string }) => {
 
           const { data: { publicUrl } } = supabase.storage
             .from('listing-images')
-            .getPublicUrl(fileName);
+            .getPublicUrl(`user-${userId}/${fileName}`);
 
           return publicUrl;
         }
@@ -320,3 +349,20 @@ export const useUploadListingPhotos = ({ userId }: { userId: string }) => {
     },
   });
 };
+
+// Mutation to delete a listing
+export const useDeleteListing = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (listingId: string) => {
+      const { error } = await supabase
+        .from('listings')
+        .delete()
+        .eq('id', listingId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
+    },
+  });
+}

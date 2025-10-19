@@ -12,6 +12,7 @@ import {
   FiList,
   FiEdit,
   FiMessageSquare,
+  FiGitlab,
 } from "react-icons/fi";
 
 export type UserRole = 'breeder' | 'seeker' | 'admin';
@@ -53,20 +54,15 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "Breeds",
+      title: "Manage",
       items: [
         {
-          label: "Manage",
-          href: "/dashboard/breeds/manage",
-          icon: FiEdit,
+          label: "Breeds",
+          href: "/dashboard/breeds",
+          icon: FiGitlab,
           ariaLabel: "Manage breeds and listings"
         },
-        {
-          label: "Matches",
-          href: "/dashboard/matches",
-          icon: FiTarget,
-          ariaLabel: "View matches"
-        },
+
         {
           label: "Listings",
           href: "/dashboard/listings",
@@ -78,6 +74,12 @@ export const navigationConfig: NavigationConfig = {
           href: "/dashboard/applications",
           icon: FiClipboard,
           ariaLabel: "View applications"
+        },
+        {
+          label: "Matches",
+          href: "/dashboard/matches",
+          icon: FiTarget,
+          ariaLabel: "View matches"
         },
       ]
     }
@@ -102,19 +104,13 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "Breeds",
+      title: "Browse",
       items: [
         {
-          label: "Browse",
-          href: "/dashboard/breeds/browse",
+          label: "Breeds",
+          href: "/dashboard/breeds",
           icon: FiSearch,
           ariaLabel: "Browse breeds and listings"
-        },
-        {
-          label: "Matches",
-          href: "/dashboard/matches",
-          icon: FiTarget,
-          ariaLabel: "My matches"
         },
         {
           label: "Listings",
@@ -127,6 +123,12 @@ export const navigationConfig: NavigationConfig = {
           href: "/dashboard/applications",
           icon: FiClipboard,
           ariaLabel: "My applications"
+        },
+        {
+          label: "Matches",
+          href: "/dashboard/matches",
+          icon: FiTarget,
+          ariaLabel: "My matches"
         },
       ]
     }

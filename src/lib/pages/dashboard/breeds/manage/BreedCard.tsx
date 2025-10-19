@@ -5,12 +5,10 @@ import {
   Badge,
   VStack,
   HStack,
-  IconButton,
   useColorModeValue,
   Skeleton,
-  Tooltip,
 } from "@chakra-ui/react";
-import { EditIcon, ViewIcon, StarIcon } from "@chakra-ui/icons";
+import { StarIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 
 // Local types for now - will fix imports later
@@ -60,7 +58,6 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
     }
   };
 
-
   const featuredImage = userRole === 'seeker' ? breed.featured_image_url : userBreed?.images && userBreed?.images[0] || '/images/placeholder-breed.jpg';
   return (
     <Box
@@ -75,7 +72,7 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
       _hover={{
         transform: "translateY(-2px)",
         shadow: "md",
-        borderColor: "brand.200"
+        borderColor: "gray.200"
       }}
       position="relative"
     >
