@@ -1,21 +1,75 @@
-import { Container, Heading, Text, VStack } from "@chakra-ui/react";
+import React, { useEffect } from 'react';
+import {
+  Container,
+  Heading,
+  Text,
+  VStack,
+  HStack,
+  Button,
+  Spinner,
+  Center,
+} from '@chakra-ui/react';
+import { useUserProfile } from '../../../hooks/queries';
+import { useRouter } from 'next/router';
+import { NextSeo } from 'next-seo';
 
-const MyListingsPage = () => {
+const ListingsPage: React.FC = () => {
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (profile && !profileLoading) {
+      // Redirect to appropriate page based on role
+      if (profile.role === 'breeder') {
+        router.push('/dashboard/listings/manage');
+      } else if (profile.role === 'seeker') {
+        router.push('/dashboard/listings/browse');
+      }
+    }
+  }, [profile, profileLoading, router]);
+
+  const handleCreateListing = () => {
+    router.push('/dashboard/listings/create');
+  };
+
+  if (profileLoading) {
+    return (
+      <Center h="400px">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  if (!profile?.role) {
+    return (
+      <Container maxW="7xl" py={8}>
+        <Center h="400px">
+          <VStack spacing={4}>
+            <Text fontSize="lg" color="gray.500">Please complete your profile setup first</Text>
+            <Button onClick={() => router.push('/onboarding')}>
+              Complete Setup
+            </Button>
+          </VStack>
+        </Center>
+      </Container>
+    );
+  }
+
+  // This component will redirect, so this UI won't be shown
   return (
-    <Container maxW="7xl" py={8}>
-      <VStack spacing={6} align="stretch">
-        <Heading size="lg" color="brand.500">
-          My Listings
-        </Heading>
-        <Text color="gray.600">
-          Manage your litters and single pet listings. Create new listings, update existing ones, and track inquiries.
-        </Text>
-        <Text fontSize="sm" color="gray.500" fontStyle="italic">
-          Listing management interface coming soon...
-        </Text>
-      </VStack>
-    </Container>
+    <>
+      <NextSeo title="Listings - DogHouse Kenya" />
+
+      <Container maxW="7xl" py={8}>
+        <Center h="400px">
+          <VStack spacing={4}>
+            <Spinner size="lg" />
+            <Text>Redirecting...</Text>
+          </VStack>
+        </Center>
+      </Container>
+    </>
   );
 };
 
-export default MyListingsPage;
+export default ListingsPage;

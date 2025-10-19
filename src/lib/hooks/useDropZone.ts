@@ -2,8 +2,8 @@ import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
 
 interface UseDropZoneProps {
-  selectedImages: File[];
-  setSelectedImages: (images: File[]) => void;
+  selectedImages: File[] | string[];
+  setSelectedImages: (images: any) => void;
   maxFiles?: number;
   acceptedTypes?: string[];
 }

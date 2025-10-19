@@ -1,3 +1,3 @@
-import MyListingsPage from "lib/pages/dashboard/listings/listings";
+import ListingsPage from "lib/pages/dashboard/listings/listings";
 
-export default MyListingsPage;
+export default ListingsPage;

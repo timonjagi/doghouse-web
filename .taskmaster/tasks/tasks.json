@@ -262,7 +262,7 @@
               3
             ],
             "details": "Modify `src/lib/components/layout/Sidebar.tsx` to accept a `role` prop. Use this prop to look up the correct array of links from the `navLinks` configuration. Map over the retrieved array to render the `<Link>` components. If the `role` prop is null or undefined, render a skeleton version of the navigation.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Log in as a Seeker and verify the sidebar shows 'Browse', 'Matches', and 'Applications'. Log in as a Breeder and see 'My Breeds', 'My Listings', 'Applications'. Log in as an Admin and see 'Verification', 'Users', 'Listings', 'Analytics'."
           },
           {
@@ -273,7 +273,7 @@
               4
             ],
             "details": "Create files for each new route, such as `src/pages/dashboard/browse.tsx`, `src/pages/dashboard/matches.tsx`, `src/pages/dashboard/my-listings.tsx`, `src/pages/dashboard/verification.tsx`, `src/pages/dashboard/users.tsx`, `src/pages/dashboard/listings.tsx`, `src/pages/dashboard/analytics.tsx`, etc. Each page should be a simple React component that renders an `<h1>` tag with the page title and is wrapped in the `DashboardLayout`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "After logging in as each role, click every link in the updated sidebar and verify that it navigates to a valid page with the correct title and does not result in a 404 error."
           }
         ]
@@ -288,7 +288,7 @@
         "dependencies": [
           4
         ],
-        "status": "pending",
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
@@ -296,7 +296,7 @@
             "description": "Build main breeds page that adapts based on user role (breeder vs seeker).",
             "dependencies": [],
             "details": "Create src/lib/pages/dashboard/breeds.tsx with conditional rendering based on user role. Use existing useUserProfile hook to determine role and show appropriate content. For breeders: show breed management interface. For seekers: show breed browsing interface.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify page loads for both roles and shows appropriate content based on user role."
           },
           {
@@ -307,7 +307,7 @@
               1
             ],
             "details": "Integrate with useBreeds and useUserBreeds hooks. Create breed selection interface that updates user_breeds table. Implement select component populated with all available breeds from the breeds table. Use API routes to update the user_breeds join table based on breeder's selections.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "As a breeder, add a breed using select, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the user_breeds table in Supabase directly to verify data integrity."
           },
           {
@@ -318,7 +318,7 @@
               1
             ],
             "details": "Create breed browsing interface with filters for availability (based on user_breeds), size, temperament, breed group, etc. Use breeds table for data. Implement search functionality and breed cards showing key information like description, traits, and featured images.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "As a seeker, browse and filter breeds by different criteria, verify all breeds are displayed correctly with proper information. Test search functionality and ensure breed cards show all relevant details."
           },
           {
@@ -329,64 +329,83 @@
               2,
               3
             ],
-            "status": "pending",
+            "status": "done",
             "testStrategy": "As a seeker, view breed details and check that images load correctly. As a breeder, edit breed details and verify changes persist."
           }
         ]
       },
       {
         "id": 6,
-        "title": "Implement Listings Page (Complete flow for both breeders and seekers)",
-        "description": "Create a unified listings page for litters and single pet listings. For breeders: create/edit listings with image upload to Supabase Storage. For seekers: browse available listings with advanced filtering and search capabilities.",
-        "details": "Build role-aware listings page using litters table and existing hooks. For breeders: implement listing creation forms with multi-image upload functionality. For seekers: create browsing interface with filters for breed, location, price, availability status. Use react-hook-form and zod for validation.",
-        "testStrategy": "Test as breeder: create listings with photos, edit existing listings, verify image upload to Supabase Storage. Test as seeker: browse and filter listings by different criteria, verify all available listings are shown correctly.",
+        "title": "Implement Complete Listings Ecosystem",
+        "description": "Create a comprehensive listings system with creation, management, discovery, and editing capabilities for both breeders and seekers.",
+        "details": "Build a complete listings ecosystem including: smart router that redirects by role, multi-step creation flow with image upload, management interface for breeders, discovery interface for seekers, detail pages, and edit functionality.",
+        "testStrategy": "Test complete user flows: breeders create and manage listings, seekers browse and filter listings, both roles view details, breeders edit their listings. Verify all CRUD operations work correctly.",
         "priority": "high",
         "dependencies": [
           5
         ],
-        "status": "pending",
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
-            "title": "Create Role-Aware Listings Page Component",
-            "description": "Build main listings page that adapts based on user role with conditional rendering.",
+            "title": "Create Smart Router for Role-Based Navigation",
+            "description": "Implement intelligent root listings page that redirects users to appropriate interfaces based on their role.",
             "dependencies": [],
-            "details": "Create src/lib/pages/dashboard/listings.tsx with role-based content. For breeders: show listing management interface with 'Create New Listing' button. For seekers: show browsing interface with filter controls. Use existing useUserProfile hook for role detection.",
-            "status": "pending",
-            "testStrategy": "Verify page loads correctly for both roles and shows appropriate interface based on user role."
+            "details": "Create src/lib/pages/dashboard/listings.tsx that detects user role and redirects: breeders to /manage, seekers to /browse. Include proper loading states and onboarding prompts for unverified users.",
+            "status": "completed",
+            "testStrategy": "Log in as breeder and verify redirect to manage page. Log in as seeker and verify redirect to browse page. Test loading states and onboarding prompts."
           },
           {
             "id": 2,
-            "title": "Implement Breeder Listing Management",
-            "description": "For breeders: create/edit litters and single pet listings with multi-image upload to Supabase Storage.",
-            "dependencies": [
-              1
-            ],
-            "details": "Integrate with useLitters hook and create comprehensive listing forms. Implement multi-image uploader that sends files to 'litter-photos' Supabase Storage bucket. Include form fields for name, birth_date, available_date, number_of_puppies, reservation_fee, description. Use react-hook-form and zod for validation.",
-            "status": "pending",
-            "testStrategy": "As a breeder, create a new listing with multiple photos, fill out all form fields, and save. Verify redirection to listings list and that new listing appears. Edit existing listing and confirm changes persist. Check Supabase Storage for uploaded files."
+            "title": "Implement Multi-Step Listing Creation Flow",
+            "description": "Build comprehensive 5-step creation flow: Basic Info → Pet Details → Photos → Pricing → Review & Publish.",
+            "dependencies": [],
+            "details": "Create step components with proper validation, form state management, and Supabase integration. Include drag-and-drop photo upload, conditional fields based on listing type, and comprehensive review step.",
+            "status": "completed",
+            "testStrategy": "Complete full creation flow as a breeder. Verify all steps work correctly, photos upload to Supabase Storage, and listing appears in database with correct data."
           },
           {
             "id": 3,
-            "title": "Implement Seeker Listing Discovery",
-            "description": "For seekers: browse listings with advanced filtering for breed, location, price, availability status.",
+            "title": "Implement Breeder Listing Management Interface",
+            "description": "Create comprehensive management dashboard for breeders to view, edit, and manage their listings.",
             "dependencies": [
-              1
+              2
             ],
-            "details": "Create listing browsing interface with filter controls for breed (dropdown from breeds table), location (text search), price range, availability status. Use Chakra UI Card components to display each listing's summary with photos, key information, and link to detail view. Ensure RLS policies allow public viewing of available listings.",
-            "status": "pending",
-            "testStrategy": "As a seeker, browse listings and test all filter combinations. Verify that only listings marked 'available' are shown. Test that filter controls work correctly and results update in real-time. Ensure clicking a listing card navigates to appropriate detail view."
+            "details": "Build listing cards with photos, status management, edit functionality, and proper access control. Include confirmation dialogs for status changes and visual indicators for listing states.",
+            "status": "completed",
+            "testStrategy": "As a breeder, view all listings, edit existing ones, change status, and verify all changes persist correctly in the database."
           },
           {
             "id": 4,
-            "title": "Implement Listing Detail Page (Complete flow for both breeders and seekers)",
-            "description": "Create a unified listing detail page that adapts based on user role. For breeders: edit listing details with image upload to Supabase Storage. For seekers: view listing details with image gallery along with availability status. Integrate with listings table and existing hooks.",
+            "title": "Implement Seeker Listing Discovery Interface",
+            "description": "Create advanced browsing interface with real-time filtering, search, and responsive listing cards.",
+            "dependencies": [],
+            "details": "Build filter controls for breed, location, price range, and listing type. Implement search functionality, responsive grid layout, and proper loading states. Include view count tracking.",
+            "status": "completed",
+            "testStrategy": "As a seeker, browse listings, test all filter combinations, verify search works, and confirm responsive design on different screen sizes."
+          },
+          {
+            "id": 5,
+            "title": "Implement Listing Detail Pages",
+            "description": "Create rich detail pages that adapt based on user role with different actions and information display.",
             "dependencies": [
-              2,
-              3
+              3,
+              4
             ],
-            "status": "pending",
-            "testStrategy": "As a seeker, view listing details and check that images load correctly. As a breeder, edit listing details and verify changes persist."
+            "details": "Build detail pages with image galleries, comprehensive listing information, role-based action buttons, and proper navigation. Include photo galleries and metadata display.",
+            "status": "completed",
+            "testStrategy": "View listing details as both breeder and seeker. Verify different actions are shown based on role and all information displays correctly."
+          },
+          {
+            "id": 6,
+            "title": "Implement Edit Listing Functionality",
+            "description": "Create complete edit flow that reuses creation components but pre-populates with existing data.",
+            "dependencies": [
+              5
+            ],
+            "details": "Build edit interface that loads existing listing data, allows modifications across all steps, and updates the database. Include ownership validation and proper form pre-population.",
+            "status": "completed",
+            "testStrategy": "Edit an existing listing as a breeder, modify various fields and photos, save changes, and verify all updates persist correctly."
           }
         ]
       },

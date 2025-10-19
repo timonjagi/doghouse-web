@@ -171,7 +171,7 @@ export const useFeaturedListings = () => {
 export const useListingsForBreed = (breedId: string) => {
   return useQuery({
     queryKey: queryKeys.listings.byBreed(breedId),
-    queryFn: async () => {
+    queryFn: async (): Promise<Partial<Listing>[]> => {
       const { data, error } = await supabase
         .from('listings')
         .select(`
@@ -204,7 +204,7 @@ export const useCreateListing = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (listingData: CreateListingData) => {
+    mutationFn: async (listingData: CreateListingData): Promise<Listing> => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No authenticated user');
 
@@ -231,7 +231,7 @@ export const useUpdateListing = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: UpdateListingData }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: UpdateListingData }): Promise<Listing> => {
       const { data, error } = await supabase
         .from('listings')
         .update({
@@ -285,49 +285,35 @@ export const useIncrementListingViews = () => {
 };
 
 // Mutation to upload listing photos
-export const useUploadListingPhotos = () => {
+export const useUploadListingPhotos = ({ userId }: { userId: string }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ listingId, files }: { listingId: string; files: File[] }) => {
+    mutationFn: async ({ listingId, files }: { listingId: string; files: File[] | string[] }) => {
       const uploadPromises = files.map(async (file) => {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${listingId}/${Date.now()}-${Math.random()}.${fileExt}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from('listing-photos')
-          .upload(fileName, file);
+        if (!listingId) throw new Error('Listing ID is required');
 
-        if (uploadError) throw uploadError;
+        if (file instanceof File) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${listingId}/${Date.now()}-${Math.random()}.${fileExt}`;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('listing-photos')
-          .getPublicUrl(fileName);
+          const { error: uploadError } = await supabase.storage
+            .from('listing-images')
+            .upload(`user-${userId}/${fileName}`, file);
 
-        return publicUrl;
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('listing-images')
+            .getPublicUrl(fileName);
+
+          return publicUrl;
+        }
       });
 
       const photoUrls = await Promise.all(uploadPromises);
-
-      // Update listing with new photo URLs
-      const { data: listing, error } = await supabase
-        .from('listings')
-        .select('photos')
-        .eq('id', listingId)
-        .single();
-
-      if (error) throw error;
-
-      const updatedPhotos = [...(listing.photos || []), ...photoUrls];
-
-      const { error: updateError } = await supabase
-        .from('listings')
-        .update({ photos: updatedPhotos })
-        .eq('id', listingId);
-
-      if (updateError) throw updateError;
-
-      return updatedPhotos;
+      return photoUrls;
     },
     onSuccess: (_, { listingId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.detail(listingId) });

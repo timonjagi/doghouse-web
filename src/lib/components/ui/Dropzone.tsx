@@ -49,14 +49,14 @@ export const Dropzone = ({
             boxSizing="content-box"
           >
             <SimpleGrid columns={{ base: 2 }} gap="4" w="full">
-              {selectedFiles.map((selectedFile) => (
+              {selectedFiles.map((selectedFile, index) => (
                 <Box h="full" w="full" position="relative">
                   <Image
                     width="100%"
                     height="100%"
                     borderRadius="lg"
                     objectFit="cover"
-                    src={selectedFile}
+                    src={selectedFile && typeof selectedFile === "string" ? selectedFile : URL.createObjectURL(selectedFile)}
                     alt={selectedFile.name}
                     bg="bg-subtle"
                   />
@@ -68,7 +68,7 @@ export const Dropzone = ({
                     height="28px"
                     left="40%"
                     top="40%"
-                    onClick={() => onRemove(selectedFile)}
+                    onClick={() => onRemove(index)}
                   />
                 </Box>
               ))}

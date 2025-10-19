@@ -15,10 +15,9 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { useCreateUserBreed, useCurrentUser, useUpdateUserBreed, useUpdateUserProfile, useUserBreedsFromUser } from "../../../hooks/queries";
+import { useBreedImageUpload, useCreateUserBreed, useCurrentUser, useUpdateUserBreed, useUpdateUserProfile, useUserBreedsFromUser } from "../../../hooks/queries";
 import breedsData from "../../../data/breeds_with_group_and_traits.json";
 import { useDropZone } from "../../../hooks/useDropZone";
-import { useBreedImageUpload } from "../../../hooks/useBreedImageUpload";
 import { Dropzone } from "../../../components/ui/Dropzone";
 import { supabase } from "../../../supabase/client";
 import { BsInfoCircle } from "react-icons/bs";
@@ -67,13 +66,11 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
 
   const { uploadImages, uploading } = useBreedImageUpload({
     userId: user?.id || '',
-
+    breedId: selectedBreed?.id || '',
     onUploadComplete: async (urls) => {
       console.log('Images uploaded successfully:', urls);
     }
   });
-
-  const imageUrls = selectedImages.map(file => URL.createObjectURL(file));
 
   const onBack = () => {
     setStep(currentStep - 1);
@@ -191,7 +188,7 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
               </Text>
 
               <Dropzone
-                selectedFiles={imageUrls}
+                selectedFiles={selectedImages}
                 onChange={onSelectImage}
                 onRemove={onRemoveImage}
                 maxUploads={4}

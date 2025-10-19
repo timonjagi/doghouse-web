@@ -16,10 +16,9 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useCreateUserBreed, useUpdateUserBreed, useDeleteUserBreed } from "../../../../hooks/queries/useUserBreeds";
+import { useCreateUserBreed, useUpdateUserBreed, useDeleteUserBreed, useBreedImageUpload } from "../../../../hooks/queries/useUserBreeds";
 import { useCurrentUser } from "../../../../hooks/queries/useAuth";
 import { useDropZone } from "../../../../hooks/useDropZone";
-import { useBreedImageUpload } from "../../../../hooks/useBreedImageUpload";
 import { Dropzone } from "../../../../components/ui/Dropzone";
 import { supabase } from "lib/supabase/client";
 import breedsData from "../../../../data/breeds_with_group_and_traits.json";
@@ -76,6 +75,7 @@ export const BreedForm = ({
   // Image upload hook
   const { uploadImages, uploading } = useBreedImageUpload({
     userId: currentUser?.id || '',
+    breedId: selectedBreed?.id || '',
     onUploadComplete: (urls) => {
       console.log('Images uploaded successfully:', urls);
     }
@@ -88,8 +88,6 @@ export const BreedForm = ({
     maxFiles: 5,
     acceptedTypes: ['image/jpeg', 'image/png', 'image/webp']
   });
-
-  const imageUrls = selectedImages.map(file => URL.createObjectURL(file));
 
   const onSelectBreed = (selectedOption: any) => {
     if (selectedOption) {
@@ -128,7 +126,7 @@ export const BreedForm = ({
         is_owner: true
       });
 
-      const uploadedUrls = await uploadImages(selectedImages);
+      const uploadedUrls = await uploadImages(selectedImages as File[]);
 
       if (uploadedUrls.length > 0 && newUserBreed?.id) {
         await updateUserBreed.mutateAsync({
@@ -196,7 +194,7 @@ export const BreedForm = ({
               </Text>
 
               <Dropzone
-                selectedFiles={imageUrls}
+                selectedFiles={selectedImages}
                 onChange={onSelectImage}
                 onRemove={onRemoveImage}
                 maxUploads={4}
