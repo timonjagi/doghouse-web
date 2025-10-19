@@ -66,34 +66,8 @@ export const ManageBreedDetailView = ({
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const deleteUserBreed = useDeleteUserBreed();
-  const cancelRef = useRef()
 
   const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForUserBreed(userBreed?.id);
-
-  const handleDelete = async () => {
-    try {
-      await deleteUserBreed.mutateAsync(userBreed.id);
-
-      toast({
-        title: "Success",
-        description: "Breed removed successfully.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-
-      router.replace('/dashboard/breeds/manage');
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to remove breed. Please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
 
   return (
     <Container maxW="7xl" py={8}>

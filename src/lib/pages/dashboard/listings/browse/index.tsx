@@ -7,19 +7,16 @@ import {
   HStack,
   Button,
   Card,
-  CardBody,
-  Image,
   Badge,
   Input,
   InputGroup,
   InputLeftElement,
-  Select,
+  Select as ChakraSelect,
   NumberInput,
   NumberInputField,
   SimpleGrid,
   Box,
   useColorModeValue,
-  Spinner,
   Center,
   FormControl,
   FormLabel,
@@ -28,10 +25,9 @@ import {
   IconButton,
   useToast,
   Stack,
-  Divider,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
-import { SettingsIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserProfile } from '../../../../hooks/queries';
 import { useListings, useIncrementListingViews } from '../../../../hooks/queries/useListings';
@@ -40,10 +36,11 @@ import { NextSeo } from 'next-seo';
 import { Loader } from 'lib/components/ui/Loader';
 import { MdFilterList } from 'react-icons/md';
 import ListingCard from './ListingCard';
+import { Select } from 'chakra-react-select';
 
 interface FilterState {
   search: string;
-  breed: string;
+  breed: any;
   location: string;
   minPrice: string;
   maxPrice: string;
@@ -56,6 +53,7 @@ const BrowseListingsPage: React.FC = () => {
   const router = useRouter();
   const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const { data: breeds, isLoading: breedsLoading } = useBreeds();
   const incrementViewsMutation = useIncrementListingViews();
@@ -70,7 +68,7 @@ const BrowseListingsPage: React.FC = () => {
     status: 'available',
   });
 
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(isMobile ? false : true);
 
   // Build query filters for the hook
   const queryFilters = useMemo(() => {
@@ -79,7 +77,7 @@ const BrowseListingsPage: React.FC = () => {
       owner_type: 'breeder'
     };
 
-    if (filters.breed) queryParams.breed_id = filters.breed;
+    if (filters.breed) queryParams.breed_id = filters.breed.value;
     if (filters.type) queryParams.type = filters.type;
 
     return queryParams;
@@ -122,31 +120,6 @@ const BrowseListingsPage: React.FC = () => {
     });
   }, [listings, filters]);
 
-  if (profileLoading) {
-    return (
-      <Container maxW="7xl" >
-        <Center h="full" flex="1">
-          <Loader />
-        </Center>
-      </Container>
-    );
-  }
-
-  if (profile?.role !== 'seeker') {
-    return (
-      <Container maxW="7xl" >
-        <Center h="400px">
-          <VStack spacing={4}>
-            <Text fontSize="lg" color="gray.500">Access denied</Text>
-            <Text color="gray.400">Only seekers can browse listings</Text>
-            <Button onClick={() => router.push('/dashboard/listings')}>
-              Back to Dashboard
-            </Button>
-          </VStack>
-        </Center>
-      </Container>
-    );
-  }
 
   const handleListingClick = async (listingId: string) => {
     // Increment view count
@@ -161,6 +134,7 @@ const BrowseListingsPage: React.FC = () => {
   };
 
   const updateFilter = (key: keyof FilterState, value: string) => {
+    console.log('Updating filter', key, value);
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
@@ -190,6 +164,31 @@ const BrowseListingsPage: React.FC = () => {
     }
   };
 
+  if (profileLoading) {
+    return (
+      <Box w="full" h="100vh" >
+        <Center h="full">
+          <Loader />
+        </Center>
+      </Box>
+    );
+  }
+
+  if (profile?.role !== 'seeker') {
+    return (
+      <Container maxW="7xl" >
+        <Center h="400px">
+          <VStack spacing={4}>
+            <Text fontSize="lg" color="gray.500">Access denied</Text>
+            <Text color="gray.400">Only seekers can browse listings</Text>
+            <Button onClick={() => router.push('/dashboard/listings')}>
+              Back to Dashboard
+            </Button>
+          </VStack>
+        </Center>
+      </Container>
+    );
+  }
 
   return (
     <>
@@ -226,8 +225,6 @@ const BrowseListingsPage: React.FC = () => {
               </InputGroup>
             </HStack>
 
-
-
             <HStack justify="space-between">
               {/* Active Filters Display */}
               {(filters.breed || filters.location || filters.minPrice || filters.maxPrice || filters.type) && (
@@ -238,7 +235,7 @@ const BrowseListingsPage: React.FC = () => {
                   {filters.breed && (
                     <WrapItem>
                       <Badge colorScheme="blue" variant="subtle">
-                        Breed: {breeds?.find(b => b.id === filters.breed)?.name}
+                        Breed: {breeds?.find(b => b.id === filters.breed.value)?.name}
                       </Badge>
                     </WrapItem>
                   )}
@@ -289,7 +286,7 @@ const BrowseListingsPage: React.FC = () => {
           {filteredListings.length} listing{filteredListings.length !== 1 ? 's' : ''} found
         </VStack>
 
-        <HStack align="center">
+        <HStack align="start">
           {/* Advanced Filters */}
           {showFilters && (
             <Card minW="200px" maxW="300px" bg={bgColor} p={4} mr={4} borderRadius="lg">
@@ -299,15 +296,11 @@ const BrowseListingsPage: React.FC = () => {
                   <Select
                     placeholder="All breeds"
                     value={filters.breed}
-                    onChange={(e) => updateFilter('breed', e.target.value)}
-                    disabled={breedsLoading || listingsLoading}
-                  >
-                    {breeds?.map((breed) => (
-                      <option key={breed.id} value={breed.id}>
-                        {breed.name}
-                      </option>
-                    ))}
-                  </Select>
+                    onChange={(e) => updateFilter('breed', e)}
+                    isDisabled={breedsLoading || listingsLoading}
+                    //@ts-ignore
+                    options={breeds?.map(breed => ({ label: breed.name, value: breed.id }))}
+                  />
                 </FormControl>
 
                 <FormControl>
@@ -341,7 +334,7 @@ const BrowseListingsPage: React.FC = () => {
 
                 <FormControl>
                   <FormLabel>Type</FormLabel>
-                  <Select
+                  <ChakraSelect
                     placeholder="All types"
                     value={filters.type}
                     onChange={(e) => updateFilter('type', e.target.value)}
@@ -349,16 +342,18 @@ const BrowseListingsPage: React.FC = () => {
                   >
                     <option value="litter">Litter</option>
                     <option value="single_pet">Single Pet</option>
-                  </Select>
+                  </ChakraSelect>
                 </FormControl>
               </Stack>
             </Card>
           )}
 
-          <Stack>
-            {listingsLoading || breedsLoading && <Center flex="1" h="full">
-              <Loader />
-            </Center>}
+          <Stack flex={1} >
+            {listingsLoading || breedsLoading && <Box flex={1} h="full">
+              <Center h="full" flex={1}>
+                <Loader />
+              </Center>
+            </Box>}
 
             {/* Listings Grid */}
             {!listingsLoading && !breedsLoading && filteredListings.length === 0 ? (

@@ -8,34 +8,13 @@ import {
   Button,
   Card,
   CardBody,
-  Image,
   Badge,
   Box,
   SimpleGrid,
-  Divider,
   useColorModeValue,
-  Spinner,
   Center,
-  Avatar,
   useToast,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   useDisclosure,
-  FormControl,
-  FormLabel,
-  Textarea,
-  NumberInput,
-  NumberInputField,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   ButtonGroup,
   AlertDialog,
   AlertDialogBody,
@@ -52,8 +31,8 @@ import { useRouter } from 'next/router';
 import { useUserProfile } from '../../../../hooks/queries';
 import { useDeleteListing, useListing } from '../../../../hooks/queries/useListings';
 import { NextSeo } from 'next-seo';
-import { BreedListings } from '../../breeds/browse/BreedListings';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
+import { Loader } from 'lib/components/ui/Loader';
 
 interface ListingDetailPageProps {
   id: string;
@@ -65,6 +44,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   const { data: profile, isLoading: profileLoading } = useUserProfile();
   const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { data: listing, isLoading: listingLoading } = useListing(id as string);
@@ -125,9 +105,11 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
   if (profileLoading || listingLoading) {
     return (
-      <Center h="400px">
-        <Spinner size="xl" />
-      </Center>
+      <Box w="full" h="100vh" >
+        <Center h="full">
+          <Loader />
+        </Center>
+      </Box>
     );
   }
 
@@ -149,7 +131,8 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
   const isOwner = profile?.id === listing.owner_id;
   const canApply = profile?.role === 'seeker' && listing.status === 'available' && !isOwner;
-  const isMobile = useBreakpointValue({ base: true, md: false });
+
+
 
   return (
     <>

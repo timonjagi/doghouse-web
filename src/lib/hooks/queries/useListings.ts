@@ -88,7 +88,7 @@ export const useListings = (filters?: {
     queryKey: queryKeys.listings.list(filters),
     queryFn: async (): Promise<Listing[]> => {
       let query = supabase.from('listings').select('*');
-
+      console.log('Fetching listings with filters:', filters);
       if (filters?.type) {
         query = query.eq('type', filters.type);
       }
