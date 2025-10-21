@@ -35,5 +35,9 @@
   "exclude": [
     "node_modules"
   ],
-  "typeRoots": []
+  "typeRoots": [],
+  "types": [
+    "node",
+    "jest"
+  ]
 }
