@@ -1,28 +1,24 @@
 import {
-  Box,
-  Button,
   Divider,
   Flex,
-  HStack,
-  Progress,
-  Spacer,
   Stack,
   Text,
   useBreakpointValue,
+  useColorModeValue as mode,
+  Box,
+  Button,
 } from "@chakra-ui/react";
 import * as React from "react";
 import {
   FiBook,
   FiFacebook,
-  FiGitlab,
   FiHelpCircle,
   FiHome,
   FiInfo,
   FiInstagram,
-  FiLogOut,
   FiMessageSquare,
   FiSettings,
-  FiUser,
+  FiTwitter,
 } from "react-icons/fi";
 import { Logo } from "./Logo";
 import { NavButton } from "./NavButton";
@@ -32,6 +28,7 @@ import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { NavSection, getNavigationForRole } from "lib/components/layout/navLinks";
 import { UserProfile } from "../auth/UserProfile";
 import { User } from "../../../../db/schema";
+import { BsTiktok } from "react-icons/bs";
 
 interface SidebarProps {
   onClose: () => void;
@@ -51,6 +48,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
     if (isMobile) onClose();
   };
 
+  const onClickExternalLink = (link: string) => {
+    window.open(link, '_blank');
+    if (isMobile) onClose();
+  };
+
   return (
     <Flex
       flex="1"
@@ -58,12 +60,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
       color="on-accent"
       overflowY="auto"
       maxW={{ base: "full", sm: "xs" }}
-      maxH="100vh"
-      py={{ base: "6", sm: "8" }}
-      px={{ base: "4", sm: "6" }}
+      justify="space-between"
+      width="full"
+      h={{ base: "calc(100vh - 64px)", md: "full" }}
+      as="nav"
+      direction="column"
     >
-      <Stack justify="space-between" spacing="1" width="full" h="full">
-        <Stack spacing="4" shouldWrapChildren h="full">
+      <Stack
+        py={{ base: "6", sm: "8" }}
+        px={{ base: "4", sm: "6" }}
+        spacing="3"
+      >
+        <Stack spacing="4" >
           <Logo />
 
           {!loading && user && (
@@ -95,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
           )}
 
           {!loading && !user && <>
-            <Stack spacing="1">
+            <Stack spacing="3">
               <NavButton
                 label="Home"
                 icon={FiHome}
@@ -126,13 +134,39 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
               />
             </Stack>
 
-            <Stack>
+            <Stack spacing="3">
               <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
                 Socials
               </Text>
-              <Stack spacing="1">
-                <NavButton label="Facebook" icon={FiFacebook} />
-                <NavButton label="Instagram" icon={FiInstagram} />
+              <Stack spacing="3">
+                <NavButton
+                  label="Facebook"
+                  icon={FiFacebook}
+                  isExternal
+                  href="https://www.facebook.com/profile.php?id=100012765483528"
+                  onClick={() => onClickExternalLink("https://www.facebook.com/profile.php?id=100012765483528")}
+                />
+                <NavButton
+                  label="Twitter"
+                  icon={FiTwitter}
+                  isExternal
+                  href="https://twitter.com/doghousekenya"
+                  onClick={() => onClickExternalLink("https://twitter.com/doghousekenya")}
+                />
+                <NavButton
+                  label="Instagram"
+                  icon={FiInstagram}
+                  isExternal
+                  href="https://instagram.com/doghousekenya"
+                  onClick={() => onClickExternalLink("https://instagram.com/doghousekenya")}
+                />
+                <NavButton
+                  label="Tiktok"
+                  icon={BsTiktok}
+                  isExternal
+                  href="https://tiktok.com/@doghousekenya"
+                  onClick={() => onClickExternalLink("https://tiktok.com/@doghousekenya")}
+                />
               </Stack>
             </Stack>
 
@@ -144,7 +178,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
 
           <Divider borderColor="bg-accent-subtle" />
 
-          <Stack spacing="1">
+          <Stack spacing="3">
             <NavButton
               label="Help Center"
               icon={FiHelpCircle}
@@ -168,20 +202,39 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
           <Divider borderColor="bg-accent-subtle" />
           <UserProfile profile={profile} onClose={onClose} />
         </Stack>
-        )}
+        )
+        }
+      </Stack >
 
-        {!loading && !user && (
-          <Stack>
-            <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-              Socials
-            </Text>
-            <Stack spacing="1">
-              <NavButton label="Facebook" icon={FiFacebook} />
-              <NavButton label="Instagram" icon={FiInstagram} />
-            </Stack>
-          </Stack>
-        )}
-      </Stack>
-    </Flex>
+      {!loading && !user && (
+        <Box borderTopWidth="1px">
+          <NavButton2 href="/login" colorScheme="on-accent">Log in</NavButton2>
+        </Box>
+      )}
+    </Flex >
   );
 };
+
+const NavButton2 = (props) => (
+  <Button
+    as="a"
+    width="full"
+    borderRadius="0"
+    variant="ghost-on-accent"
+    size="lg"
+    fontSize="sm"
+    _hover={{
+      bg: mode('brand.100', 'brand.700'),
+    }}
+    _active={{
+      bg: mode('brand.200', 'brand.600'),
+    }}
+    _focus={{
+      boxShadow: 'none',
+    }}
+    _focusVisible={{
+      boxShadow: 'outline',
+    }}
+    {...props}
+  />
+)
