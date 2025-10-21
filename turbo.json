@@ -9,7 +9,7 @@
         ".next/**",
         "!.next/cache/**",
         "public/**"
-      ],
+      ]
     },
     "check-types": {
       "dependsOn": [
