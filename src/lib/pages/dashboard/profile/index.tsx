@@ -14,21 +14,15 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import type { User } from "firebase/auth";
 import { useRouter } from "next/router";
 // import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { HiPencilAlt } from "react-icons/hi";
 
 import { CardContent } from "./CardContent";
 import { CardWithAvatar } from "./CardWithAvatar";
 import { UserInfo } from "./UserInfo";
-import EthicalQuestionairreCard from "./EthicalQuestionairreCard";
-import { UserProfile } from "lib/components/auth/UserProfile";
 import UserProfileForm from "./UserProfileForm";
-import { doc, getDoc } from "firebase/firestore";
-import { CompleteProfileBanner } from "lib/pages/dashboard/overview/CompleteProfileBanner";
-import { NewsletterForm } from "lib/pages/dashboard/overview/NewsletterForm copy";
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 const Profile = () => {

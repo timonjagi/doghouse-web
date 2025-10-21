@@ -50,12 +50,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
     if (isMobile) onClose();
   };
 
-  const onLogout = () => {
-    signOut();
-    if (!loading) router.push("/login");
-    onClose();
-  };
-
   return (
     <Flex
       flex="1"

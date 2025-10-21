@@ -32,7 +32,7 @@ export const BreedersList = ({ breed }) => {
         <Card key={breeder.id} size="sm" variant="outline">
           <CardBody>
             <Stack>
-              <HStack spacing={4}>
+              {/* <HStack spacing={4}>
                 <Avatar src={breeder.images[0]} name={breeder.users.display_name} title={breeder.users.display_name} />
                 <VStack align="start" spacing={1} flex={1}>
                   <Text fontWeight="medium">{breeder.users.display_name}</Text>
@@ -50,7 +50,7 @@ export const BreedersList = ({ breed }) => {
                 <Text fontSize="sm" color="gray.500">
                   ({breeder.users.breeder_profiles.reviewCount} reviews)
                 </Text>
-              </HStack>
+              </HStack> */}
               <Button size="sm" colorScheme="brand" w="full">
                 View Profile
               </Button>

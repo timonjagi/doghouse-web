@@ -25,7 +25,7 @@ import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 import { ToggleButton } from "./ToggleButton";
 
-const Header = () => {
+const Header = ({ profile }) => {
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
@@ -188,7 +188,7 @@ const Header = () => {
               >
                 <DrawerOverlay />
                 <DrawerContent>
-                  <Sidebar onClose={onClose} />
+                  <Sidebar onClose={onClose} profile={profile} />
                 </DrawerContent>
               </Drawer>
             </Flex>

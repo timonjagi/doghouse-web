@@ -1,6 +1,6 @@
 import { Container } from "@chakra-ui/react";
 import React from "react";
-import ChatSidebar from "./ChatSidebar";
+// import ChatSidebar from "./ChatSidebar";
 
 type indexProps = {
   children: any;

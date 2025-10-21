@@ -10,7 +10,6 @@ import {
   Flex,
   HStack,
   Icon,
-<<<<<<< HEAD
   Stack,
   StackDivider,
   Text,
@@ -20,26 +19,12 @@ import {
 import { useState } from "react";
 import { MdFilterList } from "react-icons/md";
 // import { useRefinementList } from "react-instantsearch-hooks-web";
-=======
-  IconButton,
-  Stack,
-  StackDivider,
-  Text,
-  useBreakpointValue,
-  useDisclosure,
-} from "@chakra-ui/react";
-// import * as React from "react";
-import { useEffect, useState } from "react";
-import { MdFilterList } from "react-icons/md";
-import { useRefinementList } from "react-instantsearch-hooks-web";
->>>>>>> parent of b0357f4 (feat(components): Remove app features)
 
 import { RefinementList } from "./RefinementList";
 import { SortbySelect } from "./SortBySelect";
 
 export const Filter = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-<<<<<<< HEAD
   // const { items, refine } = useRefinementList({
   //   attribute: "breedGroup",
   //   sortBy: ["name:asc"],
@@ -63,28 +48,6 @@ export const Filter = () => {
       >
         <HStack
           as="button"
-=======
-  const { items, refine } = useRefinementList({
-    attribute: "breedGroup",
-    sortBy: ["name:asc"],
-  });
-
-  const [selectedBreedGroups, setSelectedBreedGroups] = useState([]);
-
-  useEffect(() => {
-    if (selectedBreedGroups) {
-      // console.log(selectedBreedGroups.join(","));
-      refine(selectedBreedGroups.join(" "));
-    }
-  }, [selectedBreedGroups, setSelectedBreedGroups, refine]);
-
-  return (
-    <>
-      <Flex width="auto" justify="space-between">
-        <IconButton
-          icon={<MdFilterList />}
-          aria-label="Filter breeds"
->>>>>>> parent of b0357f4 (feat(components): Remove app features)
           fontSize="sm"
           type="button"
           px="3"
@@ -94,20 +57,13 @@ export const Filter = () => {
           rounded="md"
         >
           <Icon as={MdFilterList} />
-<<<<<<< HEAD
           <Text>Filters</Text>
         </HStack>
         <SortbySelect
-=======
-          {/* <Text>Filters</Text> */}
-        </IconButton>
-        {/* <SortbySelect
->>>>>>> parent of b0357f4 (feat(components): Remove app features)
           width="120px"
           defaultValue="23"
           placeholder="Sort"
           size="sm"
-<<<<<<< HEAD
         />
       </Flex>
 
@@ -121,24 +77,13 @@ export const Filter = () => {
       </Box>
       <Drawer
         placement="bottom"
-=======
-        /> */}
-      </Flex>
-
-      <Drawer
-        placement={useBreakpointValue({ base: "bottom", md: "start" })}
->>>>>>> parent of b0357f4 (feat(components): Remove app features)
         isFullHeight
         isOpen={isOpen}
         onClose={onClose}
         blockScrollOnMount={false}
         trapFocus={false}
       >
-<<<<<<< HEAD
         <DrawerContent h="auto" maxH="70vh">
-=======
-        <DrawerContent h={{ base: "auto", md: "full" }}>
->>>>>>> parent of b0357f4 (feat(components): Remove app features)
           <DrawerHeader px="4" borderBottomWidth="1px">
             <Flex justify="space-between" align="center">
               <CloseButton onClick={onClose} />
@@ -150,7 +95,7 @@ export const Filter = () => {
                   as="button"
                   textDecor="underline"
                   fontSize="sm"
-                  onClick={() => {}}
+                  onClick={() => { }}
                   color="on-accent-subtle"
                 >
                   Clear
@@ -161,11 +106,7 @@ export const Filter = () => {
           <DrawerBody padding="6">
             <Stack spacing="6" divider={<StackDivider />}>
               <RefinementList
-<<<<<<< HEAD
                 items={[]}
-=======
-                items={items}
->>>>>>> parent of b0357f4 (feat(components): Remove app features)
                 setSelectedBreedGroups={setSelectedBreedGroups}
               />
             </Stack>

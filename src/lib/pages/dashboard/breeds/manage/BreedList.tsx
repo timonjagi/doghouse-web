@@ -41,6 +41,7 @@ interface UserBreed {
   created_at: string;
   updated_at: string;
   breeds?: Breed;
+  breeder_count: any;
 }
 
 interface BreedListProps {

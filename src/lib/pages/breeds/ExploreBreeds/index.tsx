@@ -1,26 +1,17 @@
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
-  Button,
   HStack,
   Heading,
   IconButton,
-  LightMode,
   Link,
   Stack,
-  useColorModeValue,
   Text,
 } from "@chakra-ui/react";
 import * as React from "react";
-import { FiArrowRight, FiHeart } from "react-icons/fi";
-import { ColorPicker } from "./ColorPicker";
+import { FiHeart } from "react-icons/fi";
+
 import { Gallery } from "./Gallery";
 import { ProductBadge } from "./ProductBadge";
-import { products } from "./_data";
-import { Rating } from "./Rating";
 
 export const ExploreBreeds = () => {
   const images = [

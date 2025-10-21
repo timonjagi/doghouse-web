@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 const NextSitemapConfig = {
-  siteUrl: "https://doghouse-app.vercel.app",
+  siteUrl: "https://doghouse-kenya.vercel.app",
   generateRobotsTxt: true,
 };
 

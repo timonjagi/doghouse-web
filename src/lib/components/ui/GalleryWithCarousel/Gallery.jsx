@@ -38,7 +38,7 @@ export const Gallery = (props) => {
           aria-label="Previous slide"
           disabled={currentSlide === 0}
         />
-        <Carousel ref={ref} direction="row" width="full">
+        <Carousel ref={ref} direction="row" width="full" >
           {images.map((image, i) => (
             <CarouselSlide key={i} onClick={() => setIndex(i)} cursor="pointer">
               <AspectRatio

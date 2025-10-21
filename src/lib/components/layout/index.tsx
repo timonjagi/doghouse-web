@@ -92,10 +92,11 @@ export default Layout;
 const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
 
   return (
     <>
-      {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header />}
+      {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header profile={profile} />}
       <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
         {children}{" "}
       </Box>

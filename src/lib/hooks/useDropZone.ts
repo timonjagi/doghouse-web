@@ -66,7 +66,7 @@ export const useDropZone = ({
   };
 
   const onRemoveImage = (index: number) => {
-    const files = selectedImages.filter((_, i) => i !== index);
+    const files = [...selectedImages].filter((_, i) => i !== index);
     setSelectedImages(files);
   };
 

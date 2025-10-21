@@ -134,7 +134,7 @@ const EditListingPage: React.FC<EditListingPageProps> = () => {
       });
 
 
-      const retainedPhotos = formData.photos.filter((file) => !(file instanceof File)) as string[] || [];
+      const retainedPhotos = [...formData.photos].filter((file) => !(file instanceof File)) as string[] || [];
       console.log('retainedPhotos', retainedPhotos);
 
 

@@ -70,12 +70,12 @@ const ActivityFeedCard: React.FC<ActivityCardProps> = ({
       </Stack>
 
       <Stack spacing="4" zIndex="1">
-        {activities.map((activity) => (
+        {/* {activities.map((activity) => (
           <ActivityCard
             post={activity}
             onViewPost={() => onViewPost(activity)}
           />
-        ))}
+        ))} */}
       </Stack>
     </Box>
   );

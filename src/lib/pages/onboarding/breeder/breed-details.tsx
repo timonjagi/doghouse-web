@@ -119,7 +119,7 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
         is_owner: true
       });
 
-      const uploadedUrls = await uploadImages(selectedImages);
+      const uploadedUrls = await uploadImages(selectedImages as File[]);
 
       if (uploadedUrls.length > 0 && newUserBreed?.id) {
         await updateUserBreed({
