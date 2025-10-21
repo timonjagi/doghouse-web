@@ -17,8 +17,6 @@ import React, { useEffect, useState } from "react";
 import { useBreeds } from "../../../hooks/queries";
 import { useCurrentUser } from "../../../hooks/queries";
 import { useSeekerProfile, useUpsertSeekerProfile } from "../../../hooks/queries/useSeekerProfile";
-import { RadioButton } from "lib/components/ui/RadioButton";
-import { RadioButtonGroup } from "lib/components/ui/RadioButtonGroup";
 import { Loader } from "lib/components/ui/Loader";
 import breedsData from "../../../data/breeds_with_group_and_traits.json";
 import { Select } from "chakra-react-select";
