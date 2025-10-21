@@ -26,6 +26,12 @@ import {
   useToast,
   Stack,
   useBreakpointValue,
+  Drawer,
+  DrawerContent,
+  DrawerOverlay,
+  useDisclosure,
+  CardBody,
+  CardHeader,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
@@ -84,6 +90,7 @@ const BrowseListingsPage: React.FC = () => {
   }, [filters.breed, filters.type]);
 
   const { data: listings, isLoading: listingsLoading } = useListings(queryFilters);
+  const { isOpen, onToggle, onClose } = useDisclosure();
 
   // Filter listings client-side for search, location, and price
   const filteredListings = useMemo(() => {
@@ -134,8 +141,8 @@ const BrowseListingsPage: React.FC = () => {
   };
 
   const updateFilter = (key: keyof FilterState, value: string) => {
-    console.log('Updating filter', key, value);
     setFilters(prev => ({ ...prev, [key]: value }));
+    if (isMobile) onClose();
   };
 
   const clearFilters = () => {
@@ -148,6 +155,7 @@ const BrowseListingsPage: React.FC = () => {
       type: '',
       status: 'available',
     });
+    if (isMobile) onClose();
   };
 
   const formatPrice = (price?: number) => {
@@ -176,7 +184,7 @@ const BrowseListingsPage: React.FC = () => {
 
   if (profile?.role !== 'seeker') {
     return (
-      <Container maxW="7xl" >
+      <Container maxW="7xl" py={4} >
         <Center h="400px">
           <VStack spacing={4}>
             <Text fontSize="lg" color="gray.500">Access denied</Text>
@@ -194,7 +202,7 @@ const BrowseListingsPage: React.FC = () => {
     <>
       <NextSeo title="Browse Listings | DogHouse" />
 
-      <Container maxW="7xl" >
+      <Container maxW="7xl" py={4}>
         <VStack spacing={6} align="stretch">
           <Box>
             <Heading size={{ base: 'sm', lg: 'md' }} mb={2} color="brand.600">Browse Available Pets</Heading>
@@ -208,7 +216,7 @@ const BrowseListingsPage: React.FC = () => {
               <Button
                 as={IconButton}
                 icon={<MdFilterList />}
-                onClick={() => setShowFilters(!showFilters)}
+                onClick={isMobile ? onToggle : () => setShowFilters(!showFilters)}
 
               >
               </Button>
@@ -225,58 +233,7 @@ const BrowseListingsPage: React.FC = () => {
               </InputGroup>
             </HStack>
 
-            <HStack justify="space-between">
-              {/* Active Filters Display */}
-              {(filters.breed || filters.location || filters.minPrice || filters.maxPrice || filters.type) && (
-                <Wrap spacing={2}>
-                  <WrapItem>
-                    <Text fontSize="sm" color="gray.600">Active filters:</Text>
-                  </WrapItem>
-                  {filters.breed && (
-                    <WrapItem>
-                      <Badge colorScheme="blue" variant="subtle">
-                        Breed: {breeds?.find(b => b.id === filters.breed.value)?.name}
-                      </Badge>
-                    </WrapItem>
-                  )}
-                  {filters.location && (
-                    <WrapItem>
-                      <Badge colorScheme="green" variant="subtle">
-                        Location: {filters.location}
-                      </Badge>
-                    </WrapItem>
-                  )}
-                  {filters.minPrice && (
-                    <WrapItem>
-                      <Badge colorScheme="purple" variant="subtle">
-                        Min: KSH {filters.minPrice}
-                      </Badge>
-                    </WrapItem>
-                  )}
-                  {filters.maxPrice && (
-                    <WrapItem>
-                      <Badge colorScheme="purple" variant="subtle">
-                        Max: KSH {filters.maxPrice}
-                      </Badge>
-                    </WrapItem>
-                  )}
-                  {filters.type && (
-                    <WrapItem>
-                      <Badge colorScheme="orange" variant="subtle">
-                        Type: {filters.type === 'litter' ? 'Litter' : 'Single Pet'}
-                      </Badge>
-                    </WrapItem>
-                  )}
-                </Wrap>
-              )}
-
-              {(filters.breed || filters.location || filters.minPrice || filters.maxPrice || filters.type) && (
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
-                  Clear All Filters
-                </Button>
-              )}
-            </HStack>
-
+            <ActiveFilters filters={filters} clearFilters={clearFilters!} breeds={breeds!} />
           </VStack>
           {/* Results Count */}
           <HStack justify="space-between">
@@ -288,68 +245,12 @@ const BrowseListingsPage: React.FC = () => {
 
         <HStack align="start">
           {/* Advanced Filters */}
-          {showFilters && (
-            <Card minW="200px" maxW="300px" bg={bgColor} p={4} mr={4} borderRadius="lg">
-              <Stack spacing={4}>
-                <FormControl>
-                  <FormLabel>Breed</FormLabel>
-                  <Select
-                    placeholder="All breeds"
-                    value={filters.breed}
-                    onChange={(e) => updateFilter('breed', e)}
-                    isDisabled={breedsLoading || listingsLoading}
-                    //@ts-ignore
-                    options={breeds?.map(breed => ({ label: breed.name, value: breed.id }))}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Location</FormLabel>
-                  <Input
-                    placeholder="e.g., Nairobi"
-                    value={filters.location}
-                    onChange={(e) => updateFilter('location', e.target.value)}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Min Price (KSH)</FormLabel>
-                  <NumberInput
-                    value={filters.minPrice}
-                    onChange={(value) => updateFilter('minPrice', value)}
-                  >
-                    <NumberInputField placeholder="0" />
-                  </NumberInput>
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Max Price (KSH)</FormLabel>
-                  <NumberInput
-                    value={filters.maxPrice}
-                    onChange={(value) => updateFilter('maxPrice', value)}
-                  >
-                    <NumberInputField placeholder="No limit" />
-                  </NumberInput>
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>Type</FormLabel>
-                  <ChakraSelect
-                    placeholder="All types"
-                    value={filters.type}
-                    onChange={(e) => updateFilter('type', e.target.value)}
-                    disabled={breedsLoading || listingsLoading}
-                  >
-                    <option value="litter">Litter</option>
-                    <option value="single_pet">Single Pet</option>
-                  </ChakraSelect>
-                </FormControl>
-              </Stack>
-            </Card>
+          {showFilters && !isMobile && (
+            <Filters bgColor={bgColor} filters={filters} updateFilter={updateFilter} breeds={breeds} breedsLoading={breedsLoading} listingsLoading={listingsLoading} />
           )}
 
           <Stack flex={1} >
-            {listingsLoading || breedsLoading && <Box flex={1} h="full">
+            {listingsLoading || breedsLoading && <Box flex={1} h="100vh">
               <Center h="full" flex={1}>
                 <Loader />
               </Center>
@@ -384,9 +285,174 @@ const BrowseListingsPage: React.FC = () => {
           </Stack>
         </HStack>
 
+        <Drawer
+          isOpen={isOpen}
+          placement="bottom"
+          onClose={onClose}
+          preserveScrollBarGap
+
+        >
+          <DrawerOverlay />
+          <DrawerContent>
+            <Filters bgColor={bgColor} filters={filters} updateFilter={updateFilter} breeds={breeds} breedsLoading={breedsLoading} listingsLoading={listingsLoading} isMobile={isMobile} clearFilters={clearFilters} />
+          </DrawerContent>
+        </Drawer>
       </Container >
     </>
   );
 };
 
 export default BrowseListingsPage;
+
+interface FilterProps {
+  bgColor: string;
+  filters: FilterState;
+  updateFilter: (key: keyof FilterState, value: any) => void;
+  breedsLoading: boolean;
+  listingsLoading: boolean;
+  breeds: Array<{ id: string; name: string }> | undefined;
+  isMobile?: boolean;
+  clearFilters?: () => void;
+}
+
+const Filters = ({ bgColor, filters, updateFilter, breedsLoading, listingsLoading, breeds, isMobile, clearFilters }: FilterProps) => {
+  return (
+    <Card minW="200px" maxW="300px" bg={bgColor} mr={{ base: 0, md: 4 }} borderRadius="lg">
+      {isMobile && <CardHeader >
+        <HStack justify="space-between" align="center">
+
+          <Heading size="xs">Filters</Heading>
+          <Button variant="ghost" size="sm" onClick={clearFilters}
+          >Clear</Button>
+        </HStack>
+
+      </CardHeader>}
+      <CardBody>
+
+        <Stack spacing={4}>
+          {isMobile && <ActiveFilters filters={filters} clearFilters={clearFilters!} breeds={breeds!} isMobile={isMobile} />}
+
+
+          <FormControl>
+            <FormLabel>Breed</FormLabel>
+            <Select
+              placeholder="All breeds"
+              value={filters.breed}
+              onChange={(e) => updateFilter('breed', e)}
+              isDisabled={breedsLoading || listingsLoading}
+              //@ts-ignore
+              options={breeds?.map(breed => ({ label: breed.name, value: breed.id }))}
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Location</FormLabel>
+            <Input
+              placeholder="e.g., Nairobi"
+              value={filters.location}
+              onChange={(e) => updateFilter('location', e.target.value)}
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Min Price (KSH)</FormLabel>
+            <NumberInput
+              value={filters.minPrice}
+              onChange={(value) => updateFilter('minPrice', value)}
+            >
+              <NumberInputField placeholder="0" />
+            </NumberInput>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Max Price (KSH)</FormLabel>
+            <NumberInput
+              value={filters.maxPrice}
+              onChange={(value) => updateFilter('maxPrice', value)}
+            >
+              <NumberInputField placeholder="No limit" />
+            </NumberInput>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Type</FormLabel>
+            <ChakraSelect
+              placeholder="All types"
+              value={filters.type}
+              onChange={(e) => updateFilter('type', e.target.value)}
+              disabled={breedsLoading || listingsLoading}
+            >
+              <option value="litter">Litter</option>
+              <option value="single_pet">Single Pet</option>
+            </ChakraSelect>
+          </FormControl>
+        </Stack>
+      </CardBody>
+    </Card>
+  )
+};
+
+interface ActiveFiltersProps {
+  filters: FilterState;
+  clearFilters: () => void;
+  breeds: Array<{ id: string; name: string }> | undefined;
+  isMobile?: boolean;
+}
+
+const ActiveFilters = ({ filters, clearFilters, breeds, isMobile }: ActiveFiltersProps) => {
+  return <HStack justify="space-between" >
+    {/* Active Filters Display */}
+    {
+      (filters.breed || filters.location || filters.minPrice || filters.maxPrice || filters.type) && (
+        <Wrap spacing={2}>
+          <WrapItem>
+            <Text fontSize="sm" color="gray.600">Active filters:</Text>
+          </WrapItem>
+          {filters.breed && (
+            <WrapItem>
+              <Badge colorScheme="blue" variant="subtle">
+                Breed: {breeds?.find(b => b.id === filters.breed.value)?.name}
+              </Badge>
+            </WrapItem>
+          )}
+          {filters.location && (
+            <WrapItem>
+              <Badge colorScheme="green" variant="subtle">
+                Location: {filters.location}
+              </Badge>
+            </WrapItem>
+          )}
+          {filters.minPrice && (
+            <WrapItem>
+              <Badge colorScheme="purple" variant="subtle">
+                Min: KSH {filters.minPrice}
+              </Badge>
+            </WrapItem>
+          )}
+          {filters.maxPrice && (
+            <WrapItem>
+              <Badge colorScheme="purple" variant="subtle">
+                Max: KSH {filters.maxPrice}
+              </Badge>
+            </WrapItem>
+          )}
+          {filters.type && (
+            <WrapItem>
+              <Badge colorScheme="orange" variant="subtle">
+                Type: {filters.type === 'litter' ? 'Litter' : 'Single Pet'}
+              </Badge>
+            </WrapItem>
+          )}
+        </Wrap>
+      )
+    }
+
+    {!isMobile &&
+      (filters.breed || filters.location || filters.minPrice || filters.maxPrice || filters.type) && (
+        <Button variant="ghost" size="sm" onClick={clearFilters}>
+          Clear All Filters
+        </Button>
+      )
+    }
+  </HStack >;
+}

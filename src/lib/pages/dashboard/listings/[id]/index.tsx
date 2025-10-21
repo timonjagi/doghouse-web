@@ -149,11 +149,10 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           Back to {router.query.from === 'breed' ? 'Breed Details' : 'Listings'}
         </Button>
 
-        <VStack spacing={6} >
+        <VStack spacing={6} p={0} align="stretch">
           {/* Header */}
 
           <Stack spacing={4} as="section" >
-
 
             <HStack justify="space-between" align="start">
               <Box flex={1} minW="50vw">
@@ -363,20 +362,9 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
           </Stack>
 
-          {isMobile && <Box position="sticky" bottom="0" py={4} boxShadow="md" zIndex={10}>
-            {canApply && (
-              <Button
-                leftIcon={<ChatIcon />}
-                colorScheme="brand"
-                size="lg"
-                w="full"
-                onClick={handleContact}
-              >
-                Reserve This Pet
-              </Button>
-            )}
-          </Box>}
+
         </VStack>
+
 
         <AlertDialog isOpen={isOpen} leastDestructiveRef={undefined} onClose={onClose}>
           <AlertDialogOverlay>
@@ -404,6 +392,19 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
       </Container >
 
+      {isMobile && <Box position="sticky" bottom="0" p={4} boxShadow="md" bg="white" zIndex={10} w="full">
+        {canApply && (
+          <Button
+            leftIcon={<ChatIcon />}
+            colorScheme="brand"
+            size="lg"
+            w="full"
+            onClick={handleContact}
+          >
+            Reserve This Pet
+          </Button>
+        )}
+      </Box>}
 
     </>
   );

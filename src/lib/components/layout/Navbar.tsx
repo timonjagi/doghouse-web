@@ -64,7 +64,7 @@ export const Navbar = () => {
           <span>{router.pathname.split("/")[2]}</span>
         </Heading> */}
 
-        <HStack spacing="1" flex="1">
+        <HStack spacing="1" flex="1" p={8}>
           <Spacer />
           <IconButton
             icon={<FiBell />}

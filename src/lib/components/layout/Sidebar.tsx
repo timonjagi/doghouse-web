@@ -173,39 +173,40 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
           </>}
         </Stack>
 
-        {/* Common Account Section for all roles */}
-        {!loading && user && (<Stack spacing="4">
 
-          <Divider borderColor="bg-accent-subtle" />
-
-          <Stack spacing="3">
-            <NavButton
-              label="Help Center"
-              icon={FiHelpCircle}
-              aria-current={
-                router.pathname.includes("/help-center") ? "page" : "false"
-              }
-              onClick={() => onClickMenuLink("/dashboard/help-center")}
-            />
-            <NavButton
-              label="Settings"
-              icon={FiSettings}
-              onClick={() => onClickMenuLink("/dashboard/settings")}
-              aria-current={
-                router.pathname.includes("/settings") ? "page" : "false"
-              }
-            />
-
-          </Stack>
-
-
-          <Divider borderColor="bg-accent-subtle" />
-          <UserProfile profile={profile} onClose={onClose} />
-        </Stack>
-        )
-        }
       </Stack >
 
+      {/* Common Account Section for all roles */}
+      {!loading && user && (<Stack spacing="4" py={{ base: "6", sm: "8" }}
+        px={{ base: "4", sm: "6" }}>
+
+        <Divider borderColor="bg-accent-subtle" />
+
+        <Stack spacing="3">
+          <NavButton
+            label="Help Center"
+            icon={FiHelpCircle}
+            aria-current={
+              router.pathname.includes("/help-center") ? "page" : "false"
+            }
+            onClick={() => onClickMenuLink("/dashboard/help-center")}
+          />
+          <NavButton
+            label="Settings"
+            icon={FiSettings}
+            onClick={() => onClickMenuLink("/dashboard/settings")}
+            aria-current={
+              router.pathname.includes("/settings") ? "page" : "false"
+            }
+          />
+
+        </Stack>
+
+
+        <Divider borderColor="bg-accent-subtle" />
+        <UserProfile profile={profile} onClose={onClose} />
+      </Stack>
+      )}
       {!loading && !user && (
         <Box borderTopWidth="1px">
           <NavButton2 href="/login" colorScheme="on-accent">Log in</NavButton2>

@@ -8,6 +8,7 @@ import {
   Button,
   Spinner,
   Center,
+  Box,
 } from '@chakra-ui/react';
 import { useUserProfile } from '../../../hooks/queries';
 import { useRouter } from 'next/router';
@@ -32,12 +33,11 @@ const ListingsPage: React.FC = () => {
 
   if (profileLoading) {
     return (
-      <Container maxW="7xl" py={8}>
-
+      <Box w="full" h="100vh" >
         <Center h="full" flex="1">
           <Loader />
         </Center>
-      </Container>
+      </Box>
     );
   }
 
@@ -62,9 +62,11 @@ const ListingsPage: React.FC = () => {
       <NextSeo title="Listings - DogHouse Kenya" />
 
       <Container maxW="7xl">
-        <Center h="full">
-          <Loader />
-        </Center>
+        <Box w="full" h="100vh" >
+          <Center h="full">
+            <Loader />
+          </Center>
+        </Box>
       </Container>
     </>
   );

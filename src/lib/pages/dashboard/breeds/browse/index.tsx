@@ -43,21 +43,21 @@ const DashboardBrowsePage = () => {
   }
 
   return (
-    <Container maxW="7xl" py={8} px={0}>
+    <Container maxW="7xl" pt={4} >
 
       <NextSeo title="Browse Breeds " />
 
       <Box>
         <VStack spacing={6} align="stretch">
 
-          {/* <Stack>
+          <Stack>
             <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
-              Browse Available Breeds
+              Browse  Breeds
             </Heading>
             <Text color="gray.600">
               Explore dog breeds available from verified breeders in your area.
             </Text>
-          </Stack> */}
+          </Stack>
 
           <BreedList
             breeds={allAvailableBreeds || []}
