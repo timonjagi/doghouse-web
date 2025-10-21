@@ -16,6 +16,7 @@ import {
   FiFacebook,
   FiGitlab,
   FiHelpCircle,
+  FiHome,
   FiInfo,
   FiInstagram,
   FiLogOut,
@@ -96,6 +97,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
           {!loading && !user && <>
             <Stack spacing="1">
               <NavButton
+                label="Home"
+                icon={FiHome}
+                onClick={() => onClickMenuLink("/")}
+              />
+              <NavButton
                 label="About"
                 icon={FiInfo}
                 onClick={() => onClickMenuLink("/about")}
@@ -103,14 +109,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
                   router.pathname.includes("about") ? "page" : "false"
                 }
               />
-              <NavButton
-                label="Breeds"
-                icon={FiGitlab}
-                onClick={() => onClickMenuLink("/breeds")}
-                aria-current={
-                  router.pathname.includes("breeds") ? "page" : "false"
-                }
-              />
+
               <NavButton
                 label="Blog"
                 icon={FiBook}
@@ -126,6 +125,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
                 }
               />
             </Stack>
+
             <Stack>
               <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
                 Socials
@@ -135,6 +135,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
                 <NavButton label="Instagram" icon={FiInstagram} />
               </Stack>
             </Stack>
+
           </>}
         </Stack>
 
@@ -167,6 +168,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, onClose }) => {
           <Divider borderColor="bg-accent-subtle" />
           <UserProfile profile={profile} onClose={onClose} />
         </Stack>
+        )}
+
+        {!loading && !user && (
+          <Stack>
+            <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
+              Socials
+            </Text>
+            <Stack spacing="1">
+              <NavButton label="Facebook" icon={FiFacebook} />
+              <NavButton label="Instagram" icon={FiInstagram} />
+            </Stack>
+          </Stack>
         )}
       </Stack>
     </Flex>

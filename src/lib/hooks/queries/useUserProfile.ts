@@ -7,6 +7,7 @@ import { User } from '../../../../db/schema';
 interface UpdateProfileData {
   display_name?: string;
   bio?: string;
+  phone?: string;
   location_text?: string;
   location_lat?: number;
   location_lng?: number;

@@ -15,7 +15,7 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { MdOutlineLocationOn, MdBusiness, MdHome, MdApartment } from "react-icons/md";
+import { MdOutlineLocationOn, MdBusiness, MdHome, MdApartment, MdPhone } from "react-icons/md";
 import { useCurrentUser, useUserProfile } from "../../../hooks/queries";
 import { useUpdateUserProfile } from "../../../hooks/queries";
 import { supabase } from "../../../supabase/client";
@@ -33,7 +33,7 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
   const toast = useToast();
 
   const [displayName, setDisplayName] = useState("");
-  const [location, setLocation] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onBack = () => {
@@ -43,7 +43,7 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name);
-      setLocation(profile.location_text);
+      setPhone(profile.phone);
     }
   }, [profile]);
 
@@ -67,13 +67,13 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
       // Save universal user data to users table
       await updateUserProfile.mutateAsync({
         display_name: displayName,
-        location_text: location,
+        phone: phone,
       });
 
       await supabase.auth.updateUser({
         data: {
           display_name: displayName,
-          location_text: location,
+          phone: phone,
         },
       })
 
@@ -126,20 +126,20 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
             </InputGroup>
           </FormControl>
 
-          <FormControl id="location">
-            <FormLabel htmlFor="location">Location</FormLabel>
+          <FormControl id="phone">
+            <FormLabel htmlFor="phone">Phone Number</FormLabel>
             <InputGroup size="lg">
               <InputLeftElement pointerEvents="none">
-                <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
+                <Icon as={MdPhone} color="gray.300" boxSize={5} />
               </InputLeftElement>
               <Input
                 size="lg"
                 required
-                id="location"
-                name="location"
-                placeholder="City, Country"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                id="phone"
+                name="phone"
+                placeholder="+254 700 000 000"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </InputGroup>
           </FormControl>

@@ -16,7 +16,7 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { MdOutlineLocationOn, MdPerson, MdHome, MdApartment } from "react-icons/md";
+import { MdOutlineLocationOn, MdPerson, MdHome, MdApartment, MdPhone } from "react-icons/md";
 import { useCurrentUser, useUserProfile } from "../../../hooks/queries";
 import { useUpdateUserProfile } from "../../../hooks/queries";
 import { useSeekerProfile, useUpsertSeekerProfile } from "../../../hooks/queries/useSeekerProfile";
@@ -36,16 +36,11 @@ export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep
   const toast = useToast();
 
   const [displayName, setDisplayName] = useState("");
+  const [phone, setPhone] = useState("");
+
   const [location, setLocation] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const livingSituationOptions = [
-    { value: "apartment", label: "Apartment" },
-    { value: "house", label: "House" },
-    { value: "compound", label: "Compound with yard" },
-    { value: "farm", label: "Farm/Rural property" },
-  ];
 
   const experienceOptions = [
     { value: "first_time", label: "First time dog owner" },
@@ -62,6 +57,7 @@ export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name ?? "");
+      setPhone(profile.phone ?? "");
       setLocation(profile.location_text ?? "");
     }
 
@@ -93,6 +89,7 @@ export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep
         updateUserProfile.mutateAsync({
           display_name: displayName,
           location_text: location,
+          phone: phone,
         }),
         // Save seeker-specific data to seeker_profiles table
         upsertSeekerProfile.mutateAsync({
@@ -142,6 +139,24 @@ export const SeekerContactDetails: React.FC<PageProps> = ({ currentStep, setStep
                 placeholder="Your full name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
+              />
+            </InputGroup>
+          </FormControl>
+
+          <FormControl id="phone">
+            <FormLabel htmlFor="phone">Phone Number</FormLabel>
+            <InputGroup size="lg">
+              <InputLeftElement pointerEvents="none">
+                <Icon as={MdPhone} color="gray.300" boxSize={5} />
+              </InputLeftElement>
+              <Input
+                size="lg"
+                required
+                id="phone"
+                name="phone"
+                placeholder="+254 700 000 000"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </InputGroup>
           </FormControl>
