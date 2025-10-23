@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   VStack,
   FormControl,
@@ -12,7 +12,14 @@ import {
   Text,
   Box,
   HStack,
+  Card,
+  CardBody,
+  Divider,
+  Switch,
+  Select,
   useColorModeValue,
+  useDisclosure,
+  Button,
 } from '@chakra-ui/react';
 import { ListingFormData } from '.';
 
@@ -23,6 +30,9 @@ interface PricingStepProps {
 
 export const PricingStep: React.FC<PricingStepProps> = ({ data, updateData }) => {
   const bgColor = useColorModeValue('gray.50', 'gray.700');
+  const { isOpen: showRequirements, onToggle: toggleRequirements } = useDisclosure({
+    defaultIsOpen: false
+  });
 
   return (
     <VStack spacing={6} align="stretch">
@@ -91,6 +101,129 @@ export const PricingStep: React.FC<PricingStepProps> = ({ data, updateData }) =>
           City and country where the pet is located
         </Text>
       </FormControl>
+
+      {/* Adoption Requirements Section */}
+      <Card bg={bgColor}>
+        <CardBody>
+          <VStack spacing={4} align="stretch">
+            <HStack justify="space-between" align="center">
+              <Box>
+                <Text fontSize="md" fontWeight="semibold">
+                  Adoption Requirements
+                </Text>
+                <Text fontSize="sm" color="gray.600">
+                  Set requirements for potential adopters (optional)
+                </Text>
+              </Box>
+              <Button size="sm" variant="outline" onClick={toggleRequirements}>
+                {showRequirements ? 'Hide' : 'Show'} Requirements
+              </Button>
+            </HStack>
+
+            {showRequirements && (
+              <>
+                <Divider />
+                <VStack spacing={4} align="stretch">
+                  <HStack spacing={4}>
+                    <VStack align="start" spacing={3} flex={1}>
+                      <HStack justify="space-between" w="full">
+                        <Text fontSize="sm">Application Required</Text>
+                        <Switch
+                          isChecked={data.requirements?.application || false}
+                          onChange={(e) => updateData({
+                            requirements: {
+                              ...data.requirements,
+                              application: e.target.checked
+                            }
+                          })}
+                        />
+                      </HStack>
+
+                      <HStack justify="space-between" w="full">
+                        <Text fontSize="sm">Contract Required</Text>
+                        <Switch
+                          isChecked={data.requirements?.contract || false}
+                          onChange={(e) => updateData({
+                            requirements: {
+                              ...data.requirements,
+                              contract: e.target.checked
+                            }
+                          })}
+                        />
+                      </HStack>
+
+                      <HStack justify="space-between" w="full">
+                        <Text fontSize="sm">Home Check Required</Text>
+                        <Switch
+                          isChecked={data.requirements?.homeCheck || false}
+                          onChange={(e) => updateData({
+                            requirements: {
+                              ...data.requirements,
+                              homeCheck: e.target.checked
+                            }
+                          })}
+                        />
+                      </HStack>
+
+                      <HStack justify="space-between" w="full">
+                        <Text fontSize="sm">References Required</Text>
+                        <Switch
+                          isChecked={data.requirements?.references || false}
+                          onChange={(e) => updateData({
+                            requirements: {
+                              ...data.requirements,
+                              references: e.target.checked
+                            }
+                          })}
+                        />
+                      </HStack>
+                    </VStack>
+                  </HStack>
+
+                  <FormControl>
+                    <FormLabel fontSize="sm">Other Pets Policy</FormLabel>
+                    <Select
+                      placeholder="Select policy"
+                      value={data.requirements?.otherPets || ''}
+                      onChange={(e) => updateData({
+                        requirements: {
+                          ...data.requirements,
+                          otherPets: e.target.value as any
+                        }
+                      })}
+                      bg="white"
+                    >
+                      <option value="allowed">Other pets allowed</option>
+                      <option value="no-dogs">No dogs allowed</option>
+                      <option value="no-cats">No cats allowed</option>
+                      <option value="none">No other pets</option>
+                    </Select>
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel fontSize="sm">Children Policy</FormLabel>
+                    <Select
+                      placeholder="Select policy"
+                      value={data.requirements?.children || ''}
+                      onChange={(e) => updateData({
+                        requirements: {
+                          ...data.requirements,
+                          children: e.target.value as any
+                        }
+                      })}
+                      bg="white"
+                    >
+                      <option value="allowed">Children allowed</option>
+                      <option value="no-young-children">No young children</option>
+                      <option value="none">No children</option>
+                    </Select>
+                  </FormControl>
+                </VStack>
+              </>
+            )}
+          </VStack>
+        </CardBody>
+      </Card>
 
       <Box>
         <Text fontSize="sm" color="gray.600" mb={3}>

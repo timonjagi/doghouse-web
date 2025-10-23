@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   VStack,
   FormControl,
@@ -17,6 +17,11 @@ import {
   Center,
   Button,
   Stack,
+  Card,
+  CardBody,
+  Divider,
+  SimpleGrid,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { Loader } from 'lib/components/ui/Loader';
 import Link from 'next/link';
@@ -30,6 +35,9 @@ interface BasicInfoStepProps {
 
 export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, updateData, userBreeds }) => {
   const bgColor = useColorModeValue('gray.50', 'gray.700');
+  const { isOpen: showParents, onToggle: toggleParents } = useDisclosure({
+    defaultIsOpen: false
+  });
 
   if (userBreeds?.length === 0) {
     return (
@@ -41,7 +49,6 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, updateData, 
       </Alert>
     );
   }
-
 
   return (
     <VStack spacing={6} align="stretch">
@@ -100,7 +107,6 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, updateData, 
         </RadioGroup>
       </FormControl>
 
-
       <FormControl isRequired>
         <FormLabel>Listing Title</FormLabel>
         <Input
@@ -128,10 +134,173 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, updateData, 
         </Text>
       </FormControl>
 
+      {/* Parents Information Section */}
+      <Card bg={bgColor}>
+        <CardBody>
+          <VStack spacing={4} align="stretch">
+            <HStack justify="space-between" align="center">
+              <Box>
+                <Text fontSize="md" fontWeight="semibold">
+                  Parents Information
+                </Text>
+                <Text fontSize="sm" color="gray.600">
+                  Add details about the sire and dam (optional but recommended)
+                </Text>
+              </Box>
+              <Button size="sm" variant="outline" onClick={toggleParents}>
+                {showParents ? 'Hide' : 'Show'} Parents
+              </Button>
+            </HStack>
+
+            {showParents && (
+              <>
+                <Divider />
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  {/* Sire Information */}
+                  <Card size="sm">
+                    <CardBody>
+                      <VStack spacing={3} align="stretch">
+                        <Text fontSize="sm" fontWeight="semibold" color="blue.600">
+                          Sire (Father)
+                        </Text>
+
+                        <FormControl>
+                          <FormLabel fontSize="xs">Name</FormLabel>
+                          <Input
+                            size="sm"
+                            placeholder="Sire name"
+                            value={data.parents?.sire?.name || ''}
+                            onChange={(e) => updateData({
+                              parents: {
+                                ...data.parents,
+                                sire: {
+                                  ...data.parents?.sire,
+                                  name: e.target.value
+                                }
+                              }
+                            })}
+                            bg="white"
+                          />
+                        </FormControl>
+
+                        <FormControl>
+                          <FormLabel fontSize="xs">Breed</FormLabel>
+                          <Input
+                            size="sm"
+                            placeholder="Sire breed"
+                            value={data.parents?.sire?.breed || ''}
+                            onChange={(e) => updateData({
+                              parents: {
+                                ...data.parents,
+                                sire: {
+                                  ...data.parents?.sire,
+                                  breed: e.target.value
+                                }
+                              }
+                            })}
+                            bg="white"
+                          />
+                        </FormControl>
+
+                        <FormControl>
+                          <FormLabel fontSize="xs">Registration</FormLabel>
+                          <Input
+                            size="sm"
+                            placeholder="Registration number"
+                            value={data.parents?.sire?.registration || ''}
+                            onChange={(e) => updateData({
+                              parents: {
+                                ...data.parents,
+                                sire: {
+                                  ...data.parents?.sire,
+                                  registration: e.target.value
+                                }
+                              }
+                            })}
+                            bg="white"
+                          />
+                        </FormControl>
+                      </VStack>
+                    </CardBody>
+                  </Card>
+
+                  {/* Dam Information */}
+                  <Card size="sm">
+                    <CardBody>
+                      <VStack spacing={3} align="stretch">
+                        <Text fontSize="sm" fontWeight="semibold" color="pink.600">
+                          Dam (Mother)
+                        </Text>
+
+                        <FormControl>
+                          <FormLabel fontSize="xs">Name</FormLabel>
+                          <Input
+                            size="sm"
+                            placeholder="Dam name"
+                            value={data.parents?.dam?.name || ''}
+                            onChange={(e) => updateData({
+                              parents: {
+                                ...data.parents,
+                                dam: {
+                                  ...data.parents?.dam,
+                                  name: e.target.value
+                                }
+                              }
+                            })}
+                            bg="white"
+                          />
+                        </FormControl>
+
+                        <FormControl>
+                          <FormLabel fontSize="xs">Breed</FormLabel>
+                          <Input
+                            size="sm"
+                            placeholder="Dam breed"
+                            value={data.parents?.dam?.breed || ''}
+                            onChange={(e) => updateData({
+                              parents: {
+                                ...data.parents,
+                                dam: {
+                                  ...data.parents?.dam,
+                                  breed: e.target.value
+                                }
+                              }
+                            })}
+                            bg="white"
+                          />
+                        </FormControl>
+
+                        <FormControl>
+                          <FormLabel fontSize="xs">Registration</FormLabel>
+                          <Input
+                            size="sm"
+                            placeholder="Registration number"
+                            value={data.parents?.dam?.registration || ''}
+                            onChange={(e) => updateData({
+                              parents: {
+                                ...data.parents,
+                                dam: {
+                                  ...data.parents?.dam,
+                                  registration: e.target.value
+                                }
+                              }
+                            })}
+                            bg="white"
+                          />
+                        </FormControl>
+                      </VStack>
+                    </CardBody>
+                  </Card>
+                </SimpleGrid>
+
+                <Text fontSize="xs" color="gray.500">
+                  💡 Adding parent information helps build trust with potential adopters and shows transparency about your breeding program.
+                </Text>
+              </>
+            )}
+          </VStack>
+        </CardBody>
+      </Card>
     </VStack>
   );
 };
-function useSupabaseUser() {
-  throw new Error('Function not implemented.');
-}
-

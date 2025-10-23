@@ -141,6 +141,12 @@ export const listings = pgTable("listings", {
   location_lat: numeric("location_lat", { precision: 9, scale: 6 }),
   location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
 
+  // 🆕 Enhanced Information (JSON fields for comprehensive data)
+  parents: jsonb("parents").$default(() => "{}"), // sire and dam details with photos
+  health: jsonb("health").$default(() => "{}"), // vaccinations, health tests, certificates
+  training: jsonb("training").$default(() => "{}"), // training milestones and status
+  requirements: jsonb("requirements").$default(() => "{}"), // adoption requirements and preferences
+
   // Metadata
   is_featured: boolean("is_featured").notNull().default(false),
   view_count: integer("view_count").notNull().default(0),

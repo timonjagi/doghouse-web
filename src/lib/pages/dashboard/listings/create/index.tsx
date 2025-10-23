@@ -46,6 +46,7 @@ export interface ListingFormData {
   breed_id?: string;
   user_breed_id?: string;
   owner_type?: 'breeder' | 'seeker';
+
   // Pet Details (conditional based on type)
   birth_date?: string;
   available_date?: string;
@@ -55,7 +56,7 @@ export interface ListingFormData {
   pet_gender?: string;
 
   // Media
-  photos: File[] | string[];
+  photos: (File | string)[];
 
   // Pricing & Location
   price?: number;
@@ -63,6 +64,59 @@ export interface ListingFormData {
   location_text?: string;
   location_lat?: number;
   location_lng?: number;
+
+  // 🆕 Enhanced Information
+  parents?: {
+    sire?: {
+      name: string;
+      breed: string;
+      registration?: string;
+      photos: File[];
+    };
+    dam?: {
+      name: string;
+      breed: string;
+      registration?: string;
+      photos: File[];
+    };
+  };
+
+  health?: {
+    vaccinations?: Array<{
+      type: string;
+      date: string;
+      completed: boolean;
+    }>;
+    healthTests?: {
+      dna?: boolean;
+      hips?: boolean;
+      eyes?: boolean;
+      heart?: boolean;
+    };
+    certificates?: File[];
+    medicalNotes?: string;
+  };
+
+  training?: {
+    houseTrained?: boolean;
+    crateTrained?: boolean;
+    basicCommands?: boolean;
+    additionalTraining?: string;
+  };
+
+  requirements?: {
+    application?: boolean;
+    contract?: boolean;
+    spayNeuter?: boolean;
+    returnPolicy?: boolean;
+    homeCheck?: boolean;
+    references?: boolean;
+    experience?: boolean;
+    yard?: boolean;
+    fence?: boolean;
+    otherPets?: 'allowed' | 'no-dogs' | 'no-cats' | 'none';
+    children?: 'allowed' | 'no-young-children' | 'none';
+  };
 
   // Additional
   tags?: string[];
@@ -147,15 +201,20 @@ const CreateListingPage: React.FC = () => {
 
       // If photos exist, upload them
       if (data.photos && data.photos.length > 0 && result.id) {
-        const photoUrls = await uploadPhotosMutation.mutateAsync({
-          listingId: result.id,
-          files: formData.photos
-        });
+        // Filter to only File objects for upload
+        const filesToUpload = data.photos.filter((photo): photo is File => photo instanceof File);
 
-        await updateListingMutation.mutateAsync({
-          id: result.id,
-          updates: { photos: photoUrls },
-        })
+        if (filesToUpload.length > 0) {
+          const photoUrls = await uploadPhotosMutation.mutateAsync({
+            listingId: result.id,
+            files: filesToUpload
+          });
+
+          await updateListingMutation.mutateAsync({
+            id: result.id,
+            updates: { photos: photoUrls },
+          });
+        }
       };
 
 
