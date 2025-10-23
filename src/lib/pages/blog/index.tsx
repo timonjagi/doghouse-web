@@ -16,12 +16,15 @@ import { FiSearch } from "react-icons/fi";
 import BlogPostCard from "./BlogPostCard";
 import { posts } from "./data";
 import Footer from "lib/components/layout/Footer";
+import { NextSeo } from "next-seo";
 // import client from "../../../../client";
 // import groq from "groq";
 
 const Blog = () => {
   return (
-    <Box bg="bg-surface">
+    <Box bg="bg-surface" >
+      <NextSeo title="Blog | Doghouse" />
+
       <Box bg="bg-accent" color="on-accent">
         <Container
           pt={{
@@ -94,6 +97,7 @@ const Blog = () => {
         </Container>
       </Box>
       <Container
+        maxW="6xl"
         pb={{
           base: "16",
           md: "24",

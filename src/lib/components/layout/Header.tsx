@@ -19,9 +19,13 @@ import { FiHelpCircle } from "react-icons/fi";
 
 import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
+
+import UserProfileMenu from "lib/components/auth/UserProfileMenu";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+
 import { ToggleButton } from "./ToggleButton";
 
-const Header = () => {
+const Header = ({ profile }) => {
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
@@ -29,6 +33,8 @@ const Header = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
   const { pathname } = router;
+
+  const { user } = useSupabaseAuth();
 
   return (
     <Box
@@ -61,16 +67,13 @@ const Header = () => {
                   icon={<FiSettings fontSize='1.25rem' />}
                   aria-label='Settings'
                 /> */}
-                {/* {user && ( */}
-                {/* <Button
+                <Button
                   rounded="full"
                   as={Link}
-                  aria-current={pathname.includes("home") ? "page" : false}
                   href="/"
                 >
                   Home
-                </Button> */}
-                {/* )} */}
+                </Button>
 
                 <Button
                   rounded="full"
@@ -80,14 +83,14 @@ const Header = () => {
                 >
                   About
                 </Button>
-                <Button
+                {/* <Button
                   rounded="full"
                   as={Link}
                   aria-current={pathname.includes("breeds") ? "page" : false}
                   href="/breeds"
                 >
                   Breeds
-                </Button>
+                </Button> */}
                 <Button
                   rounded="full"
                   as={Link}
@@ -118,11 +121,11 @@ const Header = () => {
                 )} */}
               </ButtonGroup>
 
-              {/* {user ? (
+              {user ? (
                 <UserProfileMenu
-                  name={user?.displayName || ""}
-                  image={user?.photoURL || ""}
-                  phoneNumber={user?.phoneNumber || ""}
+                  name={user?.user_metadata?.name || user?.email || ""}
+                  image={user?.user_metadata?.avatar_url || ""}
+                  email={user?.email || ""}
                 />
               ) : (
                 <HStack spacing="3">
@@ -135,7 +138,7 @@ const Header = () => {
                     Log in
                   </Button>
                 </HStack>
-              )} */}
+              )}
             </HStack>
           ) : (
             <Flex align="center">
@@ -172,8 +175,8 @@ const Header = () => {
                     </HStack>
                   )}
                 </>
-              )} */}
-
+              )}
+               */}
               <Drawer
                 isOpen={isOpen}
                 placement="left"
@@ -185,7 +188,7 @@ const Header = () => {
               >
                 <DrawerOverlay />
                 <DrawerContent>
-                  <Sidebar onClose={onClose} />
+                  <Sidebar onClose={onClose} profile={profile} />
                 </DrawerContent>
               </Drawer>
             </Flex>
