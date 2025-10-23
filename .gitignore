@@ -47,7 +47,6 @@ sitemap*.xml
 # Turbo
 .turbo
 
-src/lib/data/
 # next-video
 videos/*
 !videos/*.json

@@ -8,6 +8,7 @@ import {
   Img,
   Stack,
   useColorModeValue as mode,
+  Link,
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { FaStar } from "react-icons/fa";
@@ -85,7 +86,7 @@ const Testimonial = (props: any) => {
 
 export const Testimonials = () => {
   return (
-    <Box as="section" bg="bg-accent" color="white" py="6rem" w="full">
+    <Box as="section" bg="bg-accent" color="white" w="full">
       <Box
         maxW={{
           base: "xl",
@@ -118,12 +119,12 @@ export const Testimonials = () => {
               Trusted by 1000+ dog lovers
             </Text>
             <Heading as="h3" size="3xl" mt="7" lineHeight="shorter">
-              Hear from our members
+              Hear from our happy customers
             </Heading>
             <Rating mt="10" value={4} />
-            {/* <Text mt="4">
+            <Text mt="4">
               <b>4.0/5</b> on <Link>Play Store</Link>
-            </Text> */}
+            </Text>
           </Box>
           <Box
             maxW={{
@@ -133,14 +134,16 @@ export const Testimonials = () => {
             mx="auto"
           >
             <Testimonial
-              name="Joel"
+              name="Neema"
               company="Nairobi, Kenya"
               image="https://images.unsplash.com/photo-1603610515737-193e0b423983?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mjk4fHxsYWR5JTIwaGVhZHNob3QlMjBzbWlsaW5nfGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
             >
-              Sed sed risus pretium quam vulputate dignissim. Ornare quam
-              viverra orci sagittis. Integer vitae justo eget magna fermentum
-              iaculis eu non diam
+              We had an amazing experience adopting our dog through Doghouse. Their customer service was top-notch,
+              they were always available to answer any questions or concerns we had. Our dog has brought so much joy
+              into our lives and we couldn't be happier with our decision. We would highly recommend Doghouse to anyone
+              looking to adopt a dog, they truly care about finding the perfect home for their dogs.
             </Testimonial>
+
           </Box>
         </Grid>
       </Box>

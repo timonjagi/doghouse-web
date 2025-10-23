@@ -1,8 +1,6 @@
-import { useToast } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useToast } from "@chakra-ui/react";
 
 export const useDropZone = ({ selectedImages, setSelectedImages }) => {
-
   const toast = useToast();
 
   const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,12 +16,13 @@ export const useDropZone = ({ selectedImages, setSelectedImages }) => {
         const newFile = readerEvent.target?.result;
         if (newFile) {
           if (selectedImages.includes(newFile)) {
-            return toast({
+            toast({
               title: "Image already selected",
               description: "Please select a different image",
               status: "error",
               duration: 4000,
             });
+            return;
           }
           setSelectedImages([...selectedImages, newFile]);
         }
@@ -32,14 +31,15 @@ export const useDropZone = ({ selectedImages, setSelectedImages }) => {
   };
 
   const onRemoveImage = (file) => {
-    const files = selectedImages.filter((selectedFile) => selectedFile !== file);
+    const files = selectedImages.filter(
+      (selectedFile) => selectedFile !== file
+    );
     setSelectedImages(files);
   };
 
   return {
     onSelectImage,
     onRemoveImage,
-    selectedImages
-  }
-
-}
+    selectedImages,
+  };
+};

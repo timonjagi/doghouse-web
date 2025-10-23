@@ -43,7 +43,7 @@ const CarouselIconButton = (props: IconButtonProps) => (
 );
 
 export const Gallery = (props: GalleryProps) => {
-  const { images, aspectRatio = 16 / 9, rootProps } = props;
+  const { images, aspectRatio = 4 / 3, rootProps } = props;
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [ref, slider] = useCarousel({
     slideChanged: (slide) => setCurrentSlide(slide.track.details.rel),

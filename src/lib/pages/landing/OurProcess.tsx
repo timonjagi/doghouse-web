@@ -1,0 +1,267 @@
+import {
+  Box,
+  Container,
+  Heading,
+  Stack,
+  HStack,
+  Text,
+  Button,
+  Circle,
+  Icon,
+  SimpleGrid,
+  StackDivider,
+  Center,
+  Link,
+  useBreakpointValue,
+  useColorModeValue as mode,
+} from "@chakra-ui/react";
+import { BsCheckCircleFill } from "react-icons/bs";
+import { FiCheck } from "react-icons/fi";
+import { GoListOrdered } from "react-icons/go";
+import { ImProfile } from "react-icons/im";
+
+export const steps = [
+  {
+    name: "Submit Your Application",
+    description:
+      "Tell us about yourself, your lifestyle, and your preferred dog breed to help us understand your unique needs",
+    icon: ImProfile,
+  },
+  {
+    name: "Meet Your New Pet",
+    description:
+      "If a dog is available, we'll schedule a visit for you to meet your new furry friend and spend time with them to see if it's the perfect match",
+    icon: GoListOrdered,
+  },
+  {
+    name: "Finalize the Adoption",
+    description:
+      "Once you've found your perfect match, we'll guide you through the adoption process",
+    icon: BsCheckCircleFill,
+  },
+];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ProcessStep = (props: any) => {
+  const { step, ...stackProps } = props;
+  return (
+    <Stack
+      direction="row"
+      spacing={{
+        base: 4,
+        lg: 4,
+      }}
+      {...stackProps}
+    >
+      <Center
+        color="inverted"
+        flexShrink={0}
+        boxSize={{
+          base: 8,
+          lg: 12,
+        }}
+        bg="accent"
+        borderRadius="lg"
+        fontSize={{
+          base: "xl",
+          lg: "2xl",
+        }}
+      >
+        <Icon as={step.icon} fontSize="1.25rem" />
+      </Center>
+      <Stack
+        spacing={{
+          base: "1",
+          lg: "2",
+        }}
+      >
+        <Text
+          fontSize={{
+            base: "lg",
+            lg: "xl",
+          }}
+          fontWeight="semibold"
+        >
+          {step.name}
+        </Text>
+        <Text color="muted">{step.description}</Text>
+      </Stack>
+    </Stack>
+  );
+};
+
+const features = [
+  "Breed Recommendations",
+  "Tailored Matches",
+  "Personalized Offers",
+  "Secure Reservations",
+  "Exclusive Network",
+  "Community Support",
+  "Expert Advice",
+  "24/7 Customer Support",
+];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const FeatureCard = (props: any) => {
+  return (
+    <Box
+      bg="bg-surface"
+      borderRadius="2xl"
+      boxShadow={mode("lg", "lg-dark")}
+      maxW={{
+        lg: "576px",
+      }}
+      py={{
+        base: "6",
+        lg: "8",
+      }}
+      {...props}
+    >
+      <Stack
+        spacing={{
+          base: "4",
+          lg: "8",
+        }}
+        justify="space-between"
+        align={{
+          base: "start",
+          lg: "center",
+        }}
+        px={{
+          base: "6",
+          md: "8",
+        }}
+      >
+        <Stack spacing="8" divider={<StackDivider />}>
+          <Stack spacing="6">
+            <Stack spacing="1">
+              <Text
+                fontSize={{
+                  base: "lg",
+                  lg: "xl",
+                }}
+                fontWeight="semibold"
+              >
+                What&apos;s included
+              </Text>
+              <Text color="muted">
+                Personalized assistance to help you find your perfect dog and
+                make all necessary arrangements, with a satisfaction guarantee
+              </Text>
+            </Stack>
+            <SimpleGrid
+              as="ul"
+              columns={{
+                base: 1,
+                lg: 2,
+              }}
+              columnGap="8"
+              rowGap="4"
+              pb="2"
+            >
+              {features.map((feature, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <HStack key={index} as="li" spacing="3">
+                  <Circle size="6" bg={mode("blue.50", "whiteAlpha.50")}>
+                    <Icon as={FiCheck} color="accent" />
+                  </Circle>
+                  <Text color="muted">{feature}</Text>
+                </HStack>
+              ))}
+            </SimpleGrid>
+          </Stack>
+
+          <Box
+            px={{
+              base: "6",
+              md: "8",
+            }}
+            pb="2"
+          >
+            <Button
+              variant="primary"
+              size="lg"
+              width="full"
+              rounded="full"
+              as={Link}
+              href="/contact/adoption"
+            >
+              Start Your Journey
+            </Button>
+          </Box>
+        </Stack>
+      </Stack>
+    </Box>
+  );
+};
+
+export const Process = () => (
+  <Box as="section" py={{ base: "8", lg: "16" }}>
+    <Container py="md">
+      <Stack
+        spacing={{
+          base: "8",
+          md: "16",
+        }}
+      >
+        <Stack
+          spacing={{
+            base: "8",
+            md: "16",
+          }}
+        >
+          <Stack spacing="3" textAlign="center" align="center">
+            <Text fontSize={{ base: 'sm', md: 'md' }} color="accent" fontWeight="semibold">
+              Our Process
+            </Text>
+            <Heading
+              size={useBreakpointValue({
+                base: "sm",
+                md: "md",
+              })}
+            >
+              Our Adoption Process
+            </Heading>
+
+            <Text
+              fontSize={{
+                base: "lg",
+                md: "xl",
+              }}
+              maxW="3xl"
+              color="muted"
+            >
+              From personalized recommendations to secure reservations,
+              we&apos;ve got you covered at every step.
+            </Text>
+          </Stack>
+        </Stack>
+        <Stack
+          direction={{
+            base: "column",
+            md: "row",
+          }}
+          spacing={{
+            base: "12",
+            lg: "24",
+          }}
+        >
+          <Stack
+            spacing={{
+              base: "4",
+              md: "8",
+            }}
+            flex="1"
+            justify="center"
+          >
+            {steps.map((step, id) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <ProcessStep key={id} step={step} />
+            ))}
+          </Stack>
+          <FeatureCard flex="1" />
+        </Stack>
+      </Stack>
+    </Container>
+  </Box>
+);

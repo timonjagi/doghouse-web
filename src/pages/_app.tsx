@@ -1,18 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { DefaultSeo } from "next-seo";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { useRouter } from "next/router";
+import { DefaultSeo } from "next-seo";
+import { RecoilRoot } from "recoil";
 
 import defaultSEOConfig from "../../next-seo.config";
 import { Chakra } from "lib/components/Chakra";
-import Layout from "lib/layout/index";
+import Layout from "lib/components/layout/index";
+
 import "lib/styles/globals.css";
-import { RecoilRoot } from "recoil";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
-  const router = useRouter();
-
   return (
     <RecoilRoot>
       <Chakra>

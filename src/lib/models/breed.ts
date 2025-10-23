@@ -2,7 +2,10 @@ export interface Breed {
   name: string;
   description: string;
   image: string;
-  age: string;
-  height: string;
-  breedGroup: string;
+  images?: string[];
+  lifeSpan: string;
+  height?: string;
+  weight?: string;
+  breedGroup?: string;
+  traits?: any;
 }

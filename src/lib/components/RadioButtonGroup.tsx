@@ -1,10 +1,9 @@
-import {
-  useRadioGroup,
-  ButtonGroup,
+import type {
   ButtonGroupProps,
   ButtonProps,
   UseRadioProps,
 } from "@chakra-ui/react";
+import { useRadioGroup, ButtonGroup } from "@chakra-ui/react";
 import React from "react";
 
 interface RadioButtonGroupProps<T>
@@ -23,7 +22,8 @@ interface RadioButtonProps extends ButtonProps {
 export const RadioButtonGroup = <T extends string>(
   props: RadioButtonGroupProps<T>
 ) => {
-  const { children, name, defaultValue, value, onChange, ...rest } = props;
+  const { children, name, defaultValue, value, onChange, isDisabled, ...rest } =
+    props;
   const { getRootProps, getRadioProps } = useRadioGroup({
     name,
     defaultValue,
@@ -36,25 +36,27 @@ export const RadioButtonGroup = <T extends string>(
       React.Children.toArray(children)
         .filter<React.ReactElement<RadioButtonProps>>(React.isValidElement)
         .map((button, index, array) => {
+          const { isDisabled: isButtonDisabled, value: buttonValue } =
+            button.props;
           const isFirstItem = index === 0;
           const isLastItem = array.length === index + 1;
 
-          const styleProps = Object.assign({
+          const styleProps = {
             ...(isFirstItem && !isLastItem ? { borderRightRadius: 0 } : {}),
             ...(!isFirstItem && isLastItem ? { borderLeftRadius: 0 } : {}),
             ...(!isFirstItem && !isLastItem ? { borderRadius: 0 } : {}),
             ...(!isLastItem ? { mr: "-px" } : {}),
-          });
+          };
 
           return React.cloneElement(button, {
             ...styleProps,
             radioProps: getRadioProps({
-              value: button.props.value,
-              disabled: props.isDisabled || button.props.isDisabled,
+              value: buttonValue,
+              disabled: isDisabled || isButtonDisabled,
             }),
           });
         }),
-    [children, getRadioProps, props.isDisabled]
+    [children, getRadioProps, isDisabled]
   );
   return (
     <ButtonGroup isAttached variant="outline" {...getRootProps(rest)}>

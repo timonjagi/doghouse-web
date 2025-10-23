@@ -13,8 +13,8 @@ export const BreedCard = ({ hit }: any) => {
   return (
     <Box position="relative" key={hit.name} borderRadius="xl" overflow="hidden">
       <Link
-        href={`/breeds?breedName=${hit.name}`}
-        as={`/breeds/${hit.name.replaceAll(" ", "-")}`}
+        href={`/breeds/${hit.name.toLowerCase().replaceAll(" ", "-")}`}
+        // as={`/breeds/${hit.name.replaceAll(" ", "-")}`}
       >
         <AspectRatio ratio={1}>
           <Image src={hit.image} alt={hit.name} fallback={<Skeleton />} />
@@ -38,9 +38,9 @@ export const BreedCard = ({ hit }: any) => {
               {hit.name}
             </Text>
 
-            {/* <Text color="white" fontSize="sm" fontWeight="light" pt={0}>
+            <Text color="white" fontSize="sm" fontWeight="light" pt={0}>
               {hit.breedGroup} group
-            </Text> */}
+            </Text>
           </Stack>
         </Box>
       </Link>

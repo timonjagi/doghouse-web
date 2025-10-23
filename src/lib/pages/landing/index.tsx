@@ -1,25 +1,20 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
 
-import Footer from "lib/layout/Footer";
+import Footer from "lib/components/layout/Footer";
 
-import { Cta } from "./Cta";
-import Features from "./Features";
+import { Blog } from "./Blog";
+import BreedTraits from "./BreedTraits";
 import Hero from "./Hero";
-// import { BreedGroups } from "./BreedGroups";
-import { Process } from "./Process";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "lib/firebase/client";
+import { Process } from "./OurProcess";
+import { OurBreeds } from "./Breeds";
 import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
-import { LogoGrid } from "./LogoGrid";
-import { PopularBreeds } from "./PopularBreeds";
-import { CtaWithImage } from "./CtaWithImage";
-const Home = () => {
-  const [user] = useAuthState(auth);
+import WhyDoghouse from "./WhyDoghouse";
 
+const Home = () => {
   return (
-    <Box as="section" height="100vh" overflowY="auto">
+    <Box as="section" bg="bg-surface">
       <Flex
         direction="column"
         alignItems="center"
@@ -27,26 +22,27 @@ const Home = () => {
         minHeight="70vh"
         w="full"
       >
-        <NextSeo title="Home" />
-        <Hero user={user} />
+        <NextSeo title="Doghouse - Quality breeds" />
+        <Hero />
 
-        {/* <Stats /> */}
+        <BreedTraits />
 
-        <Features />
-
-        <PopularBreeds />
+        <OurBreeds />
 
         <Process />
 
-        {/* <BreedGroups /> */}
+        <Stats />
 
-        {/* <Testimonials /> */}
+        <WhyDoghouse />
 
-        <Cta />
+        <Testimonials />
 
-        <CtaWithImage />
+        {/* <Cta /> */}
 
+        {/* <CtaWithImage /> */}
         {/* <LogoGrid /> */}
+
+        <Blog />
       </Flex>
       <Footer />
     </Box>

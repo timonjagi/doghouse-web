@@ -5,7 +5,7 @@ import { Select } from "@chakra-ui/react";
 const sortByOptions = {
   defaultValue: "best-seller",
   options: [
-    { label: "Alphabetical (A-Z)", value: "alphabetical" },
+    { label: "Best Seller", value: "best-seller" },
     { label: "Best Match", value: "best-match" },
     { label: "Price: Low to High", value: "low-to-high" },
     { label: "Price: High to Low", value: "high-to-low" },

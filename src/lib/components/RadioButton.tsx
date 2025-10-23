@@ -1,10 +1,5 @@
-import {
-  ButtonProps,
-  UseRadioProps,
-  useRadio,
-  Button,
-  Box,
-} from "@chakra-ui/react";
+import type { ButtonProps, UseRadioProps } from "@chakra-ui/react";
+import { useRadio, Button, Box } from "@chakra-ui/react";
 
 interface RadioButtonProps extends ButtonProps {
   value: string;
