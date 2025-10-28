@@ -25,6 +25,16 @@ import {
   Stack,
   IconButton,
   useBreakpointValue,
+  Tabs,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Divider,
+  AlertIcon,
+  Alert,
+  Spacer,
+  Img
 } from '@chakra-ui/react';
 import { ArrowBackIcon, EditIcon, ChatIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
@@ -33,6 +43,7 @@ import { useDeleteListing, useListing } from '../../../../hooks/queries/useListi
 import { NextSeo } from 'next-seo';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { Loader } from 'lib/components/ui/Loader';
+import { supabase } from 'lib/supabase/client';
 
 interface ListingDetailPageProps {
   id: string;
@@ -44,10 +55,10 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   const { data: profile, isLoading: profileLoading } = useUserProfile();
   const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const isMobile = useBreakpointValue({ base: true, lg: false });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { data: listing, isLoading: listingLoading } = useListing(id as string);
+  const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id as string);
 
   const handleContact = () => {
     toast({
@@ -81,6 +92,26 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
   const handleDeleteListing = async (listingId: string) => {
     try {
+
+      const deletedPhotos = Array.from(listing.photos as string[] || [])
+
+      //@ts-ignore
+      const deletedSirePhotos = Array.from(listing.parents?.sire?.photos as string[] || [])
+
+      //@ts-ignore
+      const deletedDamPhotos = Array.from(listing.parents?.dam?.photos as string[] || [])
+
+      //@ts-ignore
+      const deletedCerts = Array.from(listing.health?.certificates as string[] || [])
+
+      if (deletedPhotos.length > 0 || deletedSirePhotos.length > 0 || deletedDamPhotos.length > 0 || deletedCerts.length > 0) {
+        const { error: deleteError } = await supabase.storage
+          .from('listing-images')
+          .remove([...deletedPhotos as string[], ...deletedSirePhotos as string[], ...deletedDamPhotos as string[], ...deletedCerts as string[]]);
+
+        if (deleteError) throw deleteError;
+      }
+
       await deleteListingMutation.mutateAsync(listingId);
 
       toast({
@@ -105,11 +136,17 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
   if (profileLoading || listingLoading) {
     return (
-      <Box w="full" h="100vh" >
-        <Center h="full">
-          <Loader />
-        </Center>
-      </Box>
+      <Loader />
+    );
+  }
+
+  if (listingError) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        Error loading breed listing. Please try again later.
+        {listingError.message}
+      </Alert>
     );
   }
 
@@ -132,32 +169,86 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   const isOwner = profile?.id === listing.owner_id;
   const canApply = profile?.role === 'seeker' && listing.status === 'available' && !isOwner;
 
-
+  const getTitle = () => {
+    if (listing.title) return listing.title;
+    if (listing.type === 'litter') {
+      //@ts-ignore
+      return `${listing.breeds?.name} Puppies for Sale`;
+    } else {
+      //@ts-ignore
+      return `${listing.breeds?.name.charAt(0).toUpperCase() + listing.breeds?.name.slice(1)} ${listing.pet_age} old for Sale`;
+    }
+  }
 
   return (
     <>
-      <NextSeo title={`${listing.title} - DogHouse Kenya`} />
+      <NextSeo title={
+        //@ts-ignore
+        `${getTitle()} - DogHouse Kenya`
+      } />
 
-      <Container maxW="7xl" >
-        <Button
+      <Container maxW="7xl" py={{ base: 4, md: 0 }}>
+        {isMobile && <Button
           leftIcon={<ArrowBackIcon />}
           variant="ghost"
-          onClick={() => router.back()}
+          onClick={() => router.push('/dashboard/listings')}
           mb={4}
           p={0}
         >
-          Back to {router.query.from === 'breed' ? 'Breed Details' : 'Listings'}
-        </Button>
+          Back to Listings
+        </Button>}
 
-        <VStack spacing={6} p={0} align="stretch">
-          {/* Header */}
+        <Stack spacing={6} >
+          <HStack justify="space-between" align="start" wrap="wrap" spacing={4}>
+            <Box flex={1}>
+              <Heading size={{ base: 'sm', lg: 'md' }} mb={2}>{
+                getTitle()
+              }</Heading>
 
-          <Stack spacing={4} as="section" >
+            </Box>
 
-            <HStack justify="space-between" align="start">
-              <Box flex={1} minW="50vw">
-                <Heading size={{ base: 'sm', lg: 'md' }} mb={2}>{listing.title}</Heading>
-                <HStack spacing={3} mb={4}>
+
+
+            {!isMobile && canApply && (
+              <Button
+                leftIcon={<ChatIcon />}
+                colorScheme="brand"
+                size="lg"
+                onClick={handleContact}
+              >
+                Reserve This Pet
+              </Button>
+            )}
+
+            {isOwner && <ButtonGroup>
+              <Button
+                leftIcon={<EditIcon />}
+                colorScheme="brand"
+                onClick={() => router.push(`/dashboard/listings/${listing.id}/edit`)}
+              >
+                Edit
+              </Button>
+
+              <Button
+                leftIcon={<DeleteIcon />}
+                colorScheme="red"
+                onClick={onOpen}
+                isLoading={deleteListingMutation.isPending}
+              >
+                Delete
+              </Button>
+
+            </ButtonGroup>}
+          </HStack>
+
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+            <Stack spacing={4}>
+              <Gallery
+                images={Array.from(listing.photos as string[]).map((photo) => ({ src: photo }))}
+                flex={1}
+                minW="50vw"
+              >
+                <HStack spacing={3} mb={4} position="absolute" top="4" left="4" zIndex={1}>
                   <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
                     {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
                   </Badge>
@@ -168,203 +259,43 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                     <Badge colorScheme="purple">Featured</Badge>
                   )}
                 </HStack>
-              </Box>
+              </Gallery>
 
+            </Stack>
 
-              {!isMobile && <>
-                {canApply && (
-                  <Button
-                    leftIcon={<ChatIcon />}
-                    colorScheme="brand"
-                    size="lg"
-                    w="full"
-                    onClick={handleContact}
-                  >
-                    Reserve This Pet
-                  </Button>
-                )}
-              </>}
+            <Tabs variant='soft-rounded' colorScheme='brand' >
+              <TabList>
+                <Tab>Details</Tab>
+                <Tab>Parents</Tab>
+                <Tab>Health</Tab>
+                <Tab>Requirements</Tab>
+              </TabList>
 
-              {isOwner && (
-                <Stack spacing={3} direction={{ base: 'column', md: 'row' }} justify="flex-end">
-                  <ButtonGroup>
-                    <Button
-                      as={IconButton}
-                      icon={<EditIcon />}
-                      colorScheme="blue"
-                      variant="outline"
-                      onClick={() => router.push(`/dashboard/listings/${listing.id}/edit`)}
-                    >
-                      Edit Details
-                    </Button>
+              <TabPanels>
+                <TabPanel>
+                  <PetInformation
+                    listing={listing}
+                    bgColor={bgColor}
+                    formatDate={formatDate}
+                    formatPrice={formatPrice}
+                  />
 
-                    <Button
-                      as={IconButton}
-                      icon={<DeleteIcon />}
-                      colorScheme="red"
-                      onClick={onOpen}
-                      isLoading={deleteListingMutation.isPending}
-                    >
-                      Delete
-                    </Button>
-
-                  </ButtonGroup>
-                  {/* <Button
-                    colorScheme="green"
-                    variant="outline"
-                  >
-                    View Applications
-                  </Button> */}
-                </Stack>
-              )}
-            </HStack>
-
-            <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={4}>
-              <Stack spacing={4} flex={1} >
-                <Gallery images={listing.photos.map((photo) => ({ src: photo }))} flex={1} />
-
-                <Card bg={bgColor}>
-                  <CardBody>
-                    <HStack>
-                      <VStack spacing={4} align="stretch">
-                        <Box>
-                          <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
-                            Price
-                          </Text>
-                          <Text fontSize="3xl" fontWeight="bold" color="green.600">
-                            {formatPrice(listing.price)}
-                          </Text>
-                          {listing.reservation_fee && (
-                            <Text fontSize="sm" color="blue.600">
-                              Reservation Fee: {formatPrice(listing.reservation_fee)}
-                            </Text>
-                          )}
-                        </Box>
-
-                      </VStack>
-
-
-                    </HStack>
-
-
-                  </CardBody>
-                </Card>
-              </Stack>
-
-              <Stack spacing={4}>
-                {/* Pet Information */}
-                <Card bg={bgColor}>
-                  <CardBody>
-                    <VStack spacing={4} align="stretch">
-                      <Text fontSize="lg" fontWeight="semibold" color="brand.600">
-                        {listing.type === 'litter' ? 'Litter Information' : 'Pet Information'}
-                      </Text>
-
-                      <SimpleGrid columns={2} spacing={4}>
-                        {listing.type === 'litter' ? (
-                          <>
-                            <Box>
-                              <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                                Birth Date
-                              </Text>
-                              <Text>{formatDate(listing.birth_date)}</Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                                Available Date
-                              </Text>
-                              <Text>{formatDate(listing.available_date)}</Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                                Number of Puppies
-                              </Text>
-                              <Text>{listing.number_of_puppies || 'Not specified'}</Text>
-                            </Box>
-                          </>
-                        ) : (
-                          <>
-                            <Box>
-                              <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                                Pet Name
-                              </Text>
-                              <Text>{listing.pet_name || 'Not specified'}</Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                                Age
-                              </Text>
-                              <Text>{listing.pet_age || 'Not specified'}</Text>
-                            </Box>
-                            <Box>
-                              <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                                Gender
-                              </Text>
-                              <Text>{listing.pet_gender || 'Not specified'}</Text>
-                            </Box>
-                          </>
-                        )}
-                      </SimpleGrid>
-                    </VStack>
-                  </CardBody>
-                </Card>
-
-
-                {/* Description */}
-                <Card bg={bgColor}>
-                  <CardBody>
-                    <VStack spacing={3} align="stretch">
-                      <Text fontSize="lg" fontWeight="semibold" color="brand.600">
-                        Description
-                      </Text>
-                      <Text fontSize="sm" color="gray.600" whiteSpace="pre-wrap">
-                        {listing.description || 'No description provided.'}
-                      </Text>
-                    </VStack>
-                  </CardBody>
-                </Card>
-
-                {listing.location_text && (
-                  <Card bg={bgColor}>
-                    <CardBody>
-                      <VStack spacing={3} align="stretch">
-                        <Text fontSize="lg" fontWeight="semibold" color="brand.600">
-                          Location
-                        </Text>
-                        <Text fontSize="sm" color="gray.600">
-                          📍 {listing.location_text}
-                        </Text>
-                      </VStack>
-                    </CardBody>
-                  </Card>
-                )}
-                <Card bg={bgColor}>
-                  <CardBody>
-                    <SimpleGrid columns={2} spacing={4}>
-                      <Box>
-                        <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                          Views
-                        </Text>
-                        <Text>{listing.view_count || 0}</Text>
-                      </Box>
-                      <Box>
-                        <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                          Listed
-                        </Text>
-                        <Text>{formatDate(listing.created_at)}</Text>
-                      </Box>
-                    </SimpleGrid>
-                  </CardBody>
-                </Card>
-              </Stack>
-            </SimpleGrid>
-
-
-          </Stack>
-
-
-        </VStack>
-
+                </TabPanel>
+                <TabPanel>
+                  <ParentInfo
+                    listing={listing}
+                  />
+                </TabPanel>
+                <TabPanel>
+                  <HealthInfo listing={listing} />
+                </TabPanel>
+                <TabPanel>
+                  <Requirements listing={listing} />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </SimpleGrid>
+        </Stack>
 
         <AlertDialog isOpen={isOpen} leastDestructiveRef={undefined} onClose={onClose}>
           <AlertDialogOverlay>
@@ -392,8 +323,16 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
       </Container >
 
-      {isMobile && <Box position="sticky" bottom="0" p={4} boxShadow="md" bg="white" zIndex={10} w="full">
-        {canApply && (
+      {isMobile && canApply && (
+        <Box
+          position="sticky"
+          bottom="0"
+          p={4}
+          boxShadow="md"
+          bg="white"
+          zIndex={10}
+          w="full"
+        >
           <Button
             leftIcon={<ChatIcon />}
             colorScheme="brand"
@@ -403,11 +342,333 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           >
             Reserve This Pet
           </Button>
-        )}
-      </Box>}
+        </Box>)}
 
     </>
   );
 };
+
+const PetInformation = ({ listing, bgColor, formatDate, formatPrice }) => {
+  return (
+
+    <Stack spacing={6}>
+
+      <VStack spacing={4} align="stretch">
+        <Text fontSize="lg" fontWeight="semibold" color="brand.600">
+          {listing.type === 'litter' ? 'Litter Information' : 'Pet Information'}
+        </Text>
+
+        <SimpleGrid columns={2} spacing={4}>
+          {listing.type === 'litter' ? (
+            <>
+
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Breed
+                </Text>
+                <Text>{listing.breeds?.name?.charAt(0).toUpperCase() + listing.breeds?.name?.slice(1) || 'Not specified'}</Text>
+              </Box>
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Birth Date
+                </Text>
+                <Text>{formatDate(listing.birth_date.toString())}</Text>
+              </Box>
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Available Date
+                </Text>
+                <Text>{formatDate(listing.available_date.toString())}</Text>
+              </Box>
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Number of Puppies
+                </Text>
+                <Text>{listing.number_of_puppies || 'Not specified'}</Text>
+              </Box>
+
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Price
+                </Text>
+                <Text >
+                  Ksh. {listing.price || 'Not specified'}
+                </Text>
+              </Box>
+
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Reservation Fee
+                </Text>
+                <Text >
+                  Ksh. {listing.reservation_fee || 'Not specified'}
+                </Text>
+              </Box>
+            </>
+          ) : (
+            <>
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Pet Name
+                </Text>
+                <Text>{listing.pet_name || 'Not specified'}</Text>
+              </Box>
+
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Breed
+                </Text>
+                <Text>{listing.breeds?.name?.charAt(0).toUpperCase() + listing.breeds?.name?.slice(1) || 'Not specified'}</Text>
+              </Box>
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Age
+                </Text>
+                <Text>{listing.pet_age || 'Not specified'}</Text>
+              </Box>
+
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Gender
+                </Text>
+                <Text>{listing.pet_gender?.charAt(0).toUpperCase() + listing.pet_gender?.slice(1) || 'Not specified'}</Text>
+              </Box>
+
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Location
+                </Text>
+                <Text >
+                  {listing.location_text || 'Not specified'}
+                </Text>
+              </Box>
+
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Price
+                </Text>
+                <Text >
+                  Ksh. {listing.price || 'Not specified'}
+                </Text>
+              </Box>
+
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Reservation Fee
+                </Text>
+                <Text >
+                  Ksh. {listing.reservation_fee || 'Not specified'}
+                </Text>
+              </Box>
+            </>
+          )}
+        </SimpleGrid>
+      </VStack>
+
+      <Divider />
+
+
+
+      <SimpleGrid columns={2} spacing={4}>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Views
+          </Text>
+          <Text >{listing.view_count || 0} views</Text>
+        </Box>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Listed
+          </Text>
+          <Text >{formatDate(listing.created_at.toString())}</Text>
+        </Box>
+      </SimpleGrid>
+
+
+    </Stack>
+  )
+}
+
+const ParentInfo = ({ listing }) => {
+  return (
+    <Box>
+      <VStack spacing={6} align="stretch">
+        <Box>
+          <Text fontSize="lg" fontWeight="semibold" color="brand.600" mb={4}>
+            Sire Information
+          </Text>
+          {listing.parents?.sire ? (
+            <Stack>
+              <SimpleGrid columns={2} spacing={4}>
+                <Box>
+                  <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                    Name
+                  </Text>
+                  <Text>{listing.parents?.sire?.name || 'Not specified'}</Text>
+                </Box>
+                <Box>
+                  <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                    Breed
+                  </Text>
+                  <Text>{listing.parents?.sire?.breed || 'Not specified'}</Text>
+                </Box>
+              </SimpleGrid>
+              <Box>
+
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Photos
+                </Text>
+                {listing.parents?.sire?.photos.length ? listing.parents.sire.photos.map((file, index) => (
+                  <Box key={index} borderRadius="md" overflow="hidden" borderWidth={1}>
+                    <Img
+                      src={file && typeof file === 'string' ? file : URL.createObjectURL(file)}
+                      alt={`Sire Photo ${index + 1}`}
+                      objectFit="cover"
+                      w="full"
+                      h="100px"
+                    />
+                  </Box>
+                )) : <>No sire photos available</>}
+              </Box>
+            </Stack>
+
+          ) : (
+            <Text>No sire information available.</Text>
+          )}
+        </Box>
+
+        <Box>
+          <Text fontSize="lg" fontWeight="semibold" color="brand.600" mb={4}>
+            Dam Information
+          </Text>
+          {listing.parents?.dam ? (
+            <Stack >
+              <SimpleGrid columns={2} spacing={4}>
+                <Box>
+                  <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                    Name
+                  </Text>
+                  <Text>{listing.parents?.dam?.name || 'Not specified'}</Text>
+                </Box>
+                <Box>
+                  <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                    Breed
+                  </Text>
+                  <Text>{listing.parents?.dam?.breed || 'Not specified'}</Text>
+                </Box>
+              </SimpleGrid>
+
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Photos
+                </Text>
+                {listing.parents?.dam?.photos?.length ? listing.parents?.dam?.photos?.map((file, index) => (
+                  <Box key={index} borderRadius="md" overflow="hidden" borderWidth={1}>
+                    <Img
+
+                      src={file && typeof file === 'string' ? file : URL.createObjectURL(file)}
+                      alt={`Dam Photo ${index + 1}`}
+                      objectFit="cover"
+                      w="full"
+                      h="100px"
+                    />
+                  </Box>
+                )) : <>No dam photos available</>}
+              </Box>
+
+            </Stack>
+          ) : (
+            <Text>No dam information available.</Text>
+          )}
+        </Box>
+      </VStack>
+    </Box>
+  )
+}
+
+const HealthInfo = ({ listing }) => {
+  return (
+    <Stack>
+      <Text fontSize="md" fontWeight="semibold" mb={3} color="brand.600">
+        Health Information
+      </Text>
+
+      <Stack>
+        <Text fontSize="xs" color="gray.500" textTransform="uppercase" mb={1}>
+          Vaccinations ({listing.health?.vaccinations?.length || 0})
+        </Text>
+        <HStack>
+
+          {listing.health?.vaccinations && listing.health?.vaccinations.length > 0 ? (
+            listing.health?.vaccinations.map((vaccination, index) => (
+              <Badge key={index} colorScheme="brand" variant="outline" px={2} py={1} borderRadius="md">
+                <Text>{vaccination.type}</Text>
+                <Text fontSize="xs" color="muted">{new Date(vaccination.date).toDateString()}</Text>
+              </Badge>
+            )
+            )) : (
+            <Text >No vaccinations added</Text>
+          )}
+        </HStack>
+      </Stack>
+
+      <Stack>
+        <Text fontSize="xs" color="gray.500" textTransform="uppercase" mb={1}>
+          Certificates ({listing.health?.certificates?.length || 0})
+        </Text>
+        {listing.health?.certificates && listing?.health?.certificates.length > 0 ? (
+          <SimpleGrid columns={{ base: 2, md: 4 }} spacing={3}>
+            {listing.health?.certificates.map((file, index) => (
+              <Box key={index} borderRadius="md" overflow="hidden" borderWidth={1}>
+                <Img
+                  src={file && typeof file === 'string' ? file : URL.createObjectURL(file)}
+                  alt={`Photo ${index + 1}`}
+                  objectFit="cover"
+                  w="full"
+                  h="100px"
+                />
+              </Box>
+            ))}
+          </SimpleGrid>
+        ) : (
+          <Text >No certificates added</Text>
+        )}
+      </Stack>
+      <Box>
+        <Text fontSize="xs" color="gray.500" textTransform="uppercase" mb={1}>
+          Medical Notes
+        </Text>
+
+        <Text>{listing.health?.medicalNotes || 'Not specified'}</Text>
+      </Box>
+    </Stack>
+
+
+  )
+}
+
+const Requirements = ({ listing }) => {
+  console.log('requiremets', listing.requirements);
+  return (
+    <Box gridColumn={{ base: 'span 1', md: 'span 2' }}>
+      <Text fontSize="md" fontWeight="semibold" mb={3} color="brand.600">
+        Adoption Requirements
+      </Text>
+      <SimpleGrid columns={2} spacing={4}>
+
+        {listing.requirements && Object.keys(listing.requirements).length > 0 ? Object.keys(listing.requirements).map((key) => listing.requirements[key] && (
+          <Box>
+            <Text fontSize="xs" color="gray.500" textTransform="uppercase" mb={1}>
+              {key}
+            </Text>
+
+            {typeof listing.requirements[key] === 'boolean' ? <Text>{listing.requirements[key] ? 'Yes' : 'No'}</Text> : <Text>{listing.requirements[key] || 'Not specified'}</Text>}
+          </Box>
+        )) : <Text>No requirements specified.</Text>}
+      </SimpleGrid>
+    </Box>
+  )
+}
+
 
 export default ListingDetailPage;

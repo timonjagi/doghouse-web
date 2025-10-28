@@ -1,36 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-
-// Types
-interface Listing {
-  id: string;
-  title: string;
-  description?: string;
-  type: 'litter' | 'single_pet' | 'wanted';
-  owner_id: string;
-  owner_type: 'breeder' | 'seeker';
-  breed_id?: string;
-  user_breed_id?: string;
-  birth_date?: string;
-  available_date?: string;
-  number_of_puppies?: number;
-  pet_name?: string;
-  pet_age?: string;
-  pet_gender?: string;
-  price?: number;
-  reservation_fee?: number;
-  status: 'available' | 'reserved' | 'sold' | 'completed';
-  photos?: string[];
-  location_text?: string;
-  location_lat?: number;
-  location_lng?: number;
-  is_featured: boolean;
-  view_count: number;
-  tags?: string[];
-  created_at: string;
-  updated_at: string;
-}
+import { Listing } from '../../../../db/schema';
 
 interface CreateListingData {
   title: string;
@@ -51,6 +22,12 @@ interface CreateListingData {
   location_lat?: number;
   location_lng?: number;
   tags?: string[];
+  parents?: any;
+  health?: any;
+  training?: any;
+  requirements?: any;
+  status?: 'pending' | 'available' | 'reserved' | 'sold' | 'completed';
+  is_featured?: boolean;
 }
 
 interface UpdateListingData {
@@ -67,13 +44,17 @@ interface UpdateListingData {
   pet_gender?: string;
   price?: number;
   reservation_fee?: number;
-  status?: 'available' | 'reserved' | 'sold' | 'completed';
+  status?: 'pending' | 'available' | 'reserved' | 'sold' | 'completed';
   photos?: string[];
   location_text?: string;
   location_lat?: number;
   location_lng?: number;
   is_featured?: boolean;
   tags?: string[];
+  parents?: any;
+  health?: any;
+  training?: any;
+  requirements?: any;
 }
 
 // Query to get all listings with optional filters
@@ -86,8 +67,38 @@ export const useListings = (filters?: {
 }) => {
   return useQuery({
     queryKey: queryKeys.listings.list(filters),
-    queryFn: async (): Promise<Listing[]> => {
-      let query = supabase.from('listings').select('*');
+    queryFn: async (): Promise<any> => {
+      let query = supabase.from('listings').select(`
+        id,
+        title,
+        description,
+        type,
+        owner_id,
+        owner_type,
+        breed_id,
+        user_breed_id,
+        birth_date,
+        available_date,
+        number_of_puppies,
+        pet_name,
+        pet_age,
+        pet_gender,
+        price,
+        reservation_fee,
+        status,
+        photos,
+        location_text,
+        location_lat,
+        location_lng,
+        is_featured,
+        view_count,
+        tags,
+        created_at,
+        updated_at,
+        breeds (
+          name
+        )
+        `);
       console.log('Fetching listings with filters:', filters);
       if (filters?.type) {
         query = query.eq('type', filters.type);
@@ -119,7 +130,51 @@ export const useListing = (id: string) => {
     queryFn: async (): Promise<Listing | null> => {
       const { data, error } = await supabase
         .from('listings')
-        .select('*')
+        .select(
+          `
+          id,
+          title,
+          description,
+          type,
+          breed_id,
+          user_breed_id,
+          owner_id,
+          owner_type,
+          birth_date,
+          available_date,
+          number_of_puppies,
+          pet_name,
+          pet_age,
+          pet_gender,
+          price,
+          reservation_fee,
+          parents,
+          health,
+          training,
+          requirements,
+          status,
+          photos,
+          location_text,
+          location_lat,
+          location_lng,
+          is_featured,
+          view_count,
+          tags,
+          created_at,
+          updated_at,
+          breeds (
+            name
+          ),
+          users (
+            display_name,
+            profile_photo_url,
+            breeder_profiles (
+              kennel_name,
+              kennel_location
+            )
+          )
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -134,10 +189,34 @@ export const useListing = (id: string) => {
 export const useListingsByOwner = (ownerId: string) => {
   return useQuery({
     queryKey: queryKeys.listings.byOwner(ownerId),
-    queryFn: async (): Promise<Listing[]> => {
+    queryFn: async (): Promise<any> => {
       const { data, error } = await supabase
         .from('listings')
-        .select('*')
+        .select(`
+          id,
+          title,
+          description,
+          type,
+          breed_id,
+          owner_id,
+          user_breed_id,
+          birth_date,
+          available_date,
+          number_of_puppies,
+          pet_name,
+          pet_age,
+          pet_gender,
+          price,
+          reservation_fee,
+          status,
+          photos,
+          created_at,
+          updated_at,
+          breeds (
+            id, 
+            name
+          )
+        `)
         .eq('owner_id', ownerId)
         .order('created_at', { ascending: false });
 
@@ -177,7 +256,9 @@ export const useListingsForBreed = (breedId: string) => {
           id,
           title,
           description,
+          type,
           price,
+          reservation_fee,
           location_text,
           photos,
           status,
@@ -201,13 +282,24 @@ export const useListingsForUserBreed = (userBreedId: string) => {
   return useQuery({
     queryKey: queryKeys.listings.byBreed(userBreedId),
     queryFn: async (): Promise<Partial<Listing>[]> => {
+
+      if (!userBreedId) throw new Error('No user breed ID provided. Please provide a valid user');
+      console.log('Fetching listings for user breed ID:', userBreedId);
       const { data, error } = await supabase
         .from('listings')
         .select(`
           id,
           title,
+          type,
           description,
           price,
+          reservation_fee,
+          birth_date,
+          available_date,
+          number_of_puppies,
+          pet_name,
+          pet_age,
+          pet_gender,
           location_text,
           photos,
           status,
@@ -215,6 +307,9 @@ export const useListingsForUserBreed = (userBreedId: string) => {
           users (
             display_name,
             profile_photo_url
+          ),
+          breeds (
+            name
           )
         `)
         .eq('user_breed_id', userBreedId)

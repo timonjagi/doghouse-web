@@ -24,6 +24,9 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Alert,
+  AlertIcon,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { ChevronRightIcon, EditIcon, ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
@@ -32,6 +35,7 @@ import { BreedForm } from "./BreedForm";
 import { useDeleteUserBreed } from "lib/hooks/queries/useUserBreeds";
 import { BreedListings } from "../browse/BreedListings";
 import { useListingsForUserBreed } from "lib/hooks/queries/useListings";
+import { Loader } from "lib/components/ui/Loader";
 
 interface Breed {
   id: string;
@@ -61,6 +65,7 @@ export const ManageBreedDetailView = ({
   userBreed,
 }: ManageBreedDetailViewProps) => {
   const router = useRouter();
+  const isMobile = useBreakpointValue({ base: true, lg: false });
   const toast = useToast();
   const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -68,11 +73,39 @@ export const ManageBreedDetailView = ({
   const deleteUserBreed = useDeleteUserBreed();
 
   const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForUserBreed(userBreed?.id);
+  if (isLoadingListings) {
+    return (
+      <Loader />
+    );
+  }
+
+  console.log('listingsForBreed', listingsForBreed)
+  if (error) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        Error loading listing data. Please try again later.
+        {error.message}
+      </Alert>
+    );
+  }
 
   return (
-    <Container maxW="7xl" py={8}>
+    <Container maxW="7xl" >
+      {isMobile && <Button
+        leftIcon={<ArrowBackIcon />}
+        variant="ghost"
+        onClick={() => router.back()}
+        my={4}
+        px={0}
+      >
+        Back to Manage Breeds
+      </Button>}
+
+
       <VStack spacing={6} align="stretch">
-        <VStack align="stretch" spacing={4}>
+
+        <VStack align="stretch" spacing={1}>
           <HStack justify="space-between" align="center">
             <Heading size={{ base: 'sm', lg: 'md' }} color="brand.500">
               Manage {userBreed?.breeds.name}
@@ -112,7 +145,7 @@ export const ManageBreedDetailView = ({
                 <Card>
 
                   <CardBody>
-                    <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
+                    <SimpleGrid columns={{ base: 2, lg: 3 }} spacing={4}>
                       {userBreed.images.map((image, index) => (
                         <Image
                           key={index}

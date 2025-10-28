@@ -250,11 +250,8 @@ const BrowseListingsPage: React.FC = () => {
           )}
 
           <Stack flex={1} >
-            {listingsLoading || breedsLoading && <Box flex={1} h="100vh">
-              <Center h="full" flex={1}>
-                <Loader />
-              </Center>
-            </Box>}
+            {listingsLoading || breedsLoading && <Loader />}
+
 
             {/* Listings Grid */}
             {!listingsLoading && !breedsLoading && filteredListings.length === 0 ? (

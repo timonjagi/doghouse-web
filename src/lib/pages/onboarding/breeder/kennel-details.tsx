@@ -93,10 +93,7 @@ export const BreederKennelDetails: React.FC<PageProps> = ({ currentStep, setStep
 
   return (
     <>
-      {breederProfileLoading && <Center h="100%" flex="1" position="absolute" bg="white">
-        <Loader />
-      </Center>
-      }
+      {breederProfileLoading && <Loader />}
 
       <Stack as="form" spacing="9" onSubmit={onSubmit}>
         <Heading size={{ base: "sm", lg: "md" }}>

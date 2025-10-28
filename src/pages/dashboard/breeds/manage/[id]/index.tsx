@@ -15,13 +15,9 @@ export default function BreedDetailPage() {
     error: userBreedError,
   } = useUserBreed(id as string);
 
-  if (userBreedError) {
+  if (isLoadingUserBreed) {
     return (
-      <Container maxW="7xl">
-        <Center height="100vh">
-          <Loader />
-        </Center>
-      </Container>
+      <Loader />
     );
   }
 

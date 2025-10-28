@@ -1,11 +1,14 @@
-import { Center, Flex, Spinner } from "@chakra-ui/react";
+import { calc, Center, Flex, Spinner } from "@chakra-ui/react";
 
 export const Loader = () => {
   return (
-    <Flex h="100%" w="full" align="center" justify="center">
+    <Flex
+      h={{ base: 'calc(100vh - 64px)', md: 'calc(100vh - 104px)' }}
+      w="full"
+      align="center"
+      justify="center">
       <Center>
         <Spinner
-          position="absolute"
           thickness="4px"
           emptyColor="gray.200"
           color="brand.500"

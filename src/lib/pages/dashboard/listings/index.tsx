@@ -33,11 +33,7 @@ const ListingsPage: React.FC = () => {
 
   if (profileLoading) {
     return (
-      <Box w="full" h="100vh" >
-        <Center h="full" flex="1">
-          <Loader />
-        </Center>
-      </Box>
+      <Loader />
     );
   }
 
@@ -61,13 +57,7 @@ const ListingsPage: React.FC = () => {
     <>
       <NextSeo title="Listings - DogHouse Kenya" />
 
-      <Container maxW="7xl">
-        <Box w="full" h="100vh" >
-          <Center h="full">
-            <Loader />
-          </Center>
-        </Box>
-      </Container>
+      <Loader />
     </>
   );
 };

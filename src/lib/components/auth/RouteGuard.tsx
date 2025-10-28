@@ -23,6 +23,7 @@ const RouteGuard = ({ children, ...rest }) => {
 
   return loading ? (
     <Loader />
+
   ) : isAuthorized ? (
     <Box {...rest}>{children}</Box>
   ) : null;

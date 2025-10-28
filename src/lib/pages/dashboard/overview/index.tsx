@@ -57,9 +57,7 @@ const DashboardHome = () => {
   }, [profile, searchParams]);
 
   if (profileLoading) {
-    <Center h="full">
-      <Loader />
-    </Center>
+    <Loader />
   }
 
   return (

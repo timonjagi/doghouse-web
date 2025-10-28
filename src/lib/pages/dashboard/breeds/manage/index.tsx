@@ -28,16 +28,12 @@ const DashboardBreedsPage = () => {
 
   if (isLoadingProfile) {
     return (
-      <Container maxW="7xl" py={8}>
-        <Center height="200px">
-          <Spinner size="xl" color="brand.500" />
-        </Center>
-      </Container>
+      <Loader />
     );
   }
 
   return (
-    <Container maxW="7xl" py={8} px={0}>
+    <Container maxW="7xl" >
       <NextSeo title="Manage Breeds " />
 
       <Box>
@@ -60,14 +56,9 @@ const UserBreeds = ({ userProfile, onFormOpen }) => {
     error: userBreedsError
   } = useUserBreedsFromUser(userProfile.id);
 
-  console.log(userBreeds);
   if (isLoadingUserBreeds) {
     return (
-      <Container maxW="7xl">
-        <Center height="200px">
-          <Loader />
-        </Center>
-      </Container>
+      <Loader />
     );
   }
 

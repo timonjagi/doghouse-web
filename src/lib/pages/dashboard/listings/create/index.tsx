@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Container,
@@ -22,9 +22,10 @@ import {
   Center,
   Link,
   useToast,
+  Spinner,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, ArrowForwardIcon, CheckIcon } from '@chakra-ui/icons';
 import { NextSeo } from 'next-seo';
 
 // Import step components (we'll create these next)
@@ -37,6 +38,9 @@ import { ReviewStep } from './review';
 import { useCreateListing, useUpdateListing, useUploadListingPhotos } from '../../../../hooks/queries/useListings';
 import { Loader } from 'lib/components/ui/Loader';
 import { useCurrentUser, useUserBreedsFromUser } from 'lib/hooks/queries';
+import ParentInfoStep from './parent-info';
+import HealthInfoStep from './health-info';
+import RequirementsStep from './requirements';
 
 export interface ListingFormData {
   // Basic Info
@@ -56,7 +60,7 @@ export interface ListingFormData {
   pet_gender?: string;
 
   // Media
-  photos: (File | string)[];
+  photos: File[] | string[];
 
   // Pricing & Location
   price?: number;
@@ -127,6 +131,7 @@ const CreateListingPage: React.FC = () => {
   const toast = useToast();
   const { data: user } = useCurrentUser();
   const { data: userBreeds, isLoading: userBreedsLoading, error } = useUserBreedsFromUser(user?.id);
+  const [isLoading, setIsLoading] = useState(false);
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const uploadPhotosMutation = useUploadListingPhotos({ userId: user?.id || '' });
@@ -137,9 +142,12 @@ const CreateListingPage: React.FC = () => {
   const steps = [
     { title: 'Basic Info', description: 'Title and type' },
     { title: 'Pet Details', description: 'Specific information' },
+    { title: 'Parent Information', description: 'Sire and Dam details' },
+    { title: 'Health Information', description: 'Health details' },
     { title: 'Photos', description: 'Images and media' },
     { title: 'Pricing', description: 'Price and location' },
-    { title: 'Review', description: 'Final review' },
+    { title: 'Requirements', description: 'Adoption requirements' },
+    { title: 'Review & Submit', description: 'Finalize your listing' },
   ];
 
   const { activeStep, setActiveStep } = useSteps({
@@ -153,11 +161,51 @@ const CreateListingPage: React.FC = () => {
     type: 'litter',
     photos: [],
     owner_type: 'breeder',
+    health: { vaccinations: [], healthTests: {}, certificates: [], medicalNotes: '' },
+    training: {},
+    requirements: {},
+    parents: {
+      sire: { name: '', breed: '', photos: [] },
+      dam: { name: '', breed: '', photos: [] },
+    },
+    tags: [],
   });
 
   const updateFormData = (updates: Partial<ListingFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
+    localStorage.setItem('listingFormData', JSON.stringify({ ...formData, ...updates }));
   };
+
+  useEffect(() => {
+    const savedData = localStorage.getItem('listingFormData');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      console.log('Loaded saved listing form data:', JSON.parse(savedData));
+      setFormData({
+        ...formData,
+        ...parsedData,
+        photos: [],
+        parents: {
+          sire: {
+            ...parsedData.parents.sire,
+            photos: []
+          },
+          dam: {
+            ...parsedData.parents.dam,
+            photos: []
+          }
+        },
+        health: {
+          ...parsedData.health,
+          certificates: [],
+        },
+        training: {
+          ...parsedData.training,
+        }
+      });
+
+    }
+  }, []);
 
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
@@ -191,32 +239,95 @@ const CreateListingPage: React.FC = () => {
         ...(data.type === 'single_pet' && { pet_name: data.pet_name }),
         ...(data.type === 'single_pet' && { pet_age: data.pet_age }),
         ...(data.type === 'single_pet' && { pet_gender: data.pet_gender }),
+        parents: {
+          sire: {
+            name: data.parents?.sire?.name,
+            breed: data.parents?.sire?.breed,
+          },
+          dam: {
+            name: data.parents?.dam?.name,
+            breed: data.parents?.dam?.breed,
+          },
+        },
+        health: {
+          vaccinations: data.health?.vaccinations,
+          healthTests: data.health?.healthTests,
+          medicalNotes: data.health?.medicalNotes
+        },
+        training: data.training,
+        requirements: data.requirements,
+        tags: data.tags,
         price: data.price,
         reservation_fee: data.reservation_fee,
         location_text: data.location_text,
-        status: 'available' as const,
+        status: 'pending' as const,
       };
 
       const result = await createListingMutation.mutateAsync(listingData);
 
+      let filesToUpload: File[] = [];
       // If photos exist, upload them
       if (data.photos && data.photos.length > 0 && result.id) {
         // Filter to only File objects for upload
-        const filesToUpload = data.photos.filter((photo): photo is File => photo instanceof File);
-
-        if (filesToUpload.length > 0) {
-          const photoUrls = await uploadPhotosMutation.mutateAsync({
-            listingId: result.id,
-            files: filesToUpload
-          });
-
-          await updateListingMutation.mutateAsync({
-            id: result.id,
-            updates: { photos: photoUrls },
-          });
-        }
+        filesToUpload = data.photos.filter((photo): photo is File => photo instanceof File);
       };
 
+      let sirePhotoFiles: File[] = [];
+      // Also upload parent photos if any
+      if (data.parents?.sire?.photos && data.parents.sire.photos.length > 0) {
+        sirePhotoFiles = data.parents.sire.photos.filter((photo): photo is File => photo instanceof File);
+      }
+
+      let damPhotoFiles: File[] = [];
+      if (data.parents?.dam?.photos && data.parents.dam.photos.length > 0) {
+        damPhotoFiles = data.parents.dam.photos.filter((photo): photo is File => photo instanceof File);
+      }
+
+      // upload certificates if any
+      let certFiles: File[] = [];
+      if (data.health?.certificates && data.health.certificates.length > 0) {
+        certFiles = data.health.certificates.filter((file): file is File => file instanceof File);
+      }
+      // upload files using separate calls to upload moutation in a promise.all to get urls and update respective lisiting fields afterwards
+      const { photoUrls, sirePhotoUrls, damPhotoUrls, certUrls } = await Promise.all([
+        uploadPhotosMutation.mutateAsync({
+          listingId: result.id,
+          files: filesToUpload
+        }),
+        uploadPhotosMutation.mutateAsync({
+          listingId: result.id,
+          files: sirePhotoFiles
+        }),
+        uploadPhotosMutation.mutateAsync({
+          listingId: result.id,
+          files: damPhotoFiles
+        }),
+        uploadPhotosMutation.mutateAsync({
+          listingId: result.id,
+          files: certFiles
+        }),
+      ]).then(([photoUrls, sirePhotoUrls, damPhotoUrls, certUrls]) => ({ photoUrls, sirePhotoUrls, damPhotoUrls, certUrls }));
+      // Update listing with photo URLs
+      await updateListingMutation.mutateAsync({
+        id: result.id,
+        updates: {
+          photos: photoUrls,
+          parents: {
+            sire: {
+              ...listingData.parents.sire,
+              photos: sirePhotoUrls,
+            },
+            dam: {
+              ...listingData.parents.dam,
+              photos: damPhotoUrls,
+            }
+          },
+          health: {
+            ...listingData.health,
+            certificates: certUrls,
+          },
+        },
+      });
 
       toast({
         title: "Success",
@@ -225,6 +336,9 @@ const CreateListingPage: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
+
+      localStorage.removeItem('listingFormData');
+
       router.push('/dashboard/listings/manage');
 
     } catch (error) {
@@ -254,6 +368,26 @@ const CreateListingPage: React.FC = () => {
         location_lat: undefined,
         location_lng: undefined,
         tags: [],
+        parents: {
+          sire: {
+            name: '',
+            breed: '',
+            photos: [],
+          },
+          dam: {
+            name: '',
+            breed: '',
+            photos: [],
+          },
+        },
+        health: {
+          vaccinations: [],
+          healthTests: {},
+          medicalNotes: '',
+          certificates: [],
+        },
+        training: undefined,
+        requirements: undefined
       });
     }
   };
@@ -261,17 +395,24 @@ const CreateListingPage: React.FC = () => {
   const canProceedToNext = () => {
     switch (activeStep) {
       case 0: // Basic Info
-        return formData.title.trim() !== '' && !!formData.type;
+        return !!formData.user_breed_id && !!formData.type;
       case 1: // Pet Details
         if (formData.type === 'litter') {
           return !!(formData.birth_date && formData.available_date && formData.number_of_puppies);
         } else {
           return !!(formData.pet_name && formData.pet_age && formData.pet_gender);
         }
-      case 2: // Photos
+
+      case 2: // Parent Information
+        return !!formData.parents.sire.name && !!formData.parents.sire.breed && !!formData.parents.dam.name && !!formData.parents.dam.breed;
+      case 3: // Photos
         return formData.photos.length > 0;
-      case 3: // Pricing
-        return formData.price !== undefined && !!formData.location_text;
+      case 4: // Health Information
+        return true; // No required fields
+      case 5: // Pricing
+        return formData.price !== undefined
+      case 6: // Requirements
+        return true; // No required fields
       default:
         return true;
     }
@@ -280,9 +421,7 @@ const CreateListingPage: React.FC = () => {
 
   if (userBreedsLoading) {
     return (
-      <Center height="200px">
-        <Loader />
-      </Center>
+      <Loader />
     );
   }
 
@@ -347,7 +486,6 @@ const CreateListingPage: React.FC = () => {
                     <BasicInfoStep
                       data={formData}
                       updateData={updateFormData}
-                      userBreeds={userBreeds}
                     />
                   )}
 
@@ -355,28 +493,52 @@ const CreateListingPage: React.FC = () => {
                     <PetDetailsStep
                       data={formData}
                       updateData={updateFormData}
+                      userBreeds={userBreeds}
                     />
                   )}
 
+
+
                   {activeStep === 2 && (
+                    <ParentInfoStep
+                      data={formData}
+                      updateData={updateFormData}
+                      userBreeds={userBreeds}
+                    />
+                  )}
+
+                  {activeStep === 3 && (
                     <MediaStep
                       data={formData}
                       updateData={updateFormData}
                     />
                   )}
 
-                  {activeStep === 3 && (
+                  {activeStep === 4 && (
+                    <HealthInfoStep
+                      data={formData}
+                      updateData={updateFormData}
+                    />
+                  )}
+
+                  {activeStep === 5 && (
                     <PricingStep
                       data={formData}
                       updateData={updateFormData}
                     />
                   )}
 
-                  {activeStep === 4 && (
+                  {activeStep === 6 && (
+                    <RequirementsStep
+                      data={formData}
+                      updateData={updateFormData}
+                    />
+                  )}
+
+                  {activeStep === 7 && (
                     <ReviewStep
                       data={formData}
-                      onSubmit={handleSubmit}
-                      loading={createListingMutation.isPending || uploadPhotosMutation.isPending}
+                      userBreeds={userBreeds}
                     />
                   )}
                 </Box>
@@ -401,6 +563,17 @@ const CreateListingPage: React.FC = () => {
                       Next
                     </Button>
                   ) : null}
+
+                  {activeStep === steps.length - 1 && <Button
+                    leftIcon={isLoading ? <Spinner size="sm" /> : <CheckIcon />}
+                    colorScheme="brand"
+                    size="lg"
+                    onClick={handleSubmit}
+                    isLoading={createListingMutation.isPending || uploadPhotosMutation.isPending}
+                    loadingText={"Publishing..."}
+                  >
+                    Publish Listing
+                  </Button>}
                 </HStack>
               </VStack>
             </CardBody>

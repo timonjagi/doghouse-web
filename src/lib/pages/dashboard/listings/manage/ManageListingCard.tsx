@@ -1,7 +1,5 @@
-import { EditIcon, DeleteIcon, CheckIcon } from '@chakra-ui/icons';
-import { Card, HStack, IconButton, Menu, MenuButton, MenuList, MenuItem, CardBody, VStack, Box, Heading, Badge, Image, Text, MenuDivider, MenuGroup, useColorModeValue, Skeleton } from '@chakra-ui/react';
+import { HStack, VStack, Box, Badge, Image, Text, useColorModeValue, Skeleton } from '@chakra-ui/react';
 import React from 'react'
-import { FaEllipsisV } from 'react-icons/fa';
 
 interface ManageListingCardProps {
   listing: any;
@@ -18,6 +16,26 @@ function ManageListingCard({
   formatPrice
 }: ManageListingCardProps) {
   const borderColor = useColorModeValue("gray.200", "gray.600");
+  const getTitle = () => {
+    if (listing.title) return listing.title;
+    if (listing.type === 'litter') {
+      //@ts-ignore
+      return `${listing.breeds?.name} Puppies for Sale`;
+    } else {
+      //@ts-ignore
+      return `${listing.breeds?.name.charAt(0).toUpperCase() + listing.breeds?.name.slice(1)} ${listing.pet_age} old for Sale`;
+    }
+  }
+
+  const getAge = () => {
+    const today = new Date();
+    const birthDate = new Date(listing.birth_date);
+    // age in months 
+
+    const age = Math.floor((today.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
+    return age;
+  }
+
 
   return (
     <Box
@@ -45,36 +63,35 @@ function ManageListingCard({
             height="100%"
             fallback={<Skeleton width="100%" height="100%" />}
           />
+
+          <HStack position="absolute" top={2} right={2} spacing={2}>
+            <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
+              {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
+            </Badge>
+
+          </HStack>
         </Box>
       )}
 
       <VStack spacing={3} p={4} align="stretch">
         <Box>
-          <Text size="lg" fontWeight='semibold' noOfLines={2} mb={2}>
-            {listing.title}
+          <Text size="lg" fontWeight='semibold' noOfLines={2}>
+            {getTitle()}
           </Text>
-          <HStack>
-            <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
-              {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
-            </Badge>
-            <Badge colorScheme={getStatusColor(listing.status)}>
-              {listing.status}
-            </Badge>
-          </HStack>
+
+          {listing.type === 'single_pet' && <Text fontSize="xs" color="gray.600" noOfLines={2}>
+            {listing.pet_age} old • {listing.pet_gender}
+          </Text>}
+
+          {listing.type === 'litter' && <Text fontSize="xs" color="gray.600" noOfLines={2}>
+            {listing.number_of_puppies} puppies • {getAge()} months old
+          </Text>}
         </Box>
 
-        <Text fontSize="xs" color="gray.600" noOfLines={2}>
-          {listing.description}
-        </Text>
 
         <Text fontSize="lg" fontWeight="semibold" color="brand.600">
-          {formatPrice(listing.price)}
+          {formatPrice(listing.price)} {listing.type === 'litter' && 'each'}
         </Text>
-
-        {/* <Text fontSize="xs" color="gray.500">
-          Created: {new Date(listing.created_at).toLocaleDateString()}
-        </Text> */}
-
       </VStack>
     </Box>
   )

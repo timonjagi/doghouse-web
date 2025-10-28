@@ -21,7 +21,7 @@ import { IoMdClose } from "react-icons/io";
 interface DropzoneProps {
   selectedFiles: any[];
   onChange: (e: any) => void;
-  onRemove: (file: any) => void;
+  onRemove: (index: number) => void;
   maxUploads: number;
 }
 
@@ -57,7 +57,7 @@ export const Dropzone = ({
                     borderRadius="lg"
                     objectFit="cover"
                     src={selectedFile && typeof selectedFile === "string" ? selectedFile : URL.createObjectURL(selectedFile)}
-                    alt={selectedFile.name}
+                    alt={typeof selectedFile === "string" ? "image" : selectedFile.name}
                     bg="bg-subtle"
                   />
                   <IconButton

@@ -8,6 +8,7 @@ import {
   DrawerContent,
   DrawerOverlay,
   Flex,
+  Heading,
   HStack,
   IconButton,
   Spacer,
@@ -22,6 +23,7 @@ import { ToggleButton } from "./ToggleButton";
 import { FiBell } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { useUserProfile } from "lib/hooks/queries/useUserProfile";
+import Link from "next/link";
 
 export const Navbar = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
@@ -50,21 +52,23 @@ export const Navbar = () => {
       </Box>
       }
 
-      {!isMobile && <HStack justify="space-between" align="start">
-
-        {/* <Breadcrumb>
-          {router.pathname.split("/").map((item, index) => (
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/${item}`}>{item}</BreadcrumbLink>
-            </BreadcrumbItem>
-          ))}
-        </Breadcrumb> */}
-
-        {/* <Heading pb="4" size={{ base: "xs", lg: "md" }}>
-          <span>{router.pathname.split("/")[2]}</span>
-        </Heading> */}
+      {!isMobile && (
 
         <HStack spacing="1" flex="1" p={8}>
+
+          <Breadcrumb>
+            {router.pathname.split("/").map((item, index) => (
+              <BreadcrumbItem>
+                <BreadcrumbLink as={Link} href={`/${router.pathname.split("/").slice(1, index + 1).join("/")
+                  }`}>{
+                    router.pathname.split("/")[router.pathname.split("/").length - 1] === item && index !== 0
+                      ? item.charAt(0).toUpperCase() + item.slice(1).replace(/-/g, " ")
+                      : item === "[id]" ? "Detail"
+                        : item.charAt(0).toUpperCase() + item.slice(1).replace(/-/g, " ")
+                  }</BreadcrumbLink>
+              </BreadcrumbItem>
+            ))}
+          </Breadcrumb>
           <Spacer />
           <IconButton
             icon={<FiBell />}
@@ -75,7 +79,7 @@ export const Navbar = () => {
             onClick={onToggle}
           />
         </HStack>
-      </HStack>}
+      )}
 
       <Drawer
         isOpen={isOpen}

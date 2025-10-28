@@ -174,9 +174,7 @@ export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep })
   return (
 
     <>
-      {profileLoading && <Center h="100%">
-        <Loader />
-      </Center>}
+      {profileLoading && <Loader />}
 
       <Stack as="form" spacing={{ base: 6, md: 9 }} onSubmit={onSubmit}>
         <Heading size={{ base: "sm", lg: "md" }}>

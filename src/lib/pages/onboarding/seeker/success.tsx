@@ -30,7 +30,7 @@ export const SeekerSuccess: React.FC<SuccessProps> = () => {
       </Text>
 
       <Button
-        onClick={() => window.location.href = '/dashboard?onboarding=true&user_type=seeker'}
+        onClick={() => window.location.href = '/dashboard?onboarding_complete=true'}
         w="full"
         colorScheme="brand"
         size="lg"

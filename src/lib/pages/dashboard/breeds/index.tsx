@@ -32,9 +32,7 @@ const BreedsPage: React.FC = () => {
 
   if (profileLoading) {
     return (
-      <Center h="400px">
-        <Loader />
-      </Center>
+      <Loader />
     );
   }
 
@@ -58,11 +56,7 @@ const BreedsPage: React.FC = () => {
     <>
       <NextSeo title="Listings - DogHouse Kenya" />
 
-      <Container maxW="7xl">
-        <Center h="full">
-          <Loader />
-        </Center>
-      </Container>
+      <Loader />
     </>
   );
 };

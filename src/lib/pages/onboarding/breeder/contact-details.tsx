@@ -96,10 +96,7 @@ export const BreederContactDetails: React.FC<PageProps> = ({ currentStep, setSte
   return (
 
     <>
-      {profileLoading && <Center h="100%" position="absolute" flex="1">
-        <Loader />
-      </Center>
-      }
+      {profileLoading && <Loader />}
 
       <Stack as="form" spacing="9" onSubmit={onSubmit}>
         <Heading size={{ base: "sm", lg: "md" }}>

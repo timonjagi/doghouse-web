@@ -34,11 +34,7 @@ const BreedDetailPage = () => {
 
   if (isLoadingBreed) {
     return (
-      <Container maxW="7xl" py={8}>
-        <Center height="200px">
-          <Loader />
-        </Center>
-      </Container>
+      <Loader />
     );
   }
 

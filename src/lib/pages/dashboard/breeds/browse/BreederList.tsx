@@ -9,9 +9,7 @@ export const BreedersList = ({ breed }) => {
 
   if (isLoadingBreeders) {
     return (
-      <Center height="200px">
-        <Loader />
-      </Center>
+      <Loader />
     );
   }
 

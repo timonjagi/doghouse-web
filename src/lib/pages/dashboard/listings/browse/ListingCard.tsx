@@ -19,6 +19,26 @@ function ListingCard({
 }: ListingCardProps) {
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
+  const getTitle = () => {
+    if (listing.title) return listing.title;
+    if (listing.type === 'litter') {
+      //@ts-ignore
+      return `${listing.breeds?.name} Puppies for Sale`;
+    } else {
+      //@ts-ignore
+      return `${listing.breeds?.name.charAt(0).toUpperCase() + listing.breeds?.name.slice(1)} ${listing.pet_age} old for Sale`;
+    }
+  }
+
+  const getAge = () => {
+    const today = new Date();
+    const birthDate = new Date(listing.birth_date);
+    // age in months 
+
+    const age = Math.floor((today.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
+    return age;
+  }
+
   return (
     <Box
       key={listing.id}
@@ -55,35 +75,43 @@ function ListingCard({
             <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
               {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
             </Badge>
-            <Badge colorScheme={getStatusColor(listing.status)}>
+            {/* <Badge colorScheme={getStatusColor(listing.status)}>
               {listing.status}
-            </Badge>
+            </Badge> */}
           </HStack>
         </Box>
       )}
 
-      <VStack spacing={3} align="stretch" p={4}>
-        <Box>
-          <Text size="xl" fontWeight="semibold" noOfLines={2}>
-            {listing.title}
-          </Text>
+      <VStack spacing={2} align="stretch" p={4}>
 
-          {listing.location_text && (
-            <HStack align="center" spacing={1} mb={2}>
-              <Icon as={MdLocationOn} boxSize={4} color="gray.500" />
-              <Text fontSize="xs" color="gray.500">
-                {listing.location_text}
-              </Text>
-            </HStack>
-          )}
-
-        </Box>
-
-        <Text fontSize="xs" color="gray.600" noOfLines={2}>
-          {listing.description}
+        <Text size="xl" fontWeight="semibold" noOfLines={2}>
+          {getTitle()}
         </Text>
 
-        <Text fontSize="lg" fontWeight="semibold" color="green.600">
+
+        {listing.type === 'single_pet' && <Text fontSize="xs" color="gray.600" noOfLines={2}>
+          {listing.pet_age} old • {listing.pet_gender}
+        </Text>}
+
+        {listing.type === 'litter' && <Text fontSize="xs" color="gray.600" noOfLines={2}>
+          {listing.number_of_puppies} puppies • {getAge()} months old
+        </Text>}
+
+        {listing.location_text && (
+          <HStack align="center" spacing={1} mb={2}>
+            <Icon as={MdLocationOn} boxSize={4} color="gray.500" />
+            <Text fontSize="xs" color="gray.500">
+              {listing.location_text}
+            </Text>
+          </HStack>
+        )}
+
+
+        {/* <Text fontSize="xs" color="gray.600" noOfLines={2}>
+          {listing.description}
+        </Text> */}
+
+        <Text fontSize="lg" fontWeight="semibold" color="brand.600">
           {formatPrice(listing.price)}
         </Text>
 

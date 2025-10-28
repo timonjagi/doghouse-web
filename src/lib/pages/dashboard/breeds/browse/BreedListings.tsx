@@ -73,11 +73,7 @@ export const BreedListings = ({ listings, loading, error, isManaging }) => {
 
   if (loading) {
     return (
-      <Box width="full" height="full">
-        <Center height="full">
-          <Loader />
-        </Center>
-      </Box>
+      <Loader />
 
     );
   }

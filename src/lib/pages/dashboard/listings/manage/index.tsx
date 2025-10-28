@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Container,
   Heading,
@@ -6,34 +6,18 @@ import {
   VStack,
   HStack,
   Button,
-  Card,
-  CardBody,
-  Image,
-  Badge,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  IconButton,
-  useDisclosure,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  Spinner,
   Center,
   SimpleGrid,
   Box,
   useColorModeValue,
-  useToast,
   Flex,
+  AlertIcon,
+  Alert,
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon, ViewIcon, AddIcon } from '@chakra-ui/icons';
+import { AddIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserProfile } from '../../../../hooks/queries';
-import { useListingsByOwner, useUpdateListing, useDeleteListing } from '../../../../hooks/queries/useListings';
+import { useListingsByOwner } from '../../../../hooks/queries/useListings';
 import { NextSeo } from 'next-seo';
 import { Loader } from 'lib/components/ui/Loader';
 import ManageListingCard from './ManageListingCard';
@@ -41,80 +25,14 @@ import ManageListingCard from './ManageListingCard';
 const ManageListingsPage: React.FC = () => {
   const { data: profile, isLoading: profileLoading } = useUserProfile();
   const router = useRouter();
-  const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedListingId, setSelectedListingId] = useState<string>('');
 
-  const { data: listings, isLoading: listingsLoading } = useListingsByOwner(
+  const { data: listings, isLoading: listingsLoading, error } = useListingsByOwner(
     profile?.id || ''
   );
 
-  const updateListingMutation = useUpdateListing();
-  const deleteListingMutation = useDeleteListing();
-
-
-  const handleEditListing = (listingId: string) => {
-    router.push(`/dashboard/listings/${listingId}/edit`);
-  };
-
   const handleViewListing = (listingId: string) => {
     router.push(`/dashboard/listings/${listingId}`);
-  };
-
-  const handleChangeStatus = async (listingId: string, status: 'available' | 'sold' | 'reserved' | 'completed') => {
-    try {
-      await updateListingMutation.mutateAsync({
-        id: listingId,
-        updates: { status }
-      });
-
-      toast({
-        title: "Listing updated",
-        description: "Listing has been marked as sold",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update listing status",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-    onClose();
-  };
-
-  const handleDeleteListing = async (listingId: string) => {
-    try {
-      await deleteListingMutation.mutateAsync(listingId);
-
-      toast({
-        title: "Listing deleted",
-        description: "Your listing has been deleted.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      onClose();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete listing",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-
-  }
-
-  const onDeleteListing = (listingId: string) => {
-    setSelectedListingId(listingId);
-    onOpen();
   };
 
   const getStatusColor = (status: string) => {
@@ -134,11 +52,7 @@ const ManageListingsPage: React.FC = () => {
 
   if (profileLoading) {
     return (
-      <Flex>
-        <Center h="full">
-          <Loader />
-        </Center>
-      </Flex>
+      <Loader />
 
     );
   }
@@ -162,11 +76,18 @@ const ManageListingsPage: React.FC = () => {
 
   if (listingsLoading) {
     return (
-      <Box h="full">
-        <Center h="full">
-          <Loader />
-        </Center>
-      </Box>
+      <Loader />
+    );
+  }
+
+
+  if (error) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        Error loading listing data. Please try again later.
+        {error.message}
+      </Alert>
     );
   }
 
@@ -174,7 +95,7 @@ const ManageListingsPage: React.FC = () => {
     <>
       <NextSeo title="Manage Listings - DogHouse Kenya" />
 
-      <Container maxW="7xl">
+      <Container maxW="7xl" py={4}>
         <VStack spacing={6} align="stretch">
           <HStack justify="space-between">
             <Box >
@@ -182,7 +103,7 @@ const ManageListingsPage: React.FC = () => {
               <Text color="gray.600">Edit, view, or update the status of your listings</Text>
             </Box>
 
-            {listings.length > 0 && <Button
+            {listings?.length > 0 && <Button
               leftIcon={<AddIcon />}
               colorScheme="brand"
               onClick={() => router.push('/dashboard/listings/create')}
