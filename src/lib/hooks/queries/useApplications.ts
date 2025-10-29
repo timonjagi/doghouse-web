@@ -324,16 +324,54 @@ export const useUpdateApplicationStatus = () => {
       return data;
     },
     onSuccess: async (data) => {
-      // Create notification for seeker when status changes
-      if (data.status === 'approved' || data.status === 'rejected') {
+      // Automatically reserve listing when application is approved
+      if (data.status === 'approved') {
         try {
+          await supabase
+            .from('listings')
+            .update({
+              status: 'reserved',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', data.listing_id);
+        } catch (reserveError) {
+          console.error('Failed to reserve listing:', reserveError);
+          // Don't fail the approval if reservation fails
+        }
+      }
+
+      // Create notification for seeker when status changes (key transitions only)
+      if (data.status === 'pending' || data.status === 'approved' || data.status === 'rejected' || data.status === 'completed') {
+        try {
+          let title = '';
+          let body = '';
+
+          switch (data.status) {
+            case 'pending':
+              title = 'Application Under Review';
+              body = `Your application for ${data.listings.title} is now being reviewed by the breeder`;
+              break;
+            case 'approved':
+              title = 'Application Approved & Reserved';
+              body = `Congratulations! Your application for ${data.listings.title} has been approved and the listing is now reserved for you. Please complete payment within 24 hours.`;
+              break;
+            case 'rejected':
+              title = 'Application Not Approved';
+              body = `Your application for ${data.listings.title} was not approved at this time`;
+              break;
+            case 'completed':
+              title = 'Application Completed';
+              body = `Your application for ${data.listings.title} has been completed successfully`;
+              break;
+          }
+
           await supabase
             .from('notifications')
             .insert({
               user_id: data.seeker_id,
               type: 'application_status_changed',
-              title: `Application ${data.status === 'approved' ? 'Approved' : 'Rejected'}`,
-              body: `Your application for ${data.listings.title} has been ${data.status}`,
+              title,
+              body,
               target_type: 'application',
               target_id: data.listings.id,
               meta: {
@@ -350,6 +388,50 @@ export const useUpdateApplicationStatus = () => {
 
       queryClient.invalidateQueries({ queryKey: queryKeys.applications.byUser() });
       queryClient.invalidateQueries({ queryKey: queryKeys.applications.received() });
+      // Invalidate listings to show updated status
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+};
+
+// Mutation to reserve a listing (when application is approved)
+export const useReserveListing = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      applicationId,
+      listingId
+    }: {
+      applicationId: string;
+      listingId: string;
+    }) => {
+      // Update listing status to reserved
+      const { data: listingData, error: listingError } = await supabase
+        .from('listings')
+        .update({
+          status: 'reserved',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', listingId)
+        .select()
+        .single();
+
+      if (listingError) throw listingError;
+
+      // Update application status to reserved (if we add this status)
+      // For now, we'll keep it as approved but mark the listing as reserved
+
+      return listingData;
+    },
+    onSuccess: (data, variables) => {
+      // Create reservation expiry notification (24 hours from now)
+      // This would typically be handled by a cron job or scheduled task
+      // For now, we'll just update the cache
+      queryClient.invalidateQueries({ queryKey: queryKeys.applications.byUser() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.applications.received() });
+      // Invalidate listings queries to show updated status
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
     },
   });
 };

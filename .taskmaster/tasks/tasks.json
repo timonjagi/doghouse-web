@@ -419,7 +419,7 @@
         "dependencies": [
           6
         ],
-        "status": "pending",
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
@@ -427,7 +427,7 @@
             "description": "Build main applications page that adapts based on user role.",
             "dependencies": [],
             "details": "Create src/lib/pages/dashboard/applications.tsx with role-based content.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Verify page loads correctly for both roles."
           },
           {
@@ -438,7 +438,7 @@
               1
             ],
             "details": "Integrate with useApplications hook and create comprehensive application forms.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "As a seeker, submit applications and verify they appear in database."
           },
           {
@@ -449,13 +449,104 @@
               1
             ],
             "details": "Create application management interface with status updates and communication features.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "As a breeder, view and manage applications, verify status changes work correctly."
+          },
+          {
+            "id": 4,
+            "title": "Implement Application Status Tracking Infrastructure",
+            "description": "Create comprehensive status tracking with timeline and notifications.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Build status tracking system with timeline views, status change notifications, and proper data persistence.",
+            "status": "completed",
+            "testStrategy": "Verify status changes trigger notifications and timeline updates correctly."
+          },
+          {
+            "id": 5,
+            "title": "Implement Notifications Infrastructure",
+            "description": "Create complete notifications system with hooks, queries, UI components, and triggers.",
+            "dependencies": [
+              4
+            ],
+            "details": "Build notifications hooks, queries, page, drawer component, and automatic triggers for application events.",
+            "status": "completed",
+            "testStrategy": "Test notification creation, display, and navigation for both application submission and status changes."
           }
         ]
       },
       {
         "id": 8,
+        "title": "Implement Billing & Payment System",
+        "description": "Create comprehensive payment processing system with M-Pesa integration, reservation fees, commission tracking, and billing dashboard.",
+        "details": "Build complete payment infrastructure including M-Pesa mobile money integration, reservation fee processing (deducted from final price), 10% platform commission system, transaction tracking, and billing management dashboard for users to view payment history and earnings.",
+        "testStrategy": "Test complete payment flow: reservation payments, final payments, commission calculations, transaction tracking, and billing dashboard functionality.",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Integrate M-Pesa Payment Gateway",
+            "description": "Set up M-Pesa API integration for mobile money payments in Kenya.",
+            "dependencies": [],
+            "details": "Configure M-Pesa API credentials, implement STK push for payment initiation, handle payment confirmations and validation callbacks.",
+            "status": "pending",
+            "testStrategy": "Test payment initiation, confirmation handling, and error scenarios with M-Pesa sandbox environment."
+          },
+          {
+            "id": 2,
+            "title": "Implement Reservation Payment Flow",
+            "description": "Create reservation payment system where seekers pay upfront fees that are deducted from final listing price.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build reservation payment UI, integrate with M-Pesa, handle 24-hour expiry logic, and implement automatic refunds for expired reservations.",
+            "status": "pending",
+            "testStrategy": "Test reservation payment, expiry handling, and refund processing for both successful and failed payments."
+          },
+          {
+            "id": 3,
+            "title": "Implement Commission & Payout System",
+            "description": "Build 10% platform commission system with automatic calculation and breeder payout tracking.",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement commission calculation logic, track earnings/payouts in transactions table, create payout scheduling system for breeders after commission deduction.",
+            "status": "pending",
+            "testStrategy": "Verify commission calculations, payout tracking, and ensure breeders receive correct amounts after platform fees."
+          },
+          {
+            "id": 4,
+            "title": "Create Billing Dashboard",
+            "description": "Build comprehensive billing dashboard for users to track payments, earnings, and transaction history.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create billing pages for seekers (payment history) and breeders (earnings, payouts), implement transaction filtering and export functionality.",
+            "status": "pending",
+            "testStrategy": "Test billing dashboard for both seeker and breeder roles, verify transaction history, filtering, and data accuracy."
+          },
+          {
+            "id": 5,
+            "title": "Implement Payment Security & Compliance",
+            "description": "Add payment security measures, fraud prevention, and regulatory compliance features.",
+            "dependencies": [
+              4
+            ],
+            "details": "Implement payment verification, fraud detection, PCI compliance measures, and secure transaction logging.",
+            "status": "pending",
+            "testStrategy": "Test security measures, verify compliance requirements, and ensure secure payment processing."
+          }
+        ]
+      },
+      {
+        "id": 9,
         "title": "Implement Matches Page (Complete flow for both breeders and seekers)",
         "description": "Create intelligent matching system. For breeders: see matching seekers. For seekers: see matching breeders/listings.",
         "details": "Build role-aware matches page with matching algorithm. Include preference settings, match notifications, and communication features.",
@@ -500,7 +591,7 @@
         ]
       },
       {
-        "id": 9,
+        "id": 10,
         "title": "Develop User Profile Management Component",
         "description": "Create a shared component for users of all roles to view and edit their profile information, including bio, photo, location, and contact details.",
         "details": "Build a form in Next.js that populates with the current user's data from the 'users' table. Implement an update function that writes changes back to Supabase. Include functionality for uploading a profile photo to Supabase Storage and updating the `profile_photo_url` field. This component should be accessible from a user's dashboard.",
@@ -570,7 +661,7 @@
         ]
       },
       {
-        "id": 10,
+        "id": 11,
         "title": "Build Admin Dashboard: Comprehensive Management Panel",
         "description": "Create a comprehensive admin dashboard with breeder verification, user management, listings oversight, and analytics capabilities.",
         "details": "Develop a secure admin dashboard with multiple management sections. Include breeder verification panel to review and approve breeder applications, user management to oversee all platform users, listings management to monitor all litters and wanted ads, and analytics dashboard to track platform metrics and engagement. All sections should have proper role-based access control and comprehensive management interfaces.",
