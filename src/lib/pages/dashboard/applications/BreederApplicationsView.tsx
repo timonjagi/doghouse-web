@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   VStack,
@@ -21,6 +21,7 @@ import {
 import { ApplicationWithListing, useApplicationsReceived, useUpdateApplicationStatus } from '../../../hooks/queries/useApplications';
 import { User } from '../../../../../db/schema';
 import { ApplicationCard } from './ApplicationCard';
+import { Loader } from 'lib/components/ui/Loader';
 
 interface BreederApplicationsViewProps {
   userProfile: User;
@@ -29,16 +30,21 @@ interface BreederApplicationsViewProps {
 export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = ({ userProfile }) => {
   const { data: applications, isLoading, error } = useApplicationsReceived(userProfile.id);
   const toast = useToast();
+  const [selectedTab, setSelectedTab] = useState(0);
 
+  const [groupedApplications, setGroupedApplications] = React.useState<{ new: ApplicationWithListing[], pending: ApplicationWithListing[], reviewed: ApplicationWithListing[] }>({ new: [], pending: [], reviewed: [] });
   const updateStatusMutation = useUpdateApplicationStatus();
 
-  const groupedApplications = {
-    new: applications?.filter(app => app.status === 'submitted') || [],
-    pending: applications?.filter(app => app.status === 'pending') || [],
-    reviewed: applications?.filter(app => ['approved', 'rejected'].includes(app.status)) || [],
-  };
+  useEffect(() => {
+    if (applications?.length) {
+      setGroupedApplications({
+        new: applications.filter(app => app.status === 'submitted'),
+        pending: applications.filter(app => app.status === 'pending'),
+        reviewed: applications.filter(app => ['approved', 'rejected'].includes(app.status)),
+      });
 
-
+    }
+  }, [applications]);
 
   const handleQuickApprove = async (application: ApplicationWithListing) => {
     try {
@@ -92,10 +98,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
 
   if (isLoading) {
     return (
-      <VStack spacing={4} align="center" py={8}>
-        <Spinner size="lg" color="blue.500" />
-        <Text color="gray.600">Loading applications...</Text>
-      </VStack>
+      <Loader />
     );
   }
 
@@ -114,7 +117,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
   if (!applications || applications.length === 0) {
     return (
       <Box textAlign="center" py={12}>
-        <Heading size="md" color="gray.600" mb={4}>
+        <Heading size="sm" color="gray.600" mb={4}>
           No Applications Yet
         </Heading>
         <Text color="gray.500" mb={6}>
@@ -124,12 +127,10 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
     );
   }
 
-
-
   return (
     <VStack spacing={6} align="stretch">
       {/* Applications Overview */}
-      <SimpleGrid columns={{ base: 1, md: 4 }} spacing={6}>
+      <SimpleGrid columns={{ base: 2, md: 4 }} spacing={6}>
         <Card>
           <CardBody textAlign="center">
             <Text fontSize="3xl" fontWeight="bold" color="blue.500">
@@ -167,7 +168,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
       {/* Applications Tabs */}
       <Card>
         <CardHeader>
-          <Tabs colorScheme="blue">
+          <Tabs index={selectedTab} onChange={setSelectedTab} colorScheme="brand">
             <TabList>
               <Tab>
                 New ({groupedApplications.new.length})
@@ -186,7 +187,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
         </CardHeader>
 
         <CardBody>
-          <Tabs>
+          <Tabs index={selectedTab} onChange={setSelectedTab} colorScheme="brand">
             <TabPanels>
               <TabPanel px={0}>
                 {groupedApplications.new.length === 0 ? (

@@ -174,11 +174,7 @@ const BrowseListingsPage: React.FC = () => {
 
   if (profileLoading) {
     return (
-      <Box w="full" h="100vh" >
-        <Center h="full">
-          <Loader />
-        </Center>
-      </Box>
+      <Loader />
     );
   }
 
@@ -250,7 +246,11 @@ const BrowseListingsPage: React.FC = () => {
           )}
 
           <Stack flex={1} >
-            {listingsLoading || breedsLoading && <Loader />}
+            {listingsLoading || breedsLoading && (
+              <Center h="400px">
+                <Loader />
+              </Center>
+            )}
 
 
             {/* Listings Grid */}

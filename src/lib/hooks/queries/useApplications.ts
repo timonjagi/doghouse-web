@@ -132,7 +132,7 @@ export const useApplication = (applicationId: string) => {
               id,
               name
             ),
-            owner_profile:users!listings_owner_id_fkey (
+            users (
               id,
               display_name,
               email,

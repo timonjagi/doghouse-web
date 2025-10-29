@@ -36,16 +36,6 @@ import {
   Spacer,
   Avatar,
   Progress,
-  Step,
-  StepDescription,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
-  Stepper,
-  useSteps,
   Textarea,
   FormControl,
   FormLabel,
@@ -72,6 +62,7 @@ import { useUserProfile } from '../../../../hooks/queries';
 import { useApplication, useUpdateApplicationStatus } from '../../../../hooks/queries/useApplications';
 import { NextSeo } from 'next-seo';
 import { Loader } from '../../../../components/ui/Loader';
+import { ApplicationTimeline } from '../ApplicationTimeline';
 
 interface ApplicationDetailPageProps {
   id: string;
@@ -137,6 +128,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     try {
       await updateStatusMutation.mutateAsync({
         id: application.id,
+        //@ts-ignore
         status: updateForm.status,
         response_message: updateForm.response_message,
       });
@@ -170,27 +162,14 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     ];
 
     if (application?.status === 'approved') {
-      steps.push({ title: 'Completed', description: 'Adoption completed', status: 'completed' });
+      steps.push({ title: 'Reserved', description: 'Listing reserved for you', status: 'reserved' });
+      steps.push({ title: 'Contract Signed', description: 'Adoption contract signed', status: 'contract_signed' });
+      steps.push({ title: 'Payment Complete', description: 'Final payment completed', status: 'payment_complete' });
+      steps.push({ title: 'Completed', description: 'Adoption completed successfully', status: 'completed' });
     }
 
     return steps;
   };
-
-  const getCurrentStep = () => {
-    switch (application?.status) {
-      case 'submitted': return 0;
-      case 'pending': return 1;
-      case 'approved':
-      case 'rejected': return 2;
-      case 'completed': return 3;
-      default: return 0;
-    }
-  };
-
-  const { activeStep } = useSteps({
-    index: getCurrentStep(),
-    count: getApplicationSteps().length,
-  });
 
   if (profileLoading || applicationLoading) {
     return <Loader />;
@@ -253,7 +232,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                   {formatStatus(application.status)}
                 </Badge>
                 <Text fontSize="sm" color="gray.500">
-                  Applied {formatDate(application.created_at)}
+                  Applied {formatDate(application.created_at.toString())}
                 </Text>
               </HStack>
             </Box>
@@ -283,32 +262,51 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                 </Button>
               </ButtonGroup>
             )}
+
+
           </HStack>
 
           {/* Application Timeline */}
           <Card>
             <CardHeader>
-              <Heading size="md">Application Timeline</Heading>
+              <Heading size="sm">Application Timeline</Heading>
             </CardHeader>
             <CardBody>
-              <Stepper index={activeStep} orientation="horizontal" size="lg">
-                {getApplicationSteps().map((step, index) => (
-                  <Step key={index}>
-                    <StepIndicator>
-                      <StepStatus
-                        complete={<StepIcon />}
-                        incomplete={<StepNumber />}
-                        active={<StepNumber />}
-                      />
-                    </StepIndicator>
-                    <Box flexShrink="0">
-                      <StepTitle>{step.title}</StepTitle>
-                      <StepDescription>{step.description}</StepDescription>
-                    </Box>
-                    <StepSeparator />
-                  </Step>
-                ))}
-              </Stepper>
+              <ApplicationTimeline
+                application={application}
+                userProfile={userProfile}
+                onPayReservation={() => {
+                  toast({
+                    title: 'Payment feature coming soon',
+                    description: 'M-Pesa integration will be available soon',
+                    status: 'info',
+                    duration: 3000,
+                  });
+                }}
+                onSignContract={() => {
+                  toast({
+                    title: 'Contract signing coming soon',
+                    description: 'Digital contract signing will be available soon',
+                    status: 'info',
+                    duration: 3000,
+                  });
+                }}
+                onCompletePayment={() => {
+                  toast({
+                    title: 'Payment feature coming soon',
+                    description: 'Final payment processing will be available soon',
+                    status: 'info',
+                    duration: 3000,
+                  });
+                }}
+                onMarkCompleted={() => {
+                  // Mark application as completed
+                  handleStatusUpdate({
+                    preventDefault: () => { },
+                    target: { value: 'completed' }
+                  } as any);
+                }}
+              />
             </CardBody>
           </Card>
 
@@ -316,7 +314,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
             {/* Application Details */}
             <Card>
               <CardHeader>
-                <Heading size="md">Application Details</Heading>
+                <Heading size="sm">Application Details</Heading>
               </CardHeader>
               <CardBody>
                 <ApplicationDetails application={application} />
@@ -326,7 +324,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
             {/* Listing Information */}
             <Card>
               <CardHeader>
-                <Heading size="md">Listing Information</Heading>
+                <Heading size="sm">Listing Information</Heading>
               </CardHeader>
               <CardBody>
                 <ListingInfo application={application} />
@@ -337,7 +335,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
           {/* Applicant/Owner Information */}
           <Card>
             <CardHeader>
-              <Heading size="md">
+              <Heading size="sm">
                 {isOwner ? 'Applicant Information' : 'Breeder Information'}
               </Heading>
             </CardHeader>

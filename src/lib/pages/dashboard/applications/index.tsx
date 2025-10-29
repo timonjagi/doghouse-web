@@ -5,14 +5,13 @@ import {
   VStack,
   Heading,
   Text,
-  Spinner,
   Alert,
   AlertIcon,
 } from '@chakra-ui/react';
-import { useUserProfile } from '@/hooks/useUserProfile';
-import { DashboardLayout } from '@/lib/components/layout/DashboardLayout';
 import { SeekerApplicationsView } from './SeekerApplicationsView';
 import { BreederApplicationsView } from './BreederApplicationsView';
+import { Loader } from 'lib/components/ui/Loader';
+import { useUserProfile } from 'lib/hooks/queries';
 
 interface ApplicationsPageProps { }
 
@@ -22,33 +21,24 @@ export const ApplicationsPage: React.FC<ApplicationsPageProps> = () => {
   // Show loading state while fetching user profile
   if (isLoading) {
     return (
-      <DashboardLayout>
-        <Container maxW="6xl" py={8}>
-          <VStack spacing={8} align="center">
-            <Spinner size="xl" color="blue.500" />
-            <Text>Loading applications...</Text>
-          </VStack>
-        </Container>
-      </DashboardLayout>
+      <Loader />
     );
   }
 
   // Show error state
   if (error || !userProfile) {
     return (
-      <DashboardLayout>
-        <Container maxW="6xl" py={8}>
-          <Alert status="error">
-            <AlertIcon />
-            <Box>
-              <Text fontWeight="bold">Error loading applications</Text>
-              <Text fontSize="sm">
-                {error?.message || 'Unable to load user profile'}
-              </Text>
-            </Box>
-          </Alert>
-        </Container>
-      </DashboardLayout>
+      <Container maxW="6xl" py={8}>
+        <Alert status="error">
+          <AlertIcon />
+          <Box>
+            <Text fontWeight="bold">Error loading applications</Text>
+            <Text fontSize="sm">
+              {error?.message || 'Unable to load user profile'}
+            </Text>
+          </Box>
+        </Alert>
+      </Container>
     );
   }
 
@@ -76,27 +66,25 @@ export const ApplicationsPage: React.FC<ApplicationsPageProps> = () => {
   };
 
   return (
-    <DashboardLayout>
-      <Container maxW="6xl" py={8}>
-        <VStack spacing={8} align="stretch">
-          {/* Page Header */}
-          <Box>
-            <Heading size="xl" color="gray.800">
-              Applications
-            </Heading>
-            <Text color="gray.600" mt={2}>
-              {userProfile.role === 'seeker'
-                ? 'Manage your adoption applications and track their status'
-                : 'Review and manage applications for your listings'
-              }
-            </Text>
-          </Box>
+    <Container maxW="6xl" >
+      <VStack spacing={8} align="stretch">
+        {/* Page Header */}
+        <Box>
+          <Heading size={{ base: 'sm', lg: 'md' }} color="gray.800">
+            Applications
+          </Heading>
+          <Text color="gray.600" mt={2}>
+            {userProfile.role === 'seeker'
+              ? 'Manage your adoption applications and track their status'
+              : 'Review and manage applications for your listings'
+            }
+          </Text>
+        </Box>
 
-          {/* Role-Specific Content */}
-          {renderRoleSpecificContent()}
-        </VStack>
-      </Container>
-    </DashboardLayout>
+        {/* Role-Specific Content */}
+        {renderRoleSpecificContent()}
+      </VStack>
+    </Container>
   );
 };
 

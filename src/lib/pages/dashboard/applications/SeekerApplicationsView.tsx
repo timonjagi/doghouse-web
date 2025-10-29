@@ -21,6 +21,8 @@ import {
 import { useApplicationsByUser } from '../../../hooks/queries/useApplications';
 import { User } from '../../../../../db/schema';
 import { ApplicationCard } from './ApplicationCard';
+import { Loader } from 'lib/components/ui/Loader';
+import Link from 'next/link';
 
 interface SeekerApplicationsViewProps {
   userProfile: User;
@@ -37,10 +39,7 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
 
   if (isLoading) {
     return (
-      <VStack spacing={4} align="center" py={8}>
-        <Spinner size="lg" color="blue.500" />
-        <Text color="gray.600">Loading your applications...</Text>
-      </VStack>
+      <Loader />
     );
   }
 
@@ -59,13 +58,13 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
   if (!applications || applications.length === 0) {
     return (
       <Box textAlign="center" py={12}>
-        <Heading size="md" color="gray.600" mb={4}>
+        <Heading size="sm" color="gray.600" mb={4}>
           No Applications Yet
         </Heading>
         <Text color="gray.500" mb={6}>
           Start browsing listings and submit your first application to adopt your perfect companion.
         </Text>
-        <Button colorScheme="blue" size="lg">
+        <Button colorScheme="brand" size="lg" as={Link} href="/dashboard/listings">
           Browse Listings
         </Button>
       </Box>
@@ -107,7 +106,7 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
       {/* Applications Tabs */}
       <Card>
         <CardHeader>
-          <Tabs index={selectedTab} onChange={setSelectedTab} colorScheme="blue">
+          <Tabs index={selectedTab} onChange={setSelectedTab} colorScheme="brand">
             <TabList>
               <Tab>
                 Active ({groupedApplications.active.length})

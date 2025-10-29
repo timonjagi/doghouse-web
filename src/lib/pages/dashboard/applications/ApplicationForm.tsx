@@ -23,7 +23,20 @@ import {
   Badge,
   Avatar,
   SimpleGrid,
+  Select,
+  Input,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  AlertDescription,
+  List,
+  ListItem,
+  ListIcon,
+  Stack,
 } from '@chakra-ui/react';
+import { CheckCircleIcon, InfoIcon } from '@chakra-ui/icons';
 import { useCreateApplication } from '../../../hooks/queries/useApplications';
 import { useUserProfile } from '../../../hooks/queries';
 import { useSeekerProfile } from '../../../hooks/queries/useSeekerProfile';
@@ -35,10 +48,11 @@ interface ApplicationFormProps {
 }
 
 interface ApplicationData {
-  message: string;
+  message?: string;
   contact_preference: string;
   timeline: string;
-  budget_range: string;
+  offer_price?: number;
+  quantity?: number; // For litters only
 }
 
 export const ApplicationForm: React.FC<ApplicationFormProps> = ({
@@ -47,8 +61,6 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
   listing,
 }) => {
   const toast = useToast();
-  const { data: userProfile } = useUserProfile();
-  const { data: seekerProfile } = useSeekerProfile(userProfile?.id);
   const createApplicationMutation = useCreateApplication();
 
   // Initialize form with application-specific data only
@@ -56,13 +68,14 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     message: '',
     contact_preference: 'email',
     timeline: '',
-    budget_range: '',
+    offer_price: undefined,
+    quantity: listing.type === 'litter' ? 1 : undefined,
   });
 
   const [errors, setErrors] = useState<Partial<ApplicationData>>({});
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<ApplicationData> = {};
+    const newErrors: any = {};
 
     if (!formData.message.trim()) {
       newErrors.message = 'Please provide a message explaining why you want this pet';
@@ -71,6 +84,12 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     if (!formData.timeline) {
       newErrors.timeline = 'Please specify your timeline for adoption';
     }
+
+    if (listing.type === 'litter' && !formData.quantity) {
+      newErrors.quantity = 'Please specify the number of puppies you want to adopt';
+    }
+
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -86,10 +105,11 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     try {
       // Prepare application data for the JSONB field - only application-specific fields
       const applicationData = {
-        message: formData.message,
+        // message: formData.message,
         contact_preference: formData.contact_preference,
         timeline: formData.timeline,
-        budget_range: formData.budget_range,
+        offer_price: formData.offer_price,
+        ...(listing.type === 'litter' && { quantity: formData.quantity }),
         submitted_at: new Date().toISOString(),
       };
 
@@ -111,7 +131,8 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
         message: '',
         contact_preference: 'email',
         timeline: '',
-        budget_range: '',
+        offer_price: undefined,
+        quantity: listing.type === 'litter' ? 1 : undefined,
       });
       setErrors({});
       onClose();
@@ -151,10 +172,10 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
         <ModalHeader>
           <VStack align="start" spacing={2}>
             <Text fontSize="lg">Apply for {getListingTitle()}</Text>
-            <HStack>
+            {/* <HStack>
               <Badge colorScheme="blue">{listing.type === 'litter' ? 'Litter' : 'Single Pet'}</Badge>
               <Badge colorScheme="green">KSH {listing.price?.toLocaleString()}</Badge>
-            </HStack>
+            </HStack> */}
           </VStack>
         </ModalHeader>
         <ModalCloseButton />
@@ -162,85 +183,16 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
         <form onSubmit={handleSubmit}>
           <ModalBody>
             <VStack spacing={6} align="stretch">
-              {/* Listing Summary */}
-              <Box p={4} bg="gray.50" borderRadius="md">
-                <Text fontWeight="semibold" mb={2}>Listing Summary</Text>
-                <SimpleGrid columns={2} spacing={2} fontSize="sm">
-                  <Text><strong>Breed:</strong> {listing.breeds?.name}</Text>
-                  <Text><strong>Type:</strong> {listing.type}</Text>
-                  {listing.type === 'litter' ? (
-                    <>
-                      <Text><strong>Birth Date:</strong> {new Date(listing.birth_date).toLocaleDateString()}</Text>
-                      <Text><strong>Puppies:</strong> {listing.number_of_puppies}</Text>
-                    </>
-                  ) : (
-                    <>
-                      <Text><strong>Age:</strong> {listing.pet_age}</Text>
-                      <Text><strong>Gender:</strong> {listing.pet_gender}</Text>
-                    </>
-                  )}
-                </SimpleGrid>
-              </Box>
 
-              <Divider />
-
-              {/* Listing Requirements */}
-              {listing.requirements && Object.keys(listing.requirements).length > 0 && (
-                <Box p={4} bg="orange.50" borderRadius="md" border="1px" borderColor="orange.200">
-                  <Text fontWeight="semibold" mb={3} color="orange.800">Listing Requirements</Text>
-                  <SimpleGrid columns={1} spacing={2} fontSize="sm">
-                    {Object.keys(listing.requirements).map((key) => {
-                      const value = listing.requirements[key];
-                      if (!value) return null;
-
-                      const displayKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                      const displayValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value);
-
-                      return (
-                        <Text key={key}>
-                          <strong>{displayKey}:</strong> {displayValue}
-                        </Text>
-                      );
-                    })}
-                  </SimpleGrid>
-                  <Text fontSize="xs" color="orange.600" mt={2}>
-                    Please review these requirements carefully before submitting your application.
-                  </Text>
-                </Box>
-              )}
-
-              {/* Application Form - Only application-specific fields */}
+              {/* Application Form - Enhanced fields */}
               <VStack spacing={4} align="stretch">
-                <FormControl isRequired isInvalid={!!errors.message}>
-                  <FormLabel>Why do you want this pet?</FormLabel>
-                  <Textarea
-                    value={formData.message}
-                    onChange={(e) => handleInputChange('message', e.target.value)}
-                    placeholder="Tell the breeder about yourself, your experience with pets, and why you think you'd be a good home for this pet..."
-                    rows={4}
-                    maxLength={1000}
-                  />
-                  <Text fontSize="xs" color="gray.500" mt={1}>
-                    {formData.message.length}/1000 characters
-                  </Text>
-                  {errors.message && (
-                    <Text fontSize="sm" color="red.500">{errors.message}</Text>
-                  )}
-                </FormControl>
 
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                   <FormControl isRequired isInvalid={!!errors.timeline}>
                     <FormLabel>When are you ready to adopt?</FormLabel>
-                    <select
+                    <Select
                       value={formData.timeline}
                       onChange={(e) => handleInputChange('timeline', e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '8px 12px',
-                        border: '1px solid #E2E8F0',
-                        borderRadius: '6px',
-                        fontSize: '14px'
-                      }}
                     >
                       <option value="">Select timeline</option>
                       <option value="immediately">Immediately</option>
@@ -249,7 +201,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
                       <option value="1_month">Within 1 month</option>
                       <option value="3_months">Within 3 months</option>
                       <option value="flexible">Flexible</option>
-                    </select>
+                    </Select>
                     {errors.timeline && (
                       <Text fontSize="sm" color="red.500">{errors.timeline}</Text>
                     )}
@@ -257,45 +209,96 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
 
                   <FormControl>
                     <FormLabel>Preferred Contact Method</FormLabel>
-                    <select
+                    <Select
                       value={formData.contact_preference}
                       onChange={(e) => handleInputChange('contact_preference', e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '8px 12px',
-                        border: '1px solid #E2E8F0',
-                        borderRadius: '6px',
-                        fontSize: '14px'
-                      }}
                     >
                       <option value="email">Email</option>
                       <option value="phone">Phone</option>
                       <option value="whatsapp">WhatsApp</option>
-                    </select>
+                    </Select>
                   </FormControl>
                 </SimpleGrid>
 
-                <FormControl>
-                  <FormLabel>Budget Range (Optional)</FormLabel>
-                  <select
-                    value={formData.budget_range}
-                    onChange={(e) => handleInputChange('budget_range', e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      border: '1px solid #E2E8F0',
-                      borderRadius: '6px',
-                      fontSize: '14px'
-                    }}
-                  >
-                    <option value="">Select budget range</option>
-                    <option value="under_50k">Under KSH 50,000</option>
-                    <option value="50k_100k">KSH 50,000 - 100,000</option>
-                    <option value="100k_200k">KSH 100,000 - 200,000</option>
-                    <option value="over_200k">Over KSH 200,000</option>
-                  </select>
+                {/* Conditional fields based on listing type */}
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                  {/* Quantity field for litters */}
+                  {listing.type === 'litter' && (
+                    <FormControl>
+                      <FormLabel>How many puppies are you interested in?</FormLabel>
+                      <NumberInput
+                        min={1}
+                        max={listing.number_of_puppies}
+                        value={formData.quantity}
+                        onChange={(_, value) => handleInputChange('quantity', value)}
+                      >
+                        <NumberInputField />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                      <Text fontSize="xs" color="gray.600">
+                        Maximum available: {listing.number_of_puppies} puppies
+                      </Text>
+                    </FormControl>
+                  )}
+
+                  {/* Offer price field */}
+                  <FormControl>
+                    <FormLabel>Your Offer Price (KSH)</FormLabel>
+                    <Input
+                      type="number"
+                      placeholder={`e.g., ${listing.price || 'Enter amount'}`}
+                      value={formData.offer_price || ''}
+                      onChange={(e) => handleInputChange('offer_price', parseInt(e.target.value) || undefined)}
+                    />
+                    <Text fontSize="xs" color="gray.600">
+                      Leave empty to accept the listing price
+                    </Text>
+                  </FormControl>
+                </SimpleGrid>
+
+                {/* Message field */}
+                <FormControl isRequired>
+                  <FormLabel>Message to Breeder</FormLabel>
+                  <Textarea
+                    placeholder="Tell the breeder why you're interested in this pet and what you're looking for in a companion..."
+                    value={formData.message}
+                    onChange={(e) => handleInputChange('message', e.target.value)}
+                    rows={4}
+                  />
                 </FormControl>
               </VStack>
+
+              <Divider />
+
+              {/* Adoption Terms and Expectations */}
+              <Alert status="info" borderRadius="md">
+                <Box>
+                  <AlertDescription>
+                    <Text fontWeight="semibold" mb={2}>What happens after you apply?</Text>
+                    <List spacing={1} fontSize="sm">
+                      <ListItem>
+                        <ListIcon as={CheckCircleIcon} color="green.500" />
+                        Your application will be reviewed by the breeder
+                      </ListItem>
+                      <ListItem>
+                        <ListIcon as={CheckCircleIcon} color="green.500" />
+                        If approved, you'll need to pay the reservation fee within 24 hours
+                      </ListItem>
+                      <ListItem>
+                        <ListIcon as={CheckCircleIcon} color="green.500" />
+                        Reservation fee will be deducted from your final payment
+                      </ListItem>
+                      <ListItem>
+                        <ListIcon as={CheckCircleIcon} color="green.500" />
+                        You'll receive updates on the adoption process timeline
+                      </ListItem>
+                    </List>
+                  </AlertDescription>
+                </Box>
+              </Alert>
             </VStack>
           </ModalBody>
 
@@ -304,7 +307,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
               Cancel
             </Button>
             <Button
-              colorScheme="blue"
+              colorScheme="brand"
               type="submit"
               isLoading={createApplicationMutation.isPending}
             >
@@ -313,6 +316,6 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
           </ModalFooter>
         </form>
       </ModalContent>
-    </Modal>
+    </Modal >
   );
 };
