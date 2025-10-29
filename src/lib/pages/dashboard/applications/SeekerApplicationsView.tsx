@@ -1,0 +1,169 @@
+import React, { useState } from 'react';
+import {
+  Box,
+  VStack,
+  Card,
+  CardBody,
+  CardHeader,
+  Heading,
+  Text,
+  Button,
+  Alert,
+  AlertIcon,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Spinner,
+  SimpleGrid,
+} from '@chakra-ui/react';
+import { useApplicationsByUser } from '../../../hooks/queries/useApplications';
+import { User } from '../../../../../db/schema';
+import { ApplicationCard } from './ApplicationCard';
+
+interface SeekerApplicationsViewProps {
+  userProfile: User;
+}
+
+export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ userProfile }) => {
+  const { data: applications, isLoading, error } = useApplicationsByUser(userProfile.id);
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const groupedApplications = {
+    active: applications?.filter(app => ['submitted', 'pending', 'approved'].includes(app.status)) || [],
+    completed: applications?.filter(app => ['rejected', 'completed'].includes(app.status)) || [],
+  };
+
+  if (isLoading) {
+    return (
+      <VStack spacing={4} align="center" py={8}>
+        <Spinner size="lg" color="blue.500" />
+        <Text color="gray.600">Loading your applications...</Text>
+      </VStack>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        <Box>
+          <Text fontWeight="bold">Error loading applications</Text>
+          <Text fontSize="sm">{error.message}</Text>
+        </Box>
+      </Alert>
+    );
+  }
+
+  if (!applications || applications.length === 0) {
+    return (
+      <Box textAlign="center" py={12}>
+        <Heading size="md" color="gray.600" mb={4}>
+          No Applications Yet
+        </Heading>
+        <Text color="gray.500" mb={6}>
+          Start browsing listings and submit your first application to adopt your perfect companion.
+        </Text>
+        <Button colorScheme="blue" size="lg">
+          Browse Listings
+        </Button>
+      </Box>
+    );
+  }
+
+
+
+  return (
+    <VStack spacing={6} align="stretch">
+      {/* Applications Overview */}
+      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+        <Card>
+          <CardBody textAlign="center">
+            <Text fontSize="3xl" fontWeight="bold" color="blue.500">
+              {applications.length}
+            </Text>
+            <Text color="gray.600">Total Applications</Text>
+          </CardBody>
+        </Card>
+        <Card>
+          <CardBody textAlign="center">
+            <Text fontSize="3xl" fontWeight="bold" color="yellow.500">
+              {groupedApplications.active.length}
+            </Text>
+            <Text color="gray.600">Active Applications</Text>
+          </CardBody>
+        </Card>
+        <Card>
+          <CardBody textAlign="center">
+            <Text fontSize="3xl" fontWeight="bold" color="green.500">
+              {applications.filter(app => app.status === 'approved').length}
+            </Text>
+            <Text color="gray.600">Approved</Text>
+          </CardBody>
+        </Card>
+      </SimpleGrid>
+
+      {/* Applications Tabs */}
+      <Card>
+        <CardHeader>
+          <Tabs index={selectedTab} onChange={setSelectedTab} colorScheme="blue">
+            <TabList>
+              <Tab>
+                Active ({groupedApplications.active.length})
+              </Tab>
+              <Tab>
+                Completed ({groupedApplications.completed.length})
+              </Tab>
+              <Tab>
+                All ({applications.length})
+              </Tab>
+            </TabList>
+          </Tabs>
+        </CardHeader>
+
+        <CardBody>
+          <Tabs index={selectedTab} onChange={setSelectedTab}>
+            <TabPanels>
+              <TabPanel px={0}>
+                {groupedApplications.active.length === 0 ? (
+                  <Box textAlign="center" py={8}>
+                    <Text color="gray.500">No active applications</Text>
+                  </Box>
+                ) : (
+                  <VStack spacing={4} align="stretch">
+                    {groupedApplications.active.map((application) => (
+                      <ApplicationCard key={application.id} application={application} userRole="seeker" />
+                    ))}
+                  </VStack>
+                )}
+              </TabPanel>
+
+              <TabPanel px={0}>
+                {groupedApplications.completed.length === 0 ? (
+                  <Box textAlign="center" py={8}>
+                    <Text color="gray.500">No completed applications</Text>
+                  </Box>
+                ) : (
+                  <VStack spacing={4} align="stretch">
+                    {groupedApplications.completed.map((application) => (
+                      <ApplicationCard key={application.id} application={application} userRole="seeker" />
+                    ))}
+                  </VStack>
+                )}
+              </TabPanel>
+
+              <TabPanel px={0}>
+                <VStack spacing={4} align="stretch">
+                  {applications.map((application) => (
+                    <ApplicationCard key={application.id} application={application} userRole="seeker" />
+                  ))}
+                </VStack>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </CardBody>
+      </Card>
+    </VStack>
+  );
+};

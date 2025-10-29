@@ -60,7 +60,9 @@ export const queryKeys = {
     details: (): readonly string[] => ['applications', 'detail'] as const,
     detail: (id: string): readonly string[] => ['applications', 'detail', id] as const,
     byLitter: (litterId: string): readonly string[] => ['applications', 'litter', litterId] as const,
+    byListing: (listingId: string): readonly string[] => ['applications', 'listing', listingId] as const,
     byUser: (userId?: string): readonly string[] => ['applications', 'user', userId].filter(Boolean) as any,
+    received: (breederId?: string): readonly string[] => ['applications', 'received', breederId].filter(Boolean) as any,
     userApplications: (userId?: string): readonly string[] => ['applications', 'user-applications', userId].filter(Boolean) as any,
   },
 

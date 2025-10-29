@@ -23,6 +23,7 @@ import { ToggleButton } from "./ToggleButton";
 import { FiBell } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { useUserProfile } from "lib/hooks/queries/useUserProfile";
+import { NotificationsDrawer } from "./NotificationsDrawer";
 import Link from "next/link";
 
 export const Navbar = () => {
@@ -73,29 +74,32 @@ export const Navbar = () => {
           <IconButton
             icon={<FiBell />}
             aria-label="Notifications"
-            aria-current={
-              router.pathname.includes("account/notifications") ? "page" : "false"
-            }
             onClick={onToggle}
           />
         </HStack>
       )}
 
-      <Drawer
-        isOpen={isOpen}
-        placement={isMobile ? "left" : "right"}
-        onClose={onClose}
-        isFullHeight
-        preserveScrollBarGap
-        // Only disabled for showcase
-        trapFocus={false}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          {isMobile && <Sidebar onClose={onClose} profile={profile}
-          />}
-        </DrawerContent>
-      </Drawer>
+      {/* Mobile Drawer with Sidebar */}
+      {isMobile && (
+        <Drawer
+          isOpen={isOpen}
+          placement="left"
+          onClose={onClose}
+          isFullHeight
+          preserveScrollBarGap
+          trapFocus={false}
+        >
+          <DrawerOverlay />
+          <DrawerContent>
+            <Sidebar onClose={onClose} profile={profile} />
+          </DrawerContent>
+        </Drawer>
+      )}
+
+      {/* Desktop Notifications Drawer */}
+      {!isMobile && (
+        <NotificationsDrawer isOpen={isOpen} onClose={onClose} />
+      )}
     </>)
 
 };

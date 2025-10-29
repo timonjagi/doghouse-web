@@ -44,6 +44,7 @@ import { NextSeo } from 'next-seo';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { Loader } from 'lib/components/ui/Loader';
 import { supabase } from 'lib/supabase/client';
+import { ApplicationForm } from '../../applications/ApplicationForm';
 
 interface ListingDetailPageProps {
   id: string;
@@ -56,18 +57,13 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
   const isMobile = useBreakpointValue({ base: true, lg: false });
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+  const { isOpen: isApplicationOpen, onOpen: onApplicationOpen, onClose: onApplicationClose } = useDisclosure();
 
   const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id as string);
 
   const handleContact = () => {
-    toast({
-      title: "Reserve Listing",
-      description: "Application system coming soon!",
-      status: "info",
-      duration: 3000,
-      isClosable: true,
-    });
+    onApplicationOpen();
   };
   const deleteListingMutation = useDeleteListing();
 
@@ -121,7 +117,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
         duration: 3000,
         isClosable: true,
       });
-      onClose();
+      onDeleteClose();
     } catch (error) {
       toast({
         title: "Error",
@@ -232,7 +228,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
               <Button
                 leftIcon={<DeleteIcon />}
                 colorScheme="red"
-                onClick={onOpen}
+                onClick={onDeleteOpen}
                 isLoading={deleteListingMutation.isPending}
               >
                 Delete
@@ -297,7 +293,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           </SimpleGrid>
         </Stack>
 
-        <AlertDialog isOpen={isOpen} leastDestructiveRef={undefined} onClose={onClose}>
+        <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={undefined} onClose={onDeleteClose}>
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -307,7 +303,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 Are you sure you want to delete this listing? This action cannot be undone.
               </AlertDialogBody>
               <AlertDialogFooter>
-                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={onDeleteClose}>Cancel</Button>
                 <Button
                   colorScheme="red"
                   onClick={() => handleDeleteListing(listing.id)}
@@ -320,6 +316,15 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             </AlertDialogContent>
           </AlertDialogOverlay>
         </AlertDialog>
+
+        {/* Application Form Modal */}
+        {canApply && (
+          <ApplicationForm
+            isOpen={isApplicationOpen}
+            onClose={onApplicationClose}
+            listing={listing}
+          />
+        )}
 
       </Container >
 
