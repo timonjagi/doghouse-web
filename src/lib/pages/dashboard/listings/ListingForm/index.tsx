@@ -204,7 +204,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
     birth_date: listing?.birth_date ? listing?.birth_date.toString().split('T')[0] : '',
     available_date: listing?.available_date ? listing?.available_date.toString().split('T')[0] : '',
     number_of_puppies: listing?.number_of_puppies || 0,
-    pet_name: listing?.pet_name || '',
+    pet_name: listing?.pet_name ?? '',
     pet_age: listing?.pet_age || '',
     pet_gender: listing?.pet_gender || '',
     price: parseInt(listing?.price) || 0,
@@ -222,6 +222,8 @@ const ListingForm: React.FC<ListingFormProps> = ({
     training: listing?.training || {},
     requirements: listing?.requirements || {},
   })
+
+  console.log('formData', formData);
 
   useEffect(() => {
     const savedData = localStorage.getItem('listingFormData');
@@ -389,8 +391,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
 
       localStorage.removeItem('listingFormData');
 
-      router.push('/dashboard/listings/manage');
-
+      onClose()
     } catch (error) {
       console.error('Error creating listing:', error);
       toast({
@@ -593,7 +594,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
       setIsLoading(false);
       localStorage.removeItem('listingFormData');
       router.push(`/dashboard/listings/${listing?.id}`);
-
+      onClose();
       toast({
         title: "Success",
         description: `Listing updated successfully.`,
@@ -655,16 +656,15 @@ const ListingForm: React.FC<ListingFormProps> = ({
     }
   };
 
-
   const canProceedToNext = () => {
     switch (activeStep) {
       case 0: // Basic Info
-        return !!formData.user_breed_id && !!formData.type;
+        return !!formData.type && !!formData.title;
       case 1: // Pet Details
         if (formData.type === 'litter') {
-          return !!(formData.birth_date && formData.available_date && formData.number_of_puppies);
+          return !!(formData.user_breed_id && formData.birth_date && formData.available_date && formData.number_of_puppies);
         } else {
-          return !!(formData.pet_name && formData.pet_age && formData.pet_gender);
+          return !!(formData.user_breed_id && formData.pet_name && formData.pet_age && formData.pet_gender);
         }
 
       case 2: // Parent Information
@@ -702,94 +702,91 @@ const ListingForm: React.FC<ListingFormProps> = ({
         <ModalContent>
           <ModalHeader>
             <VStack align="start" spacing={2}>
-              <Heading size={{ base: 'sm', lg: 'md' }} mb={2} color="brand.500">Create New Listing</Heading>
-              <Text color="gray.600">Share your litter or pet with potential adopters</Text>
+              <Text size="lg" fontWeight="semibold">
+                {isEditing ? 'Edit Listing' : 'Create New Listing'}
+              </Text>
             </VStack>
           </ModalHeader>
           <ModalCloseButton />
 
           <ModalBody>
-            <Card bg={bgColor}>
-              <CardBody>
-                <VStack spacing={8} align="stretch">
-                  <Stepper size="sm" index={activeStep} gap="0" colorScheme="brand">
-                    {steps.map((step, index) => (
-                      <Step key={index}>
-                        <StepIndicator>
-                          <StepStatus complete={<StepIcon />} />
-                        </StepIndicator>
-                        <StepSeparator />
-                      </Step>
-                    ))}
-                  </Stepper>
+            <VStack spacing={8} align="stretch">
+              <Stepper size="sm" index={activeStep} gap="0" colorScheme="brand">
+                {steps.map((step, index) => (
+                  <Step key={index}>
+                    <StepIndicator>
+                      <StepStatus complete={<StepIcon />} />
+                    </StepIndicator>
+                    <StepSeparator />
+                  </Step>
+                ))}
+              </Stepper>
 
 
-                  <Box minH="400px">
-                    {activeStep === 0 && (
-                      <BasicInfoStep
-                        data={formData}
-                        updateData={updateFormData}
-                      />
-                    )}
+              <Box minH="400px">
+                {activeStep === 0 && (
+                  <BasicInfoStep
+                    data={formData}
+                    updateData={updateFormData}
+                  />
+                )}
 
-                    {activeStep === 1 && (
-                      <PetDetailsStep
-                        data={formData}
-                        updateData={updateFormData}
-                        userBreeds={userBreeds}
-                      />
-                    )}
+                {activeStep === 1 && (
+                  <PetDetailsStep
+                    data={formData}
+                    updateData={updateFormData}
+                    userBreeds={userBreeds}
+                  />
+                )}
 
 
 
-                    {activeStep === 2 && (
-                      <ParentInfoStep
-                        data={formData}
-                        updateData={updateFormData}
-                        userBreeds={userBreeds}
-                      />
-                    )}
+                {activeStep === 2 && (
+                  <ParentInfoStep
+                    data={formData}
+                    updateData={updateFormData}
+                    userBreeds={userBreeds}
+                  />
+                )}
 
-                    {activeStep === 3 && (
-                      <MediaStep
-                        data={formData}
-                        updateData={updateFormData}
-                      />
-                    )}
+                {activeStep === 3 && (
+                  <MediaStep
+                    data={formData}
+                    updateData={updateFormData}
+                  />
+                )}
 
-                    {activeStep === 4 && (
-                      <HealthInfoStep
-                        data={formData}
-                        updateData={updateFormData}
-                      />
-                    )}
+                {activeStep === 4 && (
+                  <HealthInfoStep
+                    data={formData}
+                    updateData={updateFormData}
+                  />
+                )}
 
-                    {activeStep === 5 && (
-                      <PricingStep
-                        data={formData}
-                        updateData={updateFormData}
-                      />
-                    )}
+                {activeStep === 5 && (
+                  <PricingStep
+                    data={formData}
+                    updateData={updateFormData}
+                  />
+                )}
 
-                    {activeStep === 6 && (
-                      <RequirementsStep
-                        data={formData}
-                        updateData={updateFormData}
-                      />
-                    )}
+                {activeStep === 6 && (
+                  <RequirementsStep
+                    data={formData}
+                    updateData={updateFormData}
+                  />
+                )}
 
-                    {activeStep === 7 && (
-                      <ReviewStep
-                        data={formData}
-                        userBreeds={userBreeds}
-                      />
-                    )}
-                  </Box>
+                {activeStep === 7 && (
+                  <ReviewStep
+                    data={formData}
+                    userBreeds={userBreeds}
+                  />
+                )}
+              </Box>
 
 
-                </VStack>
-              </CardBody>
-            </Card>
+            </VStack>
           </ModalBody>
 
           <ModalFooter>
@@ -820,7 +817,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
                 size="lg"
                 onClick={isEditing ? handleUpdate : handlePublish}
                 isLoading={isLoading}
-                loadingText={"Publishing..."}
+                loadingText={isEditing ? "Updating..." : "Publishing..."}
               >
                 {isEditing ? 'Update Listing' : 'Publish Listing'}
               </Button>}

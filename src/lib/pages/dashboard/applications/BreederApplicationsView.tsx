@@ -124,16 +124,16 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
         variant='soft-rounded'
       >
         <TabList>
-          <Tab flex={0}>
+          <Tab >
             New ({groupedApplications.new.length})
           </Tab>
-          <Tab flex={1}>
+          <Tab >
             Pending ({groupedApplications.pending.length})
           </Tab>
-          <Tab flex={1}>
+          <Tab >
             Reviewed ({groupedApplications.reviewed.length})
           </Tab>
-          <Tab flex={1}>
+          <Tab >
             All ({applications.length})
           </Tab>
         </TabList>
@@ -145,7 +145,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
                 <Text color="gray.500">No new applications</Text>
               </Box>
             ) : (
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
                 {groupedApplications.new.map((application) => (
                   <ApplicationCard
                     key={application.id}
@@ -163,7 +163,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
                 <Text color="gray.500">No pending applications</Text>
               </Box>
             ) : (
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
                 {groupedApplications.pending.map((application) => (
                   <ApplicationCard
                     key={application.id}
@@ -181,7 +181,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
                 <Text color="gray.500">No reviewed applications</Text>
               </Box>
             ) : (
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
                 {groupedApplications.reviewed.map((application) => (
                   <ApplicationCard
                     key={application.id}
@@ -194,7 +194,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
           </TabPanel>
 
           <TabPanel px={0}>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
               {applications.map((application) => (
                 <ApplicationCard
                   key={application.id}

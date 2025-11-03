@@ -134,7 +134,7 @@ const ManageListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) =>
         onClose={onListingFormClose}
         userBreeds={userBreeds}
         userProfile={userProfile}
-        isEditing={true}
+        isEditing={false}
       />
     </>
   );

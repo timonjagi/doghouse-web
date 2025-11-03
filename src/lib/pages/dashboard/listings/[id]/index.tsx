@@ -284,9 +284,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
                 </TabPanel>
                 <TabPanel>
-                  <ParentInfo
-                    listing={listing}
-                  />
+                  <ParentInfo listing={listing} />
                 </TabPanel>
                 <TabPanel>
                   <HealthInfo listing={listing} />
@@ -332,7 +330,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           />
         )}
 
-        {isOwner && (
+        {isOwner && listing && (
           <ListingForm
             isOpen={isListingFormOpen}
             onClose={onListingFormClose}
@@ -670,7 +668,6 @@ const HealthInfo = ({ listing }) => {
 }
 
 const Requirements = ({ listing }) => {
-  console.log('requiremets', listing.requirements);
   return (
     <Box gridColumn={{ base: 'span 1', md: 'span 2' }}>
       <Text fontSize="md" fontWeight="semibold" mb={3} color="brand.600">

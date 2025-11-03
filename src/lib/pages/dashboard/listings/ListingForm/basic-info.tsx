@@ -3,21 +3,14 @@ import {
   VStack,
   FormControl,
   FormLabel,
-  Select,
   Text,
   Box,
   useColorModeValue,
-  Alert,
-  AlertIcon,
-  Button,
   Card,
   CardBody,
-  Divider,
-  HStack,
   Textarea,
   Input,
 } from '@chakra-ui/react';
-import Link from 'next/link';
 import { ListingFormData } from '.';
 import { RadioCard } from 'lib/components/ui/RadioCard';
 import { RadioCardGroup } from 'lib/components/ui/RadioCardGroup';
@@ -45,32 +38,6 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, updateData }
         <CardBody>
           <VStack spacing={6} align="stretch">
 
-            {/* <FormControl isRequired>
-              <FormLabel>Listing Title</FormLabel>
-              <Input
-                placeholder="e.g., Adorable Golden Retriever Puppies"
-                value={data.title}
-                onChange={(e) => updateData({ title: e.target.value })}
-                bg={bgColor}
-              />
-              <Text fontSize="xs" color="gray.500" mt={1}>
-                Choose a clear, descriptive title that highlights your pet's best qualities.
-              </Text>
-            </FormControl>
-
-            <FormControl isRequired>
-              <FormLabel>Description</FormLabel>
-              <Textarea
-                placeholder="Describe your pet's personality, health, temperament, and any other important details..."
-                value={data.description}
-                onChange={(e) => updateData({ description: e.target.value })}
-                rows={4}
-                bg={bgColor}
-              />
-              <Text fontSize="xs" color="gray.500" mt={1}>
-                Provide detailed information to help potential adopters make informed decisions.
-              </Text>
-            </FormControl> */}
 
 
             <FormControl isRequired>
@@ -97,6 +64,34 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, updateData }
                 </RadioCard>
               </RadioCardGroup>
             </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>Listing Title</FormLabel>
+              <Input
+                placeholder="e.g., Adorable Golden Retriever Puppies"
+                value={data.title}
+                onChange={(e) => updateData({ title: e.target.value })}
+                bg="white"
+              />
+              <Text fontSize="xs" color="gray.500" mt={1}>
+                Choose a clear, descriptive title that highlights your pet's best qualities.
+              </Text>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Description</FormLabel>
+              <Textarea
+                placeholder="Describe your pet's personality, health, temperament, and any other important details..."
+                value={data.description}
+                onChange={(e) => updateData({ description: e.target.value })}
+                rows={4}
+                bg="white"
+              />
+              <Text fontSize="xs" color="gray.500" mt={1}>
+                Provide detailed information to help potential adopters make informed decisions.
+              </Text>
+            </FormControl>
+
           </VStack>
         </CardBody>
       </Card>

@@ -163,7 +163,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
       <ModalContent>
         <ModalHeader>
           <VStack align="start" spacing={2}>
-            <Text fontSize="lg">Apply for {getListingTitle()}</Text>
+            <Text fontSize="lg" fontWeight="bold">Apply for {getListingTitle()}</Text>
             {/* <HStack>
               <Badge colorScheme="blue">{listing.type === 'litter' ? 'Litter' : 'Single Pet'}</Badge>
               <Badge colorScheme="green">KSH {listing.price?.toLocaleString()}</Badge>

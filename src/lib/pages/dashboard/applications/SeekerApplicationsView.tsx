@@ -125,7 +125,7 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
                 <Text color="gray.500">No active applications</Text>
               </Box>
             ) : (
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
                 {groupedApplications.active.map((application) => (
                   <ApplicationCard
                     key={application.id}
@@ -143,7 +143,7 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
                 <Text color="gray.500">No completed applications</Text>
               </Box>
             ) : (
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
                 {groupedApplications.completed.map((application) => (
                   <ApplicationCard
                     key={application.id}
@@ -156,7 +156,7 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
           </TabPanel>
 
           <TabPanel px={0}>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
               {applications.map((application) => (
                 <ApplicationCard
                   key={application.id}
