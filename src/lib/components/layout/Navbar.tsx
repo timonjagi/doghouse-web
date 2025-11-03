@@ -80,26 +80,27 @@ export const Navbar = () => {
       )}
 
       {/* Mobile Drawer with Sidebar */}
-      {isMobile && (
-        <Drawer
-          isOpen={isOpen}
-          placement="left"
-          onClose={onClose}
-          isFullHeight
-          preserveScrollBarGap
-          trapFocus={false}
-        >
-          <DrawerOverlay />
-          <DrawerContent>
-            <Sidebar onClose={onClose} profile={profile} />
-          </DrawerContent>
-        </Drawer>
-      )}
 
-      {/* Desktop Notifications Drawer */}
-      {!isMobile && (
-        <NotificationsDrawer isOpen={isOpen} onClose={onClose} />
-      )}
+      <Drawer
+        isOpen={isOpen}
+        placement={isMobile ? 'left' : 'right'}
+        onClose={onClose}
+        isFullHeight
+        preserveScrollBarGap
+        trapFocus={false}
+        size={{ base: undefined, md: 'sm' }}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          {isMobile && (<Sidebar onClose={onClose} profile={profile} />)}
+          {!isMobile && (
+            <NotificationsDrawer isOpen={isOpen} onClose={onClose} />
+          )}
+        </DrawerContent>
+      </Drawer>
+
+
+
     </>)
 
 };

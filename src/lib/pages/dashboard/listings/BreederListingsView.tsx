@@ -10,26 +10,36 @@ import {
   SimpleGrid,
   Box,
   useColorModeValue,
-  Flex,
   AlertIcon,
   Alert,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
-import { useUserProfile } from '../../../../hooks/queries';
-import { useListingsByOwner } from '../../../../hooks/queries/useListings';
+import { useListingsByOwner } from '../../../hooks/queries/useListings';
 import { NextSeo } from 'next-seo';
 import { Loader } from 'lib/components/ui/Loader';
 import ManageListingCard from './ManageListingCard';
+import { User } from '../../../../../db/schema';
+import ListingForm from './ListingForm';
+import { useUserBreedsFromUser } from 'lib/hooks/queries';
 
-const ManageListingsPage: React.FC = () => {
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
+const ManageListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) => {
   const router = useRouter();
   const bgColor = useColorModeValue('white', 'gray.800');
 
   const { data: listings, isLoading: listingsLoading, error } = useListingsByOwner(
-    profile?.id || ''
+    userProfile?.id || ''
   );
+
+  const {
+    data: userBreeds,
+    isLoading: userBreedsLoading,
+    error: userBreedsError
+  } = useUserBreedsFromUser(userProfile?.id);
+
+
+  const { isOpen: isListingFormOpen, onOpen: onListingFormOpen, onClose: onListingFormClose } = useDisclosure();
 
   const handleViewListing = (listingId: string) => {
     router.push(`/dashboard/listings/${listingId}`);
@@ -50,38 +60,16 @@ const ManageListingsPage: React.FC = () => {
     return `KSH ${price.toLocaleString()}`;
   };
 
-  if (profileLoading) {
-    return (
-      <Loader />
-
-    );
-  }
-
-  if (profile?.role !== 'breeder') {
-    return (
-      <Container maxW="7xl">
-        <Center h="400px">
-          <VStack spacing={4}>
-            <Text fontSize="lg" color="gray.500">Access denied</Text>
-            <Text color="gray.400">Only breeders can manage listings</Text>
-            <Button onClick={() => router.push('/dashboard/listings')}>
-              Back to Dashboard
-            </Button>
-          </VStack>
-        </Center>
-      </Container>
-    );
-  }
 
 
-  if (listingsLoading) {
+  if (listingsLoading || userBreedsLoading) {
     return (
       <Loader />
     );
   }
 
 
-  if (error) {
+  if (error || userBreedsError) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -106,7 +94,7 @@ const ManageListingsPage: React.FC = () => {
             {listings?.length > 0 && <Button
               leftIcon={<AddIcon />}
               colorScheme="brand"
-              onClick={() => router.push('/dashboard/listings/create')}
+              onClick={onListingFormOpen}
             >
               Create
             </Button>}
@@ -140,6 +128,14 @@ const ManageListingsPage: React.FC = () => {
           )}
         </VStack>
       </Container>
+
+      <ListingForm
+        isOpen={isListingFormOpen}
+        onClose={onListingFormClose}
+        userBreeds={userBreeds}
+        userProfile={userProfile}
+        isEditing={true}
+      />
     </>
   );
 };

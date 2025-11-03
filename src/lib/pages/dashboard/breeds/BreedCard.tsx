@@ -10,31 +10,10 @@ import {
 } from "@chakra-ui/react";
 import { StarIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
-
-// Local types for now - will fix imports later
-interface Breed {
-  id: string;
-  name: string;
-  description?: string;
-  group?: string;
-  featured_image_url?: string;
-}
-
-interface UserBreed {
-  id: string;
-  user_id: string;
-  breed_id: string;
-  is_owner: boolean;
-  notes?: string;
-  images?: string[];
-  created_at: string;
-  updated_at: string;
-  breeds?: Breed;
-  breeder_count: any
-}
+import { UserBreed } from "../../../../../db/schema";
 
 interface BreedCardProps {
-  userBreed: UserBreed;
+  userBreed: any;
   userRole: 'breeder' | 'seeker' | 'admin';
   onClick?: () => void;
 }
@@ -52,9 +31,9 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
 
   const handleCardClick = () => {
     if (userRole === 'seeker') {
-      router.push(`/dashboard/breeds/browse/${userBreed.breeds.name}`)
+      router.push(`/dashboard/breeds/${userBreed.breeds.name.replace(/\s+/g, '-').toLowerCase()}`);
     } else {
-      router.push(`/dashboard/breeds/manage/${userBreed.id}`);
+      router.push(`/dashboard/breeds/${userBreed.id}`);
     }
   };
 

@@ -1,28 +1,21 @@
-import React from 'react';
-import {
-  Container,
-  Text,
-  VStack,
-  Button,
-  Center,
-} from '@chakra-ui/react';
-import { useUserProfile } from '../../../hooks/queries';
 import { useRouter } from 'next/router';
-import { NextSeo } from 'next-seo';
+import { useUserProfile } from 'lib/hooks/queries/useUserProfile';
+import { Container, Center, Button, VStack, Text } from '@chakra-ui/react';
+import { ManageBreedDetailView } from './ManageBreedDetailView';
+import BrowseBreedDetailPage from './BrowseBreedDetailPage';
 import { Loader } from 'lib/components/ui/Loader';
-import BreederBreedsView from './BreederBreedsView';
-import SeekerBreedsView from './SeekerBreedsView';
 
-const BreedsPage: React.FC = () => {
+export default function BreedDetailPage() {
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+
   const router = useRouter();
 
   const renderRoleSpecificContent = () => {
     switch (userProfile.role) {
       case 'seeker':
-        return <SeekerBreedsView userProfile={userProfile} />;
+        return <BrowseBreedDetailPage />;
       case 'breeder':
-        return <BreederBreedsView userProfile={userProfile} />;
+        return <ManageBreedDetailView />;
       default:
         return (
           <Container maxW="7xl" py={8}>
@@ -46,18 +39,9 @@ const BreedsPage: React.FC = () => {
     );
   }
 
-  // This component will redirect, so this UI won't be shown
   return (
     <>
-      <NextSeo title="Breeds - DogHouse Kenya" />
-
-      <Container maxW="7xl" py={{ base: 4, md: 0 }}>
-
-        {renderRoleSpecificContent()}
-
-      </Container>
+      {renderRoleSpecificContent()}
     </>
   );
-};
-
-export default BreedsPage;
+}

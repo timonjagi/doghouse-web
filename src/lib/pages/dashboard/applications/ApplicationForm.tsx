@@ -12,16 +12,11 @@ import {
   FormControl,
   FormLabel,
   Textarea,
-  Checkbox,
   Text,
   Alert,
-  AlertIcon,
   useToast,
   Box,
   Divider,
-  HStack,
-  Badge,
-  Avatar,
   SimpleGrid,
   Select,
   Input,
@@ -34,12 +29,9 @@ import {
   List,
   ListItem,
   ListIcon,
-  Stack,
 } from '@chakra-ui/react';
-import { CheckCircleIcon, InfoIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import { useCreateApplication } from '../../../hooks/queries/useApplications';
-import { useUserProfile } from '../../../hooks/queries';
-import { useSeekerProfile } from '../../../hooks/queries/useSeekerProfile';
 
 interface ApplicationFormProps {
   isOpen: boolean;
@@ -166,7 +158,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>

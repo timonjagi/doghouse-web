@@ -6,31 +6,20 @@ import {
   HStack,
   Button,
   useDisclosure,
-  Spinner,
-  Center,
   Alert,
   AlertIcon,
   Box,
   Stack,
 } from "@chakra-ui/react";
-import { useUserProfile } from "../../../../hooks/queries/useUserProfile";
-import { useUserBreedsFromUser } from "../../../../hooks/queries/useUserBreeds";
+import { useUserBreedsFromUser } from "../../../hooks/queries/useUserBreeds";
 import { BreedList } from "./BreedList";
 import { BreedForm } from "./BreedForm";
 import { AddIcon } from "@chakra-ui/icons";
 import { Loader } from "lib/components/ui/Loader";
 import { NextSeo } from "next-seo";
 
-const DashboardBreedsPage = () => {
-
-  const { data: userProfile, isLoading: isLoadingProfile } = useUserProfile();
+const DashboardBreedsPage = ({ userProfile }) => {
   const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
-
-  if (isLoadingProfile) {
-    return (
-      <Loader />
-    );
-  }
 
   return (
     <Container maxW="7xl" >
@@ -49,7 +38,6 @@ const DashboardBreedsPage = () => {
 };
 
 const UserBreeds = ({ userProfile, onFormOpen }) => {
-
   const {
     data: userBreeds,
     isLoading: isLoadingUserBreeds,

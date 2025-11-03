@@ -104,7 +104,8 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
     : 'Contact for Price';
 
   return (
-    <Card shadow="md" border="1px" borderColor="gray.200" _hover={{ shadow: 'lg' }}>
+    <Card shadow="md" border="1px" borderColor="gray.200" _hover={{ shadow: 'lg' }} onClick={handleViewDetails}
+    >
       <CardBody p={0}>
         <Grid templateColumns="120px 1fr" gap={0}>
           {/* Left Image/Avatar */}
@@ -135,9 +136,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
               <Flex align="center">
                 <Box>
                   <HStack spacing={2} mb={1}>
-                    <Text fontSize="sm" color="gray.600">
-                      {subTitle}
-                    </Text>
+
                     <Badge
                       colorScheme={getStatusColor(application.status)}
                       variant="solid"
@@ -151,6 +150,9 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
                   </HStack>
                   <Text fontSize="md" fontWeight="bold" color="gray.800">
                     {displayName}
+                  </Text>
+                  <Text fontSize="sm" color="gray.600">
+                    {subTitle}
                   </Text>
                   {userRole === 'breeder' && (
                     <Text fontSize="sm" color="gray.500">
@@ -190,12 +192,6 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
                 )}
               </Flex>
 
-              {/* Listing Title (for breeders) */}
-              {userRole === 'breeder' && (
-                <Text fontWeight="medium" color="blue.600">
-                  {application.listings.title}
-                </Text>
-              )}
 
               {/* Price and Date */}
               <HStack justify="space-between">
@@ -207,18 +203,6 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
                 </Text>
               </HStack>
 
-              {/* Application Message Preview (for seekers) */}
-              //@ts-ignore
-              {userRole === 'seeker' && application.application_data?.message && (
-                <Box>
-                  <Text fontSize="sm" color="gray.600" fontStyle="italic">
-                    //@ts-ignore
-                    "{application.application_data.message.substring(0, 100)}
-                    //@ts-ignore
-                    {application.application_data.message.length > 100 ? '...' : ''}"
-                  </Text>
-                </Box>
-              )}
 
               {/* Action Buttons */}
               <HStack justify="flex-end" pt={2}>

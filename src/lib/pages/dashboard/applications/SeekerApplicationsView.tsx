@@ -76,7 +76,7 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
   return (
     <VStack spacing={6} align="stretch">
       {/* Applications Overview */}
-      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+      {/* <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
         <Card>
           <CardBody textAlign="center">
             <Text fontSize="3xl" fontWeight="bold" color="blue.500">
@@ -101,7 +101,7 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
             <Text color="gray.600">Approved</Text>
           </CardBody>
         </Card>
-      </SimpleGrid>
+      </SimpleGrid> */}
 
       {/* Applications Tabs */}
       <Card>

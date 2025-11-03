@@ -66,11 +66,11 @@ export const ApplicationsPage: React.FC<ApplicationsPageProps> = () => {
   };
 
   return (
-    <Container maxW="6xl" >
+    <Container maxW="6xl" py={{ base: 4, md: 0 }} >
       <VStack spacing={8} align="stretch">
         {/* Page Header */}
         <Box>
-          <Heading size={{ base: 'sm', lg: 'md' }} color="gray.800">
+          <Heading size={{ base: 'sm', lg: 'md' }} color="brand.800">
             Applications
           </Heading>
           <Text color="gray.600" mt={2}>

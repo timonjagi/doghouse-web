@@ -61,7 +61,7 @@ export const useUserBreedsFromUser = (userId?: string) => {
 export const useUserBreed = (breedId: string) => {
   return useQuery({
     queryKey: ['breeds', 'user-breed', breedId] as const,
-    queryFn: async (): Promise<UserBreed | null> => {
+    queryFn: async (): Promise<any> => {
       const { data, error } = await supabase
         .from('user_breeds')
         .select(`
@@ -86,11 +86,13 @@ export const useUserBreed = (breedId: string) => {
           )
         `)
         .eq('id', breedId)
-      //.single();
+        .single();
 
       if (error) throw error;
-      return data[0]
+
+      return data || null;
     },
+
     enabled: !!breedId,
   });
 };

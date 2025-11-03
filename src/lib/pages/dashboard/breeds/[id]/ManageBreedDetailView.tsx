@@ -12,12 +12,6 @@ import {
   SimpleGrid,
   useDisclosure,
   useToast,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   ButtonGroup,
   Tab,
   TabList,
@@ -27,13 +21,18 @@ import {
   Alert,
   AlertIcon,
   useBreakpointValue,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
-import { ChevronRightIcon, EditIcon, ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
-import { useRef } from "react";
-import { BreedForm } from "./BreedForm";
-import { useDeleteUserBreed } from "lib/hooks/queries/useUserBreeds";
-import { BreedListings } from "../browse/BreedListings";
+import { BreedForm } from "../BreedForm";
+import { useDeleteUserBreed, useUserBreed } from "lib/hooks/queries/useUserBreeds";
+import { BreedListings } from "../BreedListings";
 import { useListingsForUserBreed } from "lib/hooks/queries/useListings";
 import { Loader } from "lib/components/ui/Loader";
 
@@ -45,46 +44,52 @@ interface Breed {
   featured_image_url?: string;
 }
 
-interface UserBreed {
-  id: string;
-  breed_id: string;
-  is_owner: boolean;
-  notes?: string;
-  images?: any;
-  created_at: any;
-  updated_at: any;
-  breeds?: Breed;
-}
-
-interface ManageBreedDetailViewProps {
-  userBreed?: UserBreed | null;
-  userRole?: string;
-}
-
-export const ManageBreedDetailView = ({
-  userBreed,
-}: ManageBreedDetailViewProps) => {
+export const ManageBreedDetailView = () => {
   const router = useRouter();
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const toast = useToast();
+
+  const { id } = router.query;
+  const {
+    data: userBreed,
+    isLoading: isLoadingUserBreed,
+    error: userBreedError,
+  } = useUserBreed(id as string);
+  const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForUserBreed(userBreed?.id);
+
+
   const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
 
   const deleteUserBreed = useDeleteUserBreed();
 
-  const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForUserBreed(userBreed?.id);
-  if (isLoadingListings) {
+  const handleDeleteBreed = async () => {
+    try {
+      await deleteUserBreed.mutateAsync(userBreed?.id as string);
+      toast({
+        title: "Breed deleted",
+        description: "Your breed has been deleted successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      router.push("/dashboard/breeds");
+    } catch (error) {
+      console.error("Error deleting breed:", error);
+    }
+  };
+
+  if (isLoadingListings || isLoadingUserBreed) {
     return (
       <Loader />
     );
   }
 
-  console.log('listingsForBreed', listingsForBreed)
-  if (error) {
+  if (error || userBreedError) {
     return (
       <Alert status="error">
         <AlertIcon />
-        Error loading listing data. Please try again later.
+        Error loading breed data. Please try again later.
         {error.message}
       </Alert>
     );
@@ -116,7 +121,7 @@ export const ManageBreedDetailView = ({
               <Button
                 leftIcon={<DeleteIcon />}
                 colorScheme="red"
-                onClick={onOpen}
+                onClick={onDeleteOpen}
                 isLoading={deleteUserBreed.isPending}
               >
                 Delete
@@ -188,6 +193,31 @@ export const ManageBreedDetailView = ({
           editingBreed={userBreed}
         />
       </VStack>
+
+
+      <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={undefined} onClose={onDeleteClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Breed
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure you want to delete this breed? This action cannot be undone.
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button onClick={onDeleteClose}>Cancel</Button>
+              <Button
+                colorScheme="red"
+                onClick={handleDeleteBreed}
+                ml={3}
+                isLoading={deleteUserBreed.isPending}
+              >
+                Delete Listing
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Container>
   );
 };

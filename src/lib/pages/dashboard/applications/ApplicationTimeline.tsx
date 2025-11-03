@@ -319,7 +319,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             />
           </StepIndicator>
 
-          <Box flexShrink="0" w="full">
+          <Box flexShrink="1" w="full">
             <VStack align="start" spacing={2}>
               <HStack align="center">
                 <Box>
@@ -346,6 +346,11 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
 
               <StepDescription pt={2} pb={4}>{step.description}</StepDescription>
 
+              {application.status === 'approved' || application.status === 'rejected' && (
+                <Text fontSize="xs" color="red.500">
+                  {application.response_message}
+                </Text>
+              )}
 
               {/* Additional info - only show for current step */}
               {step.status === 'current' && step.info && step.info.length > 0 && (
@@ -360,7 +365,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
 
               {/* Action button */}
               {step.actionButton && (
-                <Box py={2}>
+                <Box py={2} mb={4}>
                   <Button
                     size="sm"
                     colorScheme={step.actionButton.colorScheme}

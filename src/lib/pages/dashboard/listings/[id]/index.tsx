@@ -38,13 +38,14 @@ import {
 } from '@chakra-ui/react';
 import { ArrowBackIcon, EditIcon, ChatIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
-import { useUserProfile } from '../../../../hooks/queries';
+import { useUserBreedsFromUser, useUserProfile } from '../../../../hooks/queries';
 import { useDeleteListing, useListing } from '../../../../hooks/queries/useListings';
 import { NextSeo } from 'next-seo';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { Loader } from 'lib/components/ui/Loader';
 import { supabase } from 'lib/supabase/client';
 import { ApplicationForm } from '../../applications/ApplicationForm';
+import ListingForm from '../ListingForm';
 
 interface ListingDetailPageProps {
   id: string;
@@ -53,18 +54,24 @@ interface ListingDetailPageProps {
 const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
+
+
+  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+  const {
+    data: userBreeds,
+    isLoading: userBreedsLoading,
+    error: userBreedsError
+  } = useUserBreedsFromUser(userProfile?.id);
+
   const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
   const { isOpen: isApplicationOpen, onOpen: onApplicationOpen, onClose: onApplicationClose } = useDisclosure();
+  const { isOpen: isListingFormOpen, onOpen: onListingFormOpen, onClose: onListingFormClose } = useDisclosure();
 
   const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id as string);
 
-  const handleContact = () => {
-    onApplicationOpen();
-  };
   const deleteListingMutation = useDeleteListing();
 
   const formatPrice = (price?: number) => {
@@ -130,13 +137,13 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
   }
 
-  if (profileLoading || listingLoading) {
+  if (profileLoading || listingLoading || userBreedsLoading) {
     return (
       <Loader />
     );
   }
 
-  if (listingError) {
+  if (listingError || userBreedsError) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -162,8 +169,8 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   }
 
 
-  const isOwner = profile?.id === listing.owner_id;
-  const canApply = profile?.role === 'seeker' && listing.status === 'available' && !isOwner;
+  const isOwner = userProfile?.id === listing.owner_id;
+  const canApply = userProfile?.role === 'seeker' && listing.status === 'available' && !isOwner;
 
   const getTitle = () => {
     if (listing.title) return listing.title;
@@ -204,13 +211,12 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             </Box>
 
 
-
             {!isMobile && canApply && (
               <Button
                 leftIcon={<ChatIcon />}
                 colorScheme="brand"
                 size="lg"
-                onClick={handleContact}
+                onClick={onApplicationOpen}
               >
                 Reserve This Pet
               </Button>
@@ -220,7 +226,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
               <Button
                 leftIcon={<EditIcon />}
                 colorScheme="brand"
-                onClick={() => router.push(`/dashboard/listings/${listing.id}/edit`)}
+                onClick={onListingFormOpen}
               >
                 Edit
               </Button>
@@ -297,7 +303,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Mark Listing as Sold
+                Delete Listing
               </AlertDialogHeader>
               <AlertDialogBody>
                 Are you sure you want to delete this listing? This action cannot be undone.
@@ -326,6 +332,17 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           />
         )}
 
+        {isOwner && (
+          <ListingForm
+            isOpen={isListingFormOpen}
+            onClose={onListingFormClose}
+            userBreeds={userBreeds}
+            userProfile={userProfile}
+            listing={listing}
+            isEditing={true}
+          />
+        )}
+
       </Container >
 
       {isMobile && canApply && (
@@ -343,7 +360,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             colorScheme="brand"
             size="lg"
             w="full"
-            onClick={handleContact}
+            onClick={onApplicationOpen}
           >
             Reserve This Pet
           </Button>

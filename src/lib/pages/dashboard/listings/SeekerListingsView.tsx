@@ -35,14 +35,15 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
-import { useUserProfile } from '../../../../hooks/queries';
-import { useListings, useIncrementListingViews } from '../../../../hooks/queries/useListings';
-import { useBreeds } from '../../../../hooks/queries/useBreeds';
+import { useUserProfile } from '../../../hooks/queries';
+import { useListings, useIncrementListingViews } from '../../../hooks/queries/useListings';
+import { useBreeds } from '../../../hooks/queries/useBreeds';
 import { NextSeo } from 'next-seo';
 import { Loader } from 'lib/components/ui/Loader';
 import { MdFilterList } from 'react-icons/md';
 import ListingCard from './ListingCard';
 import { Select } from 'chakra-react-select';
+import { User } from '../../../../../db/schema';
 
 interface FilterState {
   search: string;
@@ -54,8 +55,7 @@ interface FilterState {
   status: string;
 }
 
-const BrowseListingsPage: React.FC = () => {
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
+const BrowseListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) => {
   const router = useRouter();
   const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
@@ -172,27 +172,6 @@ const BrowseListingsPage: React.FC = () => {
     }
   };
 
-  if (profileLoading) {
-    return (
-      <Loader />
-    );
-  }
-
-  if (profile?.role !== 'seeker') {
-    return (
-      <Container maxW="7xl" py={4} >
-        <Center h="400px">
-          <VStack spacing={4}>
-            <Text fontSize="lg" color="gray.500">Access denied</Text>
-            <Text color="gray.400">Only seekers can browse listings</Text>
-            <Button onClick={() => router.push('/dashboard/listings')}>
-              Back to Dashboard
-            </Button>
-          </VStack>
-        </Center>
-      </Container>
-    );
-  }
 
   return (
     <>

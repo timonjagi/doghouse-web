@@ -10,8 +10,18 @@ export interface ApplicationWithListing extends Application {
     title: string;
     type: string;
     price: number | null;
+    reservation_fee: number | null;
     photos: string[];
     owner_id: string;
+    birth_date: string | null;
+    available_date: string | null;
+    number_of_puppies: number | null;
+    pet_name: string | null;
+    pet_age: string | null;
+    pet_gender: string | null;
+    location_text: string | null;
+    location_lat: number | null;
+    location_lng: number | null;
     breeds: {
       id: string;
       name: string;
@@ -119,6 +129,7 @@ export const useApplication = (applicationId: string) => {
             title,
             type,
             price,
+            reservation_fee,
             photos,
             owner_id,
             birth_date,
@@ -128,6 +139,7 @@ export const useApplication = (applicationId: string) => {
             pet_age,
             pet_gender,
             location_text,
+            created_at,
             breeds (
               id,
               name
@@ -139,7 +151,12 @@ export const useApplication = (applicationId: string) => {
               phone,
               profile_photo_url,
               location_text,
-              created_at
+              created_at,
+              breeder_profiles (
+                id,
+                kennel_name,
+                kennel_location
+              )
             )
           ),
           users (
@@ -149,7 +166,14 @@ export const useApplication = (applicationId: string) => {
             phone,
             profile_photo_url,
             location_text,
-            created_at
+            created_at,
+            seeker_profiles (
+              id,
+              experience_level,
+              has_allergies,
+              has_children,
+              has_other_pets
+            )
           )
         `)
         .eq('id', applicationId)
@@ -337,6 +361,21 @@ export const useUpdateApplicationStatus = () => {
         } catch (reserveError) {
           console.error('Failed to reserve listing:', reserveError);
           // Don't fail the approval if reservation fails
+        }
+      }
+
+      if (data.status === 'completed') {
+        try {
+          await supabase
+            .from('listings')
+            .update({
+              status: 'sold',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', data.listing_id);
+        } catch (completeError) {
+          console.error('Failed to complete listing:', completeError);
+          // Don't fail the completion if completion fails
         }
       }
 

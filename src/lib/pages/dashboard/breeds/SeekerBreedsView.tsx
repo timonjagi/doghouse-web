@@ -10,11 +10,11 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { Loader } from "lib/components/ui/Loader";
-import { BreedList } from "../manage/BreedList";
+import { BreedList } from "./BreedList";
 import { useAllAvailableUserBreeds } from "lib/hooks/queries/useUserBreeds";
 import { NextSeo } from "next-seo";
 
-const DashboardBrowsePage = () => {
+const DashboardBrowsePage = ({ userProfile }) => {
   const {
     data: allAvailableBreeds,
     isLoading: isLoadingAvailableBreeds,
@@ -39,29 +39,24 @@ const DashboardBrowsePage = () => {
   }
 
   return (
-    <Container maxW="7xl" pt={4} >
+    <Box>
+      <VStack spacing={6} align="stretch">
 
-      <NextSeo title="Browse Breeds " />
+        <Stack>
+          <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
+            Browse  Breeds
+          </Heading>
+          <Text color="gray.600">
+            Explore dog breeds available from verified breeders in your area.
+          </Text>
+        </Stack>
 
-      <Box>
-        <VStack spacing={6} align="stretch">
-
-          <Stack>
-            <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
-              Browse  Breeds
-            </Heading>
-            <Text color="gray.600">
-              Explore dog breeds available from verified breeders in your area.
-            </Text>
-          </Stack>
-
-          <BreedList
-            breeds={allAvailableBreeds || []}
-            userRole="seeker"
-          />
-        </VStack>
-      </Box>
-    </Container>
+        <BreedList
+          breeds={allAvailableBreeds || []}
+          userRole="seeker"
+        />
+      </VStack>
+    </Box>
   );
 };
 

@@ -2,8 +2,8 @@ import { Card, CardHeader, Heading, CardBody, SimpleGrid, VStack, Button, Image,
 import { Loader } from "lib/components/ui/Loader";
 import { useIncrementListingViews, useUpdateListing } from "lib/hooks/queries/useListings";
 import { formatPrice } from "lib/pages/breeds/ExploreBreeds/PriceTag";
-import ListingCard from "../../listings/browse/ListingCard";
-import ManageListingCard from "../../listings/manage/ManageListingCard";
+import ListingCard from "../listings/ListingCard";
+import ManageListingCard from "../listings/ManageListingCard";
 import { useRouter } from "next/router";
 
 export const BreedListings = ({ listings, loading, error, isManaging }) => {
@@ -98,7 +98,7 @@ export const BreedListings = ({ listings, loading, error, isManaging }) => {
   }
 
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
       {listings?.map((listing) => (
         <>
           {isManaging ?

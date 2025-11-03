@@ -1,19 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-
-// Types
-interface Notification {
-  id: string;
-  user_id: string;
-  type: string;
-  title: string;
-  message?: string;
-  read: boolean;
-  data?: Record<string, any>;
-  created_at: string;
-}
-
+import { Notification } from '../../../../db/schema';
 // Query to get user notifications
 export const useNotifications = (userId?: string) => {
   return useQuery({
@@ -45,7 +33,7 @@ export const useUnreadNotificationsCount = (userId?: string) => {
         .from('notifications')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', userId)
-        .eq('read', false);
+        .eq('is_read', false);
 
       if (error) throw error;
       return count || 0;
@@ -63,7 +51,7 @@ export const useMarkNotificationAsRead = () => {
     mutationFn: async (notificationId: string) => {
       const { error } = await supabase
         .from('notifications')
-        .update({ read: true })
+        .update({ is_read: true })
         .eq('id', notificationId);
 
       if (error) throw error;
@@ -84,7 +72,7 @@ export const useMarkAllNotificationsAsRead = () => {
         .from('notifications')
         .update({ read: true })
         .eq('user_id', userId)
-        .eq('read', false);
+        .eq('is_read', false);
 
       if (error) throw error;
     },

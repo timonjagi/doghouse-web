@@ -16,33 +16,14 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useCreateUserBreed, useUpdateUserBreed, useDeleteUserBreed, useBreedImageUpload } from "../../../../hooks/queries/useUserBreeds";
-import { useCurrentUser } from "../../../../hooks/queries/useAuth";
-import { useDropZone } from "../../../../hooks/useDropZone";
-import { Dropzone } from "../../../../components/ui/Dropzone";
+import { useCreateUserBreed, useUpdateUserBreed, useDeleteUserBreed, useBreedImageUpload } from "../../../hooks/queries/useUserBreeds";
+import { useCurrentUser } from "../../../hooks/queries/useAuth";
+import { useDropZone } from "../../../hooks/useDropZone";
+import { Dropzone } from "../../../components/ui/Dropzone";
 import { supabase } from "lib/supabase/client";
-import breedsData from "../../../../data/breeds_with_group_and_traits.json";
+import breedsData from "../../../data/breeds_with_group_and_traits.json";
 import { Select } from "chakra-react-select";
-
-// Local types for now - will fix imports later
-interface Breed {
-  id: string;
-  name: string;
-  description?: string;
-  breed_group?: string;
-  featured_image_url?: string;
-}
-
-interface UserBreed {
-  id: string;
-  breed_id: string;
-  is_owner: boolean;
-  notes?: string;
-  images?: string[];
-  created_at: string;
-  updated_at: string;
-  breeds?: Breed;
-}
+import { UserBreed } from "../../../../../db/schema";
 
 interface BreedFormProps {
   isOpen: boolean;
