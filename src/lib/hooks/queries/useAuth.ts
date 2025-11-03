@@ -123,6 +123,9 @@ export const useSignOut = () => {
 
       // Clear all cached queries
       queryClient.clear();
+
+      // Invalidate auth queries
+      queryClient.invalidateQueries();
     },
   });
 };

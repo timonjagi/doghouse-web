@@ -195,32 +195,32 @@ const ListingForm: React.FC<ListingFormProps> = ({
   // });
 
   const [formData, setFormData] = useState<ListingFormData>({
-    title: listing.title || '',
-    description: listing.description || '',
-    type: listing.type as 'litter' | 'single_pet' || 'litter',
-    owner_type: listing.owner_type as 'breeder' | 'seeker' || 'breeder',
-    user_breed_id: listing.user_breed_id || '',
-    breed_id: listing.breed_id || '',
-    birth_date: listing.birth_date ? listing.birth_date.toString().split('T')[0] : '',
-    available_date: listing.available_date ? listing.available_date.toString().split('T')[0] : '',
-    number_of_puppies: listing.number_of_puppies || 0,
-    pet_name: listing.pet_name || '',
-    pet_age: listing.pet_age || '',
-    pet_gender: listing.pet_gender || '',
-    price: parseInt(listing.price) || 0,
-    reservation_fee: parseInt(listing.reservation_fee) || 0,
-    location_text: listing.location_text || '',
-    location_lat: parseFloat(listing.location_lat),
-    location_lng: parseFloat(listing.location_lng),
+    title: listing?.title || '',
+    description: listing?.description || '',
+    type: listing?.type as 'litter' | 'single_pet' || 'litter',
+    owner_type: listing?.owner_type as 'breeder' | 'seeker' || 'breeder',
+    user_breed_id: listing?.user_breed_id || '',
+    breed_id: listing?.breed_id || '',
+    birth_date: listing?.birth_date ? listing?.birth_date.toString().split('T')[0] : '',
+    available_date: listing?.available_date ? listing?.available_date.toString().split('T')[0] : '',
+    number_of_puppies: listing?.number_of_puppies || 0,
+    pet_name: listing?.pet_name || '',
+    pet_age: listing?.pet_age || '',
+    pet_gender: listing?.pet_gender || '',
+    price: parseInt(listing?.price) || 0,
+    reservation_fee: parseInt(listing?.reservation_fee) || 0,
+    location_text: listing?.location_text || '',
+    location_lat: parseFloat(listing?.location_lat),
+    location_lng: parseFloat(listing?.location_lng),
     //@ts-ignore
-    photos: listing.photos || [],
-    parents: listing.parents || {
+    photos: listing?.photos || [],
+    parents: listing?.parents || {
       sire: { name: '', breed: '', photos: [] },
       dam: { name: '', breed: '', photos: [] },
     },
-    health: listing.health ?? {},
-    training: listing.training || {},
-    requirements: listing.requirements || {},
+    health: listing?.health ?? {},
+    training: listing?.training || {},
+    requirements: listing?.requirements || {},
   })
 
   useEffect(() => {
@@ -510,19 +510,19 @@ const ListingForm: React.FC<ListingFormProps> = ({
 
       const retainedCerts = [...formData.health?.certificates].filter((file) => !(file instanceof File)) as string[] || [];
 
-      const deletedPhotos = Array.from(listing.photos as string[] || [])?.filter((photo) => !retainedPhotos.includes(photo)) || [];
+      const deletedPhotos = Array.from(listing?.photos as string[] || [])?.filter((photo) => !retainedPhotos.includes(photo)) || [];
       console.log('deletedPhotos', deletedPhotos);
 
       //@ts-ignore
-      const deletedSirePhotos = Array.from(listing.parents?.sire?.photos as string[] || [])?.filter((photo) => !retainedSirePhotos.includes(photo)) || [];
+      const deletedSirePhotos = Array.from(listing?.parents?.sire?.photos as string[] || [])?.filter((photo) => !retainedSirePhotos.includes(photo)) || [];
       console.log('deletedParentPhotos', deletedSirePhotos);
 
       //@ts-ignore
-      const deletedDamPhotos = Array.from(listing.parents?.dam?.photos as string[] || [])?.filter((photo) => !retainedDamPhotos.includes(photo)) || [];
+      const deletedDamPhotos = Array.from(listing?.parents?.dam?.photos as string[] || [])?.filter((photo) => !retainedDamPhotos.includes(photo)) || [];
       console.log('deletedDamPhotos', deletedDamPhotos);
 
       //@ts-ignore
-      const deletedCerts = Array.from(listing.health?.certificates as string[] || [])?.filter((photo) => !retainedCerts.includes(photo)) || [];
+      const deletedCerts = Array.from(listing?.health?.certificates as string[] || [])?.filter((photo) => !retainedCerts.includes(photo)) || [];
       console.log('deletedCerts', deletedCerts);
 
       if (deletedPhotos.length > 0 || deletedSirePhotos.length > 0 || deletedDamPhotos.length > 0 || deletedCerts.length > 0) {
@@ -533,19 +533,19 @@ const ListingForm: React.FC<ListingFormProps> = ({
         if (deleteError) throw deleteError;
       }
 
-      const updatedPhotos = [...(Array.from(listing.photos as string[] || [])?.filter((photo) => !deletedPhotos.includes(photo)) || []), ...photoUrls];
+      const updatedPhotos = [...(Array.from(listing?.photos as string[] || [])?.filter((photo) => !deletedPhotos.includes(photo)) || []), ...photoUrls];
       console.log('updatedPhotos', updatedPhotos);
 
       //@ts-ignore
-      const updatedSirePhotos = [...(Array.from(listing.parents?.sire.photos as string[] || [])?.filter((photo) => !deletedSirePhotos.includes(photo)) || []), ...sirePhotoUrls];
+      const updatedSirePhotos = [...(Array.from(listing?.parents?.sire.photos as string[] || [])?.filter((photo) => !deletedSirePhotos.includes(photo)) || []), ...sirePhotoUrls];
       console.log('updatedSirePhotos', updatedSirePhotos);
 
       //@ts-ignore
-      const updatedDamPhotos = [...(Array.from(listing.parents?.dam.photos as string[] || [])?.filter((photo) => !deletedDamPhotos.includes(photo)) || []), ...damPhotoUrls];
+      const updatedDamPhotos = [...(Array.from(listing?.parents?.dam.photos as string[] || [])?.filter((photo) => !deletedDamPhotos.includes(photo)) || []), ...damPhotoUrls];
       console.log('updatedDamPhotos', updatedDamPhotos);
 
       //@ts-ignore
-      const updatedCerts = [...(Array.from(listing.health?.certificates as string[] || [])?.filter((photo) => !deletedCerts.includes(photo)) || []), ...certUrls];
+      const updatedCerts = [...(Array.from(listing?.health?.certificates as string[] || [])?.filter((photo) => !deletedCerts.includes(photo)) || []), ...certUrls];
       console.log('updatedCerts', updatedCerts);
 
       // Update the listing
@@ -606,7 +606,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
       console.error('Error creating listing:', error);
       toast({
         title: "Error",
-        description: "Failed to save listing. Please try again.",
+        description: "Failed to save listing?. Please try again.",
         status: "error",
         duration: 5000,
         isClosable: true,

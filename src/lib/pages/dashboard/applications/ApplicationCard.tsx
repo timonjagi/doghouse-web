@@ -3,48 +3,34 @@ import {
   Box,
   VStack,
   HStack,
-  Card,
-  CardBody,
   Text,
-  Button,
   Badge,
   Avatar,
   Image,
-  Grid,
-  GridItem,
-  Flex,
-  Spacer,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  IconButton,
+  Skeleton,
+  useColorModeValue,
+  Icon,
 } from '@chakra-ui/react';
 import {
-  ChevronDownIcon,
-  CalendarIcon,
   CheckCircleIcon,
   WarningIcon,
   TimeIcon,
-  PhoneIcon,
+  CalendarIcon,
   EmailIcon,
-  ViewIcon,
 } from '@chakra-ui/icons';
+import { MdLocationOn } from 'react-icons/md';
 import { ApplicationWithListing } from '../../../hooks/queries/useApplications';
 import { useRouter } from 'next/router';
+import { FiUser } from 'react-icons/fi';
 
 interface ApplicationCardProps {
   application: ApplicationWithListing;
   userRole: 'seeker' | 'breeder';
-  onQuickApprove?: (application: ApplicationWithListing) => void;
-  onQuickReject?: (application: ApplicationWithListing) => void;
 }
 
 export const ApplicationCard: React.FC<ApplicationCardProps> = ({
   application,
   userRole,
-  onQuickApprove,
-  onQuickReject,
 }) => {
   const router = useRouter();
 
@@ -86,148 +72,68 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
     router.push(`/dashboard/applications/${application.id}`);
   };
 
-  const primaryImage = userRole === 'seeker'
-    ? application.listings.photos?.[0] || '/images/doggo.png'
-    : application.users.profile_photo_url || undefined;
-
   const breedName = application.listings.breeds?.name || 'Unknown Breed';
-  const displayName = userRole === 'seeker'
-    ? application.listings.title
-    : application.users.display_name;
-
-  const subTitle = userRole === 'seeker'
-    ? `${application.listings.type === 'litter' ? 'Litter' : 'Pet'} • ${breedName}`
-    : application.users.email;
-
-  const priceText = application.listings.price
-    ? `KSH ${application.listings.price.toLocaleString()}`
-    : 'Contact for Price';
+  const borderColor = useColorModeValue("gray.200", "gray.600");
 
   return (
-    <Card shadow="md" border="1px" borderColor="gray.200" _hover={{ shadow: 'lg' }} onClick={handleViewDetails}
+    <Box
+      key={application.id}
+      overflow="hidden"
+      border="1px solid"
+      borderColor={borderColor}
+      borderRadius="lg"
+      cursor="pointer"
+      onClick={handleViewDetails}
+      transition="all 0.2s"
+      _hover={{
+        transform: "translateY(-2px)",
+        shadow: "md",
+        borderColor: "gray.200"
+      }}
     >
-      <CardBody p={0}>
-        <Grid templateColumns="120px 1fr" gap={0}>
-          {/* Left Image/Avatar */}
-          <GridItem>
-            {userRole === 'seeker' ? (
-              <Image
-                src={primaryImage}
-                alt={application.listings.title}
-                width="120px"
-                height="120px"
-                objectFit="cover"
-                borderLeftRadius="md"
-              />
-            ) : (
-              <Avatar
-                src={primaryImage}
-                name={application.users.display_name}
-                size="lg"
-                borderLeftRadius="md"
-              />
-            )}
-          </GridItem>
+      {/* Main Photo */}
+      <Box position="relative" height="200px" overflow="hidden">
+        <Image
+          src={application.listings.photos?.[0]}
+          alt={breedName}
+          objectFit="cover"
+          w="full"
+          h="200px"
+          fallback={<Skeleton width="100%" height="100%" />}
+          fallbackSrc='/images/logo_white.png'
+          loading="lazy"
+        />
 
-          {/* Application Details */}
-          <GridItem p={4}>
-            <VStack align="stretch" spacing={2}>
-              {/* Header Row */}
-              <Flex align="center">
-                <Box>
-                  <HStack spacing={2} mb={1}>
+        <HStack position="absolute" top={2} right={2} spacing={2}>
+          <Badge colorScheme={getStatusColor(application.status)}>
+            {formatStatus(application.status)}
+          </Badge>
+        </HStack>
+      </Box>
 
-                    <Badge
-                      colorScheme={getStatusColor(application.status)}
-                      variant="solid"
-                      px={2}
-                      py={1}
-                      borderRadius="full"
-                      fontSize="xs"
-                    >
-                      {formatStatus(application.status)}
-                    </Badge>
-                  </HStack>
-                  <Text fontSize="md" fontWeight="bold" color="gray.800">
-                    {displayName}
-                  </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    {subTitle}
-                  </Text>
-                  {userRole === 'breeder' && (
-                    <Text fontSize="sm" color="gray.500">
-                      {application.users.email}
-                    </Text>
-                  )}
-                </Box>
-                <Spacer />
-                {userRole === 'breeder' && (
-                  <Menu>
-                    <MenuButton
-                      as={IconButton}
-                      aria-label="Options"
-                      icon={<ChevronDownIcon />}
-                      variant="outline"
-                      size="sm"
-                    />
-                    <MenuList>
-                      <MenuItem icon={<ViewIcon />} onClick={handleViewDetails}>
-                        View Details
-                      </MenuItem>
-                      <MenuItem icon={<EmailIcon />}>
-                        Contact Applicant
-                      </MenuItem>
-                      {application.status === 'submitted' && onQuickApprove && onQuickReject && (
-                        <>
-                          <MenuItem icon={<CheckCircleIcon />} onClick={() => onQuickApprove(application)}>
-                            Approve
-                          </MenuItem>
-                          <MenuItem icon={<WarningIcon />} onClick={() => onQuickReject(application)}>
-                            Reject
-                          </MenuItem>
-                        </>
-                      )}
-                    </MenuList>
-                  </Menu>
-                )}
-              </Flex>
+      <VStack spacing={2} align="stretch" p={4}>
+        <Text fontSize="lg" fontWeight="semibold" noOfLines={2}>
+          {application.listings.title}
+        </Text>
 
+        <Text fontSize="sm" color="gray.600" noOfLines={2}>
+          {`${application.listings.type === 'litter' ? 'Litter' : 'Pet'} • ${breedName}`}
+        </Text>
 
-              {/* Price and Date */}
-              <HStack justify="space-between">
-                <Text fontSize="lg" fontWeight="bold" color="green.600">
-                  {priceText}
-                </Text>
-                <Text fontSize="sm" color="gray.500">
-                  Applied {formatDate(application.created_at.toString())}
-                </Text>
-              </HStack>
+        {userRole === 'breeder' && application.users && (
+          <HStack align="center" spacing={1}>
+            <Icon as={FiUser} boxSize={4} color="gray.500" />
+            <Text fontSize="sm" color="gray.500">
+              {application.users.display_name} |  Applied: {formatDate(application.created_at.toString())}
+            </Text>
 
+          </HStack>
+        )}
 
-              {/* Action Buttons */}
-              <HStack justify="flex-end" pt={2}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleViewDetails}
-                >
-                  {userRole === 'seeker' ? 'View Details' : 'Review'}
-                </Button>
-                {userRole === 'seeker' && application.status === 'submitted' && (
-                  <Button variant="ghost" size="sm" color="red.500">
-                    Withdraw
-                  </Button>
-                )}
-                {userRole === 'breeder' && application.status === 'submitted' && onQuickApprove && (
-                  <Button colorScheme="green" size="sm" onClick={() => onQuickApprove(application)}>
-                    Quick Approve
-                  </Button>
-                )}
-              </HStack>
-            </VStack>
-          </GridItem>
-        </Grid>
-      </CardBody>
-    </Card>
+        <Text fontSize="lg" fontWeight="semibold" color="brand.600">
+          Ksh. {application.listings.price.toLocaleString()}
+        </Text>
+      </VStack>
+    </Box>
   );
 };

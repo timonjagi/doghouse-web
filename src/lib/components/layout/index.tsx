@@ -128,6 +128,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         {isDesktop &&
           <Sidebar
             profile={profile}
+            loading={profileLoading}
             onClose={onClose}
           />
         }

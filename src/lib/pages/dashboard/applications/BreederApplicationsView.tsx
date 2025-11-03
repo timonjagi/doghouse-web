@@ -46,55 +46,6 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
     }
   }, [applications]);
 
-  const handleQuickApprove = async (application: ApplicationWithListing) => {
-    try {
-      await updateStatusMutation.mutateAsync({
-        id: application.id,
-        status: 'approved',
-      });
-
-      toast({
-        title: 'Application approved',
-        description: 'The application has been approved successfully',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error updating application',
-        description: error.message,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const handleQuickReject = async (application: ApplicationWithListing) => {
-    try {
-      await updateStatusMutation.mutateAsync({
-        id: application.id,
-        status: 'rejected',
-      });
-
-      toast({
-        title: 'Application rejected',
-        description: 'The application has been rejected',
-        status: 'info',
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error updating application',
-        description: error.message,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -130,7 +81,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
   return (
     <VStack spacing={6} align="stretch">
       {/* Applications Overview */}
-      <SimpleGrid columns={{ base: 2, md: 4 }} spacing={6}>
+      {/* <SimpleGrid columns={{ base: 2, md: 4 }} spacing={6}>
         <Card>
           <CardBody textAlign="center">
             <Text fontSize="3xl" fontWeight="bold" color="blue.500">
@@ -163,109 +114,99 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
             <Text color="gray.600">Pending Review</Text>
           </CardBody>
         </Card>
-      </SimpleGrid>
+      </SimpleGrid> */}
 
       {/* Applications Tabs */}
-      <Card>
-        <CardHeader>
-          <Tabs index={selectedTab} onChange={setSelectedTab} colorScheme="brand">
-            <TabList>
-              <Tab>
-                New ({groupedApplications.new.length})
-              </Tab>
-              <Tab>
-                Pending ({groupedApplications.pending.length})
-              </Tab>
-              <Tab>
-                Reviewed ({groupedApplications.reviewed.length})
-              </Tab>
-              <Tab>
-                All ({applications.length})
-              </Tab>
-            </TabList>
-          </Tabs>
-        </CardHeader>
+      <Tabs
+        index={selectedTab}
+        onChange={setSelectedTab}
+        colorScheme="brand"
+        variant='soft-rounded'
+      >
+        <TabList>
+          <Tab flex={0}>
+            New ({groupedApplications.new.length})
+          </Tab>
+          <Tab flex={1}>
+            Pending ({groupedApplications.pending.length})
+          </Tab>
+          <Tab flex={1}>
+            Reviewed ({groupedApplications.reviewed.length})
+          </Tab>
+          <Tab flex={1}>
+            All ({applications.length})
+          </Tab>
+        </TabList>
 
-        <CardBody>
-          <Tabs index={selectedTab} onChange={setSelectedTab} colorScheme="brand">
-            <TabPanels>
-              <TabPanel px={0}>
-                {groupedApplications.new.length === 0 ? (
-                  <Box textAlign="center" py={8}>
-                    <Text color="gray.500">No new applications</Text>
-                  </Box>
-                ) : (
-                  <VStack spacing={4} align="stretch">
-                    {groupedApplications.new.map((application) => (
-                      <ApplicationCard
-                        key={application.id}
-                        application={application}
-                        userRole="breeder"
-                        onQuickApprove={handleQuickApprove}
-                        onQuickReject={handleQuickReject}
-                      />
-                    ))}
-                  </VStack>
-                )}
-              </TabPanel>
+        <TabPanels>
+          <TabPanel px={0}>
+            {groupedApplications.new.length === 0 ? (
+              <Box textAlign="center" py={8}>
+                <Text color="gray.500">No new applications</Text>
+              </Box>
+            ) : (
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+                {groupedApplications.new.map((application) => (
+                  <ApplicationCard
+                    key={application.id}
+                    application={application}
+                    userRole="breeder"
+                  />
+                ))}
+              </SimpleGrid>
+            )}
+          </TabPanel>
 
-              <TabPanel px={0}>
-                {groupedApplications.pending.length === 0 ? (
-                  <Box textAlign="center" py={8}>
-                    <Text color="gray.500">No pending applications</Text>
-                  </Box>
-                ) : (
-                  <VStack spacing={4} align="stretch">
-                    {groupedApplications.pending.map((application) => (
-                      <ApplicationCard
-                        key={application.id}
-                        application={application}
-                        userRole="breeder"
-                        onQuickApprove={handleQuickApprove}
-                        onQuickReject={handleQuickReject}
-                      />
-                    ))}
-                  </VStack>
-                )}
-              </TabPanel>
+          <TabPanel px={0}>
+            {groupedApplications.pending.length === 0 ? (
+              <Box textAlign="center" py={8}>
+                <Text color="gray.500">No pending applications</Text>
+              </Box>
+            ) : (
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+                {groupedApplications.pending.map((application) => (
+                  <ApplicationCard
+                    key={application.id}
+                    application={application}
+                    userRole="breeder"
+                  />
+                ))}
+              </SimpleGrid>
+            )}
+          </TabPanel>
 
-              <TabPanel px={0}>
-                {groupedApplications.reviewed.length === 0 ? (
-                  <Box textAlign="center" py={8}>
-                    <Text color="gray.500">No reviewed applications</Text>
-                  </Box>
-                ) : (
-                  <VStack spacing={4} align="stretch">
-                    {groupedApplications.reviewed.map((application) => (
-                      <ApplicationCard
-                        key={application.id}
-                        application={application}
-                        userRole="breeder"
-                        onQuickApprove={handleQuickApprove}
-                        onQuickReject={handleQuickReject}
-                      />
-                    ))}
-                  </VStack>
-                )}
-              </TabPanel>
+          <TabPanel px={0}>
+            {groupedApplications.reviewed.length === 0 ? (
+              <Box textAlign="center" py={8}>
+                <Text color="gray.500">No reviewed applications</Text>
+              </Box>
+            ) : (
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+                {groupedApplications.reviewed.map((application) => (
+                  <ApplicationCard
+                    key={application.id}
+                    application={application}
+                    userRole="breeder"
+                  />
+                ))}
+              </SimpleGrid>
+            )}
+          </TabPanel>
 
-              <TabPanel px={0}>
-                <VStack spacing={4} align="stretch">
-                  {applications.map((application) => (
-                    <ApplicationCard
-                      key={application.id}
-                      application={application}
-                      userRole="breeder"
-                      onQuickApprove={handleQuickApprove}
-                      onQuickReject={handleQuickReject}
-                    />
-                  ))}
-                </VStack>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </CardBody>
-      </Card>
+          <TabPanel px={0}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+              {applications.map((application) => (
+                <ApplicationCard
+                  key={application.id}
+                  application={application}
+                  userRole="breeder"
+                />
+              ))}
+            </SimpleGrid>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+
     </VStack>
   );
 };

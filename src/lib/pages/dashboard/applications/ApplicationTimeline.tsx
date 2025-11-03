@@ -40,6 +40,9 @@ interface ApplicationTimelineProps {
   onSignContract?: () => void;
   onCompletePayment?: () => void;
   onMarkCompleted?: () => void;
+  onWithdrawApplication?: () => void;
+  onApproveApplication?: () => void;
+  onRejectApplication?: () => void;
 }
 
 interface TimelineStep {
@@ -48,13 +51,13 @@ interface TimelineStep {
   description: string;
   status: 'completed' | 'current' | 'pending' | 'locked';
   date?: string;
-  actionButton?: {
+  actionButtons?: {
     label: string;
     onClick: () => void;
     colorScheme: string;
     icon: any;
     disabled?: boolean;
-  };
+  }[];
   info?: string[];
 }
 
@@ -65,6 +68,9 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
   onSignContract,
   onCompletePayment,
   onMarkCompleted,
+  onWithdrawApplication,
+  onApproveApplication,
+  onRejectApplication,
 }) => {
   const isOwner = userProfile?.id === application.listings.owner_id;
   const isApplicant = userProfile?.id === application.seeker_id;
@@ -83,6 +89,12 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             'Application includes your personal details and preferences',
             'Breeder will review your suitability for adoption',
           ],
+          actionButtons: application.status === 'submitted' && onWithdrawApplication ? [{
+            label: 'Withdraw Application',
+            onClick: onWithdrawApplication,
+            colorScheme: 'red',
+            icon: WarningIcon,
+          }] : undefined,
         },
         {
           id: 'under_review',
@@ -131,13 +143,18 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
               'Reservation fee is deducted from final payment',
               'If payment is not received within 24 hours, listing will be released',
             ],
-            actionButton: application.status === 'approved' && !application.reservation_paid ? {
+            actionButtons: application.status === 'approved' && !application.reservation_paid ? [{
               label: 'Pay Reservation Fee',
               onClick: onPayReservation || (() => { }),
               colorScheme: 'green',
               icon: StarIcon,
-            } : undefined,
-          },
+            }] : undefined,
+          }
+        );
+      }
+
+      if (application.reservation_paid) {
+        steps.push(
           {
             id: 'contract',
             title: 'Sign Adoption Contract',
@@ -149,13 +166,18 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
               'Includes responsibilities of both parties',
               'Required before final payment',
             ],
-            actionButton: application.reservation_paid && !application.contract_signed ? {
+            actionButtons: application.reservation_paid && !application.contract_signed ? [{
               label: 'Sign Contract',
               onClick: onSignContract || (() => { }),
               colorScheme: 'blue',
               icon: EditIcon,
-            } : undefined,
-          },
+            }] : undefined,
+          }
+        )
+      }
+
+      if (application.contract_signed) {
+        steps.push(
           {
             id: 'payment',
             title: 'Complete Payment',
@@ -167,13 +189,18 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
               'Payment secures ownership transfer',
               'Adoption process completes upon payment',
             ],
-            actionButton: application.contract_signed && !application.payment_complete ? {
+            actionButtons: application.contract_signed && !application.payment_complete ? [{
               label: 'Complete Payment',
               onClick: onCompletePayment || (() => { }),
               colorScheme: 'green',
               icon: StarIcon,
-            } : undefined,
-          },
+            }] : undefined,
+          }
+        )
+      }
+
+      if (application.payment_complete) {
+        steps.push(
           {
             id: 'completed',
             title: 'Adoption Completed',
@@ -185,9 +212,8 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
               'Welcome to your new family member!',
             ],
           }
-        );
+        )
       }
-
       return steps;
     } else {
       // Steps for breeders (owners)
@@ -235,6 +261,20 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             'Take time to make the right decision',
             'Consider the applicant\'s profile and requirements',
           ],
+          actionButtons: application.status === 'pending' && onApproveApplication && onRejectApplication ? [
+            {
+              label: 'Approve',
+              onClick: onApproveApplication,
+              colorScheme: 'green',
+              icon: CheckCircleIcon,
+            },
+            {
+              label: 'Reject',
+              onClick: onRejectApplication,
+              colorScheme: 'red',
+              icon: WarningIcon,
+            },
+          ] : undefined,
         },
       ];
 
@@ -248,9 +288,15 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             status: application.reservation_paid ? 'completed' : 'current',
             info: [
               'Applicant has 24 hours to pay reservation fee',
-              'Reservation secures the listing for adoption',
+              'If payment is not received within 24 hours, listing will be released',
+
             ],
-          },
+          }
+        );
+      }
+
+      if (application.reservation_paid) {
+        steps.push(
           {
             id: 'awaiting_contract',
             title: 'Awaiting Contract Signature',
@@ -261,7 +307,12 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
               'Contract outlines adoption terms and responsibilities',
               'Both parties must agree to the terms',
             ],
-          },
+          }
+        )
+      }
+
+      if (application.contract_signed) {
+        steps.push(
           {
             id: 'awaiting_final_payment',
             title: 'Awaiting Final Payment',
@@ -272,7 +323,12 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
               'Final payment completes the adoption',
               'Reservation fee will be deducted from total',
             ],
-          },
+          }
+        )
+      }
+
+      if (application.payment_complete) {
+        steps.push(
           {
             id: 'finalize',
             title: 'Finalize Adoption',
@@ -282,16 +338,15 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
               'Mark adoption as completed',
               'Arrange pickup/delivery with new owner',
             ],
-            actionButton: application.payment_complete && application.status !== 'completed' ? {
+            actionButtons: application.payment_complete && application.status !== 'completed' ? [{
               label: 'Mark as Completed',
               onClick: onMarkCompleted || (() => { }),
               colorScheme: 'purple',
               icon: CheckIcon,
-            } : undefined,
+            }] : undefined,
           }
-        );
+        )
       }
-
       return steps;
     }
   };
@@ -333,8 +388,8 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
                 </Box>
 
                 {step.status === 'current' && (
-                  <Badge colorScheme="blue" variant="subtle" size="sm">
-                    Current Step
+                  <Badge colorScheme="orange" variant="subtle" size="sm">
+                    Pending
                   </Badge>
                 )}
                 {step.status === 'completed' && (
@@ -363,18 +418,23 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
                 </VStack>
               )}
 
-              {/* Action button */}
-              {step.actionButton && (
+              {/* Action buttons */}
+              {step.actionButtons && step.actionButtons.length > 0 && (
                 <Box py={2} mb={4}>
-                  <Button
-                    size="sm"
-                    colorScheme={step.actionButton.colorScheme}
-                    leftIcon={<Icon as={step.actionButton.icon} />}
-                    onClick={step.actionButton.onClick}
-                    isDisabled={step.actionButton.disabled}
-                  >
-                    {step.actionButton.label}
-                  </Button>
+                  <HStack spacing={2}>
+                    {step.actionButtons.map((button, btnIndex) => (
+                      <Button
+                        key={btnIndex}
+                        size="sm"
+                        colorScheme={button.colorScheme}
+                        leftIcon={<Icon as={button.icon} />}
+                        onClick={button.onClick}
+                        isDisabled={button.disabled}
+                      >
+                        {button.label}
+                      </Button>
+                    ))}
+                  </HStack>
                 </Box>
               )}
             </VStack>

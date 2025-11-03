@@ -12,6 +12,7 @@ import { SeekerApplicationsView } from './SeekerApplicationsView';
 import { BreederApplicationsView } from './BreederApplicationsView';
 import { Loader } from 'lib/components/ui/Loader';
 import { useUserProfile } from 'lib/hooks/queries';
+import { NextSeo } from 'next-seo';
 
 interface ApplicationsPageProps { }
 
@@ -49,8 +50,6 @@ export const ApplicationsPage: React.FC<ApplicationsPageProps> = () => {
         return <SeekerApplicationsView userProfile={userProfile} />;
       case 'breeder':
         return <BreederApplicationsView userProfile={userProfile} />;
-      case 'admin':
-        return <BreederApplicationsView userProfile={userProfile} />;
       default:
         return (
           <Box textAlign="center" py={12}>
@@ -66,25 +65,32 @@ export const ApplicationsPage: React.FC<ApplicationsPageProps> = () => {
   };
 
   return (
-    <Container maxW="6xl" py={{ base: 4, md: 0 }} >
-      <VStack spacing={8} align="stretch">
-        {/* Page Header */}
-        <Box>
-          <Heading size={{ base: 'sm', lg: 'md' }} color="brand.800">
-            Applications
-          </Heading>
-          <Text color="gray.600" mt={2}>
-            {userProfile.role === 'seeker'
-              ? 'Manage your adoption applications and track their status'
-              : 'Review and manage applications for your listings'
-            }
-          </Text>
-        </Box>
+    <>
 
-        {/* Role-Specific Content */}
-        {renderRoleSpecificContent()}
-      </VStack>
-    </Container>
+      <NextSeo title="Applications - DogHouse Kenya" />
+
+      <Container maxW="6xl" py={{ base: 4, md: 0 }} >
+        <VStack spacing={8} align="stretch">
+          {/* Page Header */}
+          <Box>
+            <Heading size={{ base: 'sm', lg: 'md' }} color="brand.800">
+              Applications
+            </Heading>
+            <Text color="gray.600" mt={2}>
+              {userProfile.role === 'seeker'
+                ? 'Manage your adoption applications and track their status'
+                : 'Review and manage applications for your listings'
+              }
+            </Text>
+          </Box>
+
+          {/* Role-Specific Content */}
+          {renderRoleSpecificContent()}
+        </VStack>
+      </Container>
+    </>
+
+
   );
 };
 

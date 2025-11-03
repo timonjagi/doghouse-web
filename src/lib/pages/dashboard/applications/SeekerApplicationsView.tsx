@@ -104,65 +104,70 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
       </SimpleGrid> */}
 
       {/* Applications Tabs */}
-      <Card>
-        <CardHeader>
-          <Tabs index={selectedTab} onChange={setSelectedTab} colorScheme="brand">
-            <TabList>
-              <Tab>
-                Active ({groupedApplications.active.length})
-              </Tab>
-              <Tab>
-                Completed ({groupedApplications.completed.length})
-              </Tab>
-              <Tab>
-                All ({applications.length})
-              </Tab>
-            </TabList>
-          </Tabs>
-        </CardHeader>
 
-        <CardBody>
-          <Tabs index={selectedTab} onChange={setSelectedTab}>
-            <TabPanels>
-              <TabPanel px={0}>
-                {groupedApplications.active.length === 0 ? (
-                  <Box textAlign="center" py={8}>
-                    <Text color="gray.500">No active applications</Text>
-                  </Box>
-                ) : (
-                  <VStack spacing={4} align="stretch">
-                    {groupedApplications.active.map((application) => (
-                      <ApplicationCard key={application.id} application={application} userRole="seeker" />
-                    ))}
-                  </VStack>
-                )}
-              </TabPanel>
+      <Tabs variant='soft-rounded' index={selectedTab} onChange={setSelectedTab} colorScheme="brand">
+        <TabList>
+          <Tab>
+            Active ({groupedApplications.active.length})
+          </Tab>
+          <Tab>
+            Completed ({groupedApplications.completed.length})
+          </Tab>
+          <Tab>
+            All ({applications.length})
+          </Tab>
+        </TabList>
 
-              <TabPanel px={0}>
-                {groupedApplications.completed.length === 0 ? (
-                  <Box textAlign="center" py={8}>
-                    <Text color="gray.500">No completed applications</Text>
-                  </Box>
-                ) : (
-                  <VStack spacing={4} align="stretch">
-                    {groupedApplications.completed.map((application) => (
-                      <ApplicationCard key={application.id} application={application} userRole="seeker" />
-                    ))}
-                  </VStack>
-                )}
-              </TabPanel>
+        <TabPanels>
+          <TabPanel px={0}>
+            {groupedApplications.active.length === 0 ? (
+              <Box textAlign="center" py={8}>
+                <Text color="gray.500">No active applications</Text>
+              </Box>
+            ) : (
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+                {groupedApplications.active.map((application) => (
+                  <ApplicationCard
+                    key={application.id}
+                    application={application}
+                    userRole="seeker"
+                  />
+                ))}
+              </SimpleGrid>
+            )}
+          </TabPanel>
 
-              <TabPanel px={0}>
-                <VStack spacing={4} align="stretch">
-                  {applications.map((application) => (
-                    <ApplicationCard key={application.id} application={application} userRole="seeker" />
-                  ))}
-                </VStack>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </CardBody>
-      </Card>
+          <TabPanel px={0}>
+            {groupedApplications.completed.length === 0 ? (
+              <Box textAlign="center" py={8}>
+                <Text color="gray.500">No completed applications</Text>
+              </Box>
+            ) : (
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+                {groupedApplications.completed.map((application) => (
+                  <ApplicationCard
+                    key={application.id}
+                    application={application}
+                    userRole="seeker"
+                  />
+                ))}
+              </SimpleGrid>
+            )}
+          </TabPanel>
+
+          <TabPanel px={0}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} >
+              {applications.map((application) => (
+                <ApplicationCard
+                  key={application.id}
+                  application={application}
+                  userRole="seeker"
+                />
+              ))}
+            </SimpleGrid>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </VStack>
   );
 };

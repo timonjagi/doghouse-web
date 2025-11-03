@@ -76,6 +76,15 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     response_message: '',
   });
 
+  const [pendingAction, setPendingAction] = useState<{
+    type: 'withdraw' | 'approve' | 'reject' | 'complete' | null;
+    status: string;
+    title: string;
+    message: string;
+    confirmText: string;
+    colorScheme: string;
+  } | null>(null);
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Not specified';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -104,27 +113,35 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
   const handleStatusUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!pendingAction) return;
+
     try {
       await updateStatusMutation.mutateAsync({
         id: application.id,
         //@ts-ignore
-        status: updateForm.status,
-        response_message: updateForm.response_message,
+        status: pendingAction.status,
+        response_message: updateForm.response_message || pendingAction.message,
       });
 
       toast({
-        title: 'Application updated',
-        description: `Application status changed to ${formatStatus(updateForm.status)}`,
+        title: pendingAction.title,
+        description: pendingAction.message,
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
 
       setUpdateForm({ status: '', response_message: '' });
+      setPendingAction(null);
       onUpdateClose();
+
+      // Redirect for withdrawal
+      if (pendingAction.type === 'withdraw') {
+        router.push('/dashboard/applications');
+      }
     } catch (error) {
       toast({
-        title: 'Error updating application',
+        title: `Error ${pendingAction.type === 'withdraw' ? 'withdrawing' : pendingAction.type === 'approve' ? 'approving' : 'rejecting'} application`,
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -132,6 +149,62 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
       });
     }
   };
+
+  const initiateAction = (action: 'withdraw' | 'approve' | 'reject' | 'complete') => {
+    let actionConfig;
+
+    switch (action) {
+      case 'withdraw':
+        actionConfig = {
+          type: 'withdraw' as const,
+          status: 'rejected',
+          title: 'Application Withdrawn',
+          message: 'Your application has been successfully withdrawn',
+          confirmText: 'Withdraw Application',
+          colorScheme: 'red',
+        };
+        break;
+      case 'approve':
+        actionConfig = {
+          type: 'approve' as const,
+          status: 'approved',
+          title: 'Application Approved',
+          message: 'The application has been approved successfully',
+          confirmText: 'Approve Application',
+          colorScheme: 'green',
+        };
+        break;
+      case 'reject':
+        actionConfig = {
+          type: 'reject' as const,
+          status: 'rejected',
+          title: 'Application Rejected',
+          message: 'The application has been rejected',
+          confirmText: 'Reject Application',
+          colorScheme: 'red',
+        };
+        break;
+      case 'complete':
+        actionConfig = {
+          type: 'complete' as const,
+          status: 'completed',
+          title: 'Application Completed',
+          message: 'The adoption process has been marked as completed',
+          confirmText: 'Mark as Completed',
+          colorScheme: 'purple',
+        };
+        break;
+    }
+
+    setPendingAction(actionConfig);
+    setUpdateForm({ status: actionConfig.status, response_message: '' });
+    onUpdateOpen();
+  };
+
+  const handleWithdrawApplication = () => initiateAction('withdraw');
+  const handleApproveApplication = () => initiateAction('approve');
+  const handleRejectApplication = () => initiateAction('reject');
+  const handleMarkCompleted = () => initiateAction('complete');
 
 
   if (profileLoading || applicationLoading) {
@@ -191,7 +264,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     <>
       <NextSeo title={`Application for ${application.listings.title} - DogHouse Kenya`} />
 
-      <Container maxW="7xl" py={{ base: 4, md: 0 }}>
+      <Container maxW="7xl" py={{ base: 4, md: 0 }} >
         {isMobile && (
           <Button
             leftIcon={<ArrowBackIcon />}
@@ -289,13 +362,10 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                       duration: 3000,
                     });
                   }}
-                  onMarkCompleted={() => {
-                    // Mark application as completed
-                    handleStatusUpdate({
-                      preventDefault: () => { },
-                      target: { value: 'completed' }
-                    } as any);
-                  }}
+                  onMarkCompleted={handleMarkCompleted}
+                  onWithdrawApplication={handleWithdrawApplication}
+                  onApproveApplication={handleApproveApplication}
+                  onRejectApplication={handleRejectApplication}
                 />
               </CardBody>
             </Card>
@@ -312,7 +382,23 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                 <ApplicationDetails application={application} />
               </CardBody>
             </Card>
-
+            <Card
+              sx={{ display: 'inline-block', width: '100%' }}
+              mb={4}
+            >
+              <CardHeader>
+                <Heading size="xs">
+                  {isOwner ? 'Applicant Information' : 'Breeder Information'}
+                </Heading>
+              </CardHeader>
+              <CardBody>
+                {isOwner ? (
+                  <ApplicantInfo application={application} />
+                ) : (
+                  <BreederInfo application={application} formatDate={formatDate} />
+                )}
+              </CardBody>
+            </Card>
             <Card
               sx={{ display: 'inline-block', width: '100%' }}
               mb={4}
@@ -328,70 +414,73 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
 
           </Box>
           {/* </SimpleGrid> */}
-          <Card
-            sx={{ display: 'inline-block', width: '100%' }}
-            mb={4}
-          >
-            <CardHeader>
-              <Heading size="xs">
-                {isOwner ? 'Applicant Information' : 'Breeder Information'}
-              </Heading>
-            </CardHeader>
-            <CardBody>
-              {isOwner ? (
-                <ApplicantInfo application={application} />
-              ) : (
-                <BreederInfo application={application} formatDate={formatDate} />
-              )}
-            </CardBody>
-          </Card>
+
         </Stack>
       </Container>
 
       {/* Status Update Modal */}
-      <AlertDialog isOpen={isUpdateOpen} leastDestructiveRef={undefined} onClose={onUpdateClose}>
+      <AlertDialog isOpen={isUpdateOpen} leastDestructiveRef={undefined} onClose={() => {
+        setPendingAction(null);
+        onUpdateClose();
+      }}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Update Application Status
+              {pendingAction?.title || 'Update Application Status'}
             </AlertDialogHeader>
             <AlertDialogBody>
               <form onSubmit={handleStatusUpdate}>
                 <VStack spacing={4} align="stretch">
-                  <FormControl>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      value={updateForm.status}
-                      onChange={(e) => setUpdateForm({ ...updateForm, status: e.target.value })}
-                      required
-                    >
-                      <option value="pending">Pending Review</option>
-                      <option value="approved">Approve Application</option>
-                      <option value="rejected">Reject Application</option>
-                    </Select>
-                  </FormControl>
+                  {pendingAction?.type !== 'withdraw' && (
+                    <FormControl>
+                      <FormLabel>Response Message (Optional)</FormLabel>
+                      <Textarea
+                        value={updateForm.response_message}
+                        onChange={(e) => setUpdateForm({ ...updateForm, response_message: e.target.value })}
+                        placeholder={
+                          pendingAction?.type === 'approve'
+                            ? "Add a welcome message for the applicant..."
+                            : "Add a reason for rejection..."
+                        }
+                        rows={3}
+                      />
+                    </FormControl>
+                  )}
 
-                  <FormControl>
-                    <FormLabel>Response Message (Optional)</FormLabel>
-                    <Textarea
-                      value={updateForm.response_message}
-                      onChange={(e) => setUpdateForm({ ...updateForm, response_message: e.target.value })}
-                      placeholder="Add a message for the applicant..."
-                      rows={3}
-                    />
-                  </FormControl>
+                  {pendingAction?.type === 'withdraw' && (
+                    <Text>
+                      Are you sure you want to withdraw this application? This action cannot be undone.
+                    </Text>
+                  )}
+
+                  {pendingAction?.type === 'approve' && (
+                    <Text>
+                      Approving this application will notify the applicant and allow them to proceed with the adoption process.
+                    </Text>
+                  )}
+
+                  {pendingAction?.type === 'reject' && (
+                    <Text>
+                      Rejecting this application will notify the applicant that their application was not approved.
+                    </Text>
+                  )}
                 </VStack>
               </form>
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button onClick={onUpdateClose}>Cancel</Button>
+              <Button onClick={() => {
+                setPendingAction(null);
+                onUpdateClose();
+              }}>
+                Cancel
+              </Button>
               <Button
-                colorScheme={updateForm.status === 'approved' ? 'green' : 'red'}
+                colorScheme={pendingAction?.colorScheme || 'blue'}
                 onClick={handleStatusUpdate}
                 ml={3}
                 isLoading={updateStatusMutation.isPending}
               >
-                Update Status
+                {pendingAction?.confirmText || 'Confirm'}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -458,8 +547,6 @@ const ApplicationDetails = ({ application }) => {
 
 // Listing Information Component
 const ListingInfo = ({ application }) => {
-  const primaryPhoto = application.listings.photos?.[0] || '/images/doggo.png';
-
   return (
     <VStack spacing={4} align="stretch">
       <Gallery
@@ -542,136 +629,129 @@ const ListingInfo = ({ application }) => {
 // Applicant Information Component
 const ApplicantInfo = ({ application }) => {
   return (
-    <VStack spacing={4} align="stretch">
+    <Stack spacing={4}>
 
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-        <Stack>
+      <HStack spacing={4}>
+        <Avatar
+          src={application.users.profile_photo_url || undefined}
+          name={application.users.display_name}
+          size="lg"
+        />
+        <VStack align="start" spacing={1}>
+          <Text fontWeight="bold" fontSize="lg">{application.users.display_name}</Text>
+          <Text color="gray.600">{application.users.email.replace(
+            application.users.email.split('@')[0],
+            application.users.email.split('@')[0].slice(0, 3) + '***'
+          )}</Text>
+        </VStack>
+      </HStack>
 
-          <HStack spacing={4}>
-            <Avatar
-              src={application.users.profile_photo_url || undefined}
-              name={application.users.display_name}
-              size="lg"
-            />
-            <VStack align="start" spacing={1}>
-              <Text fontWeight="bold" fontSize="lg">{application.users.display_name}</Text>
-              <Text color="gray.600">{application.users.email}</Text>
-              <Text color="gray.600">{application.users.phone || 'No phone number'}</Text>
-            </VStack>
-          </HStack>
-          <HStack spacing={4} pt={2}>
-            <Button leftIcon={<EmailIcon />} size="sm" variant="outline">
-              Email Applicant
-            </Button>
-            <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
-              Call Applicant
-            </Button>
-            <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
-              Message
-            </Button>
-          </HStack>
 
-        </Stack>
+      {application?.reservation_paid && <HStack spacing={4} pt={2}>
+        <Button leftIcon={<EmailIcon />} size="sm" variant="outline">
+          Email Applicant
+        </Button>
+        <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
+          Call Applicant
+        </Button>
+        <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
+          Message
+        </Button>
+      </HStack>}
 
-        <SimpleGrid columns={2} spacing={4}>
-          <Box>
-            <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-              Location
-            </Text>
-            <Text>{application.users.location_text || 'Not specified'}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-              Member Since
-            </Text>
-            <Text>{new Date(application.users.created_at).toLocaleDateString()}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-              Experience Level
-            </Text>
-            <Text>{application.users?.seeker_profiles?.experience_level || 'Not specified'}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-              Living Situation
-            </Text>
-            <Text>{application.users?.seeker_profiles?.living_situation || 'Not specified'}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-              Children
-            </Text>
-            <Text>{application.application_data?.has_children ? 'Yes' : 'No'}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-              Other Pets
-            </Text>
-            <Text>{application.users?.seeker_profiles?.has_other_pets ? 'Yes' : 'No'}</Text>
-          </Box>
-        </SimpleGrid>
+      <Divider />
+
+      <SimpleGrid columns={2} spacing={4}>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Location
+          </Text>
+          <Text>{application.users.location_text || 'Not specified'}</Text>
+        </Box>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Member Since
+          </Text>
+          <Text>{new Date(application.users.created_at).toLocaleDateString()}</Text>
+        </Box>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Experience Level
+          </Text>
+          <Text>{application.users?.seeker_profiles?.experience_level || 'Not specified'}</Text>
+        </Box>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Living Situation
+          </Text>
+          <Text>{application.users?.seeker_profiles?.living_situation || 'Not specified'}</Text>
+        </Box>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Children
+          </Text>
+          <Text>{application.application_data?.has_children ? 'Yes' : 'No'}</Text>
+        </Box>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Other Pets
+          </Text>
+          <Text>{application.users?.seeker_profiles?.has_other_pets ? 'Yes' : 'No'}</Text>
+        </Box>
       </SimpleGrid>
-
-
-    </VStack>
+    </Stack>
   );
 };
 
 // Breeder Information Component
 const BreederInfo = ({ application, formatDate }) => {
   return (
-    <VStack spacing={4} align="stretch">
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-        <Stack>
-          <HStack spacing={4}>
-            <Avatar
-              src={application.listings.users?.profile_photo_url || undefined}
-              name={application.listings.users?.display_name || 'Breeder'}
-              size="lg"
-            />
-            <VStack align="start" spacing={1}>
-              <Text fontWeight="bold" fontSize="lg">
-                {application.listings.users?.display_name || 'Breeder'}
-              </Text>
-              <Text color="gray.600">{application.listings.users?.email || 'No email'}</Text>
-              <Text color="gray.600">{application.listings.users?.phone || 'No phone'}</Text>
-            </VStack>
-          </HStack>
-          <HStack spacing={4} pt={2}>
-            {/* <Button leftIcon={<EmailIcon />} size="sm" variant="outline">
+    <Stack spacing={4} >
+      <HStack spacing={4}>
+        <Avatar
+          src={application.listings.users?.profile_photo_url || undefined}
+          name={application.listings.users?.display_name || 'Breeder'}
+          size="lg"
+        />
+        <VStack align="start" spacing={1}>
+          <Text fontWeight="bold" fontSize="lg">
+            {application.listings.users?.display_name || 'Breeder'}
+          </Text>
+          <Text color="gray.600">{application.listings.users?.email.replace(
+            application.listings.users?.email.split('@')[0],
+            application.listings.users?.email.split('@')[0].slice(0, 3) + '***'
+          )}</Text>
+        </VStack>
+      </HStack>
+
+      {application?.reservation_paid && <HStack spacing={4} pt={2}>
+        <Button leftIcon={<EmailIcon />} size="sm" variant="outline">
           Contact Breeder
-        </Button> */}
-            <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
-              Call Breeder
-            </Button>
-            <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
+        </Button>
+        <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
+          Call Breeder
+        </Button>
+        {/* <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
               Message
-            </Button>
-          </HStack>
+            </Button> */}
+      </HStack>
+      }
 
-        </Stack>
-
-        <SimpleGrid columns={2} spacing={4}>
-          <Box>
-            <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-              Location
-            </Text>
-            <Text>{application.listings?.users?.location_text || 'Not specified'}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-              Listing Created
-            </Text>
-            <Text>{formatDate(application.listings.created_at)}</Text>
-          </Box>
-        </SimpleGrid>
+      <SimpleGrid columns={2} spacing={4}>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Location
+          </Text>
+          <Text>{application.listings?.users?.location_text || 'Not specified'}</Text>
+        </Box>
+        <Box>
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            Listing Created
+          </Text>
+          <Text>{formatDate(application.listings.created_at)}</Text>
+        </Box>
       </SimpleGrid>
-
-
-
-
-    </VStack>
+    </Stack>
   );
 };
 

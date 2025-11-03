@@ -88,14 +88,16 @@ export const Navbar = () => {
         isFullHeight
         preserveScrollBarGap
         trapFocus={false}
-        size={{ base: undefined, md: 'sm' }}
+        size={{ base: 'xs', md: 'sm' }}
       >
         <DrawerOverlay />
         <DrawerContent>
-          {isMobile && (<Sidebar onClose={onClose} profile={profile} />)}
-          {!isMobile && (
+          {isMobile ? (
+            <Sidebar onClose={onClose} profile={profile} loading={profileLoading} />
+          ) :
             <NotificationsDrawer isOpen={isOpen} onClose={onClose} />
-          )}
+          }
+
         </DrawerContent>
       </Drawer>
 

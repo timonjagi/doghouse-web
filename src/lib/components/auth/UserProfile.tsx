@@ -7,6 +7,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { useSignOut } from "lib/hooks/queries";
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { useRouter } from "next/router";
 // import * as React from "react";
@@ -18,18 +19,17 @@ interface UserProfileProps {
   onClose: () => void;
 }
 
-export const UserProfile = ({ profile, onClose }) => {
-  const { user, signOut } = useSupabaseAuth();
-
+export const UserProfile: React.FC<UserProfileProps> = ({ profile, onClose }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const toast = useToast();
   const router = useRouter();
 
+  const signOut = useSignOut();
   const onLogout = async () => {
     onClose();
 
     try {
-      await signOut();
+      await signOut.mutateAsync();
       toast({
         title: "Logged out successfully",
         description: "",
