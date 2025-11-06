@@ -118,30 +118,35 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             'May include phone/video calls or home visits',
           ],
         },
-        {
-          id: 'decision',
-          title: application.status === 'approved' ? 'Application Approved' : 'Decision Made',
-          description: application.status === 'approved'
-            ? 'Congratulations! Your application has been approved'
-            : application.status === 'rejected'
-              ? 'Your application was not approved at this time'
-              : 'Awaiting breeder decision',
-          status: ['approved', 'rejected'].includes(application.status) ? 'completed' :
-            application.status === 'pending' ? 'current' : 'pending',
-          info: application.status === 'approved' ? [
-            'Listing is now temporarily reserved for you',
-            'Next step: Pay reservation fee within 24 hours',
-          ] : application.status === 'rejected' ? [
-            'You can apply for other available listings',
-            'Consider reaching out to the breeder for feedback',
-          ] : [
-            'Breeder will notify you of their decision',
-            'This may take 1-3 business days',
-          ],
 
-        },
       ];
 
+      if (['approved', 'rejected'].includes(application.status)) {
+        steps.push(
+          {
+            id: 'decision',
+            title: application.status === 'approved' ? 'Application Approved' : 'Decision Made',
+            description: application.status === 'approved'
+              ? 'Congratulations! Your application has been approved'
+              : application.status === 'rejected'
+                ? 'Your application was not approved at this time'
+                : 'Awaiting breeder decision',
+            status: ['approved', 'rejected'].includes(application.status) ? 'completed' :
+              application.status === 'pending' ? 'current' : 'pending',
+            info: application.status === 'approved' ? [
+              'Listing is now temporarily reserved for you',
+              'Next step: Pay reservation fee within 24 hours',
+            ] : application.status === 'rejected' ? [
+              'You can apply for other available listings',
+              'Consider reaching out to the breeder for feedback',
+            ] : [
+              'Breeder will notify you of their decision',
+              'This may take 1-3 business days',
+            ],
+
+          }
+        )
+      }
       // Add post-approval steps only if approved
       if (application.status === 'approved') {
         steps.push(
@@ -447,7 +452,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
 
               <StepDescription pt={2} pb={4}>{step.description}</StepDescription>
 
-              {application.status === 'approved' || application.status === 'rejected' && (
+              {application.status === 'approved' || application.status === 'rejected' && index === steps.length - 1 && (
                 <Text fontSize="xs" color="red.500">
                   {
                     //@ts-ignore

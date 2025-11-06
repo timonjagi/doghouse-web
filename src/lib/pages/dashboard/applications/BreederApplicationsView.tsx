@@ -38,7 +38,7 @@ export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = (
       setGroupedApplications({
         new: applications.filter(app => app.status === 'submitted'),
         pending: applications.filter(app => app.status === 'pending'),
-        reviewed: applications.filter(app => ['approved', 'rejected'].includes(app.status)),
+        reviewed: applications.filter(app => ['approved', 'reserved'].includes(app.status)),
       });
 
     }

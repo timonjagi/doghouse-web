@@ -282,7 +282,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
 
   // Handle payment success callback from Paystack
   useEffect(() => {
-    if (payment === 'success' && application && !statusModal.isOpen) {
+    if (payment === 'success' && application && !statusModal.isOpen && transactions) {
       // Determine payment type based on application state
       let paymentType: 'reservation' | 'final' = 'reservation';
       let expectedAmount = Number(application.listings.reservation_fee) || 0;
@@ -291,11 +291,11 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         paymentType = 'final';
         expectedAmount = Number(application.listings.price) - Number(application.listings.reservation_fee);
       }
-
+      const transaction = transactions?.find(tx => tx.status === 'pending');
       // Show payment status modal
       setStatusModal({
         isOpen: true,
-        paymentReference: '', // Will be determined by the modal
+        paymentReference: (transaction.meta as any).paystack_reference,
         paymentType,
         expectedAmount,
       });
@@ -304,7 +304,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
       const newUrl = router.pathname.replace('[id]', id as string);
       router.replace(newUrl, undefined, { shallow: true });
     }
-  }, [payment, application, statusModal.isOpen, router, id]);
+  }, [payment, application, transactions, statusModal.isOpen, router, id]);
 
   if (profileLoading || applicationLoading || transactionsLoading) {
     return <Loader />;
@@ -363,17 +363,16 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
       <NextSeo title={`Application for ${application.listings.title} - DogHouse Kenya`} />
 
       <Container maxW="7xl" py={{ base: 4, md: 0 }} >
-        {isMobile && (
-          <Button
-            leftIcon={<ArrowBackIcon />}
-            variant="ghost"
-            onClick={() => router.push('/dashboard/applications')}
-            mb={4}
-            p={0}
-          >
-            Back to Applications
-          </Button>
-        )}
+        <Button
+          leftIcon={<ArrowBackIcon />}
+          variant="ghost"
+          onClick={() => router.push('/dashboard/applications')}
+          mb={4}
+          p={0}
+        >
+          Back to Applications
+        </Button>
+
 
         <Stack spacing={6}>
           <HStack justify="space-between" align="start" wrap="wrap" spacing={4}>

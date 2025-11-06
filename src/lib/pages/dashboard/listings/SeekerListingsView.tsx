@@ -57,7 +57,6 @@ interface FilterState {
 
 const BrowseListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) => {
   const router = useRouter();
-  const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
   const isMobile = useBreakpointValue({ base: true, md: false });
 

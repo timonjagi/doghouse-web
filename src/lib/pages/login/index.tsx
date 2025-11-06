@@ -12,20 +12,15 @@ import {
   Text,
   useBreakpointValue,
   useColorModeValue as mode,
-  useToast,
 } from "@chakra-ui/react";
 import { LoginForm } from "lib/components/auth/LoginForm";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 import { Logo } from "../../components/layout/Logo";
 
 const Login = () => {
   const router = useRouter();
-  const { user, loading } = useSupabaseAuth();
-  const toast = useToast();
 
   return (
     <Flex

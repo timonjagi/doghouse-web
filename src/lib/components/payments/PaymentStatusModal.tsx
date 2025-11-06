@@ -66,16 +66,6 @@ export const PaymentStatusModal: React.FC<PaymentStatusModalProps> = ({
 
         if (result?.status === 'completed') {
           setStatus('completed');
-
-          // Auto-close after success
-          setTimeout(() => {
-            onClose();
-            window.location.reload(); // Refresh to show updated application status
-          }, 200);
-          return;
-        }
-
-        if (status === 'completed') {
           toast({
             title: 'Payment Successful!',
             description: `${paymentType === 'reservation' ? 'Reservation fee' : 'Final payment'} has been confirmed.`,
@@ -83,6 +73,12 @@ export const PaymentStatusModal: React.FC<PaymentStatusModalProps> = ({
             duration: 5000,
             isClosable: true,
           });
+          // Auto-close after success
+          setTimeout(() => {
+            onClose();
+            //window.location.reload(); // Refresh to show updated application status
+          }, 2000);
+          return;
         }
 
         setPollingCount(prev => {

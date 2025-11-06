@@ -312,7 +312,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
         price: data.price,
         reservation_fee: data.reservation_fee,
         location_text: data.location_text,
-        status: 'pending' as const,
+        status: 'available' as const,
       };
 
       const result = await createListingMutation.mutateAsync(listingData);
@@ -668,7 +668,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
         }
 
       case 2: // Parent Information
-        return !!formData.parents.sire.name && !!formData.parents.sire.breed && !!formData.parents.dam.name && !!formData.parents.dam.breed;
+        return true;
       case 3: // Photos
         return formData.photos.length > 0;
       case 4: // Health Information
@@ -818,6 +818,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
                 onClick={isEditing ? handleUpdate : handlePublish}
                 isLoading={isLoading}
                 loadingText={isEditing ? "Updating..." : "Publishing..."}
+                isDisabled={isLoading}
               >
                 {isEditing ? 'Update Listing' : 'Publish Listing'}
               </Button>}

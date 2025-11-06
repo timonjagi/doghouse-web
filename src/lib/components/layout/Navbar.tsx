@@ -74,13 +74,13 @@ export const Navbar = () => {
             ))}
           </Breadcrumb>
           <Spacer />
-          <Box>
+          <Box >
             <IconButton
               icon={<FiBell />}
               aria-label="Notifications"
               onClick={onToggle}
             />
-            {unreadCount > 0 && <Circle size="2" bg="blue.400" position="absolute" top={3} right={3} />}
+            {unreadCount > 0 && <Circle size="2" bg="blue.400" display="relative" position="absolute" top={8} right={8} zIndex={1} />}
           </Box>
         </HStack>
       )}

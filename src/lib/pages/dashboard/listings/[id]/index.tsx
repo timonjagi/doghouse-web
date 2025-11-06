@@ -217,7 +217,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                   {formatStatus(listing.status)}
                 </Badge>
                 <Text fontSize="sm" color="gray.500">
-                  Listed {formatDate(listing.created_at.toString())}
+                  Listed: {formatDate(listing.created_at.toString())}
                 </Text>
               </HStack>
 

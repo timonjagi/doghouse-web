@@ -32,6 +32,7 @@ import {
 } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import { useCreateApplication } from '../../../hooks/queries/useApplications';
+import { useRouter } from 'next/router';
 
 interface ApplicationFormProps {
   isOpen: boolean;
@@ -53,6 +54,8 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
   listing,
 }) => {
   const toast = useToast();
+  const router = useRouter();
+
   const createApplicationMutation = useCreateApplication();
 
   // Initialize form with application-specific data only
@@ -69,10 +72,6 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
   const validateForm = (): boolean => {
     const newErrors: any = {};
 
-    if (!formData.message.trim()) {
-      newErrors.message = 'Please provide a message explaining why you want this pet';
-    }
-
     if (!formData.timeline) {
       newErrors.timeline = 'Please specify your timeline for adoption';
     }
@@ -80,8 +79,6 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     if (listing.type === 'litter' && !formData.quantity) {
       newErrors.quantity = 'Please specify the number of puppies you want to adopt';
     }
-
-
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -105,7 +102,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
         submitted_at: new Date().toISOString(),
       };
 
-      await createApplicationMutation.mutateAsync({
+      const result = await createApplicationMutation.mutateAsync({
         listing_id: listing.id,
         application_data: applicationData,
       });
@@ -118,6 +115,9 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
         isClosable: true,
       });
 
+      if (result) {
+        router.push('/dashboard/applications/' + result.id)
+      }
       // Reset form and close modal
       setFormData({
         message: '',
@@ -198,7 +198,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
                       <Text fontSize="sm" color="red.500">{errors.timeline}</Text>
                     )}
                   </FormControl>
-
+                  {/* 
                   <FormControl>
                     <FormLabel>Preferred Contact Method</FormLabel>
                     <Select
@@ -209,6 +209,19 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
                       <option value="phone">Phone</option>
                       <option value="whatsapp">WhatsApp</option>
                     </Select>
+                  </FormControl> */}
+
+                  <FormControl>
+                    <FormLabel>Your Offer Price (KSH)</FormLabel>
+                    <Input
+                      type="number"
+                      placeholder={`e.g., ${listing.price || 'Enter amount'}`}
+                      value={formData.offer_price || ''}
+                      onChange={(e) => handleInputChange('offer_price', parseInt(e.target.value) || undefined)}
+                    />
+                    <Text fontSize="xs" color="gray.600">
+                      Leave empty to accept the listing price
+                    </Text>
                   </FormControl>
                 </SimpleGrid>
 
@@ -236,24 +249,11 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
                     </FormControl>
                   )}
 
-                  {/* Offer price field */}
-                  <FormControl>
-                    <FormLabel>Your Offer Price (KSH)</FormLabel>
-                    <Input
-                      type="number"
-                      placeholder={`e.g., ${listing.price || 'Enter amount'}`}
-                      value={formData.offer_price || ''}
-                      onChange={(e) => handleInputChange('offer_price', parseInt(e.target.value) || undefined)}
-                    />
-                    <Text fontSize="xs" color="gray.600">
-                      Leave empty to accept the listing price
-                    </Text>
-                  </FormControl>
                 </SimpleGrid>
 
                 {/* Message field */}
-                <FormControl isRequired>
-                  <FormLabel>Message to Breeder</FormLabel>
+                <FormControl>
+                  <FormLabel>Message to Breeder (optional)</FormLabel>
                   <Textarea
                     placeholder="Tell the breeder why you're interested in this pet and what you're looking for in a companion..."
                     value={formData.message}

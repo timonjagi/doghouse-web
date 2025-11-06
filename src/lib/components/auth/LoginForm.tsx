@@ -62,13 +62,13 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
           isClosable: true,
         });
       } else if (data.user) {
+        router.push("/dashboard");
         toast({
           title: "Login successful",
           description: "Welcome back!",
           status: "success",
           duration: 3000,
         });
-        router.push("/dashboard");
       }
     } catch (error) {
       toast({
@@ -180,7 +180,6 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
           leftIcon={<GoogleIcon boxSize="5" />}
           iconSpacing="3"
           onClick={handleGoogleLogin}
-          isLoading={loading}
         >
           Continue with Google
         </Button>
