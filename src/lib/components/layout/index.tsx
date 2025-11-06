@@ -49,6 +49,11 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/applications/[id]", layout: DashboardLayout },
     { path: "/dashboard/profile", layout: DashboardLayout },
     { path: "/dashboard/settings", layout: DashboardLayout },
+    { path: "/dashboard/billing/earnings", layout: DashboardLayout },
+    { path: "/dashboard/billing/payments", layout: DashboardLayout },
+    { path: "/dashboard/billing/transactions", layout: DashboardLayout },
+
+
 
     // Admin dashboard routes
     { path: "/dashboard/admin", layout: DashboardLayout },

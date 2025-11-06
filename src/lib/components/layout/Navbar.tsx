@@ -4,6 +4,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   ButtonGroup,
+  Circle,
   Drawer,
   DrawerContent,
   DrawerOverlay,
@@ -25,12 +26,14 @@ import { useRouter } from "next/router";
 import { useUserProfile } from "lib/hooks/queries/useUserProfile";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import Link from "next/link";
+import { useUnreadNotificationsCount } from "lib/hooks/queries/useNotifications";
 
 export const Navbar = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const router = useRouter();
   const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const { data: unreadCount } = useUnreadNotificationsCount(profile?.id);
 
   const currentRoute = router.pathname;
   return (
@@ -71,11 +74,14 @@ export const Navbar = () => {
             ))}
           </Breadcrumb>
           <Spacer />
-          <IconButton
-            icon={<FiBell />}
-            aria-label="Notifications"
-            onClick={onToggle}
-          />
+          <Box>
+            <IconButton
+              icon={<FiBell />}
+              aria-label="Notifications"
+              onClick={onToggle}
+            />
+            {unreadCount > 0 && <Circle size="2" bg="blue.400" position="absolute" top={3} right={3} />}
+          </Box>
         </HStack>
       )}
 

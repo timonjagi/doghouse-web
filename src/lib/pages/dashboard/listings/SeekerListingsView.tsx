@@ -180,7 +180,7 @@ const BrowseListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) =>
       <Container maxW="7xl" py={4}>
         <VStack spacing={6} align="stretch">
           <Box>
-            <Heading size={{ base: 'sm', lg: 'md' }} mb={2} color="brand.600">Browse Available Pets</Heading>
+            <Heading size={{ base: 'sm', lg: 'md' }} mb={2} >Browse Available Pets</Heading>
             <Text color="gray.600">Find your perfect companion from verified breeders</Text>
           </Box>
 

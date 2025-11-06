@@ -46,12 +46,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiHome,
           ariaLabel: "Dashboard home"
         },
-        {
-          label: "Inbox",
-          href: "/dashboard/inbox",
-          icon: FiMessageSquare,
-          ariaLabel: "Inbox"
-        },
+        // {
+        //   label: "Inbox",
+        //   href: "/dashboard/inbox",
+        //   icon: FiMessageSquare,
+        //   ariaLabel: "Inbox"
+        // },
       ]
     },
     {
@@ -113,12 +113,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiHome,
           ariaLabel: "Dashboard home"
         },
-        {
-          label: "Inbox",
-          href: "/dashboard/inbox",
-          icon: FiMessageSquare,
-          ariaLabel: "Inbox"
-        },
+        // {
+        //   label: "Inbox",
+        //   href: "/dashboard/inbox",
+        //   icon: FiMessageSquare,
+        //   ariaLabel: "Inbox"
+        // },
       ]
     },
     {

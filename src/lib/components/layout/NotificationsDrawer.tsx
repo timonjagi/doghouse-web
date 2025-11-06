@@ -53,14 +53,14 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
     }
 
     // Navigate based on notification type and data
-    //@ts-ignore
-    if (notification.meta?.applicationId) {
-      //@ts-ignore
-      router.push(`/dashboard/applications/${notification.meta.applicationId}`);
-      //@ts-ignore
-    } else if (notification.meta?.listingId) {
-      //@ts-ignore
-      router.push(`/dashboard/listings/${notification.meta.listingId}`);
+    if (notification.type === 'payment_completed' || notification.type === 'payment_received') {
+      // For payment notifications, navigate to transactions page
+      router.push('/dashboard/billing/transactions');
+    } else if ((notification.meta as any)?.applicationId) {
+      // For application status changes, navigate to applications page
+      router.push(`/dashboard/applications/${(notification.meta as any).applicationId}`);
+    } else if ((notification.meta as any)?.listingId) {
+      router.push(`/dashboard/listings/${(notification.meta as any).listingId}`);
     }
 
     // Close the drawer
@@ -111,6 +111,9 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
       case 'application_received':
       case 'application_status_changed':
         return <FiBell />;
+      case 'payment_completed':
+      case 'payment_received':
+        return <FiBell />; // Could use a payment icon like FiCreditCard
       default:
         return <FiBell />;
     }
@@ -122,6 +125,10 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
         return 'blue';
       case 'application_status_changed':
         return 'green';
+      case 'payment_completed':
+        return 'green';
+      case 'payment_received':
+        return 'purple';
       default:
         return 'gray';
     }

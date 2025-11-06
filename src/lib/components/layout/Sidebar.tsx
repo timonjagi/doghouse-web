@@ -7,6 +7,7 @@ import {
   useColorModeValue as mode,
   Box,
   Button,
+  Circle,
 } from "@chakra-ui/react";
 import * as React from "react";
 import {
@@ -109,43 +110,44 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
   };
 
   return (
-    <>
-      <Stack
-        py={{ base: "6", sm: "8" }}
-        px={{ base: "4", sm: "6" }}
-      >
-        <Logo />
+    <Stack
 
-        <Stack>
-          {/* Render dynamic navigation sections */}
-          {navigationSections.map((section) => (
-            <Stack key={section.title} spacing="2">
-              <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-                {section.title}
-              </Text>
-              <Stack spacing="1">
-                {section.items.map((item) => (
-                  <NavButton
-                    key={item.href}
-                    label={item.label}
-                    icon={item.icon}
-                    onClick={() => onClickMenuLink(item.href)}
-                    aria-current={
-                      router.pathname === item.href ? "page" : "false"
-                    }
-                  />
-                ))}
-              </Stack>
+      py={{ base: "6", sm: "8" }}
+      px={{ base: "4", sm: "6" }}
+    >
+
+
+      <Logo />
+
+      <Stack>
+        {/* Render dynamic navigation sections */}
+        {navigationSections.map((section) => (
+          <Stack key={section.title} spacing="2">
+            <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
+              {section.title}
+            </Text>
+            <Stack spacing="1">
+              {section.items.map((item) => (
+                <NavButton
+                  key={item.href}
+                  label={item.label}
+                  icon={item.icon}
+                  onClick={() => onClickMenuLink(item.href)}
+                  aria-current={
+                    router.pathname === item.href ? "page" : "false"
+                  }
+                //endElement={<Circle size="2" bg="blue.400" />}
+
+                />
+              ))}
             </Stack>
-          ))}
-        </Stack>
+          </Stack>
+        ))}
       </Stack>
-
       {/* Account Section */}
       <Stack
-        spacing="4"
-        py={{ base: "6", sm: "8" }}
-        px={{ base: "4", sm: "6" }}
+        spacing="2"
+
       >
         <Divider borderColor="bg-accent-subtle" />
 
@@ -171,7 +173,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
         <Divider borderColor="bg-accent-subtle" />
         <UserProfile profile={profile} onClose={onClose} />
       </Stack>
-    </>
+    </Stack>
   );
 };
 

@@ -218,7 +218,8 @@ export const transactions = pgTable("transactions", {
   breeder_id: uuid("breeder_id").notNull().references(() => users.id),
   amount: numeric("amount", { precision: 10, scale: 2 }),
   commission_fee: numeric("commission_fee", { precision: 10, scale: 2 }),
-  status: varchar("status", { length: 50 }).notNull().default("pending"),
+  status: varchar("status", { length: 50 }).notNull().default("pending"), // payment status
+  payout_status: varchar("payout_status", { length: 50 }).notNull().default("pending"), // payout status to breeder
   payment_method: varchar("payment_method", { length: 100 }),
   meta: jsonb("meta"),
   created_at: timestamp("created_at").notNull().defaultNow(),

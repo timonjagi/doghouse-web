@@ -202,11 +202,12 @@ export const useVerifyPayment = (applicationId?: string) => {
 
           if (transaction) {
             const paymentType = (transaction.meta as any)?.payment_type;
-            // Update transaction status to completed
+            // Update transaction status to completed and set payout status to pending
             const { data: txn, error: txError } = await supabase
               .from('transactions')
               .update({
                 status: 'completed',
+                payout_status: 'pending', // Payment completed, payout pending
                 payment_method: data.channel,
                 updated_at: new Date().toISOString(),
               })
@@ -241,6 +242,72 @@ export const useVerifyPayment = (applicationId?: string) => {
               if (appError) throw appError;
 
               console.log('updated application', app)
+
+              // Create notifications for payment completion
+              try {
+                let seekerTitle = '';
+                let seekerBody = '';
+                let breederTitle = '';
+                let breederBody = '';
+
+                if (paymentType === 'reservation') {
+                  seekerTitle = 'Reservation Payment Confirmed';
+                  seekerBody = `Your reservation payment for ${app.listings?.title || 'the listing'} has been confirmed. The listing is now reserved for you.`;
+                  breederTitle = 'Reservation Payment Received';
+                  breederBody = `You have received a reservation payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}.`;
+                } else if (paymentType === 'final') {
+                  seekerTitle = 'Final Payment Confirmed';
+                  seekerBody = `Your final payment for ${app.listings?.title || 'the listing'} has been confirmed. Your adoption is now complete!`;
+                  breederTitle = 'Final Payment Received';
+                  breederBody = `You have received the final payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}. Payout will be processed soon.`;
+                }
+
+                // Notify seeker
+                if (seekerTitle && seekerBody) {
+                  await supabase
+                    .from('notifications')
+                    .insert({
+                      user_id: app.seeker_id,
+                      type: 'payment_completed',
+                      title: seekerTitle,
+                      body: seekerBody,
+                      target_type: 'application',
+                      target_id: app.listing_id,
+                      meta: {
+                        applicationId: app.id,
+                        listingId: app.listing_id,
+                        paymentType,
+                        transactionId: txn.id,
+                        amount: txn.amount,
+                      },
+                    });
+                }
+
+                // Notify breeder
+                if (breederTitle && breederBody) {
+                  await supabase
+                    .from('notifications')
+                    .insert({
+                      user_id: app.listings?.owner_id,
+                      type: 'payment_received',
+                      title: breederTitle,
+                      body: breederBody,
+                      target_type: 'application',
+                      target_id: app.listing_id,
+                      meta: {
+                        applicationId: app.id,
+                        listingId: app.listing_id,
+                        paymentType,
+                        transactionId: txn.id,
+                        amount: txn.amount,
+                        earnings: txn.amount - txn.commission_fee,
+                      },
+                    });
+                }
+              } catch (notificationError) {
+                console.error('Failed to create payment notifications:', notificationError);
+                // Don't fail the payment if notification creation fails
+              }
             }
           }
         } catch (error) {
