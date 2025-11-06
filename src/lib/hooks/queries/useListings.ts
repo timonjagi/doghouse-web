@@ -313,7 +313,7 @@ export const useListingsForUserBreed = (userBreedId: string) => {
           )
         `)
         .eq('user_breed_id', userBreedId)
-        .eq('status', 'available');
+      //.eq('status', 'available');
 
       if (error) throw error;
       return data || [];

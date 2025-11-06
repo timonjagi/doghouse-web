@@ -35,6 +35,14 @@ export interface ApplicationWithListing extends Application {
   };
 }
 
+
+interface UpdateApplicationData {
+  status?: string;
+  reservation_paid?: boolean;
+  contract_signed?: boolean;
+  payment_completed?: boolean;
+  application_data?: any
+}
 // Query to get applications for a specific listing
 export const useApplicationsByListing = (listingId: string) => {
   return useQuery({
@@ -306,20 +314,23 @@ export const useCreateApplication = () => {
 };
 
 // Mutation to update application status
-export const useUpdateApplicationStatus = () => {
+export const useUpdateApplication = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({
       id,
-      status
+      updates
     }: {
       id: string;
-      status: 'submitted' | 'pending' | 'approved' | 'rejected' | 'completed';
+      updates: UpdateApplicationData
     }) => {
       const { data, error } = await supabase
         .from('applications')
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', id)
         .select(`
           *,
@@ -391,8 +402,8 @@ export const useUpdateApplicationStatus = () => {
               body = `Your application for ${data.listings.title} is now being reviewed by the breeder`;
               break;
             case 'approved':
-              title = 'Application Approved & Reserved';
-              body = `Congratulations! Your application for ${data.listings.title} has been approved and the listing is now reserved for you. Please complete payment within 24 hours.`;
+              title = 'Application Approved';
+              body = `Congratulations! Your application for ${data.listings.title} has been approved and the listing is now temporarily reserved for you. Please complete payment within 24 hours.`;
               break;
             case 'rejected':
               title = 'Application Not Approved';
@@ -425,51 +436,8 @@ export const useUpdateApplicationStatus = () => {
         }
       }
 
-      queryClient.invalidateQueries({ queryKey: queryKeys.applications.byUser() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.applications.received() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.applications.all() });
       // Invalidate listings to show updated status
-      queryClient.invalidateQueries({ queryKey: ['listings'] });
-    },
-  });
-};
-
-// Mutation to reserve a listing (when application is approved)
-export const useReserveListing = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      applicationId,
-      listingId
-    }: {
-      applicationId: string;
-      listingId: string;
-    }) => {
-      // Update listing status to reserved
-      const { data: listingData, error: listingError } = await supabase
-        .from('listings')
-        .update({
-          status: 'reserved',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', listingId)
-        .select()
-        .single();
-
-      if (listingError) throw listingError;
-
-      // Update application status to reserved (if we add this status)
-      // For now, we'll keep it as approved but mark the listing as reserved
-
-      return listingData;
-    },
-    onSuccess: (data, variables) => {
-      // Create reservation expiry notification (24 hours from now)
-      // This would typically be handled by a cron job or scheduled task
-      // For now, we'll just update the cache
-      queryClient.invalidateQueries({ queryKey: queryKeys.applications.byUser() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.applications.received() });
-      // Invalidate listings queries to show updated status
       queryClient.invalidateQueries({ queryKey: ['listings'] });
     },
   });

@@ -165,6 +165,9 @@ export const applications = pgTable("applications", {
   status: varchar("status", { length: 50 }).notNull().default("submitted"), // submitted/pending/approved/rejected/completed
   application_data: jsonb("application_data"), // full answers, contact prefs
   contract_url: text("contract_url"),
+  reservation_paid: boolean("reservation_paid").notNull().default(false),
+  contract_signed: boolean("contract_signed").notNull().default(false),
+  payment_completed: boolean("payment_completed").notNull().default(false),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -179,6 +182,7 @@ export const messages = pgTable("messages", {
   attachments: jsonb("attachments"),
   read: boolean("read").notNull().default(false),
   created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // NOTIFICATIONS (history)
@@ -193,6 +197,7 @@ export const notifications = pgTable("notifications", {
   is_read: boolean("is_read").notNull().default(false),
   meta: jsonb("meta"),
   created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // ACTIVITY LOGS
@@ -217,6 +222,7 @@ export const transactions = pgTable("transactions", {
   payment_method: varchar("payment_method", { length: 100 }),
   meta: jsonb("meta"),
   created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export type User = typeof users.$inferSelect;

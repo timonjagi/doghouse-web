@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Heading,
@@ -17,43 +17,32 @@ import {
   useToast,
   useDisclosure,
   ButtonGroup,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Stack,
   useBreakpointValue,
   Divider,
   AlertIcon,
   Alert,
   Avatar,
-  Textarea,
-  FormControl,
-  FormLabel,
-  Select,
-  Grid,
-  GridItem,
-  Image,
 } from '@chakra-ui/react';
 import {
   ArrowBackIcon,
   CheckCircleIcon,
   WarningIcon,
-  TimeIcon,
   PhoneIcon,
   EmailIcon,
-  ChatIcon,
-  CalendarIcon
+  ChatIcon
 } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserProfile } from '../../../../hooks/queries';
-import { useApplication, useUpdateApplicationStatus } from '../../../../hooks/queries/useApplications';
+import { useApplication, useUpdateApplication } from '../../../../hooks/queries/useApplications';
+import { useTransactionsByApplication } from '../../../../hooks/queries/useTransactions';
 import { NextSeo } from 'next-seo';
 import { Loader } from '../../../../components/ui/Loader';
 import { ApplicationTimeline } from '../ApplicationTimeline';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
+import { PaymentModal } from '../../../../components/payments/PaymentModal';
+import { PaymentStatusModal } from '../../../../components/payments/PaymentStatusModal';
+import ApplicationStatusDialog from '../ApplicationStatusDialog';
 
 interface ApplicationDetailPageProps {
   id: string;
@@ -61,7 +50,7 @@ interface ApplicationDetailPageProps {
 
 const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, payment } = router.query;
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
   const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
@@ -69,7 +58,8 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
   const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onClose: onUpdateClose } = useDisclosure();
 
   const { data: application, isLoading: applicationLoading, error: applicationError } = useApplication(id as string);
-  const updateStatusMutation = useUpdateApplicationStatus();
+  const { data: transactions, isLoading: transactionsLoading, error: transactionsError } = useTransactionsByApplication(id as string);
+  const updateApplicationMutation = useUpdateApplication();
 
   const [updateForm, setUpdateForm] = useState({
     status: '',
@@ -84,6 +74,31 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     confirmText: string;
     colorScheme: string;
   } | null>(null);
+
+  // Payment modal states
+  const [paymentModal, setPaymentModal] = useState<{
+    isOpen: boolean;
+    type: 'reservation' | 'final';
+    amount: number;
+    description: string;
+  }>({
+    isOpen: false,
+    type: 'reservation',
+    amount: 0,
+    description: '',
+  });
+
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    paymentReference: string;
+    paymentType: 'reservation' | 'final';
+    expectedAmount: number;
+  }>({
+    isOpen: false,
+    paymentReference: '',
+    paymentType: 'reservation',
+    expectedAmount: 0,
+  });
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Not specified';
@@ -116,11 +131,15 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     if (!pendingAction) return;
 
     try {
-      await updateStatusMutation.mutateAsync({
+      await updateApplicationMutation.mutateAsync({
         id: application.id,
-        //@ts-ignore
-        status: pendingAction.status,
-        response_message: updateForm.response_message || pendingAction.message,
+        updates: {
+          status: pendingAction.status,
+          application_data: {
+            ...application.application_data as any,
+            response_message: updateForm.response_message || pendingAction.message,
+          }
+        }
       });
 
       toast({
@@ -168,7 +187,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         actionConfig = {
           type: 'approve' as const,
           status: 'approved',
-          title: 'Application Approved',
+          title: 'Approve Application',
           message: 'The application has been approved successfully',
           confirmText: 'Approve Application',
           colorScheme: 'green',
@@ -178,7 +197,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         actionConfig = {
           type: 'reject' as const,
           status: 'rejected',
-          title: 'Application Rejected',
+          title: 'Reject Application',
           message: 'The application has been rejected',
           confirmText: 'Reject Application',
           colorScheme: 'red',
@@ -188,7 +207,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         actionConfig = {
           type: 'complete' as const,
           status: 'completed',
-          title: 'Application Completed',
+          title: 'Complete Application',
           message: 'The adoption process has been marked as completed',
           confirmText: 'Mark as Completed',
           colorScheme: 'purple',
@@ -206,17 +225,97 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
   const handleRejectApplication = () => initiateAction('reject');
   const handleMarkCompleted = () => initiateAction('complete');
 
+  // Payment handlers
+  const handlePayReservation = () => {
+    setPaymentModal({
+      isOpen: true,
+      type: 'reservation',
+      amount: Number(application.listings.reservation_fee) || 0,
+      description: `Reservation fee for ${application.listings.title}`,
+    });
+  };
 
-  if (profileLoading || applicationLoading) {
+  const handleSignContract = async () => {
+    // In the future, this could integrate with a digital signature service
+    try {
+      await updateApplicationMutation.mutateAsync({
+        id: application.id,
+        updates: { contract_signed: true }
+      });
+
+      toast({
+        title: 'Contract Signed',
+        description: 'You have successfully signed the adoption contract',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to sign contract',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleCompletePayment = () => {
+    const finalAmount = Number(application.listings.price) - Number(application.listings.reservation_fee);
+    setPaymentModal({
+      isOpen: true,
+      type: 'final',
+      amount: finalAmount,
+      description: `Final payment for ${application.listings.title}`,
+    });
+  };
+
+  // Modal handlers
+  const handlePaymentModalClose = () => {
+    setPaymentModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleStatusModalClose = () => {
+    setStatusModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  // Handle payment success callback from Paystack
+  useEffect(() => {
+    if (payment === 'success' && application && !statusModal.isOpen) {
+      // Determine payment type based on application state
+      let paymentType: 'reservation' | 'final' = 'reservation';
+      let expectedAmount = Number(application.listings.reservation_fee) || 0;
+
+      if (application.reservation_paid && !application.payment_completed) {
+        paymentType = 'final';
+        expectedAmount = Number(application.listings.price) - Number(application.listings.reservation_fee);
+      }
+
+      // Show payment status modal
+      setStatusModal({
+        isOpen: true,
+        paymentReference: '', // Will be determined by the modal
+        paymentType,
+        expectedAmount,
+      });
+
+      // Clean up URL by removing the payment parameter
+      const newUrl = router.pathname.replace('[id]', id as string);
+      router.replace(newUrl, undefined, { shallow: true });
+    }
+  }, [payment, application, statusModal.isOpen, router, id]);
+
+  if (profileLoading || applicationLoading || transactionsLoading) {
     return <Loader />;
   }
 
-  if (applicationError) {
+  if (applicationError || transactionsError) {
     return (
       <Alert status="error">
         <AlertIcon />
         Error loading application. Please try again later.
-        {applicationError.message}
+        {applicationError?.message || transactionsError?.message}
       </Alert>
     );
   }
@@ -259,7 +358,6 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     return age;
   }
 
-
   return (
     <>
       <NextSeo title={`Application for ${application.listings.title} - DogHouse Kenya`} />
@@ -298,10 +396,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                 <Button
                   leftIcon={<CheckCircleIcon />}
                   colorScheme="green"
-                  onClick={() => {
-                    setUpdateForm({ status: 'approved', response_message: '' });
-                    onUpdateOpen();
-                  }}
+                  onClick={handleApproveApplication}
                 >
                   Approve
                 </Button>
@@ -309,10 +404,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                   leftIcon={<WarningIcon />}
                   colorScheme="red"
                   variant="outline"
-                  onClick={() => {
-                    setUpdateForm({ status: 'rejected', response_message: '' });
-                    onUpdateOpen();
-                  }}
+                  onClick={handleRejectApplication}
                 >
                   Reject
                 </Button>
@@ -332,43 +424,13 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
               mb={4}
             >
               <CardHeader>
-                <Heading size="xs">Application Timeline</Heading>
+                <Heading size="xs">Listing Information</Heading>
               </CardHeader>
               <CardBody>
-                <ApplicationTimeline
-                  application={application}
-                  userProfile={userProfile}
-                  onPayReservation={() => {
-                    toast({
-                      title: 'Payment feature coming soon',
-                      description: 'M-Pesa integration will be available soon',
-                      status: 'info',
-                      duration: 3000,
-                    });
-                  }}
-                  onSignContract={() => {
-                    toast({
-                      title: 'Contract signing coming soon',
-                      description: 'Digital contract signing will be available soon',
-                      status: 'info',
-                      duration: 3000,
-                    });
-                  }}
-                  onCompletePayment={() => {
-                    toast({
-                      title: 'Payment feature coming soon',
-                      description: 'Final payment processing will be available soon',
-                      status: 'info',
-                      duration: 3000,
-                    });
-                  }}
-                  onMarkCompleted={handleMarkCompleted}
-                  onWithdrawApplication={handleWithdrawApplication}
-                  onApproveApplication={handleApproveApplication}
-                  onRejectApplication={handleRejectApplication}
-                />
+                <ListingInfo application={application} />
               </CardBody>
             </Card>
+
 
 
             <Card
@@ -382,6 +444,40 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                 <ApplicationDetails application={application} />
               </CardBody>
             </Card>
+
+            <Card
+              sx={{ display: 'inline-block', width: '100%' }}
+              mb={4}
+            >
+              <CardHeader>
+                <Heading size="xs">Application Timeline</Heading>
+              </CardHeader>
+              <CardBody>
+                <ApplicationTimeline
+                  application={application}
+                  userProfile={userProfile}
+                  transactions={transactions}
+                  onPayReservation={handlePayReservation}
+                  onSignContract={handleSignContract}
+                  onCompletePayment={handleCompletePayment}
+                  onMarkCompleted={handleMarkCompleted}
+                  onWithdrawApplication={handleWithdrawApplication}
+                  onApproveApplication={handleApproveApplication}
+                  onRejectApplication={handleRejectApplication}
+                  onCheckPaymentStatus={(reference, type) => {
+                    setStatusModal({
+                      isOpen: true,
+                      paymentReference: reference,
+                      paymentType: type,
+                      expectedAmount: type === 'reservation'
+                        ? Number(application.listings.reservation_fee)
+                        : Number(application.listings.price) - Number(application.listings.reservation_fee),
+                    });
+                  }}
+                />
+              </CardBody>
+            </Card>
+
             <Card
               sx={{ display: 'inline-block', width: '100%' }}
               mb={4}
@@ -399,17 +495,6 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                 )}
               </CardBody>
             </Card>
-            <Card
-              sx={{ display: 'inline-block', width: '100%' }}
-              mb={4}
-            >
-              <CardHeader>
-                <Heading size="xs">Listing Information</Heading>
-              </CardHeader>
-              <CardBody>
-                <ListingInfo application={application} />
-              </CardBody>
-            </Card>
 
 
           </Box>
@@ -419,73 +504,34 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
       </Container>
 
       {/* Status Update Modal */}
-      <AlertDialog isOpen={isUpdateOpen} leastDestructiveRef={undefined} onClose={() => {
-        setPendingAction(null);
-        onUpdateClose();
-      }}>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              {pendingAction?.title || 'Update Application Status'}
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              <form onSubmit={handleStatusUpdate}>
-                <VStack spacing={4} align="stretch">
-                  {pendingAction?.type !== 'withdraw' && (
-                    <FormControl>
-                      <FormLabel>Response Message (Optional)</FormLabel>
-                      <Textarea
-                        value={updateForm.response_message}
-                        onChange={(e) => setUpdateForm({ ...updateForm, response_message: e.target.value })}
-                        placeholder={
-                          pendingAction?.type === 'approve'
-                            ? "Add a welcome message for the applicant..."
-                            : "Add a reason for rejection..."
-                        }
-                        rows={3}
-                      />
-                    </FormControl>
-                  )}
+      <ApplicationStatusDialog
+        form={updateForm}
+        setForm={setUpdateForm}
+        isOpen={isUpdateOpen}
+        onClose={onUpdateClose}
+        pendingAction={pendingAction}
+        setPendingAction={setPendingAction}
+        onSubmit={handleStatusUpdate}
+        isLoading={updateApplicationMutation.isPending}
+      />
 
-                  {pendingAction?.type === 'withdraw' && (
-                    <Text>
-                      Are you sure you want to withdraw this application? This action cannot be undone.
-                    </Text>
-                  )}
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={paymentModal.isOpen}
+        onClose={handlePaymentModalClose}
+        application={application}
+        paymentType={paymentModal.type}
+      />
 
-                  {pendingAction?.type === 'approve' && (
-                    <Text>
-                      Approving this application will notify the applicant and allow them to proceed with the adoption process.
-                    </Text>
-                  )}
-
-                  {pendingAction?.type === 'reject' && (
-                    <Text>
-                      Rejecting this application will notify the applicant that their application was not approved.
-                    </Text>
-                  )}
-                </VStack>
-              </form>
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button onClick={() => {
-                setPendingAction(null);
-                onUpdateClose();
-              }}>
-                Cancel
-              </Button>
-              <Button
-                colorScheme={pendingAction?.colorScheme || 'blue'}
-                onClick={handleStatusUpdate}
-                ml={3}
-                isLoading={updateStatusMutation.isPending}
-              >
-                {pendingAction?.confirmText || 'Confirm'}
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      {/* Payment Status Modal */}
+      <PaymentStatusModal
+        isOpen={statusModal.isOpen}
+        onClose={handleStatusModalClose}
+        paymentReference={statusModal.paymentReference}
+        paymentType={statusModal.paymentType}
+        expectedAmount={statusModal.expectedAmount}
+        applicationId={id as string}
+      />
     </>
   );
 };
@@ -608,8 +654,7 @@ const ListingInfo = ({ application }) => {
             Price
           </Text>
           <Text>Ksh. {
-            application?.application_data?.offer_price && application.status === 'approved' ? application.application_data.offer_price :
-              application.listings.price || 'Not specified'
+            application.listings.price || 'Not specified'
           }</Text>
         </Box>
 
@@ -752,129 +797,6 @@ const BreederInfo = ({ application, formatDate }) => {
         </Box>
       </SimpleGrid>
     </Stack>
-  );
-};
-
-
-
-function BentoGridExample() {
-  return (
-    <Grid
-      templateColumns={{
-        base: 'repeat(1, 1fr)',
-        md: 'repeat(3, 1fr)', // 3 columns on medium screens and up
-      }}
-      gap={4}
-      p={5}
-    >
-      {/* Large card, spanning 2 columns on desktop */}
-      <GridItem
-        colSpan={{ base: 1, md: 2 }}
-        bg="teal.500"
-        p={6}
-        borderRadius="xl"
-        color="white"
-      >
-        <Heading size="md" mb={2}>
-          Large Bento Card
-        </Heading>
-        <Text>
-          This item spans two columns on medium screens and larger, perfect for
-          highlighting key information.
-        </Text>
-      </GridItem>
-
-      {/* Small card */}
-      <GridItem bg="purple.500" p={6} borderRadius="xl" color="white">
-        <Heading size="md" mb={2}>
-          Small Card
-        </Heading>
-        <Text>A simple, single-column card.</Text>
-      </GridItem>
-
-      {/* Another small card */}
-      <GridItem bg="orange.500" p={6} borderRadius="xl" color="white">
-        <Heading size="md" mb={2}>
-          Another Small Card
-        </Heading>
-        <Text>Another one.</Text>
-      </GridItem>
-
-      {/* Large card, spanning 2 columns on desktop */}
-      <GridItem
-        colSpan={{ base: 1, md: 2 }}
-        bg="cyan.500"
-        p={6}
-        borderRadius="xl"
-        color="white"
-      >
-        <Heading size="md" mb={2}>
-          Another Large Card
-        </Heading>
-        <Text>
-          This one also spans two columns, showing a different content type.
-        </Text>
-      </GridItem>
-    </Grid>
-  );
-}
-
-const CustomGrid = () => {
-  return (
-    <Grid
-      templateAreas={`"nav main main"
-                      "nav aside aside"`}
-      gridTemplateRows={'1fr 2fr'}
-      gridTemplateColumns={'1fr 3fr 1fr'}
-      gap="4"
-    >
-      <GridItem bg="pink.300" area={'nav'}>
-        <Box height="100%">Nav</Box>
-      </GridItem>
-      <GridItem bg="cyan.300" area={'main'}>
-        <Box height="100%">Main Content</Box>
-      </GridItem>
-      <GridItem bg="purple.300" area={'aside'}>
-        <Box height="100%">Aside</Box>
-      </GridItem>
-    </Grid>
-  );
-};
-
-const ColumnMasonry = () => {
-  const items = [
-    { height: '150px', content: 'Card 1' },
-    { height: '200px', content: 'Card 2' },
-    { height: '100px', content: 'Card 3' },
-    { height: '250px', content: 'Card 4' },
-    { height: '180px', content: 'Card 5' },
-    { height: '120px', content: 'Card 6' },
-    { height: '220px', content: 'Card 7' },
-    { height: '170px', content: 'Card 8' },
-    { height: '210px', content: 'Card 9' },
-  ];
-
-  return (
-    <Box
-      sx={{
-        columnCount: [1, 2, 3], // Responsive column count
-        columnGap: 4,
-      }}
-    >
-      {items.map((item, index) => (
-        <Box
-          key={index}
-          h={item.height}
-          bg="teal.400"
-          borderRadius="md"
-          mb={4}
-          p={4}
-          sx={{ display: 'inline-block', width: '100%' }}
-        >
-          {item.content}
-        </Box>
-      ))}
-    </Box>
   );
 };
 

@@ -98,7 +98,7 @@ export const BreedListings = ({ listings, loading, error, isManaging }) => {
   }
 
   return (
-    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
       {listings?.map((listing) => (
         <>
           {isManaging ?

@@ -31,11 +31,14 @@ import {
   CheckIcon,
   EditIcon,
   StarIcon,
+  InfoIcon,
 } from '@chakra-ui/icons';
+import { ApplicationWithListing } from 'lib/hooks/queries';
 
 interface ApplicationTimelineProps {
-  application: any;
+  application: ApplicationWithListing;
   userProfile: any;
+  transactions?: any[];
   onPayReservation?: () => void;
   onSignContract?: () => void;
   onCompletePayment?: () => void;
@@ -43,6 +46,7 @@ interface ApplicationTimelineProps {
   onWithdrawApplication?: () => void;
   onApproveApplication?: () => void;
   onRejectApplication?: () => void;
+  onCheckPaymentStatus?: (reference: string, type: 'reservation' | 'final') => void;
 }
 
 interface TimelineStep {
@@ -64,6 +68,7 @@ interface TimelineStep {
 export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
   application,
   userProfile,
+  transactions = [],
   onPayReservation,
   onSignContract,
   onCompletePayment,
@@ -71,9 +76,15 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
   onWithdrawApplication,
   onApproveApplication,
   onRejectApplication,
+  onCheckPaymentStatus,
 }) => {
   const isOwner = userProfile?.id === application.listings.owner_id;
   const isApplicant = userProfile?.id === application.seeker_id;
+
+  // Check for pending transactions from props
+  const pendingTransactions = transactions?.filter(tx => tx.status === 'pending') || [];
+  const hasPendingReservationPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'reservation');
+  const hasPendingFinalPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'final');
 
   const getTimelineSteps = (): TimelineStep[] => {
     if (isApplicant) {
@@ -99,7 +110,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         {
           id: 'under_review',
           title: 'Under Review',
-          description: 'Application is being reviewed by the breeder',
+          description: 'Your application is being reviewed by the breeder',
           status: application.status === 'submitted' ? 'current' :
             ['pending', 'approved', 'rejected', 'completed'].includes(application.status) ? 'completed' : 'pending',
           info: [
@@ -113,12 +124,12 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           description: application.status === 'approved'
             ? 'Congratulations! Your application has been approved'
             : application.status === 'rejected'
-              ? 'Application was not approved at this time'
+              ? 'Your application was not approved at this time'
               : 'Awaiting breeder decision',
           status: ['approved', 'rejected'].includes(application.status) ? 'completed' :
             application.status === 'pending' ? 'current' : 'pending',
           info: application.status === 'approved' ? [
-            'Listing is now reserved for you',
+            'Listing is now temporarily reserved for you',
             'Next step: Pay reservation fee within 24 hours',
           ] : application.status === 'rejected' ? [
             'You can apply for other available listings',
@@ -137,18 +148,37 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           {
             id: 'reserved',
             title: 'Reserve Listing',
-            description: application.reservation_paid ? 'Listing is reserved for you' : 'Pay reservation fee to secure your adoption',
+            description: application.reservation_paid ? 'The listing has been reserved for you' : 'Pay reservation fee to secure your adoption',
             status: application.reservation_paid ? 'completed' : 'current',
             info: [
               'Reservation fee is deducted from final payment',
               'If payment is not received within 24 hours, listing will be released',
             ],
-            actionButtons: application.status === 'approved' && !application.reservation_paid ? [{
-              label: 'Pay Reservation Fee',
-              onClick: onPayReservation || (() => { }),
-              colorScheme: 'green',
-              icon: StarIcon,
-            }] : undefined,
+            actionButtons: (() => {
+              const buttons = [];
+              if (application.status === 'approved' && !application.reservation_paid) {
+                buttons.push({
+                  label: 'Pay Reservation Fee',
+                  onClick: onPayReservation || (() => { }),
+                  colorScheme: 'green',
+                  icon: StarIcon,
+                });
+              }
+              if (hasPendingReservationPayment && onCheckPaymentStatus) {
+                buttons.push({
+                  label: 'Check Payment Status',
+                  onClick: () => {
+                    const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'reservation');
+                    if (transaction) {
+                      onCheckPaymentStatus((transaction.meta as any).paystack_reference, 'reservation');
+                    }
+                  },
+                  colorScheme: 'blue',
+                  icon: InfoIcon,
+                });
+              }
+              return buttons.length > 0 ? buttons : undefined;
+            })(),
           }
         );
       }
@@ -164,7 +194,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             info: [
               'Legal agreement outlining adoption terms',
               'Includes responsibilities of both parties',
-              'Required before final payment',
+              'Required by breeder before final payment',
             ],
             actionButtons: application.reservation_paid && !application.contract_signed ? [{
               label: 'Sign Contract',
@@ -182,35 +212,51 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             id: 'payment',
             title: 'Complete Payment',
             description: 'Make final payment to complete adoption',
-            status: application.payment_complete ? 'completed' :
+            status: application.payment_completed ? 'completed' :
               application.contract_signed ? 'current' : 'locked',
             info: [
               'Reservation fee will be deducted from final amount',
               'Payment secures ownership transfer',
-              'Adoption process completes upon payment',
             ],
-            actionButtons: application.contract_signed && !application.payment_complete ? [{
-              label: 'Complete Payment',
-              onClick: onCompletePayment || (() => { }),
-              colorScheme: 'green',
-              icon: StarIcon,
-            }] : undefined,
+            actionButtons: (() => {
+              const buttons = [];
+              if (application.contract_signed && !application.payment_completed) {
+                buttons.push({
+                  label: 'Complete Payment',
+                  onClick: onCompletePayment || (() => { }),
+                  colorScheme: 'green',
+                  icon: StarIcon,
+                });
+              }
+              if (hasPendingFinalPayment && onCheckPaymentStatus) {
+                buttons.push({
+                  label: 'Check Payment Status',
+                  onClick: () => {
+                    const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'final');
+                    if (transaction) {
+                      onCheckPaymentStatus((transaction.meta as any).paystack_reference, 'final');
+                    }
+                  },
+                  colorScheme: 'blue',
+                  icon: InfoIcon,
+                });
+              }
+              return buttons.length > 0 ? buttons : undefined;
+            })(),
           }
         )
       }
 
-      if (application.payment_complete) {
+      if (application.payment_completed) {
         steps.push(
           {
             id: 'completed',
-            title: 'Adoption Completed',
-            description: application.status === 'completed' ? 'Congratulations! Adoption process is complete' : '',
+            title: application.status === 'completed' ? 'Adoption Completed' : 'Final Payment Received',
+            description: application.status === 'completed' ? 'Congratulations! Adoption process is complete. If you enjoyed your experiece, please leave us a review.' : 'You will receive pickup/ delivery arrangements',
             status: application.status === 'completed' ? 'completed' : 'pending',
-            info: [
+            info: application.status === 'completed' ? [
               'Ownership transfer is complete',
-              'You will receive pickup/delivery arrangements',
-              'Welcome to your new family member!',
-            ],
+            ] : ['You will receive pickup/delivery arrangements'],
           }
         )
       }
@@ -239,6 +285,20 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             'Evaluate applicant against your requirements',
             'Consider phone/video calls or home visits if needed',
           ],
+          actionButtons: application.status === 'submitted' && onApproveApplication && onRejectApplication ? [
+            {
+              label: 'Approve',
+              onClick: onApproveApplication,
+              colorScheme: 'green',
+              icon: CheckCircleIcon,
+            },
+            {
+              label: 'Reject',
+              onClick: onRejectApplication,
+              colorScheme: 'red',
+              icon: WarningIcon,
+            },
+          ] : undefined,
         },
         {
           id: 'decision',
@@ -260,21 +320,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           ] : [
             'Take time to make the right decision',
             'Consider the applicant\'s profile and requirements',
-          ],
-          actionButtons: application.status === 'pending' && onApproveApplication && onRejectApplication ? [
-            {
-              label: 'Approve',
-              onClick: onApproveApplication,
-              colorScheme: 'green',
-              icon: CheckCircleIcon,
-            },
-            {
-              label: 'Reject',
-              onClick: onRejectApplication,
-              colorScheme: 'red',
-              icon: WarningIcon,
-            },
-          ] : undefined,
+          ]
         },
       ];
 
@@ -317,7 +363,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             id: 'awaiting_final_payment',
             title: 'Awaiting Final Payment',
             description: 'Waiting for applicant to complete final payment',
-            status: application.payment_complete ? 'completed' :
+            status: application.payment_completed ? 'completed' :
               application.contract_signed ? 'current' : 'locked',
             info: [
               'Final payment completes the adoption',
@@ -327,18 +373,18 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         )
       }
 
-      if (application.payment_complete) {
+      if (application.payment_completed) {
         steps.push(
           {
             id: 'finalize',
-            title: 'Finalize Adoption',
-            description: 'Complete the adoption process',
+            title: application.status === 'completed' ? 'Adoption Completed' : 'Finalize Adoption',
+            description: application.status === 'completed' ? 'Congratulations! Your adoption is complete. If you enjoyed your experiece, please leave us a review.' : 'Complete the adoption process',
             status: application.status === 'completed' ? 'completed' : 'pending',
             info: [
               'Mark adoption as completed',
               'Arrange pickup/delivery with new owner',
             ],
-            actionButtons: application.payment_complete && application.status !== 'completed' ? [{
+            actionButtons: application.payment_completed && application.status !== 'completed' ? [{
               label: 'Mark as Completed',
               onClick: onMarkCompleted || (() => { }),
               colorScheme: 'purple',
@@ -403,7 +449,10 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
 
               {application.status === 'approved' || application.status === 'rejected' && (
                 <Text fontSize="xs" color="red.500">
-                  {application.response_message}
+                  {
+                    //@ts-ignore
+                    application.application_data?.response_message
+                  }
                 </Text>
               )}
 
@@ -421,7 +470,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
               {/* Action buttons */}
               {step.actionButtons && step.actionButtons.length > 0 && (
                 <Box py={2} mb={4}>
-                  <HStack spacing={2}>
+                  <HStack spacing={2} wrap="wrap">
                     {step.actionButtons.map((button, btnIndex) => (
                       <Button
                         key={btnIndex}

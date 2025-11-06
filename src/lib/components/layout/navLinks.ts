@@ -13,6 +13,7 @@ import {
   FiEdit,
   FiMessageSquare,
   FiGitlab,
+  FiCreditCard,
 } from "react-icons/fi";
 
 export type UserRole = 'breeder' | 'seeker' | 'admin';
@@ -82,6 +83,23 @@ export const navigationConfig: NavigationConfig = {
           ariaLabel: "View matches"
         },
       ]
+    },
+    {
+      title: "Billing",
+      items: [
+        {
+          label: "Earnings",
+          href: "/dashboard/billing/earnings",
+          icon: FiCreditCard,
+          ariaLabel: "View earnings and payouts"
+        },
+        {
+          label: "Transactions",
+          href: "/dashboard/billing/transactions",
+          icon: FiBarChart,
+          ariaLabel: "View transaction history"
+        },
+      ]
     }
   ],
 
@@ -129,6 +147,23 @@ export const navigationConfig: NavigationConfig = {
           href: "/dashboard/matches",
           icon: FiTarget,
           ariaLabel: "My matches"
+        },
+      ]
+    },
+    {
+      title: "Billing",
+      items: [
+        {
+          label: "Payments",
+          href: "/dashboard/billing/payments",
+          icon: FiCreditCard,
+          ariaLabel: "View payment history"
+        },
+        {
+          label: "Transactions",
+          href: "/dashboard/billing/transactions",
+          icon: FiBarChart,
+          ariaLabel: "View transaction history"
         },
       ]
     }

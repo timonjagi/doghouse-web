@@ -36,7 +36,7 @@ import {
   Spacer,
   Img
 } from '@chakra-ui/react';
-import { ArrowBackIcon, EditIcon, ChatIcon, DeleteIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, EditIcon, ChatIcon, DeleteIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserBreedsFromUser, useUserProfile } from '../../../../hooks/queries';
 import { useDeleteListing, useListing } from '../../../../hooks/queries/useListings';
@@ -183,6 +183,10 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
     }
   }
 
+  const formatStatus = (status: string) => {
+    return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+  };
+
   return (
     <>
       <NextSeo title={
@@ -191,7 +195,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
       } />
 
       <Container maxW="7xl" py={{ base: 4, md: 0 }}>
-        {isMobile && <Button
+        <Button
           leftIcon={<ArrowBackIcon />}
           variant="ghost"
           onClick={() => router.push('/dashboard/listings')}
@@ -199,7 +203,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           p={0}
         >
           Back to Listings
-        </Button>}
+        </Button>
 
         <Stack spacing={6} >
           <HStack justify="space-between" align="start" wrap="wrap" spacing={4}>
@@ -207,6 +211,15 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
               <Heading size={{ base: 'sm', lg: 'md' }} mb={2}>{
                 getTitle()
               }</Heading>
+              <HStack flex={1}>
+
+                <Badge colorScheme={getStatusColor(listing.status)}>
+                  {formatStatus(listing.status)}
+                </Badge>
+                <Text fontSize="sm" color="gray.500">
+                  Listed {formatDate(listing.created_at.toString())}
+                </Text>
+              </HStack>
 
             </Box>
 
@@ -227,6 +240,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 leftIcon={<EditIcon />}
                 colorScheme="brand"
                 onClick={onListingFormOpen}
+                isDisabled={listing.status !== 'available'}
               >
                 Edit
               </Button>
@@ -236,6 +250,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 colorScheme="red"
                 onClick={onDeleteOpen}
                 isLoading={deleteListingMutation.isPending}
+                isDisabled={listing.status !== 'available'}
               >
                 Delete
               </Button>
@@ -295,6 +310,16 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
               </TabPanels>
             </Tabs>
           </SimpleGrid>
+
+          {/* <Button
+            leftIcon={<ArrowForwardIcon />}
+            variant="ghost"
+            onClick={() => router.push('/dashboard/applications')}
+            mb={4}
+            p={0}
+          >
+            View Applications
+          </Button> */}
         </Stack>
 
         <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={undefined} onClose={onDeleteClose}>

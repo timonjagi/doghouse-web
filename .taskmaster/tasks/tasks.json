@@ -264,73 +264,6 @@
             "details": "Modify `src/lib/components/layout/Sidebar.tsx` to accept a `role` prop. Use this prop to look up the correct array of links from the `navLinks` configuration. Map over the retrieved array to render the `<Link>` components. If the `role` prop is null or undefined, render a skeleton version of the navigation.",
             "status": "done",
             "testStrategy": "Log in as a Seeker and verify the sidebar shows 'Browse', 'Matches', and 'Applications'. Log in as a Breeder and see 'My Breeds', 'My Listings', 'Applications'. Log in as an Admin and see 'Verification', 'Users', 'Listings', 'Analytics'."
-          },
-          {
-            "id": 5,
-            "title": "Create Placeholder Pages for New Dashboard Routes",
-            "description": "To prevent 404 errors from the new sidebar links, create basic placeholder pages for each new role-specific dashboard route.",
-            "dependencies": [
-              4
-            ],
-            "details": "Create files for each new route, such as `src/pages/dashboard/browse.tsx`, `src/pages/dashboard/matches.tsx`, `src/pages/dashboard/my-listings.tsx`, `src/pages/dashboard/verification.tsx`, `src/pages/dashboard/users.tsx`, `src/pages/dashboard/listings.tsx`, `src/pages/dashboard/analytics.tsx`, etc. Each page should be a simple React component that renders an `<h1>` tag with the page title and is wrapped in the `DashboardLayout`.",
-            "status": "done",
-            "testStrategy": "After logging in as each role, click every link in the updated sidebar and verify that it navigates to a valid page with the correct title and does not result in a 404 error."
-          }
-        ]
-      },
-      {
-        "id": 5,
-        "title": "Implement Breeds Page (Complete flow for both breeders and seekers)",
-        "description": "Create a unified breeds page that adapts based on user role. For breeders: manage their breeds, add/remove breeds they offer with multi-select interface. For seekers: browse available breeds, filter by preferences. Integrate with user_breeds table and existing hooks.",
-        "details": "Build a role-aware breeds page component that shows different content based on user role. For breeders: implement multi-select breed management interface that updates user_breeds table. For seekers: create breed browsing interface with filters for size, temperament, etc. Use existing useBreeds, useUserBreeds hooks and breeds table for data.",
-        "testStrategy": "Log in as a breeder and verify you can add/remove breeds with multi-select interface. Log in as a seeker and verify you can browse and filter breeds. Test that breed selections persist in user_breeds table and breed filtering works correctly.",
-        "priority": "high",
-        "dependencies": [
-          4
-        ],
-        "status": "completed",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Role-Aware Breeds Page Component",
-            "description": "Build main breeds page that adapts based on user role (breeder vs seeker).",
-            "dependencies": [],
-            "details": "Create src/lib/pages/dashboard/breeds.tsx with conditional rendering based on user role. Use existing useUserProfile hook to determine role and show appropriate content. For breeders: show breed management interface. For seekers: show breed browsing interface.",
-            "status": "done",
-            "testStrategy": "Verify page loads for both roles and shows appropriate content based on user role."
-          },
-          {
-            "id": 2,
-            "title": "Implement Breeder Breed Management",
-            "description": "For breeders: add/remove breeds, manage their offerings with select interface populated from breeds table.",
-            "dependencies": [
-              1
-            ],
-            "details": "Integrate with useBreeds and useUserBreeds hooks. Create breed selection interface that updates user_breeds table. Implement select component populated with all available breeds from the breeds table. Use API routes to update the user_breeds join table based on breeder's selections.",
-            "status": "done",
-            "testStrategy": "As a breeder, add a breed using select, save, and refresh to confirm they persist. Remove one breed and confirm the change is saved. Check the user_breeds table in Supabase directly to verify data integrity."
-          },
-          {
-            "id": 3,
-            "title": "Implement Seeker Breed Discovery",
-            "description": "For seekers: browse breeds with filtering and search capabilities for availability size, temperament, etc.",
-            "dependencies": [
-              1
-            ],
-            "details": "Create breed browsing interface with filters for availability (based on user_breeds), size, temperament, breed group, etc. Use breeds table for data. Implement search functionality and breed cards showing key information like description, traits, and featured images.",
-            "status": "done",
-            "testStrategy": "As a seeker, browse and filter breeds by different criteria, verify all breeds are displayed correctly with proper information. Test search functionality and ensure breed cards show all relevant details."
-          },
-          {
-            "id": 4,
-            "title": "Implement Breed Detail Page (Complete flow for both breeders and seekers)",
-            "description": "Create a unified breed detail page that adapts based on user role. For breeders: edit breed details with image upload to Supabase Storage. For seekers: view breed details with image gallery along with availability status. Integrate with breeds table and existing hooks.",
-            "dependencies": [
-              2,
-              3
-            ],
-            "status": "done",
-            "testStrategy": "As a seeker, view breed details and check that images load correctly. As a breeder, edit breed details and verify changes persist."
           }
         ]
       },
@@ -480,68 +413,154 @@
       },
       {
         "id": 8,
-        "title": "Implement Billing & Payment System",
-        "description": "Create comprehensive payment processing system with M-Pesa integration, reservation fees, commission tracking, and billing dashboard.",
-        "details": "Build complete payment infrastructure including M-Pesa mobile money integration, reservation fee processing (deducted from final price), 10% platform commission system, transaction tracking, and billing management dashboard for users to view payment history and earnings.",
-        "testStrategy": "Test complete payment flow: reservation payments, final payments, commission calculations, transaction tracking, and billing dashboard functionality.",
+        "title": "Implement Billing & Payment System with Paystack",
+        "description": "Create comprehensive payment processing system with Paystack integration, reservation fees, commission tracking, and billing dashboard.",
+        "details": "Build complete payment infrastructure using Paystack for multi-channel payments (M-Pesa, cards, bank transfers), reservation fee processing (deducted from final price), 10% platform commission system, transaction tracking, and billing management dashboard for users to view payment history and earnings.",
+        "testStrategy": "Test complete payment flow: reservation payments, final payments, commission calculations, transaction tracking, and billing dashboard functionality across multiple payment channels.",
         "priority": "high",
         "dependencies": [
           7
         ],
-        "status": "pending",
+        "status": "in_progress",
         "subtasks": [
           {
             "id": 1,
-            "title": "Integrate M-Pesa Payment Gateway",
-            "description": "Set up M-Pesa API integration for mobile money payments in Kenya.",
+            "title": "Update applications table schema",
+            "description": "Add reservation_paid, contract_signed, payment_complete boolean flags to applications table",
             "dependencies": [],
-            "details": "Configure M-Pesa API credentials, implement STK push for payment initiation, handle payment confirmations and validation callbacks.",
-            "status": "pending",
-            "testStrategy": "Test payment initiation, confirmation handling, and error scenarios with M-Pesa sandbox environment."
+            "details": "Add three boolean columns to applications table in db/schema.ts and create migration file for existing database.",
+            "status": "completed",
+            "testStrategy": "Run migration and verify new columns exist in Supabase applications table."
           },
           {
             "id": 2,
-            "title": "Implement Reservation Payment Flow",
-            "description": "Create reservation payment system where seekers pay upfront fees that are deducted from final listing price.",
+            "title": "Create database migration for application fields",
+            "description": "Generate and apply Drizzle migration for new application table columns",
             "dependencies": [
               1
             ],
-            "details": "Build reservation payment UI, integrate with M-Pesa, handle 24-hour expiry logic, and implement automatic refunds for expired reservations.",
-            "status": "pending",
-            "testStrategy": "Test reservation payment, expiry handling, and refund processing for both successful and failed payments."
+            "details": "Use drizzle-kit generate to create migration file, then apply with drizzle-kit push.",
+            "status": "completed",
+            "testStrategy": "Verify migration completes successfully and new columns are added to database."
           },
           {
             "id": 3,
-            "title": "Implement Commission & Payout System",
-            "description": "Build 10% platform commission system with automatic calculation and breeder payout tracking.",
+            "title": "Consolidate payment hooks into single usePayments hook",
+            "description": "Create comprehensive usePayments hook that handles all payment operations",
+            "dependencies": [],
+            "details": "Build src/hooks/usePayments.ts with methods for payment initiation, status checking, transactions, reservation/final payments, and billing history.",
+            "status": "completed",
+            "testStrategy": "Test hook integration and verify all payment methods work correctly."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Paystack Payment Gateway",
+            "description": "Set up Paystack API integration with support for multiple Kenyan payment channels",
             "dependencies": [
-              2
+              3
             ],
-            "details": "Implement commission calculation logic, track earnings/payouts in transactions table, create payout scheduling system for breeders after commission deduction.",
+            "details": "Configure Paystack credentials, implement transaction initialization, handle webhooks for payment confirmations, support M-Pesa, cards, bank transfers.",
+            "status": "completed",
+            "testStrategy": "Test payment initiation across different channels and verify webhook confirmations work correctly."
+          },
+          {
+            "id": 5,
+            "title": "Implement Reservation Payment Flow",
+            "description": "Create reservation payment system using Paystack with 24-hour expiry",
+            "dependencies": [
+              4
+            ],
+            "details": "Build reservation payment UI, integrate with Paystack transactions, handle expiry logic, implement refund processing for expired reservations.",
+            "status": "pending",
+            "testStrategy": "Test reservation payment flow, expiry handling, and refund processing for both successful and failed payments."
+          },
+          {
+            "id": 6,
+            "title": "Implement Commission & Payout System",
+            "description": "Build 10% platform commission system with Paystack payout integration",
+            "dependencies": [
+              5
+            ],
+            "details": "Implement commission calculation logic, track earnings/payouts in transactions table, create payout scheduling system using Paystack transfers for breeders after commission deduction.",
             "status": "pending",
             "testStrategy": "Verify commission calculations, payout tracking, and ensure breeders receive correct amounts after platform fees."
           },
           {
-            "id": 4,
+            "id": 7,
             "title": "Create Billing Dashboard",
-            "description": "Build comprehensive billing dashboard for users to track payments, earnings, and transaction history.",
+            "description": "Build comprehensive billing dashboards for seekers and breeders",
             "dependencies": [
-              3
+              6
             ],
-            "details": "Create billing pages for seekers (payment history) and breeders (earnings, payouts), implement transaction filtering and export functionality.",
+            "details": "Create billing pages for seekers (payment history) and breeders (earnings, payouts), implement transaction filtering and export functionality with Paystack transaction data.",
             "status": "pending",
             "testStrategy": "Test billing dashboard for both seeker and breeder roles, verify transaction history, filtering, and data accuracy."
           },
           {
-            "id": 5,
+            "id": 8,
             "title": "Implement Payment Security & Compliance",
-            "description": "Add payment security measures, fraud prevention, and regulatory compliance features.",
+            "description": "Add payment security measures leveraging Paystack's compliance features",
             "dependencies": [
-              4
+              7
             ],
-            "details": "Implement payment verification, fraud detection, PCI compliance measures, and secure transaction logging.",
+            "details": "Implement payment verification, webhook signature validation, secure transaction logging, leverage Paystack's PCI compliance and fraud detection.",
             "status": "pending",
-            "testStrategy": "Test security measures, verify compliance requirements, and ensure secure payment processing."
+            "testStrategy": "Test security measures, verify webhook validation, and ensure secure payment processing."
+          },
+          {
+            "id": 9,
+            "title": "Connect ApplicationTimeline action buttons to Paystack",
+            "description": "Integrate payment handlers with existing ApplicationTimeline component",
+            "dependencies": [
+              5
+            ],
+            "details": "Connect 'Pay Reservation Fee' and 'Complete Payment' buttons to usePayments hook, implement proper loading states and error handling.",
+            "status": "completed",
+            "testStrategy": "Test payment button integration in application timeline for both reservation and final payments."
+          },
+          {
+            "id": 10,
+            "title": "Build payment modals and status displays",
+            "description": "Create payment initiation modals and real-time status components",
+            "dependencies": [
+              9
+            ],
+            "details": "Build PaymentModal, PaymentStatusModal components with Paystack integration, implement real-time payment status updates. Refactor usePayments hook to follow patterns in other hooks and pass application data from components.",
+            "status": "completed",
+            "testStrategy": "Test payment modals and verify real-time status updates work correctly."
+          },
+          {
+            "id": 11,
+            "title": "Add billing navigation and dashboard routes",
+            "description": "Add billing sections to sidebar navigation and create dashboard routes",
+            "dependencies": [
+              7
+            ],
+            "details": "Update navLinks configuration to include billing sections, create /dashboard/billing and /dashboard/payouts routes.",
+            "status": "pending",
+            "testStrategy": "Test navigation to billing sections and verify dashboard routes load correctly."
+          },
+          {
+            "id": 12,
+            "title": "Implement real-time payment status updates",
+            "description": "Add real-time updates for payment status changes via webhooks",
+            "dependencies": [
+              10
+            ],
+            "details": "Implement webhook handlers to update application status in real-time, add status polling for pending payments.",
+            "status": "pending",
+            "testStrategy": "Test real-time status updates and verify application timeline reflects payment changes immediately."
+          },
+          {
+            "id": 13,
+            "title": "Create admin payment oversight features",
+            "description": "Add payment analytics and management to admin dashboard",
+            "dependencies": [
+              7
+            ],
+            "details": "Create admin payment analytics dashboard with transaction overview, payment method breakdown, commission tracking, and payment management tools.",
+            "status": "pending",
+            "testStrategy": "Test admin payment oversight features and verify analytics data accuracy."
           }
         ]
       },

@@ -18,7 +18,7 @@ import {
   SimpleGrid,
   useToast,
 } from '@chakra-ui/react';
-import { ApplicationWithListing, useApplicationsReceived, useUpdateApplicationStatus } from '../../../hooks/queries/useApplications';
+import { ApplicationWithListing, useApplicationsReceived, useUpdateApplication } from '../../../hooks/queries/useApplications';
 import { User } from '../../../../../db/schema';
 import { ApplicationCard } from './ApplicationCard';
 import { Loader } from 'lib/components/ui/Loader';
@@ -29,11 +29,9 @@ interface BreederApplicationsViewProps {
 
 export const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = ({ userProfile }) => {
   const { data: applications, isLoading, error } = useApplicationsReceived(userProfile.id);
-  const toast = useToast();
   const [selectedTab, setSelectedTab] = useState(0);
 
   const [groupedApplications, setGroupedApplications] = React.useState<{ new: ApplicationWithListing[], pending: ApplicationWithListing[], reviewed: ApplicationWithListing[] }>({ new: [], pending: [], reviewed: [] });
-  const updateStatusMutation = useUpdateApplicationStatus();
 
   useEffect(() => {
     if (applications?.length) {

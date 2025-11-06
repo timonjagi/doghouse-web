@@ -68,7 +68,9 @@ function ManageListingCard({
             <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
               {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
             </Badge>
-
+            <Badge colorScheme={getStatusColor(listing.status)}>
+              {listing.status}
+            </Badge>
           </HStack>
         </Box>
       )}

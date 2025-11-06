@@ -75,9 +75,9 @@ function ListingCard({
             <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
               {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
             </Badge>
-            {/* <Badge colorScheme={getStatusColor(listing.status)}>
+            <Badge colorScheme={getStatusColor(listing.status)}>
               {listing.status}
-            </Badge> */}
+            </Badge>
           </HStack>
         </Box>
       )}

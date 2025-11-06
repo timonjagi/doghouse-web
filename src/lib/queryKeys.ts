@@ -73,6 +73,17 @@ export const queryKeys = {
     user: (): readonly string[] => ['auth', 'user'] as const,
   },
 
+  // Transaction related queries
+  transactions: {
+    all: (): readonly string[] => ['transactions'] as const,
+    lists: (): readonly string[] => ['transactions', 'list'] as const,
+    list: (filters?: Record<string, unknown>): readonly string[] => ['transactions', 'list', filters].filter(Boolean) as any,
+    details: (): readonly string[] => ['transactions', 'detail'] as const,
+    detail: (id: string): readonly string[] => ['transactions', 'detail', id] as const,
+    byUser: (userId: string): readonly string[] => ['transactions', 'user', userId] as const,
+    billing: (userId: string): readonly string[] => ['transactions', 'billing', userId] as const,
+  },
+
   // Notification related queries
   notifications: {
     all: (): readonly string[] => ['notifications'] as const,
