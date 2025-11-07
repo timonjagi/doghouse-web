@@ -19,10 +19,9 @@ const BreedDetailPage = () => {
       <Head>
         <title>
           {breedName
-            ? `${
-                breedName.charAt(0).toUpperCase() +
-                breedName.slice(1).replace(/-/g, " ")
-              } | Doghouse`
+            ? `${breedName.charAt(0).toUpperCase() +
+            breedName.slice(1).replace(/-/g, " ")
+            } | Doghouse`
             : ""}
         </title>
       </Head>
