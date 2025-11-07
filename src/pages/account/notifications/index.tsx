@@ -24,17 +24,7 @@ import {
   useMarkAllNotificationsAsRead,
   useUnreadNotificationsCount,
 } from '../../../lib/hooks/queries/useNotifications';
-
-interface Notification {
-  id: string;
-  user_id: string;
-  type: string;
-  title: string;
-  message?: string;
-  read: boolean;
-  data?: Record<string, any>;
-  created_at: string;
-}
+import { Notification } from '../../../../db/schema';
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -49,15 +39,15 @@ export default function NotificationsPage() {
 
   const handleNotificationClick = async (notification: Notification) => {
     // Mark as read if not already read
-    if (!notification.read) {
+    if (!notification.is_read) {
       await markAsReadMutation.mutateAsync(notification.id);
     }
 
     // Navigate based on notification type and meta data
-    if (notification.data?.applicationId) {
-      router.push(`/dashboard/applications/${notification.data.applicationId}`);
-    } else if (notification.data?.listingId) {
-      router.push(`/dashboard/listings/${notification.data.listingId}`);
+    if ((notification.meta as any)?.applicationId) {
+      router.push(`/dashboard/applications/${(notification.meta as any).applicationId}`);
+    } else if ((notification.meta as any)?.listingId) {
+      router.push(`/dashboard/listings/${(notification.meta as any).listingId}`);
     }
     // Add more navigation logic for other types as needed
   };
@@ -187,9 +177,9 @@ export default function NotificationsPage() {
                 cursor="pointer"
                 onClick={() => handleNotificationClick(notification)}
                 _hover={{ shadow: 'md' }}
-                bg={notification.read ? 'white' : 'blue.50'}
-                borderLeft={notification.read ? 'none' : '4px solid'}
-                borderLeftColor={notification.read ? 'none' : 'blue.400'}
+                bg={notification.is_read ? 'white' : 'blue.50'}
+                borderLeft={notification.is_read ? 'none' : '4px solid'}
+                borderLeftColor={notification.is_read ? 'none' : 'blue.400'}
               >
                 <CardBody p={4}>
                   <HStack align="start" spacing={3}>
@@ -204,9 +194,9 @@ export default function NotificationsPage() {
                         </Text>
                         <HStack spacing={2}>
                           <Text fontSize="xs" color="gray.500">
-                            {formatDate(notification.created_at)}
+                            {formatDate(notification.created_at.toString())}
                           </Text>
-                          {!notification.read && (
+                          {!notification.is_read && (
                             <Badge colorScheme="blue" variant="solid" fontSize="xs">
                               New
                             </Badge>
@@ -214,9 +204,9 @@ export default function NotificationsPage() {
                         </HStack>
                       </HStack>
 
-                      {notification.message && (
+                      {notification.body && (
                         <Text fontSize="sm" color="gray.700">
-                          {notification.message}
+                          {notification.body}
                         </Text>
                       )}
                     </Box>

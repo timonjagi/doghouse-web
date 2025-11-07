@@ -213,7 +213,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
     location_lat: parseFloat(listing?.location_lat),
     location_lng: parseFloat(listing?.location_lng),
     //@ts-ignore
-    photos: listing?.photos || [],
+    photos: listing?.photos as string[] || [],
     parents: listing?.parents || {
       sire: { name: '', breed: '', photos: [] },
       dam: { name: '', breed: '', photos: [] },
@@ -321,7 +321,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
       // If photos exist, upload them
       if (data.photos && data.photos.length > 0 && result.id) {
         // Filter to only File objects for upload
-        filesToUpload = data.photos.filter((photo): photo is File => photo instanceof File);
+        filesToUpload = (data.photos as any).filter((photo): photo is File => photo instanceof File);
       };
 
       let sirePhotoFiles: File[] = [];
@@ -452,7 +452,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
       // If photos exist, upload them
       if (formData.photos && formData.photos.length > 0) {
         // Filter to only File objects for upload
-        filesToUpload = formData.photos.filter((photo) => photo instanceof File);
+        filesToUpload = (formData.photos as any).filter((photo) => photo instanceof File);
       };
 
       let photoUrls = []
@@ -503,13 +503,13 @@ const ListingForm: React.FC<ListingFormProps> = ({
       }
 
 
-      const retainedPhotos = [...formData.photos].filter((file) => !(file instanceof File)) as string[] || [];
+      const retainedPhotos = [...formData.photos].filter((file) => !(file instanceof File)) as any[] || [];
 
-      const retainedSirePhotos = [...formData.parents?.sire?.photos].filter((file) => !(file instanceof File)) as string[] || [];
+      const retainedSirePhotos = [...formData.parents?.sire?.photos].filter((file) => !(file instanceof File)) as any[] || [];
 
-      const retainedDamPhotos = [...formData.parents?.dam?.photos].filter((file) => !(file instanceof File)) as string[] || [];
+      const retainedDamPhotos = [...formData.parents?.dam?.photos].filter((file) => !(file instanceof File)) as any[] || [];
 
-      const retainedCerts = [...formData.health?.certificates].filter((file) => !(file instanceof File)) as string[] || [];
+      const retainedCerts = [...formData.health?.certificates].filter((file) => !(file instanceof File)) as any[] || [];
 
       const deletedPhotos = Array.from(listing?.photos as string[] || [])?.filter((photo) => !retainedPhotos.includes(photo)) || [];
       console.log('deletedPhotos', deletedPhotos);

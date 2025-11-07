@@ -15,7 +15,7 @@ export interface TransactionFilters extends Record<string, unknown> {
 export const useTransactions = (filters?: TransactionFilters) => {
   return useQuery({
     queryKey: queryKeys.transactions.list(filters),
-    queryFn: async (): Promise<Transaction[]> => {
+    queryFn: async (): Promise<Transaction[] | any[]> => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
@@ -80,6 +80,7 @@ export const useTransaction = (id: string) => {
           commission_fee,
           status,
           payment_method,
+          payout_status,
           created_at,
           updated_at,
           meta,
