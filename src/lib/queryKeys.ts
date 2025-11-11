@@ -84,6 +84,14 @@ export const queryKeys = {
     billing: (userId: string): readonly string[] => ['transactions', 'billing', userId] as const,
   },
 
+  // Payout related queries
+  payouts: {
+    all: (): readonly string[] => ['payouts'] as const,
+    pending: (): readonly string[] => ['payouts', 'pending'] as const,
+    calculation: (breederId: string): readonly string[] => ['payouts', 'calculation', breederId] as const,
+    stats: (): readonly string[] => ['payouts', 'stats'] as const,
+  },
+
   // Notification related queries
   notifications: {
     all: (): readonly string[] => ['notifications'] as const,

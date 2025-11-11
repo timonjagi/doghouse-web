@@ -196,6 +196,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiShield,
           ariaLabel: "Breeder verification"
         },
+        {
+          label: "Payouts",
+          href: "/dashboard/admin/payouts",
+          icon: FiCreditCard,
+          ariaLabel: "Manage breeder payouts"
+        },
 
       ]
     },

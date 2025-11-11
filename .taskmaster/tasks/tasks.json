@@ -482,7 +482,7 @@
               5
             ],
             "details": "Implement commission calculation logic, track earnings/payouts in transactions table, create payout scheduling system using Paystack transfers for breeders after commission deduction.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Verify commission calculations, payout tracking, and ensure breeders receive correct amounts after platform fees."
           },
           {
@@ -493,7 +493,7 @@
               6
             ],
             "details": "Create billing pages for seekers (payment history) and breeders (earnings, payouts), implement transaction filtering and export functionality with Paystack transaction data.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Test billing dashboard for both seeker and breeder roles, verify transaction history, filtering, and data accuracy."
           },
           {
@@ -537,7 +537,7 @@
               7
             ],
             "details": "Update navLinks configuration to include billing sections, create /dashboard/billing and /dashboard/payouts routes.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Test navigation to billing sections and verify dashboard routes load correctly."
           },
           {
@@ -559,8 +559,19 @@
               7
             ],
             "details": "Create admin payment analytics dashboard with transaction overview, payment method breakdown, commission tracking, and payment management tools.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Test admin payment oversight features and verify analytics data accuracy."
+          },
+          {
+            "id": 14,
+            "title": "Add payout status tracking (separate from payment status)",
+            "description": "Implement separate payout status tracking to distinguish between payment completion and breeder payout",
+            "dependencies": [
+              7
+            ],
+            "details": "Add payout_status field to transactions table, update payment verification logic to set payout_status to 'pending', update billing dashboards to show separate payment and payout statuses, add payment notifications for both seekers and breeders.",
+            "status": "completed",
+            "testStrategy": "Test payment flow and verify payout status is properly tracked separately from payment status. Check billing dashboards show correct status indicators."
           }
         ]
       },
