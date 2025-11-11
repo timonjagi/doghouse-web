@@ -471,7 +471,7 @@
               4
             ],
             "details": "Build reservation payment UI, integrate with Paystack transactions, handle expiry logic, implement refund processing for expired reservations.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Test reservation payment flow, expiry handling, and refund processing for both successful and failed payments."
           },
           {

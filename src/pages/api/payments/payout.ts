@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 
 interface PaystackTransferRequest {
   amount: number;
@@ -37,7 +37,7 @@ export default async function handler(
 
   try {
     // Verify user authentication
-    const supabase = createServerSupabaseClient({ req, res });
+    const supabase = createPagesServerClient({ req, res });
     const { data: { session }, error: authError } = await supabase.auth.getSession();
 
     if (authError || !session) {
