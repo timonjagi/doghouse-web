@@ -93,12 +93,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiCreditCard,
           ariaLabel: "View earnings and payouts"
         },
-        {
-          label: "Transactions",
-          href: "/dashboard/billing/transactions",
-          icon: FiBarChart,
-          ariaLabel: "View transaction history"
-        },
+        // {
+        //   label: "Transactions",
+        //   href: "/dashboard/billing/transactions",
+        //   icon: FiBarChart,
+        //   ariaLabel: "View transaction history"
+        // },
       ]
     }
   ],
@@ -159,12 +159,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiCreditCard,
           ariaLabel: "View payment history"
         },
-        {
-          label: "Transactions",
-          href: "/dashboard/billing/transactions",
-          icon: FiBarChart,
-          ariaLabel: "View transaction history"
-        },
+        // {
+        //   label: "Transactions",
+        //   href: "/dashboard/billing/transactions",
+        //   icon: FiBarChart,
+        //   ariaLabel: "View transaction history"
+        // },
       ]
     }
   ],

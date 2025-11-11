@@ -22,6 +22,7 @@ export interface ApplicationWithListing extends Application {
     location_text: string | null;
     location_lat: number | null;
     location_lng: number | null;
+    requirements: any;
     breeds: {
       id: string;
       name: string;
@@ -59,6 +60,7 @@ export const useApplicationsByListing = (listingId: string) => {
             price,
             photos,
             owner_id,
+            requirements,
             breeds (
               id,
               name

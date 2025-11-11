@@ -49,152 +49,148 @@ const BreedDetailPage = () => {
             : ""}
         </title>
       </Head>
-      <Box as="section" h="100vh">
-        <Container
-
+      <Container maxW="7xl" py={{ base: '4', md: '0' }}>
+        <Button
+          leftIcon={<ArrowBackIcon />}
+          variant="ghost"
+          onClick={() => router.back()}
+          mb={4}
+          p={0}
         >
-          <Button
-            leftIcon={<ArrowBackIcon />}
-            variant="ghost"
-            onClick={() => router.back()}
-            mb={4}
-            p={0}
+          Back to Breeds
+        </Button>
+        <Stack
+          spacing={{ base: "6", lg: "12", xl: "16" }}
+        >
+          <Heading
+            size={{ base: "sm", md: "md" }}
+            textTransform="capitalize"
           >
-            Back to Breeds
-          </Button>
-          <Stack
-            spacing={{ base: "6", lg: "12", xl: "16" }}
-          >
-            <Heading
-              size={{ base: "sm", md: "md" }}
-              textTransform="capitalize"
-            >
-              {breed.name}
-            </Heading>
-            <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+            {breed.name}
+          </Heading>
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
 
-              <Stack flex="1" spacing="6">
+            <Stack flex="1" spacing="6">
 
-                <Gallery
-                  rootProps={{ flex: "1", flexGrow: 1, minHeight: "100%", }}
-                  images={[{ src: breed?.featured_image_url, alt: "" }]}
-                />
-              </Stack>
+              <Gallery
+                rootProps={{ flex: "1", flexGrow: 1, minHeight: "100%", }}
+                images={[{ src: breed?.featured_image_url, alt: "" }]}
+              />
+            </Stack>
 
-              <Tabs variant='soft-rounded' colorScheme='brand'>
-                <TabList>
+            <Tabs variant='soft-rounded' colorScheme='brand'>
+              <TabList>
 
-                  <Tab>Details</Tab>
-                  <Tab>Traits</Tab>
-                  <Tab>Listings</Tab>
+                <Tab>Details</Tab>
+                <Tab>Traits</Tab>
+                <Tab>Listings</Tab>
 
-                  <Tab>Breeders</Tab>
-                </TabList>
+                <Tab>Breeders</Tab>
+              </TabList>
 
-                <TabPanels>
-                  <TabPanel>
+              <TabPanels>
+                <TabPanel>
 
-                    <Stack>
-                      <Text color="muted">{breed.description}</Text>
+                  <Stack>
+                    <Text color="muted">{breed.description}</Text>
 
-                      <TableContainer >
-                        <Table variant='striped' colorScheme='brand' maxWidth="sm">
-                          <Tbody>
-                            <Tr>
-                              <Td>Breed Group</Td>
-                              <Td>{breed.group} group</Td>
-                            </Tr>
-                            <Tr>
-                              <Td>Height</Td>
-                              <Td>{breed.height}</Td>
-                            </Tr>
-                            <Tr>
-                              <Td>Weight</Td>
-                              <Td>{breed.weight}</Td>
-                            </Tr>
-                            <Tr>
-                              <Td>Life Span</Td>
-                              <Td>{breed.life_span}</Td>
-                            </Tr>
-                          </Tbody>
-                        </Table>
-                      </TableContainer>
-                    </Stack>
-                  </TabPanel>
+                    <TableContainer >
+                      <Table variant='striped' colorScheme='brand' maxWidth="sm">
+                        <Tbody>
+                          <Tr>
+                            <Td>Breed Group</Td>
+                            <Td>{breed.group} group</Td>
+                          </Tr>
+                          <Tr>
+                            <Td>Height</Td>
+                            <Td>{breed.height}</Td>
+                          </Tr>
+                          <Tr>
+                            <Td>Weight</Td>
+                            <Td>{breed.weight}</Td>
+                          </Tr>
+                          <Tr>
+                            <Td>Life Span</Td>
+                            <Td>{breed.life_span}</Td>
+                          </Tr>
+                        </Tbody>
+                      </Table>
+                    </TableContainer>
+                  </Stack>
+                </TabPanel>
 
-                  <TabPanel>
-                    <Stack spacing="2" bg={useColorModeValue("gray.50", "gray.700")}>
-                      <Accordion allowToggle>
+                <TabPanel>
+                  <Stack spacing="2" bg={useColorModeValue("gray.50", "gray.700")}>
+                    <Accordion allowToggle>
 
-                        {breed.traits &&
-                          // @ts-ignore
-                          breed.traits.map((group) => (
-                            // <HStack
-                            //   flex={1}
-                            //   justifyContent="space-between"
-                            //   alignItems="center"
-                            //   key={group.category}
-                            // >
-                            //   <Text fontSize={{ base: "sm", lg: "md" }} color="muted">
-                            //     {group.category}
-                            //   </Text>
-                            //   <HStack gap="$2" alignItems="center">
-                            //     <Rating score={group.score} />
-                            //   </HStack>
-                            // </HStack>
+                      {breed.traits &&
+                        // @ts-ignore
+                        breed.traits.map((group) => (
+                          // <HStack
+                          //   flex={1}
+                          //   justifyContent="space-between"
+                          //   alignItems="center"
+                          //   key={group.category}
+                          // >
+                          //   <Text fontSize={{ base: "sm", lg: "md" }} color="muted">
+                          //     {group.category}
+                          //   </Text>
+                          //   <HStack gap="$2" alignItems="center">
+                          //     <Rating score={group.score} />
+                          //   </HStack>
+                          // </HStack>
 
-                            <AccordionItem>
-                              <h2>
-                                <AccordionButton>
-                                  <Box as='span' flex='1' textAlign='left'>
-                                    {group.category}
-                                  </Box>
-                                  <AccordionIcon />
-                                </AccordionButton>
-                              </h2>
+                          <AccordionItem>
+                            <h2>
+                              <AccordionButton>
+                                <Box as='span' flex='1' textAlign='left'>
+                                  {group.category}
+                                </Box>
+                                <AccordionIcon />
+                              </AccordionButton>
+                            </h2>
 
-                              <AccordionPanel pb={4}>
-                                {group.subTraits?.map((trait) => (
-                                  <HStack
-                                    flex={1}
-                                    justifyContent="space-between"
-                                    alignItems="center"
-                                    key={trait.name}
-                                  >
-                                    <Text fontSize={{ base: "sm", lg: "md" }} color="muted">
-                                      {trait.name}
-                                    </Text>
-                                    <HStack gap="$2" alignItems="center">
-                                      <Rating score={trait.score} />
-                                    </HStack>
+                            <AccordionPanel pb={4}>
+                              {group.subTraits?.map((trait) => (
+                                <HStack
+                                  flex={1}
+                                  justifyContent="space-between"
+                                  alignItems="center"
+                                  key={trait.name}
+                                >
+                                  <Text fontSize={{ base: "sm", lg: "md" }} color="muted">
+                                    {trait.name}
+                                  </Text>
+                                  <HStack gap="$2" alignItems="center">
+                                    <Rating score={trait.score} />
                                   </HStack>
-                                ))}
-                              </AccordionPanel>
-                            </AccordionItem>
-                          ))}
-                      </Accordion>
+                                </HStack>
+                              ))}
+                            </AccordionPanel>
+                          </AccordionItem>
+                        ))}
+                    </Accordion>
 
 
-                    </Stack>
-                  </TabPanel>
-                  <TabPanel>
-                    <BreedListings
-                      listings={listingsForBreed}
-                      loading={isLoadingListings}
-                      error={error}
-                      isManaging={true}
-                    />
-                  </TabPanel>
-                  <TabPanel>
-                    <BreedersList breed={breed} />
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
+                  </Stack>
+                </TabPanel>
+                <TabPanel>
+                  <BreedListings
+                    listings={listingsForBreed}
+                    loading={isLoadingListings}
+                    error={error}
+                    isManaging={true}
+                  />
+                </TabPanel>
+                <TabPanel>
+                  <BreedersList breed={breed} />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
 
-            </SimpleGrid>
-          </Stack>
-        </Container>
-      </Box>
+          </SimpleGrid>
+        </Stack>
+      </Container>
     </>
   );
 };

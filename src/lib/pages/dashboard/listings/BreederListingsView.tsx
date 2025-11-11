@@ -87,7 +87,7 @@ const ManageListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) =>
         <VStack spacing={6} align="stretch">
           <HStack justify="space-between">
             <Box >
-              <Heading size={{ base: 'sm', lg: 'md' }} mb={2} color="brand.500">Manage Listings</Heading>
+              <Heading size={{ base: 'sm', lg: 'md' }} mb={2}>Manage Listings</Heading>
               <Text color="gray.600">Edit, view, or update the status of your listings</Text>
             </Box>
 

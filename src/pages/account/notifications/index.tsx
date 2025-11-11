@@ -14,6 +14,7 @@ import {
   AlertIcon,
   Divider,
   useToast,
+  Container,
 } from '@chakra-ui/react';
 import { FiBell, FiCheck } from 'react-icons/fi';
 import { useRouter } from 'next/router';
@@ -129,13 +130,13 @@ export default function NotificationsPage() {
   }
 
   return (
-    <Box maxW="4xl" mx="auto" p={6}>
+    <Container maxW="4xl" mx="auto" py={6}>
       <VStack spacing={6} align="stretch">
         {/* Header */}
         <HStack justify="space-between" align="center">
           <HStack>
             <FiBell size={24} />
-            <Heading size="lg">Notifications</Heading>
+            <Heading size={{ base: 'xs', md: 'sm' }}>Notifications</Heading>
             {unreadCount > 0 && (
               <Badge colorScheme="red" borderRadius="full" px={2}>
                 {unreadCount}
@@ -217,6 +218,6 @@ export default function NotificationsPage() {
           </VStack>
         )}
       </VStack>
-    </Box>
+    </Container>
   );
 }

@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { useUserProfile } from "lib/hooks/queries";
+import { BottomNavbar } from "./BottomNavbar";
 
 type LayoutProps = {
   children: ReactNode;
@@ -47,8 +48,9 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/matches", layout: DashboardLayout },
     { path: "/dashboard/applications", layout: DashboardLayout },
     { path: "/dashboard/applications/[id]", layout: DashboardLayout },
-    { path: "/dashboard/profile", layout: DashboardLayout },
-    { path: "/dashboard/settings", layout: DashboardLayout },
+    { path: "/account/notifications", layout: DashboardLayout },
+    { path: "/dashboard/account/profile", layout: DashboardLayout },
+    { path: "/dashboard/account/settings", layout: DashboardLayout },
     { path: "/dashboard/billing/earnings", layout: DashboardLayout },
     { path: "/dashboard/billing/payments", layout: DashboardLayout },
     { path: "/dashboard/billing/transactions", layout: DashboardLayout },
@@ -84,11 +86,9 @@ const Layout = ({ children }: LayoutProps) => {
   const { layout: LayoutComponent } = matchedRoute;
   console.log("matched route", matchedRoute);
   return (
-    <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">
-      <Box h="full">
-        <LayoutComponent>{children}</LayoutComponent>
-      </Box>
-    </Box>
+    <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out" overflow="hidden">
+      <LayoutComponent>{children}</LayoutComponent>
+    </Box >
   );
 };
 
@@ -115,8 +115,6 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const { onClose } = useDisclosure();
 
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
-
   return (
     <>
       {isMobile && <Navbar />}
@@ -125,17 +123,12 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         direction={{ base: "column", md: "row" }}
         bg="bg-canvas"
         overflow="auto"
-        h="100vh"
+        h={{ base: "calc(100vh - 128px)", md: "100vh" }}
         w="100vw"
-        maxH="100vh"
         maxW="100vw"
       >
         {isDesktop &&
-          <Sidebar
-            profile={profile}
-            loading={profileLoading}
-            onClose={onClose}
-          />
+          <Sidebar onClose={onClose} />
         }
 
         <Box bg="bg-canvas" flex="1" overflow="auto" w="full">
@@ -145,6 +138,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           </Box>
         </Box>
       </Flex>
+      {isMobile && <BottomNavbar />}
     </>
   );
 };

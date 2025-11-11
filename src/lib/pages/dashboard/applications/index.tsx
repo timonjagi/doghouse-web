@@ -73,7 +73,7 @@ export const ApplicationsPage: React.FC<ApplicationsPageProps> = () => {
         <VStack spacing={8} align="stretch">
           {/* Page Header */}
           <Box>
-            <Heading size={{ base: 'sm', lg: 'md' }} color="brand.800">
+            <Heading size={{ base: 'sm', lg: 'md' }}>
               Applications
             </Heading>
             <Text color="gray.600" mt={2}>

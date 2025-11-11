@@ -104,7 +104,7 @@ const PaymentsPage: React.FC = () => {
     <>
       <NextSeo title="Payment History - DogHouse Kenya" />
 
-      <Container maxW="7xl" py={8}>
+      <Container maxW="7xl" py={{ base: 4, md: 0 }}>
         <VStack spacing={8} align="stretch">
           {/* Header */}
           <Box>
@@ -115,7 +115,7 @@ const PaymentsPage: React.FC = () => {
           </Box>
 
           {/* Stats Overview */}
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
             <Card>
               <CardBody>
                 <Stat>
@@ -141,7 +141,7 @@ const PaymentsPage: React.FC = () => {
               </CardBody>
             </Card>
 
-            <Card>
+            {/* <Card>
               <CardBody>
                 <Stat>
                   <StatLabel>Active Adoptions</StatLabel>
@@ -151,7 +151,7 @@ const PaymentsPage: React.FC = () => {
                   </StatHelpText>
                 </Stat>
               </CardBody>
-            </Card>
+            </Card> */}
           </SimpleGrid>
 
           {/* Payment Information Alert */}
@@ -168,9 +168,9 @@ const PaymentsPage: React.FC = () => {
           {/* Payment History */}
           <Card>
             <CardHeader>
-              <HStack justify="space-between">
+              <HStack justify="space-between" wrap="wrap" spacing="2">
                 <Box>
-                  <Heading size="md">Payment History</Heading>
+                  <Heading size={{ base: 'xs', lg: 'sm' }}>Payment History</Heading>
                   <Text fontSize="sm" color="gray.600">
                     All your adoption payments and transactions
                   </Text>
@@ -254,13 +254,13 @@ const PaymentsPage: React.FC = () => {
 
           {/* Payment Methods */}
           <Card>
-            <CardHeader>
-              <Heading size="md">Payment Methods</Heading>
-            </CardHeader>
+            {/* <CardHeader>
+              <Heading size={{ base: 'xs', lg: 'sm' }}></Heading>
+            </CardHeader> */}
             <CardBody>
               <VStack spacing={4} align="start">
-                <Box>
-                  <Text fontWeight="semibold" mb={2}>Accepted Payment Methods</Text>
+                {/* <Box>
+                  <Text fontWeight="semibold" mb={4}>Accepted Payment Methods</Text>
                   <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                     <HStack spacing={3}>
                       <Icon as={FiCreditCard} color="blue.500" />
@@ -272,14 +272,14 @@ const PaymentsPage: React.FC = () => {
                     <HStack spacing={3}>
                       <Icon as={FiDollarSign} color="green.500" />
                       <Box>
-                        <Text fontWeight="medium">M-Pesa Mobile Money</Text>
+                        <Text fontWeight="medium"> Mobile Money</Text>
                         <Text fontSize="sm" color="gray.600">Pay with your mobile money</Text>
                       </Box>
                     </HStack>
                   </SimpleGrid>
                 </Box>
 
-                <Divider />
+                <Divider /> */}
 
                 <Box>
                   <Text fontWeight="semibold" mb={2}>Security & Refunds</Text>

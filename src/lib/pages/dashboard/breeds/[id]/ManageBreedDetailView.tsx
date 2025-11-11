@@ -112,7 +112,7 @@ export const ManageBreedDetailView = () => {
 
         <VStack align="stretch" spacing={1}>
           <HStack justify="space-between" align="center">
-            <Heading size={{ base: 'sm', lg: 'md' }} color="brand.500">
+            <Heading size={{ base: 'sm', lg: 'md' }}>
               Manage {userBreed?.breeds.name}
             </Heading>
 

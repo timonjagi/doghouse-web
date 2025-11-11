@@ -188,7 +188,7 @@ const Header = ({ profile }) => {
               >
                 <DrawerOverlay />
                 <DrawerContent>
-                  <Sidebar onClose={onClose} profile={profile} />
+                  <Sidebar onClose={onClose} />
                 </DrawerContent>
               </Drawer>
             </Flex>

@@ -418,31 +418,8 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
               columnGap: 4,
             }}
           >
-            <Card
-              sx={{ display: 'inline-block', width: '100%' }}
-              mb={4}
-            >
-              <CardHeader>
-                <Heading size="xs">Listing Information</Heading>
-              </CardHeader>
-              <CardBody>
-                <ListingInfo application={application} />
-              </CardBody>
-            </Card>
 
 
-
-            <Card
-              sx={{ display: 'inline-block', width: '100%' }}
-              mb={4}
-            >
-              <CardHeader>
-                <Heading size="xs">Application Details</Heading>
-              </CardHeader>
-              <CardBody>
-                <ApplicationDetails application={application} />
-              </CardBody>
-            </Card>
 
             <Card
               sx={{ display: 'inline-block', width: '100%' }}
@@ -474,6 +451,30 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                     });
                   }}
                 />
+              </CardBody>
+            </Card>
+
+            <Card
+              sx={{ display: 'inline-block', width: '100%' }}
+              mb={4}
+            >
+              <CardHeader>
+                <Heading size="xs">Application Details</Heading>
+              </CardHeader>
+              <CardBody>
+                <ApplicationDetails application={application} />
+              </CardBody>
+            </Card>
+
+            <Card
+              sx={{ display: 'inline-block', width: '100%' }}
+              mb={4}
+            >
+              <CardHeader>
+                <Heading size="xs">Listing Information</Heading>
+              </CardHeader>
+              <CardBody>
+                <ListingInfo application={application} />
               </CardBody>
             </Card>
 

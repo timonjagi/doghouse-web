@@ -15,10 +15,16 @@ import {
   Icon,
   Divider,
   useToast,
+  Alert,
+  AlertDescription,
+  List,
+  ListIcon,
+  ListItem,
 } from '@chakra-ui/react';
 import { FaCreditCard, FaMobileAlt } from 'react-icons/fa';
 import { useInitiatePayment } from '../../hooks/queries/usePayments';
 import { ApplicationWithListing } from '../../hooks/queries/useApplications';
+import { CheckCircleIcon, ChevronRightIcon } from '@chakra-ui/icons';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -121,7 +127,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} size="lg" scrollBehavior='inside'>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -150,7 +156,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             </Box>
 
             {/* Payment Methods */}
-            <Box>
+            {/* <Box>
               <Text fontSize="lg" fontWeight="semibold" mb={4}>
                 Choose Payment Method
               </Text>
@@ -187,12 +193,39 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </Box>
                 ))}
               </VStack>
-            </Box>
+            </Box> */}
 
-            <Divider />
+            {/* <Divider /> */}
 
             {/* Payment Info */}
-            <Box>
+
+            <Alert status="info" borderRadius="md">
+              <Box>
+                <AlertDescription>
+                  <Text fontWeight="semibold" mb={2}>What happens next?</Text>
+                  <List spacing={1} fontSize="sm">
+                    <ListItem>
+                      <ListIcon as={ChevronRightIcon} color="green.500" />
+                      You'll be redirected to Paystack's secure payment page
+                    </ListItem>
+                    <ListItem>
+                      <ListIcon as={ChevronRightIcon} color="green.500" />
+                      Complete payment using your selected method
+                    </ListItem>
+                    <ListItem>
+                      <ListIcon as={ChevronRightIcon} color="green.500" />
+                      You'll be redirected back once payment is confirmed
+                    </ListItem>
+                    <ListItem>
+                      <ListIcon as={ChevronRightIcon} color="green.500" />
+                      Your application status will update automatically
+                    </ListItem>
+                  </List>
+                </AlertDescription>
+              </Box>
+            </Alert>
+
+            {/* <Box>
               <Text fontSize="sm" color="gray.600" mb={2}>
                 What happens next?
               </Text>
@@ -202,7 +235,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <Text fontSize="sm">• You'll be redirected back once payment is confirmed</Text>
                 <Text fontSize="sm">• Your application status will update automatically</Text>
               </VStack>
-            </Box>
+            </Box> */}
 
             {/* Error handling is done through the hook's onPaymentError callback */}
           </VStack>

@@ -56,7 +56,10 @@ const ListingsPage: React.FC = () => {
     <>
       <NextSeo title="Listings - DogHouse Kenya" />
 
-      {renderRoleSpecificContent()}
+      <Container maxW="7xl" py={{ base: 4, md: 0 }}>
+
+        {renderRoleSpecificContent()}
+      </Container>
     </>
   );
 };

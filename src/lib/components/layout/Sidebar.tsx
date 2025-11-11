@@ -29,20 +29,18 @@ import { NavSection, getNavigationForRole } from "lib/components/layout/navLinks
 import { UserProfile } from "../auth/UserProfile";
 import { User } from "../../../../db/schema";
 import { BsTiktok } from "react-icons/bs";
-import { useCurrentUser } from "lib/hooks/queries";
+import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
 import { useEffect } from "react";
 
 interface SidebarProps {
   onClose: () => void;
-  profile: User;
-  loading?: boolean;
   navigationSections?: NavSection[];
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ profile, loading, onClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const { data: user, isLoading: loadingCurrentUser } = useCurrentUser();
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
 
-  const isMobile = useBreakpointValue({ base: true, md: false });
 
   // Show loading state while checking auth
   if (loadingCurrentUser) {
@@ -71,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, loading, onClose }) =
       maxW={{ base: "full", sm: "xs" }}
       justify="space-between"
       width="full"
-      h={{ base: "calc(100vh - 64px)", md: "full" }}
+      h="full"
       as="nav"
       direction="column"
       overflowY="auto"
@@ -110,12 +108,12 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
 
   return (
     <Stack
-      py={{ base: "6", sm: "8" }}
+      py={{ base: "6", sm: "4" }}
       px={{ base: "4", sm: "6" }}
       justify="space-between"
-      h={{ base: "calc(100vh - 64px)", md: "full" }}
+      h="full"
     >
-      <Box>
+      <Stack spacing="2">
 
         <Logo />
 
@@ -145,11 +143,10 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
           ))}
         </Stack>
 
-      </Box>
+      </Stack>
       {/* Account Section */}
       <Stack
         spacing="2"
-
       >
         <Divider borderColor="bg-accent-subtle" />
 
