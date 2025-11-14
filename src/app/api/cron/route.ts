@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 interface ExpiredApplication {
   id: string;
@@ -13,31 +13,27 @@ interface ExpiredApplication {
   }>;
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  // Only allow POST requests (for Vercel cron) or GET requests (for manual testing)
-  if (req.method !== 'POST' && req.method !== 'GET') {
-    return res.status(405).json({
-      success: false,
-      message: 'Method not allowed',
-    });
-  }
-
+export async function POST(request: NextRequest) {
   // For Vercel cron, verify the authorization header
-  if (req.method === 'POST') {
-    const authHeader = req.headers.authorization;
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return res.status(401).json({
-        success: false,
-        message: 'Unauthorized',
-      });
-    }
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({
+      success: false,
+      message: 'Unauthorized',
+    }, { status: 401 });
   }
 
   try {
-    const supabase = createPagesServerClient({ req, res });
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    );
 
     // Calculate the cutoff time (24 hours ago)
     const cutoffTime = new Date();
@@ -68,16 +64,16 @@ export default async function handler(
 
     if (fetchError) {
       console.error('Error fetching expired applications:', fetchError);
-      return res.status(500).json({
+      return NextResponse.json({
         success: false,
         message: 'Failed to fetch expired applications',
         error: fetchError.message,
-      });
+      }, { status: 500 });
     }
 
     if (!expiredApplications || expiredApplications.length === 0) {
       console.log('No expired applications found');
-      return res.status(200).json({
+      return NextResponse.json({
         success: true,
         message: 'No expired applications to process',
         processed: 0,
@@ -240,7 +236,7 @@ export default async function handler(
 
     console.log(`Cron job completed: ${processedCount} processed, ${errorCount} errors`);
 
-    return res.status(200).json({
+    return NextResponse.json({
       success: true,
       message: `Processed ${processedCount} expired applications with ${errorCount} errors`,
       processed: processedCount,
@@ -250,10 +246,18 @@ export default async function handler(
 
   } catch (error) {
     console.error('Cron job error:', error);
-    return res.status(500).json({
+    return NextResponse.json({
       success: false,
       message: 'Internal server error',
       error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    }, { status: 500 });
   }
+}
+
+// Allow GET requests for manual testing
+export async function GET() {
+  return NextResponse.json({
+    success: false,
+    message: 'Use POST method for cron jobs. GET is for testing only.',
+  }, { status: 405 });
 }
