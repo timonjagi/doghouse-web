@@ -38,7 +38,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const { data: user } = useCurrentUser();
-  const { data: profile, isLoading: profileLoading } = useUserProfileById(user?.id);
+  const { data: profile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
 
   // Show loading state while checking auth
   if (profileLoading) {

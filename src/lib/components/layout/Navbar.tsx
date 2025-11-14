@@ -41,7 +41,7 @@ export const Navbar = () => {
   const toast = useToast();
 
   const { data: user } = useCurrentUser();
-  const { data: userProfile, isLoading: profileLoading } = useUserProfileById(user?.id);
+  const { data: userProfile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
   const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
 
   const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
