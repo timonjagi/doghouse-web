@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from 'lib/supabase/client';
-import { paystack } from 'lib/paystack/paystack';
+import { paystack } from 'lib/services/paystack';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
