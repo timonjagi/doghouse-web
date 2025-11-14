@@ -14,7 +14,7 @@ export const BottomNavbar = () => {
     <Flex
       bg="bg-accent"
       color="on-accent"
-      justify="space-between"
+      justify="space-evenly"
       align="center"
       width="full"
       h="64px"
@@ -22,7 +22,7 @@ export const BottomNavbar = () => {
       direction="row"
       display="fixed"
       bottom={0}
-      pb={2}
+      wrap="nowrap"
     >
       <NavButton
         label="Home"
@@ -40,15 +40,17 @@ export const BottomNavbar = () => {
         aria-current={
           router.pathname.includes("breeds") ? "page" : "false"
         }
+
       />
 
       <NavButton
         label="Matches"
         icon={FiTarget}
-        href="/dashboard/account"
+        href="/dashboard/matches"
         aria-current={
           router.pathname.includes("matches") ? "page" : "false"
         }
+
       />
 
       <NavButton
@@ -58,6 +60,7 @@ export const BottomNavbar = () => {
         aria-current={
           router.pathname.includes("listings") ? "page" : "false"
         }
+
       />
 
       <NavButton
@@ -67,9 +70,8 @@ export const BottomNavbar = () => {
         aria-current={
           router.pathname.includes("applications") ? "page" : "false"
         }
+
       />
-
-
     </Flex>
   );
 };
@@ -92,9 +94,10 @@ const NavButton = (props: NavButtonProps) => {
       variant="ghost-on-accent"
       justifyContent="center"
       align="center"
-      maxW="calc(100vw / 5)"
+      w="calc(100vw / 5)"
       as={Link}
       href={href}
+      borderRadius={0}
       {...buttonProps}
     >
       <Stack spacing="1" align="center"

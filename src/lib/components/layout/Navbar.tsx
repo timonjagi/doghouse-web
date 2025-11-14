@@ -70,7 +70,7 @@ export const Navbar = () => {
   return (
     <>
       {isMobile ? (
-        <Box width="full" px={{ base: "4", md: "8" }} py="4" bg="bg-accent">
+        <Box width="full" px={{ base: "4", md: "8" }} py="3" bg="bg-accent">
           <Flex justify="space-between">
             <Logo />
 
@@ -150,14 +150,14 @@ export const Navbar = () => {
 
             Notifications
 
-            {unreadCount && unreadCount > 0 && (
+            {unreadCount > 0 && (
               <Badge colorScheme="red" borderRadius="full" px={2} fontSize="xs">
                 {unreadCount}
               </Badge>
             )}
 
 
-            {notifications && notifications.length > 0 && unreadCount && unreadCount > 0 && (
+            {notifications && notifications.length > 0 && unreadCount > 0 && (
               <Button
                 leftIcon={<FiCheck />}
                 variant="outline"

@@ -57,7 +57,7 @@ const DashboardHome = () => {
   }
 
   return (
-    <Container h="full" maxW="7xl">
+    <Container maxW="7xl">
 
       <NextSeo title="Dashboard" />
 

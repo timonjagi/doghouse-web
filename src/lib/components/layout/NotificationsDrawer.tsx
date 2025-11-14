@@ -60,7 +60,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
     // Navigate based on notification type and data
     if (notification.type === 'payment_completed' || notification.type === 'payment_received') {
       // For payment notifications, navigate to transactions page
-      router.push('/dashboard/billing/payments');
+      router.push('/dashboard/account/billing');
     } else if ((notification.meta as any)?.applicationId) {
       // For application status changes, navigate to applications page
       router.push(`/dashboard/applications/${(notification.meta as any).applicationId}`);
@@ -74,7 +74,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
 
 
   const handleViewAll = () => {
-    router.push('/account/notifications');
+    router.push('/dashboard/account/notifications');
     onClose();
   };
 
@@ -123,7 +123,6 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
   // Get only the latest 5 notifications for the drawer
   const latestNotifications = notifications?.slice(0, 5) || [];
 
-  console.log('latestNotifications', latestNotifications);
   return (
     <Flex
       flex="1"
@@ -173,7 +172,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
                   border="none"
                   borderBottom="1px solid"
                   borderColor="gray.100"
-                  bg={notification.is_read ? 'white' : 'blue.50'}
+                  bg={notification.is_read ? 'white' : 'brand.50'}
                 >
                   <CardBody p={4}>
                     <HStack align="start" spacing={3}>
@@ -191,7 +190,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
                               {formatDate(notification.created_at.toString())}
                             </Text>
                             {!notification.is_read && (
-                              <Badge colorScheme="blue" variant="solid" fontSize="xs" px={1}>
+                              <Badge colorScheme="brand" variant="solid" fontSize="xs" px={1}>
                                 New
                               </Badge>
                             )}
@@ -217,7 +216,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
                     size="sm"
                     width="full"
                     onClick={handleViewAll}
-                    color="blue.500"
+                    color="brand.500"
                   >
                     View All Notifications ({notifications.length})
                   </Button>
