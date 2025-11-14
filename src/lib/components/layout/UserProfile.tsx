@@ -3,15 +3,19 @@ import {
   Box,
   HStack,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Spacer,
   Text,
   useToast,
 } from "@chakra-ui/react";
 import { useSignOut } from "lib/hooks/queries";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { useRouter } from "next/router";
+import { BsThreeDotsVertical } from "react-icons/bs";
 // import * as React from "react";
-import { FiLogOut } from "react-icons/fi";
+import { MdOutlineAccountCircle, MdLogout } from "react-icons/md";
 
 
 interface UserProfileProps {
@@ -63,12 +67,38 @@ export const UserProfile: React.FC<UserProfileProps> = ({ profile, onClose }) =>
         </Text>
       </Box>
       <Spacer />
-      <IconButton
-        colorScheme="brand-on-accent"
-        aria-label="Logout"
-        icon={<FiLogOut />}
-        onClick={onLogout}
-      />
+      <Menu>
+
+        <MenuButton
+          as={IconButton}
+          icon={<BsThreeDotsVertical />}
+          rounded="full"
+          variant="link"
+          cursor="pointer"
+          minW={0}
+          color="on-accent"
+        >
+
+          <MenuList>
+            <MenuItem
+              icon={<MdOutlineAccountCircle />}
+              cursor="pointer"
+              as="a"
+              href="/account"
+            >
+              Account
+            </MenuItem>
+            <MenuItem
+              icon={<MdLogout />}
+              cursor="pointer"
+              as="button"
+              onClick={onLogout}
+            >
+              Logout
+            </MenuItem>
+          </MenuList>
+        </MenuButton>
+      </Menu>
     </HStack>
   );
 };

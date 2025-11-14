@@ -66,7 +66,7 @@ export const BottomNavbar = () => {
       <NavButton
         label="Account"
         icon={FiUser}
-        href="/account"
+        href="/dashboard/account"
         aria-current={
           router.pathname.includes("account") ? "page" : "false"
         }

@@ -12,11 +12,10 @@ import {
   MenuItem,
   useToast,
 } from "@chakra-ui/react";
-import Link from "next/link";
 import type React from "react";
 import { useRouter } from "next/router";
 import { MdDashboard, MdLogout, MdOutlineAccountCircle } from "react-icons/md";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+import { useSignOut } from "lib/hooks/queries";
 
 type UserProfileMenuProps = {
   name: string;
@@ -31,11 +30,11 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
 
   const toast = useToast();
   const router = useRouter();
-  const { signOut } = useSupabaseAuth();
+  const signOut = useSignOut();
 
   const onLogout = async () => {
     try {
-      await signOut();
+      await signOut.mutateAsync();
 
       toast({
         title: "Logged out successfully",
@@ -87,23 +86,23 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
             </Box>
           </Center>
           <MenuDivider />
-          <MenuItem
+          {router.pathname === '/' && <MenuItem
             icon={<MdDashboard />}
             cursor="pointer"
             as="a"
             href="/dashboard"
           >
             Go to Dashboard
-          </MenuItem>
+          </MenuItem>}
 
-          {/* <MenuItem
+          <MenuItem
             icon={<MdOutlineAccountCircle />}
             cursor="pointer"
             as="a"
-            href="/account"
+            href="/dashboard/account"
           >
             Account
-          </MenuItem> */}
+          </MenuItem>
           <MenuItem
             icon={<MdLogout />}
             cursor="pointer"

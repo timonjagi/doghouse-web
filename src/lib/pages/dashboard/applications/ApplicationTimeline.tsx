@@ -309,7 +309,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           title: 'Review Application',
           description: 'Review the applicant\'s suitability',
           status: application.status === 'submitted' ? 'current' :
-            ['pending', 'approved', 'rejected', 'completed'].includes(application.status) ? 'completed' : 'pending',
+            ['pending', 'approved', 'rejected', 'reserved', 'completed'].includes(application.status) ? 'completed' : 'pending',
           info: [
             'Evaluate applicant against your requirements',
             'Consider phone/video calls or home visits if needed',
@@ -332,13 +332,13 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         {
           id: 'decision',
           title: application.status === 'approved' ? 'Application Approved' :
-            application.status === 'rejected' ? 'Application Rejected' : 'Make Decision',
-          description: application.status === 'approved'
+            application.status === 'rejected' ? 'Application Rejected' : 'Application Approved',
+          description: ['approved', 'reserved', 'completed'].includes(application.status)
             ? 'You approved this application'
             : application.status === 'rejected'
               ? 'You rejected this application'
               : 'Approve or reject the application',
-          status: ['approved', 'rejected'].includes(application.status) ? 'completed' :
+          status: ['approved', 'rejected', 'reserved', 'completed'].includes(application.status) ? 'completed' :
             application.status === 'pending' ? 'current' : 'pending',
           info: application.status === 'approved' ? [
             'Applicant will be notified of approval',
@@ -354,12 +354,12 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
       ];
 
       // Add post-approval steps only if approved
-      if (application.status === 'approved') {
+      if (['approved', 'reserved', 'completed'].includes(application.status)) {
         steps.push(
           {
             id: 'awaiting_payment',
             title: 'Awaiting Reservation Payment',
-            description: 'Waiting for applicant to pay reservation fee',
+            description: application.reservation_paid ? 'Reservation fee has been paid' : 'Waiting for applicant to pay reservation fee',
             status: application.reservation_paid ? 'completed' : 'current',
             info: [
               'Applicant has 24 hours to pay reservation fee',
@@ -375,7 +375,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           {
             id: 'awaiting_contract',
             title: 'Awaiting Contract Signature',
-            description: 'Waiting for applicant to sign adoption contract',
+            description: application.contract_signed ? 'Contract has been signed' : 'Waiting for applicant to sign adoption contract',
             status: application.contract_signed ? 'completed' :
               application.reservation_paid ? 'current' : 'locked',
             info: [
@@ -391,7 +391,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           {
             id: 'awaiting_final_payment',
             title: 'Awaiting Final Payment',
-            description: 'Waiting for applicant to complete final payment',
+            description: application.payment_completed ? 'Final payment has been completed' : 'Waiting for applicant to complete final payment',
             status: application.payment_completed ? 'completed' :
               application.contract_signed || (application.reservation_paid && !contractRequired) ? 'current' : 'locked',
             info: [
@@ -407,8 +407,8 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           {
             id: 'finalize',
             title: application.status === 'completed' ? 'Adoption Completed' : 'Finalize Adoption',
-            description: application.status === 'completed' ? 'Congratulations! Your adoption is complete. If you enjoyed your experiece, please leave us a review.' : 'Complete the adoption process',
-            status: application.status === 'completed' ? 'completed' : 'pending',
+            description: application.status === 'completed' ? 'Congratulations! Your adoption is complete. If you enjoyed your experiece, please leave us a review.' : 'Finalize the adoption.',
+            status: application.status === 'completed' ? 'completed' : 'current',
             info: [
               'Mark adoption as completed',
               'Arrange pickup/delivery with new owner',
@@ -416,22 +416,21 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
             actionButtons: application.payment_completed && application.status !== 'completed' ? [{
               label: 'Mark as Completed',
               onClick: onMarkCompleted || (() => { }),
-              colorScheme: 'purple',
+              colorScheme: 'green',
               icon: CheckIcon,
-            }] : application.status === 'completed' ? [{
+            },
+            {
+              // contact new owner
+              label: 'Contact New Owner',
+              onClick: onContactNewOwner || (() => { }),
+              colorScheme: 'purple',
+              icon: PhoneIcon,
+            }] : [{
               label: 'Leave Review',
               onClick: onLeaveReview || (() => { }),
               colorScheme: 'purple',
               icon: StarIcon,
-            }] : [
-              {
-                // contact new owner
-                label: 'Contact New Owner',
-                onClick: onContactNewOwner || (() => { }),
-                colorScheme: 'purple',
-                icon: PhoneIcon,
-              }
-            ],
+            }],
           }
         )
       }
@@ -489,7 +488,7 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
 
               <StepDescription pt={2} pb={4}>{step.description}</StepDescription>
 
-              {application.status === 'approved' || application.status === 'rejected' && index === steps.length - 1 && (
+              {application.status === 'approved' || application.status === 'rejected' || application.status === 'withdrawn' && (
                 <Text fontSize="xs" color="red.500">
                   {
                     //@ts-ignore

@@ -26,7 +26,7 @@ import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
 
 import { NavSection, getNavigationForRole } from "lib/components/layout/navLinks";
-import { UserProfile } from "../auth/UserProfile";
+import { UserProfile } from "./UserProfile";
 import { User } from "../../../../db/schema";
 import { BsTiktok } from "react-icons/bs";
 import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
@@ -157,20 +157,17 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
             aria-current={
               router.pathname.includes("/help-center") ? "page" : "false"
             }
-            onClick={() => onClickMenuLink("/dashboard/help-center")}
+            onClick={() => onClickMenuLink("/help-center")}
           />
           <NavButton
             label="Settings"
             icon={FiSettings}
-            onClick={() => onClickMenuLink("/dashboard/settings")}
+            onClick={() => onClickMenuLink("/dashboard/account/settings")}
             aria-current={
               router.pathname.includes("/settings") ? "page" : "false"
             }
           />
         </Stack>
-
-        <Divider borderColor="bg-accent-subtle" />
-        <UserProfile profile={profile} onClose={onClose} />
       </Stack>
     </Stack>
   );

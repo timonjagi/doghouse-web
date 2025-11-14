@@ -11,7 +11,7 @@ interface UpdateProfileData {
   location_text?: string;
   location_lat?: number;
   location_lng?: number;
-  avatar_url?: string;
+  profile_photo_url?: string | null;
   role?: string;
   onboarding_completed?: boolean;
 }
@@ -82,7 +82,7 @@ export const useUpdateUserProfile = () => {
       const { updateUserProfile } = useAppStore.getState();
       updateUserProfile({
         displayName: data.display_name,
-        avatarUrl: data.avatar_url,
+        avatarUrl: data.profile_photo_url,
       });
 
       // Invalidate relevant queries - avoid infinite recursion
@@ -106,18 +106,18 @@ export const useUploadProfilePhoto = () => {
 
       const { error: uploadError } = await supabase.storage
         .from('profile-photos')
-        .upload(fileName, file);
+        .upload(`user-${user.id}/${fileName}`, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('profile-photos')
-        .getPublicUrl(fileName);
+        .getPublicUrl(`user-${user.id}/${fileName}`);
 
       // Update user profile with new avatar URL
       const { error: updateError } = await supabase
         .from('users')
-        .update({ avatar_url: publicUrl })
+        .update({ profile_photo_url: publicUrl })
         .eq('id', user.id);
 
       if (updateError) throw updateError;

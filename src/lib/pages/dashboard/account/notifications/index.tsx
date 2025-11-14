@@ -18,14 +18,14 @@ import {
 } from '@chakra-ui/react';
 import { FiBell, FiCheck } from 'react-icons/fi';
 import { useRouter } from 'next/router';
-import { useUserProfile } from '../../../lib/hooks/queries';
+import { useUserProfile } from '../../../../../lib/hooks/queries';
 import {
   useNotifications,
   useMarkNotificationAsRead,
   useMarkAllNotificationsAsRead,
   useUnreadNotificationsCount,
-} from '../../../lib/hooks/queries/useNotifications';
-import { Notification } from '../../../../db/schema';
+} from '../../../../../lib/hooks/queries/useNotifications';
+import { Notification } from '../../../../../../db/schema';
 
 export default function NotificationsPage() {
   const router = useRouter();

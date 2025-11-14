@@ -48,13 +48,11 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/matches", layout: DashboardLayout },
     { path: "/dashboard/applications", layout: DashboardLayout },
     { path: "/dashboard/applications/[id]", layout: DashboardLayout },
-    { path: "/account/notifications", layout: DashboardLayout },
+    { path: "/dashboard/account", layout: DashboardLayout },
+    { path: "/dashboard/account/notifications", layout: DashboardLayout },
     { path: "/dashboard/account/profile", layout: DashboardLayout },
     { path: "/dashboard/account/settings", layout: DashboardLayout },
-    { path: "/dashboard/billing/earnings", layout: DashboardLayout },
-    { path: "/dashboard/billing/payments", layout: DashboardLayout },
-    { path: "/dashboard/billing/transactions", layout: DashboardLayout },
-
+    { path: "/dashboard/account/billing", layout: DashboardLayout },
 
 
     // Admin dashboard routes

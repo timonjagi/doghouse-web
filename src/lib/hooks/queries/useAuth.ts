@@ -122,7 +122,7 @@ export const useSignOut = () => {
       clearUserSession();
 
       // Clear all cached queries
-      queryClient.clear();
+      //queryClient.clear();
 
       // Invalidate auth queries
       queryClient.invalidateQueries();

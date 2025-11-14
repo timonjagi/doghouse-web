@@ -14,6 +14,9 @@ import {
   FiMessageSquare,
   FiGitlab,
   FiCreditCard,
+  FiUser,
+  FiGrid,
+  FiBell,
 } from "react-icons/fi";
 
 export type UserRole = 'breeder' | 'seeker' | 'admin';
@@ -85,20 +88,27 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "Billing",
+      title: "Account",
       items: [
         {
-          label: "Earnings",
-          href: "/dashboard/billing/earnings",
-          icon: FiCreditCard,
-          ariaLabel: "View earnings and payouts"
+          label: "Profile",
+          href: "/dashboard/account/profile",
+          icon: FiUser,
+          ariaLabel: "View profile"
         },
-        // {
-        //   label: "Transactions",
-        //   href: "/dashboard/billing/transactions",
-        //   icon: FiBarChart,
-        //   ariaLabel: "View transaction history"
-        // },
+        {
+          label: "Billing",
+          href: "/dashboard/account/billing",
+          icon: FiCreditCard,
+          ariaLabel: "View payment history"
+        },
+
+        {
+          label: "Notifications",
+          href: "/dashboard/account/notifications",
+          icon: FiBell,
+          ariaLabel: "View notifications"
+        },
       ]
     }
   ],
@@ -110,15 +120,9 @@ export const navigationConfig: NavigationConfig = {
         {
           label: "Overview",
           href: "/dashboard",
-          icon: FiHome,
+          icon: FiGrid,
           ariaLabel: "Dashboard home"
-        },
-        // {
-        //   label: "Inbox",
-        //   href: "/dashboard/inbox",
-        //   icon: FiMessageSquare,
-        //   ariaLabel: "Inbox"
-        // },
+        }
       ]
     },
     {
@@ -151,20 +155,27 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "Billing",
+      title: "Account",
       items: [
         {
-          label: "Payments",
-          href: "/dashboard/billing/payments",
+          label: "Profile",
+          href: "/dashboard/account/profile",
+          icon: FiUser,
+          ariaLabel: "View profile"
+        },
+        {
+          label: "Billing",
+          href: "/dashboard/account/billing",
           icon: FiCreditCard,
           ariaLabel: "View payment history"
         },
-        // {
-        //   label: "Transactions",
-        //   href: "/dashboard/billing/transactions",
-        //   icon: FiBarChart,
-        //   ariaLabel: "View transaction history"
-        // },
+
+        {
+          label: "Notifications",
+          href: "/dashboard/account/notifications",
+          icon: FiBell,
+          ariaLabel: "View notifications"
+        },
       ]
     }
   ],

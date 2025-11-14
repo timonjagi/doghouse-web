@@ -56,8 +56,8 @@ export const Dropzone = ({
                     height="100%"
                     borderRadius="lg"
                     objectFit="cover"
-                    src={selectedFile && typeof selectedFile === "string" ? selectedFile : URL.createObjectURL(selectedFile)}
-                    alt={typeof selectedFile === "string" ? "image" : selectedFile.name}
+                    src={selectedFile && typeof selectedFile === "string" ? selectedFile : selectedFile ? URL.createObjectURL(selectedFile) : ''}
+                    alt={typeof selectedFile === "string" ? "image" : selectedFile ? selectedFile.name : ''}
                     bg="bg-subtle"
                   />
                   <IconButton

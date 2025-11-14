@@ -173,76 +173,6 @@
             "testStrategy": "Test hooks individually to ensure they properly interact with the updated database schema."
           },
           {
-            "id": 4,
-            "title": "Implement Seeker Onboarding Flow",
-            "description": "Build complete seeker onboarding with preferences and wanted listing creation.",
-            "dependencies": [
-              1,
-              3
-            ],
-            "details": "Create SeekerContactDetails, SeekerPreferences, and WantedListing components that save to wanted_listings table.",
-            "status": "done",
-            "testStrategy": "Complete seeker onboarding flow and verify wanted_listing is created with all preferences."
-          },
-          {
-            "id": 5,
-            "title": "Implement Breeder Onboarding Flow",
-            "description": "Build complete breeder onboarding with kennel info and breed image upload.",
-            "dependencies": [
-              1,
-              3
-            ],
-            "details": "Create BreederContactDetails, BreedSelection, and BreedImages components with image upload functionality.",
-            "status": "done",
-            "testStrategy": "Complete breeder onboarding flow and verify kennel information and breed images are properly saved."
-          },
-          {
-            "id": 6,
-            "title": "Update Onboarding Router Logic",
-            "description": "Modify main onboarding component to route users to appropriate role-specific flows.",
-            "dependencies": [
-              4,
-              5
-            ],
-            "details": "Update src/lib/pages/onboarding/index.tsx to detect user role and render appropriate flow components.",
-            "status": "done",
-            "testStrategy": "Test role detection and routing to ensure users see the correct onboarding flow."
-          }
-        ]
-      },
-      {
-        "id": 4,
-        "title": "Refactor Dashboard Layout and Sidebar for Role-Based Views",
-        "description": "Update the main layout and sidebar navigation to dynamically display menu items based on the user's role (Breeder, Seeker, Admin) as defined in the PRD.",
-        "details": "Modify the layout components in `src/lib/components/layout/`, particularly `Sidebar.tsx`. The component should fetch the current user's role from the Supabase session and render different navigation links for 'Breeder', 'Seeker', and 'Admin' roles, matching the components outlined in the PRD's MVP Dashboard Summary.",
-        "testStrategy": "Log in as a Seeker and verify the sidebar shows links to 'Matches' and 'My Applications'. Log in as a Breeder and verify links for 'Breeds', 'Litters', and 'Inquiries'. Log in as an Admin and verify links for 'Verification' and 'Analytics'.",
-        "priority": "high",
-        "dependencies": [
-          1,
-          2,
-          3
-        ],
-        "status": "completed",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create 'useUserProfile' Hook to Fetch User Role",
-            "description": "Develop a custom React hook `useUserProfile` that fetches the current user's profile data, including their role, from the 'users' table in Supabase. This hook will encapsulate the logic for retrieving the session user and querying for their extended profile.",
-            "dependencies": [],
-            "details": "Create a new file `src/hooks/useUserProfile.ts`. The hook should use `useUser` from `@supabase/auth-helpers-react` to get the authenticated user's ID and `useSupabaseClient` to query the `users` table for the row matching that ID. It should return the user profile object (or null/undefined during loading/error states) and the user's role.",
-            "status": "completed",
-            "testStrategy": "Create a test page that uses the hook. Log in as a Breeder and verify the hook returns the full user profile with `role: 'Breeder'`. Test loading and unauthenticated states."
-          },
-          {
-            "id": 2,
-            "title": "Define Role-Based Navigation Link Configurations",
-            "description": "Create a centralized configuration object that defines the navigation links for each user role with clean groupings: Dashboard, Browse/Matches, Applications, Profile sections.",
-            "dependencies": [],
-            "details": "In a new file `src/lib/config/navLinks.ts`, define navigation configurations for each role: BREEDER (Dashboard, My Breeds, My Listings, Applications, Profile), SEEKER (Dashboard, Browse, Matches, Applications, Profile), ADMIN (Dashboard, Verification, Users, Listings, Analytics, Profile).",
-            "status": "pending",
-            "testStrategy": "Review the created configuration file to ensure it contains the correct navigation structure with proper groupings and icons for each role."
-          },
-          {
             "id": 3,
             "title": "Integrate 'useUserProfile' Hook into DashboardLayout",
             "description": "Modify the main `DashboardLayout.tsx` component to use the new `useUserProfile` hook. This component will be responsible for fetching the user's role and passing it down to its children, specifically the Sidebar.",
@@ -577,55 +507,10 @@
       },
       {
         "id": 9,
-        "title": "Implement Matches Page (Complete flow for both breeders and seekers)",
-        "description": "Create intelligent matching system. For breeders: see matching seekers. For seekers: see matching breeders/listings.",
-        "details": "Build role-aware matches page with matching algorithm. Include preference settings, match notifications, and communication features.",
-        "testStrategy": "Test matching algorithm for both roles, verify notifications work correctly.",
-        "priority": "medium",
-        "dependencies": [
-          7
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Role-Aware Matches Page Component",
-            "description": "Build main matches page that adapts based on user role.",
-            "dependencies": [],
-            "details": "Create src/lib/pages/dashboard/matches.tsx with role-based matching interface.",
-            "status": "pending",
-            "testStrategy": "Verify page loads correctly for both roles."
-          },
-          {
-            "id": 2,
-            "title": "Implement Matching Algorithm",
-            "description": "Create logic to match seekers with breeders based on preferences and offerings.",
-            "dependencies": [
-              1
-            ],
-            "details": "Build matching algorithm using breed preferences, location, and other criteria.",
-            "status": "pending",
-            "testStrategy": "Test matching results, verify correct matches are shown for both roles."
-          },
-          {
-            "id": 3,
-            "title": "Implement Match Notifications",
-            "description": "Add notification system for new matches and updates.",
-            "dependencies": [
-              2
-            ],
-            "details": "Integrate with notifications system to alert users of new matches.",
-            "status": "pending",
-            "testStrategy": "Verify notifications are sent and received correctly for new matches."
-          }
-        ]
-      },
-      {
-        "id": 10,
         "title": "Develop User Profile Management Component",
-        "description": "Create a shared component for users of all roles to view and edit their profile information, including bio, photo, location, and contact details.",
-        "details": "Build a form in Next.js that populates with the current user's data from the 'users' table. Implement an update function that writes changes back to Supabase. Include functionality for uploading a profile photo to Supabase Storage and updating the `profile_photo_url` field. This component should be accessible from a user's dashboard.",
-        "testStrategy": "Log in as a user, navigate to the profile page, change the bio and display name, and verify the changes persist after a page refresh. Test the image upload functionality and confirm the new image is displayed. Check the Supabase Storage bucket to ensure the file was uploaded.",
+        "description": "Create a shared component for users of all roles to view and edit their profile information, including bio, photo, location, and contact details using Chakra UI.",
+        "details": "Build a profile management system using the existing useUserProfile hook. Create components under account/profile structure with Chakra UI styling. Implement profile photo upload to Supabase Storage and form validation with Zod.",
+        "testStrategy": "Log in as a user, navigate to /account/profile, change the bio and display name, and verify the changes persist after a page refresh. Test the image upload functionality and confirm the new image is displayed. Check the Supabase Storage bucket to ensure the file was uploaded.",
         "priority": "high",
         "dependencies": [
           1,
@@ -636,62 +521,50 @@
         "subtasks": [
           {
             "id": 1,
-            "title": "Create Profile Page and Fetch User Data",
-            "description": "Create the main page component for user profile management, located at `/settings/profile`. This server component will be responsible for fetching the currently logged-in user's data from the Supabase 'users' table.",
+            "title": "Create Profile Page Structure",
+            "description": "Create the main profile page components under account/profile structure.",
             "dependencies": [],
-            "details": "Create the file `src/app/(app)/settings/profile/index.tsx`. Use the `createServerComponentClient` from `@supabase/auth-helpers-nextjs` to fetch user session and profile data (name, bio, location, photo URL). The fetched data will be passed as props to a client component created in a subsequent task.",
+            "details": "Create `src/pages/account/profile/index.tsx` and `src/lib/pages/account/profile/index.tsx`. Use the existing useUserProfile hook to fetch current user data. Implement proper loading and error states with Chakra UI components.",
             "status": "pending",
-            "testStrategy": "Navigate to `/settings/profile` while logged in. Verify the page loads without errors. Log the fetched user data on the server to confirm it's being retrieved correctly."
+            "testStrategy": "Navigate to /account/profile while logged in. Verify the page loads without errors and displays user data from useUserProfile hook."
           },
           {
             "id": 2,
-            "title": "Build Profile Form UI Client Component",
-            "description": "Develop a client component that displays the user profile form. This component will receive the user's data as props and render a form with fields for display name, bio, and location.",
+            "title": "Build ProfileForm Component with Chakra UI",
+            "description": "Develop the main profile form component using Chakra UI components.",
             "dependencies": [
               1
             ],
-            "details": "Create a new client component file, e.g., `src/components/profile/profile-form.tsx`. Use `Chakra UI` components (`Input`, `Textarea`, `Button`, `Label`) to build the form. Populate the form fields with the initial user data passed via props. Use `react-hook-form` and `zod` for form state management and validation, following existing patterns in the codebase.",
+            "details": "Create `src/lib/pages/account/profile/ProfileForm.tsx` with Chakra UI form components (Input, Textarea, Button, FormControl). Include fields for display name, bio, and location.",
             "status": "pending",
-            "testStrategy": "Render the component with mock user data. Verify that all form fields display the correct initial values. Check that the form layout is responsive and matches the site's design system."
+            "testStrategy": "Render the ProfileForm component. Verify all Chakra UI components display correctly and form validation works as expected."
           },
           {
             "id": 3,
-            "title": "Implement API Route for Profile Text Updates",
-            "description": "Create a Next.js API route to handle updates for the text-based profile fields (display name, bio, location).",
+            "title": "Implement ProfilePhotoUpload Component",
+            "description": "Create photo upload component with drag-and-drop functionality.",
             "dependencies": [
               2
             ],
-            "details": "Create a new api route in `src/pages/api/users/`. The API route will accept form data, validate it using a Zod schema, and use the Supabase client to update the corresponding record in the 'users' table. Connect this action to the `onSubmit` handler of the profile form.",
+            "details": "Create `src/lib/pages/account/profile/ProfilePhotoUpload.tsx` with Chakra UI styling. Implement drag-and-drop upload, image preview, and Supabase Storage integration. Show current profile photo and allow replacement.",
             "status": "pending",
-            "testStrategy": "Log in, change the display name and bio, and submit the form. After a page refresh, the new values should persist. Check the 'users' table in Supabase directly to confirm the update. Test validation by submitting empty or invalid data."
+            "testStrategy": "Test photo upload functionality. Verify drag-and-drop works, preview displays correctly, and images are uploaded to Supabase Storage."
           },
           {
             "id": 4,
-            "title": "Add Profile Photo Display and Upload UI",
-            "description": "Enhance the profile form to include the user's current profile photo and a file input for uploading a new one. This involves only the UI and client-side state management for the selected file.",
+            "title": "Create useUpdateProfile Hook",
+            "description": "Build a React Query mutation hook for profile updates.",
             "dependencies": [
               2
             ],
-            "details": "In `profile-form.tsx`, use the `next/image` component to display the current user's avatar using the `profile_photo_url`. Add a styled `<input type='file' accept='image/*' />` for selecting a new photo. Implement client-side logic to show a preview of the selected image before uploading.",
+            "details": "Create `src/lib/hooks/queries/useUpdateProfile.ts` following existing hook patterns. Handle both text field updates and photo URL updates. Include proper error handling and success callbacks.",
             "status": "pending",
-            "testStrategy": "Verify the current profile photo (or a placeholder) is displayed correctly. Select a new image file from your local machine and confirm that a preview of the new image is shown, replacing the old one."
-          },
-          {
-            "id": 5,
-            "title": "Implement API Route for Photo Upload and URL Update",
-            "description": "Create the server-side logic to handle the profile photo upload to Supabase Storage and update the user's record with the new photo URL.",
-            "dependencies": [
-              3,
-              4
-            ],
-            "details": "Create a new API route that accepts `FormData`. This API route will: 1. Extract the file from the form data. 2. Upload the file to a designated Supabase Storage bucket (e.g., 'avatars'). 3. Retrieve the public URL of the uploaded file. 4. Update the `profile_photo_url` column in the 'users' table for the current user. Ensure proper error handling for upload failures.",
-            "status": "pending",
-            "testStrategy": "Log in, upload a new profile picture, and submit. Verify that the new picture is displayed on the profile page after refresh. Check the Supabase Storage 'avatars' bucket to confirm the new file exists. Verify the `profile_photo_url` in the 'users' table has been updated."
+            "testStrategy": "Test the useUpdateProfile hook with mock data. Verify it properly updates the database and invalidates relevant queries."
           }
         ]
       },
       {
-        "id": 11,
+        "id": 10,
         "title": "Build Admin Dashboard: Comprehensive Management Panel",
         "description": "Create a comprehensive admin dashboard with breeder verification, user management, listings oversight, and analytics capabilities.",
         "details": "Develop a secure admin dashboard with multiple management sections. Include breeder verification panel to review and approve breeder applications, user management to oversee all platform users, listings management to monitor all litters and wanted ads, and analytics dashboard to track platform metrics and engagement. All sections should have proper role-based access control and comprehensive management interfaces.",
@@ -755,6 +628,51 @@
             "details": "Build analytics interface that displays key platform metrics including user growth, listing activity, application success rates, and engagement statistics. Include charts, graphs, and exportable reports for data analysis.",
             "status": "pending",
             "testStrategy": "As admin, view platform analytics, check key metrics, and verify data accuracy. Test data visualization and reporting features."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement Matches Page (Complete flow for both breeders and seekers)",
+        "description": "Create intelligent matching system. For breeders: see matching seekers. For seekers: see matching breeders/listings.",
+        "details": "Build role-aware matches page with matching algorithm. Include preference settings, match notifications, and communication features.",
+        "testStrategy": "Test matching algorithm for both roles, verify notifications work correctly.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Role-Aware Matches Page Component",
+            "description": "Build main matches page that adapts based on user role.",
+            "dependencies": [],
+            "details": "Create src/lib/pages/dashboard/matches.tsx with role-based matching interface.",
+            "status": "pending",
+            "testStrategy": "Verify page loads correctly for both roles."
+          },
+          {
+            "id": 2,
+            "title": "Implement Matching Algorithm",
+            "description": "Create logic to match seekers with breeders based on preferences and offerings.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build matching algorithm using breed preferences, location, and other criteria.",
+            "status": "pending",
+            "testStrategy": "Test matching results, verify correct matches are shown for both roles."
+          },
+          {
+            "id": 3,
+            "title": "Implement Match Notifications",
+            "description": "Add notification system for new matches and updates.",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate with notifications system to alert users of new matches.",
+            "status": "pending",
+            "testStrategy": "Verify notifications are sent and received correctly for new matches."
           }
         ]
       }

@@ -30,6 +30,7 @@ import { useUserProfile } from "lib/hooks/queries/useUserProfile";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import Link from "next/link";
 import { useMarkAllNotificationsAsRead, useNotifications, useUnreadNotificationsCount } from "lib/hooks/queries/useNotifications";
+import UserProfileMenu from "./UserProfileMenu";
 
 export const Navbar = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
@@ -84,6 +85,12 @@ export const Navbar = () => {
                   <Icon as={FiBell} boxSize="6" color="on-accent-subtle" />
 
                 </Button>
+
+                <UserProfileMenu
+                  name={userProfile?.display_name || ""}
+                  image={userProfile?.profile_photo_url || ""}
+                  email={userProfile?.email || ""}
+                />
               </ButtonGroup>
             </HStack>
           </Flex>
@@ -104,14 +111,23 @@ export const Navbar = () => {
             ))}
           </Breadcrumb>
           <Spacer />
-          <Box >
-            <IconButton
-              icon={<FiBell />}
-              aria-label="Notifications"
-              onClick={onToggle}
+          <ButtonGroup variant="ghost-on-accent" spacing="2">
+
+            <Box >
+              <IconButton
+                icon={<FiBell />}
+                aria-label="Notifications"
+                onClick={onToggle}
+              />
+              {unreadCount > 0 && <Circle size="2" bg="blue.400" display="relative" position="absolute" top={8} right={8} zIndex={1} />}
+            </Box>
+
+            <UserProfileMenu
+              name={userProfile?.display_name || ""}
+              image={userProfile?.profile_photo_url || ""}
+              email={userProfile?.email || ""}
             />
-            {unreadCount > 0 && <Circle size="2" bg="blue.400" display="relative" position="absolute" top={8} right={8} zIndex={1} />}
-          </Box>
+          </ButtonGroup>
         </HStack>
       )}
 

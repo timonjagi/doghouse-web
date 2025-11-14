@@ -6,23 +6,23 @@ import {
   Button,
   Center,
 } from '@chakra-ui/react';
-import { useUserProfile } from '../../../hooks/queries';
 import { useRouter } from 'next/router';
 import { NextSeo } from 'next-seo';
 import { Loader } from 'lib/components/ui/Loader';
-import BreederListingsView from './BreederListingsView';
-import SeekerListingsView from './SeekerListingsView';
+import PaymentsPage from './payments';
+import EarningsPage from './earnings';
+import { useUserProfile } from 'lib/hooks/queries/useUserProfile';
 
-const ListingsPage: React.FC = () => {
+const BillingPage: React.FC = () => {
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
   const router = useRouter();
 
   const renderRoleSpecificContent = () => {
     switch (userProfile.role) {
       case 'seeker':
-        return <SeekerListingsView userProfile={userProfile} />;
+        return <PaymentsPage />;
       case 'breeder':
-        return <BreederListingsView userProfile={userProfile} />;
+        return <EarningsPage />;
 
       default:
         return (
@@ -49,7 +49,7 @@ const ListingsPage: React.FC = () => {
 
   return (
     <>
-      <NextSeo title="Listings - DogHouse Kenya" />
+      <NextSeo title="Billing - DogHouse Kenya" />
 
       <Container maxW="7xl" py={{ base: 4, md: 0 }}>
 
@@ -59,4 +59,4 @@ const ListingsPage: React.FC = () => {
   );
 };
 
-export default ListingsPage;
+export default BillingPage;
