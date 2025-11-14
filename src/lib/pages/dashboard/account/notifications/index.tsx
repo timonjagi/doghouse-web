@@ -135,8 +135,13 @@ export default function NotificationsPage() {
         {/* Header */}
         <HStack justify="space-between" align="center">
           <HStack>
-            <FiBell size={24} />
-            <Heading size={{ base: 'xs', md: 'sm' }}>Notifications</Heading>
+            <Box>
+              <Heading size={{ base: 'xs', md: 'sm' }}>Notifications</Heading>
+
+              <Text color="gray.600" mt={2}>
+                You'll receive notifications about your applications and listings here.
+              </Text>
+            </Box>
             {unreadCount > 0 && (
               <Badge colorScheme="red" borderRadius="full" px={2}>
                 {unreadCount}
@@ -156,8 +161,6 @@ export default function NotificationsPage() {
             </Button>
           )}
         </HStack>
-
-        <Divider />
 
         {/* Notifications List */}
         {!notifications || notifications.length === 0 ? (

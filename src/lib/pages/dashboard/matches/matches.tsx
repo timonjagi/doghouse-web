@@ -2,9 +2,9 @@ import { Container, Heading, Text, VStack } from "@chakra-ui/react";
 
 const MatchesPage = () => {
   return (
-    <Container maxW="7xl" py={8}>
+    <Container maxW="7xl" py={{ base: 4, md: 0 }}>
       <VStack spacing={6} align="stretch">
-        <Heading size="lg">
+        <Heading size={{ base: "xs", lg: "md" }}>
           My Matches
         </Heading>
         <Text color="gray.600">

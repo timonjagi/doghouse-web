@@ -151,7 +151,7 @@ const PaymentsPage: React.FC = () => {
       </SimpleGrid>
 
       {/* Payment Information Alert */}
-      {/* <Alert status="info" borderRadius="md">
+      <Alert status="info" borderRadius="md">
         <AlertIcon />
         <Box>
           <Text fontWeight="bold">Payment Information</Text>
@@ -159,7 +159,7 @@ const PaymentsPage: React.FC = () => {
             Reservation fees are deducted from your final payment. All payments are processed securely through Paystack.
           </Text>
         </Box>
-      </Alert> */}
+      </Alert>
 
       {/* Payment History */}
       <Card>

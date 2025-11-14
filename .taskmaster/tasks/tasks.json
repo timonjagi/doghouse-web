@@ -517,7 +517,7 @@
           2,
           3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -525,7 +525,7 @@
             "description": "Create the main profile page components under account/profile structure.",
             "dependencies": [],
             "details": "Create `src/pages/account/profile/index.tsx` and `src/lib/pages/account/profile/index.tsx`. Use the existing useUserProfile hook to fetch current user data. Implement proper loading and error states with Chakra UI components.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Navigate to /account/profile while logged in. Verify the page loads without errors and displays user data from useUserProfile hook."
           },
           {
@@ -536,7 +536,7 @@
               1
             ],
             "details": "Create `src/lib/pages/account/profile/ProfileForm.tsx` with Chakra UI form components (Input, Textarea, Button, FormControl). Include fields for display name, bio, and location.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Render the ProfileForm component. Verify all Chakra UI components display correctly and form validation works as expected."
           },
           {
@@ -547,7 +547,7 @@
               2
             ],
             "details": "Create `src/lib/pages/account/profile/ProfilePhotoUpload.tsx` with Chakra UI styling. Implement drag-and-drop upload, image preview, and Supabase Storage integration. Show current profile photo and allow replacement.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test photo upload functionality. Verify drag-and-drop works, preview displays correctly, and images are uploaded to Supabase Storage."
           },
           {
@@ -558,7 +558,7 @@
               2
             ],
             "details": "Create `src/lib/hooks/queries/useUpdateProfile.ts` following existing hook patterns. Handle both text field updates and photo URL updates. Include proper error handling and success callbacks.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test the useUpdateProfile hook with mock data. Verify it properly updates the database and invalidates relevant queries."
           }
         ]
@@ -628,6 +628,84 @@
             "details": "Build analytics interface that displays key platform metrics including user growth, listing activity, application success rates, and engagement statistics. Include charts, graphs, and exportable reports for data analysis.",
             "status": "pending",
             "testStrategy": "As admin, view platform analytics, check key metrics, and verify data accuracy. Test data visualization and reporting features."
+          },
+          {
+            "id": 6,
+            "title": "Implement Payout Management Panel",
+            "description": "Create comprehensive payout management interface for admins to oversee breeder earnings and payout processing.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build payout management panel that displays all breeder earnings, payout history, pending payouts, and payout processing. Include manual payout approval, payout scheduling, payout method management, and payout status tracking. Integrate with Paystack payout system for automated processing.",
+            "status": "pending",
+            "testStrategy": "As admin, view all breeder payouts, approve pending payouts, verify payout processing works correctly, and check payout history and status tracking."
+          },
+          {
+            "id": 7,
+            "title": "Implement Financial Reports & Revenue Analytics",
+            "description": "Create detailed financial reporting system for platform revenue, commission tracking, and business metrics.",
+            "dependencies": [
+              5,
+              6
+            ],
+            "details": "Build financial reports dashboard with revenue breakdowns, commission earnings, payment method analytics, geographic revenue distribution, and exportable financial reports. Include profit/loss analysis and financial forecasting tools.",
+            "status": "pending",
+            "testStrategy": "As admin, view comprehensive financial reports, verify revenue calculations, test report exports, and validate financial analytics accuracy."
+          },
+          {
+            "id": 8,
+            "title": "Implement Dispute Resolution Panel",
+            "description": "Create dispute management system for handling conflicts between breeders and seekers.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build dispute resolution interface that allows admins to view reported disputes, mediate between parties, make binding decisions, and track dispute resolution outcomes. Include dispute categories, evidence management, and communication tools.",
+            "status": "pending",
+            "testStrategy": "As admin, view dispute queue, mediate sample disputes, verify decision enforcement, and test dispute tracking and resolution workflows."
+          },
+          {
+            "id": 9,
+            "title": "Implement Content Management System",
+            "description": "Create CMS for managing platform content including blog posts, static pages, and promotional content.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build content management interface for creating, editing, and publishing blog posts, managing static pages, and controlling promotional content. Include rich text editor, image management, SEO optimization, and content scheduling.",
+            "status": "pending",
+            "testStrategy": "As admin, create and publish blog posts, edit static pages, manage promotional content, and verify content appears correctly on the public site."
+          },
+          {
+            "id": 10,
+            "title": "Implement System Configuration & Settings",
+            "description": "Create system-wide configuration panel for platform settings, feature flags, and operational parameters.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build configuration management interface for platform settings including commission rates, payment settings, feature toggles, email templates, notification settings, and system maintenance controls.",
+            "status": "pending",
+            "testStrategy": "As admin, modify system settings, toggle features, update configuration parameters, and verify changes take effect across the platform."
+          },
+          {
+            "id": 11,
+            "title": "Implement Support Ticket Management",
+            "description": "Create comprehensive support ticket system for handling user inquiries and technical issues.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build support ticket management interface with ticket creation, assignment, status tracking, priority management, and resolution workflows. Include canned responses, ticket categories, and escalation procedures.",
+            "status": "pending",
+            "testStrategy": "As admin, manage support tickets, assign tickets to team members, track resolution progress, and verify ticket management workflows function correctly."
+          },
+          {
+            "id": 12,
+            "title": "Implement Platform Announcements & Notifications",
+            "description": "Create system for broadcasting platform-wide announcements and targeted notifications to users.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build announcement management interface for creating, scheduling, and sending platform announcements. Include targeted notifications by user role, region, or segment. Support email notifications, in-app notifications, and push notifications.",
+            "status": "pending",
+            "testStrategy": "As admin, create and send announcements, target specific user groups, verify delivery across different notification channels, and track announcement engagement."
           }
         ]
       },

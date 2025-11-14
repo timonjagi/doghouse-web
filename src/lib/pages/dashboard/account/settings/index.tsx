@@ -55,7 +55,7 @@ const Settings = () => {
               Settings
             </Heading>
             <Text color="gray.600" mt={2}>
-              Manage your personal information and profile photo
+              Manage your account settings
             </Text>
           </Box>
 

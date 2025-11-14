@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Avatar,
   Box,
@@ -13,11 +13,15 @@ import {
   Textarea,
   VStack,
   useToast,
+  Select,
 } from '@chakra-ui/react';
 import { User } from '../../../../../../db/schema';
 import { useUpdateUserProfile, useUploadProfilePhoto } from 'lib/hooks/queries/useUserProfile';
+import { useSeekerProfile, useUpsertSeekerProfile } from 'lib/hooks/queries/useSeekerProfile';
 import { Dropzone } from 'lib/components/ui/Dropzone';
 import { useDropZone } from 'lib/hooks/useDropZone';
+import { RadioButton } from 'lib/components/ui/RadioButton';
+import { RadioButtonGroup } from 'lib/components/ui/RadioButtonGroup';
 
 
 interface ProfileFormProps {
@@ -42,6 +46,8 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ userProfile }) => {
   const toast = useToast();
   const updateProfileMutation = useUpdateUserProfile();
   const uploadMutation = useUploadProfilePhoto();
+  const { data: seekerProfile } = useSeekerProfile(userProfile.id);
+  const upsertSeekerProfile = useUpsertSeekerProfile();
 
   const [formData, setFormData] = useState<FormData>({
     display_name: userProfile.display_name || '',
@@ -50,9 +56,29 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ userProfile }) => {
     location_text: userProfile.location_text || '',
   });
 
+  const [seekerFormData, setSeekerFormData] = useState({
+    experience_level: '',
+    has_allergies: false,
+    has_children: false,
+    has_other_pets: false,
+    living_situation: '',
+  });
+
   const [errors, setErrors] = useState<FormErrors>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  // Populate seeker form data
+  useEffect(() => {
+    if (seekerProfile) {
+      setSeekerFormData({
+        experience_level: seekerProfile.experience_level || '',
+        has_allergies: seekerProfile.has_allergies,
+        has_children: seekerProfile.has_children,
+        has_other_pets: seekerProfile.has_other_pets,
+        living_situation: seekerProfile.living_situation || '',
+      });
+    }
+  }, [seekerProfile]);
 
   const { onSelectImage, onRemoveImage, selectedImages } = useDropZone({
     selectedImages: selectedFile ? [selectedFile] : [],
@@ -110,7 +136,13 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ userProfile }) => {
     }
 
     try {
+      // Update user profile
       await updateProfileMutation.mutateAsync(formData);
+
+      // Update seeker profile if user is a seeker
+      if (userProfile.role === 'seeker') {
+        await upsertSeekerProfile.mutateAsync(seekerFormData);
+      }
 
       toast({
         title: 'Profile updated',
@@ -144,13 +176,26 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ userProfile }) => {
   };
 
   const hasChanges = () => {
-    return (
+    const userProfileChanged = (
       formData.display_name !== (userProfile.display_name || '') ||
       formData.bio !== (userProfile.bio || '') ||
       formData.phone !== (userProfile.phone || '') ||
       formData.location_text !== (userProfile.location_text || '') ||
       selectedFile
     );
+
+    if (userProfile.role === 'seeker') {
+      const seekerProfileChanged = (
+        seekerFormData.experience_level !== (seekerProfile?.experience_level || '') ||
+        seekerFormData.has_allergies !== (seekerProfile?.has_allergies || false) ||
+        seekerFormData.has_children !== (seekerProfile?.has_children || false) ||
+        seekerFormData.has_other_pets !== (seekerProfile?.has_other_pets || false) ||
+        seekerFormData.living_situation !== (seekerProfile?.living_situation || '')
+      );
+      return userProfileChanged || seekerProfileChanged;
+    }
+
+    return userProfileChanged;
   };
 
   return (
@@ -267,6 +312,114 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ userProfile }) => {
                   </Stack>
                 </Stack>
               </FormControl>
+
+              {/* Seeker-specific fields */}
+              {userProfile.role === 'seeker' && (
+                <>
+
+
+                  <FormControl>
+                    <Stack
+                      direction={{ base: 'column', md: 'row' }}
+                      spacing={{ base: '1.5', md: '8' }}
+                      justify="space-between"
+                    >
+                      <FormLabel variant="inline">Living Situation</FormLabel>
+                      <Stack w="full" maxW={{ md: '3xl' }}>
+                        <Select
+                          placeholder="Select your living situation"
+                          value={seekerFormData.living_situation}
+                          onChange={(e) => setSeekerFormData(prev => ({ ...prev, living_situation: e.target.value }))}
+                        >
+                          <option value="apartment">Apartment</option>
+                          <option value="compound">Compound with yard</option>
+                          <option value="farm">Farm/Rural property</option>
+                        </Select>
+                      </Stack>
+                    </Stack>
+                  </FormControl>
+
+                  <FormControl>
+                    <Stack
+                      direction={{ base: 'column', md: 'row' }}
+                      spacing={{ base: '1.5', md: '8' }}
+                      justify="space-between"
+                    >
+                      <FormLabel variant="inline">Experience Level</FormLabel>
+                      <Stack w="full">
+                        <Select
+                          placeholder="Select your experience level"
+                          value={seekerFormData.experience_level}
+                          onChange={(e) => setSeekerFormData(prev => ({ ...prev, experience_level: e.target.value }))}
+                          maxW={{ md: '3xl' }}
+                        >
+                          <option value="beginner">Beginner - First time dog owner</option>
+                          <option value="intermediate">Intermediate - Some experience</option>
+                          <option value="experienced">Experienced - Multiple dogs owned</option>
+                        </Select>
+                      </Stack>
+                    </Stack>
+                  </FormControl>
+
+                  <FormControl>
+                    <Stack
+                      direction={{ base: 'column', md: 'row' }}
+                      spacing={{ base: '1.5', md: '8' }}
+                      justify="space-between"
+                    >
+                      <FormLabel variant="inline">Household Allergies</FormLabel>
+                      <Stack w="full" maxW={{ md: '3xl' }}>
+                        <RadioButtonGroup
+                          value={seekerFormData.has_allergies.toString()}
+                          onChange={(value) => setSeekerFormData(prev => ({ ...prev, has_allergies: value === 'true' }))}
+                        >
+                          <RadioButton value="true">Yes</RadioButton>
+                          <RadioButton value="false">No</RadioButton>
+                        </RadioButtonGroup>
+                      </Stack>
+                    </Stack>
+                  </FormControl>
+
+                  <FormControl>
+                    <Stack
+                      direction={{ base: 'column', md: 'row' }}
+                      spacing={{ base: '1.5', md: '8' }}
+                      justify="space-between"
+                    >
+                      <FormLabel variant="inline">Children at Home</FormLabel>
+                      <Stack w="full" maxW={{ md: '3xl' }}>
+                        <RadioButtonGroup
+                          value={seekerFormData.has_children.toString()}
+                          onChange={(value) => setSeekerFormData(prev => ({ ...prev, has_children: value === 'true' }))}
+                        >
+                          <RadioButton value="true">Yes</RadioButton>
+                          <RadioButton value="false">No</RadioButton>
+                        </RadioButtonGroup>
+                      </Stack>
+                    </Stack>
+                  </FormControl>
+
+                  <FormControl>
+                    <Stack
+                      direction={{ base: 'column', md: 'row' }}
+                      spacing={{ base: '1.5', md: '8' }}
+                      justify="space-between"
+                    >
+                      <FormLabel variant="inline">Other Pets at Home</FormLabel>
+                      <Stack w="full" maxW={{ md: '3xl' }}>
+                        <RadioButtonGroup
+                          value={seekerFormData.has_other_pets.toString()}
+                          onChange={(value) => setSeekerFormData(prev => ({ ...prev, has_other_pets: value === 'true' }))}
+                        >
+                          <RadioButton value="true">Yes</RadioButton>
+                          <RadioButton value="false">No</RadioButton>
+                        </RadioButtonGroup>
+                      </Stack>
+                    </Stack>
+                  </FormControl>
+
+                </>
+              )}
             </Stack>
 
             <Button

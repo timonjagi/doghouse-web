@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react';
 import { Loader } from 'lib/components/ui/Loader';
 import { ProfileForm } from './ProfileForm';
-import { ProfilePhotoUpload } from './ProfilePhotoUpload';
 import { NextSeo } from 'next-seo';
 import { useUserProfile } from 'lib/hooks/queries/useUserProfile';
 
@@ -57,10 +56,6 @@ export const ProfilePage: React.FC = () => {
             </Text>
           </Box>
 
-          {/* Profile Photo Upload */}
-          {/* <ProfilePhotoUpload userProfile={userProfile} /> */}
-
-          {/* Profile Form */}
           <ProfileForm userProfile={userProfile} />
         </VStack>
       </Container>

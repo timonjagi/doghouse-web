@@ -6,18 +6,14 @@ import {
   FiUsers,
   FiBarChart,
   FiShield,
-  FiSettings,
-  FiLogOut,
-  FiHeart,
   FiList,
-  FiEdit,
   FiMessageSquare,
   FiGitlab,
   FiCreditCard,
   FiUser,
   FiGrid,
-  FiBell,
 } from "react-icons/fi";
+import { LuSettings2 } from "react-icons/lu";
 
 export type UserRole = 'breeder' | 'seeker' | 'admin';
 
@@ -49,12 +45,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiHome,
           ariaLabel: "Dashboard home"
         },
-        // {
-        //   label: "Inbox",
-        //   href: "/dashboard/inbox",
-        //   icon: FiMessageSquare,
-        //   ariaLabel: "Inbox"
-        // },
+        {
+          label: "Inbox",
+          href: "/dashboard/inbox",
+          icon: FiMessageSquare,
+          ariaLabel: "Inbox"
+        },
       ]
     },
     {
@@ -97,18 +93,17 @@ export const navigationConfig: NavigationConfig = {
           ariaLabel: "View profile"
         },
         {
+          label: "Kennel",
+          href: "/dashboard/account/kennel",
+          icon: LuSettings2,
+          ariaLabel: "View kennel"
+        },
+        {
           label: "Billing",
           href: "/dashboard/account/billing",
           icon: FiCreditCard,
           ariaLabel: "View payment history"
-        },
-
-        {
-          label: "Notifications",
-          href: "/dashboard/account/notifications",
-          icon: FiBell,
-          ariaLabel: "View notifications"
-        },
+        }
       ]
     }
   ],
@@ -122,7 +117,13 @@ export const navigationConfig: NavigationConfig = {
           href: "/dashboard",
           icon: FiGrid,
           ariaLabel: "Dashboard home"
-        }
+        },
+        {
+          label: "Inbox",
+          href: "/dashboard/inbox",
+          icon: FiMessageSquare,
+          ariaLabel: "Inbox"
+        },
       ]
     },
     {
@@ -164,17 +165,16 @@ export const navigationConfig: NavigationConfig = {
           ariaLabel: "View profile"
         },
         {
+          label: "Preferences",
+          href: "/dashboard/account/preferences",
+          icon: LuSettings2,
+          ariaLabel: "View preferences"
+        },
+        {
           label: "Billing",
           href: "/dashboard/account/billing",
           icon: FiCreditCard,
-          ariaLabel: "View payment history"
-        },
-
-        {
-          label: "Notifications",
-          href: "/dashboard/account/notifications",
-          icon: FiBell,
-          ariaLabel: "View notifications"
+          ariaLabel: "View billing history"
         },
       ]
     }

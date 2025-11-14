@@ -1,18 +1,13 @@
 import { Button, ButtonProps, Flex, Icon, Stack, Text } from "@chakra-ui/icons";
+import { useUserProfile } from "lib/hooks/queries/useUserProfile";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { ElementType, useCallback } from "react";
-import { FiBell, FiClipboard, FiHome, FiList, FiSearch, FiUser } from "react-icons/fi";
+import { ElementType } from "react";
+import { FiClipboard, FiGitlab, FiHome, FiList, FiSearch, FiTarget } from "react-icons/fi";
 
 export const BottomNavbar = () => {
   const router = useRouter();
-
-  const onClickMenuLink = useCallback(
-    (path) => {
-      router.push(path);
-    },
-    [router.push]
-  );
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
 
   return (
     <Flex
@@ -26,6 +21,7 @@ export const BottomNavbar = () => {
       direction="row"
       display="fixed"
       bottom={0}
+      pb={2}
     >
       <NavButton
         label="Home"
@@ -38,10 +34,19 @@ export const BottomNavbar = () => {
 
       <NavButton
         label="Breeds"
-        icon={FiSearch}
+        icon={profile?.role === "breeder" ? FiGitlab : FiSearch}
         href="/dashboard/breeds"
         aria-current={
           router.pathname.includes("breeds") ? "page" : "false"
+        }
+      />
+
+      <NavButton
+        label="Matches"
+        icon={FiTarget}
+        href="/dashboard/account"
+        aria-current={
+          router.pathname.includes("matches") ? "page" : "false"
         }
       />
 
@@ -63,14 +68,7 @@ export const BottomNavbar = () => {
         }
       />
 
-      <NavButton
-        label="Account"
-        icon={FiUser}
-        href="/dashboard/account"
-        aria-current={
-          router.pathname.includes("account") ? "page" : "false"
-        }
-      />
+
     </Flex>
   );
 };

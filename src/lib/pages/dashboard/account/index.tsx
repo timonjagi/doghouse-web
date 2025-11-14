@@ -1,10 +1,12 @@
 import {
+  Alert,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  AlertIcon,
   Box,
   Button,
   Container,
@@ -20,18 +22,18 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 // import * as React from "react";
-import { HiPencilAlt } from "react-icons/hi";
 
 import { CardContent } from "./CardContent";
 import { CardWithAvatar } from "./CardWithAvatar";
 
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { Loader } from "lib/components/ui/Loader";
-import { UserInfo } from "../profile/UserInfo";
+import { UserInfo } from "./UserInfo";
 import { useUserProfile } from "lib/hooks/queries/useUserProfile";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { useSignOut } from "lib/hooks/queries/useAuth";
-import { FiLogOut, FiTrash, FiTrash2 } from "react-icons/fi";
+import { FiLogOut, FiTrash2 } from "react-icons/fi";
+import Link from "next/link";
 
 const AccountPage = () => {
   const { user, loading } = useSupabaseAuth();
@@ -71,18 +73,53 @@ const AccountPage = () => {
   if (isLoading) {
     return <Loader />;
   }
+
+  if (error || !userProfile) {
+    return (
+      <Container maxW="6xl" py={8}>
+        <Alert status="error">
+          <AlertIcon />
+          <Box>
+            <Text fontWeight="bold">Error loading applications</Text>
+            <Text fontSize="sm">
+              {error?.message || 'Unable to load user profile'}
+            </Text>
+          </Box>
+        </Alert>
+      </Container>
+    );
+  }
+
   // eslint-disable-next-line
+  // Role-specific routes
+  const getRoleSpecificRoutes = () => {
+    if (userProfile?.role === 'seeker') {
+      return [
+        {
+          name: "Preferences",
+          description: "Update your adoption preferences",
+          href: "/dashboard/account/preferences",
+        }
+      ];
+    } else if (userProfile?.role === 'breeder') {
+      return [
+        {
+          name: "Kennel",
+          description: "Manage your kennel details",
+          href: "/dashboard/account/kennel",
+        }
+      ];
+    }
+    return [];
+  };
+
   const routes = [
     {
       name: "Profile",
       description: "Update your profile details",
       href: "/dashboard/account/profile",
     },
-    {
-      name: "Security",
-      description: "Manage your security settings",
-      href: "/dashboard/account/security",
-    },
+    ...getRoleSpecificRoutes(),
     {
       name: "Billing",
       description: "Update your billing details",
@@ -93,7 +130,6 @@ const AccountPage = () => {
       description: "Manage your notifications",
       href: "/dashboard/account/notifications",
     },
-
     {
       name: "Settings",
       description: "Manage your account settings",
@@ -174,16 +210,14 @@ const AccountPage = () => {
                     <Text color="muted">{route.description}</Text>
                   </Stack>
 
-                  <Button
+                  <IconButton
                     variant="ghost"
                     size="sm"
-                    onClick={() => router.push(route.href)}
-                    as={IconButton}
+                    href={route.href}
+                    as={Link}
                     icon={<ArrowForwardIcon />}
                     aria-label="Go to page"
-                  >
-
-                  </Button>
+                  />
                 </Stack>
               ))}
             </Stack>

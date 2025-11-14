@@ -7,7 +7,6 @@ import {
   useColorModeValue as mode,
   Box,
   Button,
-  Circle,
 } from "@chakra-ui/react";
 import * as React from "react";
 import {
@@ -26,11 +25,11 @@ import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
 
 import { NavSection, getNavigationForRole } from "lib/components/layout/navLinks";
-import { UserProfile } from "./UserProfile";
 import { User } from "../../../../db/schema";
 import { BsTiktok } from "react-icons/bs";
-import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
 import { useEffect } from "react";
+import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
+import { useCurrentUser } from "lib/hooks/queries";
 
 interface SidebarProps {
   onClose: () => void;
@@ -38,12 +37,11 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
-  const { data: user, isLoading: loadingCurrentUser } = useCurrentUser();
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
-
+  const { data: user } = useCurrentUser();
+  const { data: profile, isLoading: profileLoading } = useUserProfileById(user?.id);
 
   // Show loading state while checking auth
-  if (loadingCurrentUser) {
+  if (profileLoading) {
     return (
       <Flex
         flex="1"
@@ -74,9 +72,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
       direction="column"
       overflowY="auto"
     >
-      {user?.id ? (
+      {profile?.id && (
         <LoggedInSidebar profile={profile} onClose={onClose} />
-      ) : (
+      )}
+
+      {!profile?.id && (
         <LoggedOutSidebar onClose={onClose} />
       )}
     </Flex>
@@ -194,8 +194,6 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
 
   return (
     <Stack
-      py={{ base: "6", sm: "8" }}
-      px={{ base: "4", sm: "6" }}
       justify="space-between"
       h={{ base: "calc(100vh - 64px)", md: "full" }}
     >
@@ -273,32 +271,29 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
       </Stack>
 
       <Box borderTopWidth="1px">
-        <NavButton2 href="/login" colorScheme="on-accent">Log in</NavButton2>
+        <Button
+          as="a"
+          width="full"
+          borderRadius="0"
+          variant="ghost-on-accent"
+          size="lg"
+          fontSize="sm"
+          _hover={{
+            bg: mode('brand.100', 'brand.700'),
+          }}
+          _active={{
+            bg: mode('brand.200', 'brand.600'),
+          }}
+          _focus={{
+            boxShadow: 'none',
+          }}
+          _focusVisible={{
+            boxShadow: 'outline',
+          }}
+          href="/login" colorScheme="on-accent"
+        >Log in</Button>
       </Box>
     </Stack>
   );
 };
 
-const NavButton2 = (props) => (
-  <Button
-    as="a"
-    width="full"
-    borderRadius="0"
-    variant="ghost-on-accent"
-    size="lg"
-    fontSize="sm"
-    _hover={{
-      bg: mode('brand.100', 'brand.700'),
-    }}
-    _active={{
-      bg: mode('brand.200', 'brand.600'),
-    }}
-    _focus={{
-      boxShadow: 'none',
-    }}
-    _focusVisible={{
-      boxShadow: 'outline',
-    }}
-    {...props}
-  />
-)

@@ -5,6 +5,9 @@ import {
   VStack,
   Button,
   Center,
+  Alert,
+  AlertIcon,
+  Box,
 } from '@chakra-ui/react';
 import { useUserProfile } from '../../../hooks/queries';
 import { useRouter } from 'next/router';
@@ -14,8 +17,34 @@ import BreederListingsView from './BreederListingsView';
 import SeekerListingsView from './SeekerListingsView';
 
 const ListingsPage: React.FC = () => {
-  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+  const { data: userProfile, isLoading: profileLoading, error } = useUserProfile();
   const router = useRouter();
+
+
+
+
+  if (profileLoading) {
+    return (
+      <Loader />
+    );
+  }
+
+  if (error || !userProfile) {
+    return (
+      <Container maxW="6xl" py={8}>
+        <Alert status="error">
+          <AlertIcon />
+          <Box>
+            <Text fontWeight="bold">Error loading listings</Text>
+            <Text fontSize="sm">
+              {error?.message || 'Unable to load user profile'}
+            </Text>
+          </Box>
+        </Alert>
+      </Container>
+    );
+  }
+
 
   const renderRoleSpecificContent = () => {
     switch (userProfile.role) {
@@ -39,13 +68,6 @@ const ListingsPage: React.FC = () => {
         );
     }
   };
-
-
-  if (profileLoading) {
-    return (
-      <Loader />
-    );
-  }
 
   return (
     <>

@@ -26,11 +26,12 @@ import { Logo } from "./Logo";
 
 import { FiBell, FiCheck } from "react-icons/fi";
 import { useRouter } from "next/router";
-import { useUserProfile } from "lib/hooks/queries/useUserProfile";
+import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import Link from "next/link";
 import { useMarkAllNotificationsAsRead, useNotifications, useUnreadNotificationsCount } from "lib/hooks/queries/useNotifications";
 import UserProfileMenu from "./UserProfileMenu";
+import { useCurrentUser } from "lib/hooks/queries";
 
 export const Navbar = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
@@ -39,7 +40,8 @@ export const Navbar = () => {
 
   const toast = useToast();
 
-  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+  const { data: user } = useCurrentUser();
+  const { data: userProfile, isLoading: profileLoading } = useUserProfileById(user?.id);
   const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
 
   const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);

@@ -11,11 +11,13 @@ import {
   MenuDivider,
   MenuItem,
   useToast,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import type React from "react";
 import { useRouter } from "next/router";
 import { MdDashboard, MdLogout, MdOutlineAccountCircle } from "react-icons/md";
 import { useSignOut } from "lib/hooks/queries";
+import Link from "next/link";
 
 type UserProfileMenuProps = {
   name: string;
@@ -31,6 +33,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
   const toast = useToast();
   const router = useRouter();
   const signOut = useSignOut();
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const onLogout = async () => {
     try {
@@ -61,7 +64,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
       <Menu>
         <MenuButton
           as={Button}
-          rightIcon={<ChevronDownIcon />}
+          rightIcon={isMobile ? null : <ChevronDownIcon />}
           rounded="full"
           variant="link"
           cursor="pointer"
@@ -89,7 +92,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
           {router.pathname === '/' && <MenuItem
             icon={<MdDashboard />}
             cursor="pointer"
-            as="a"
+            as={Link}
             href="/dashboard"
           >
             Go to Dashboard
@@ -98,7 +101,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
           <MenuItem
             icon={<MdOutlineAccountCircle />}
             cursor="pointer"
-            as="a"
+            as={Link}
             href="/dashboard/account"
           >
             Account
