@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { ElementType } from "react";
 import { FiClipboard, FiGitlab, FiHome, FiList, FiSearch, FiTarget } from "react-icons/fi";
+import { LuDog } from "react-icons/lu";
 
 export const BottomNavbar = () => {
   const router = useRouter();
@@ -34,7 +35,7 @@ export const BottomNavbar = () => {
 
       <NavButton
         label="Breeds"
-        icon={profile?.role === "breeder" ? FiGitlab : FiSearch}
+        icon={profile?.role === "breeder" ? LuDog : FiSearch}
         href="/dashboard/breeds"
         aria-current={
           router.pathname.includes("breeds") ? "page" : "false"

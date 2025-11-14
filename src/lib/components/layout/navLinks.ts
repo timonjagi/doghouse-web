@@ -13,7 +13,8 @@ import {
   FiUser,
   FiGrid,
 } from "react-icons/fi";
-import { LuSettings2 } from "react-icons/lu";
+import { GiDogHouse } from "react-icons/gi";
+import { LuDog, LuSettings2 } from "react-icons/lu";
 
 export type UserRole = 'breeder' | 'seeker' | 'admin';
 
@@ -59,7 +60,7 @@ export const navigationConfig: NavigationConfig = {
         {
           label: "Breeds",
           href: "/dashboard/breeds",
-          icon: FiGitlab,
+          icon: LuDog,
           ariaLabel: "Manage breeds and listings"
         },
 
@@ -95,7 +96,7 @@ export const navigationConfig: NavigationConfig = {
         {
           label: "Kennel",
           href: "/dashboard/account/kennel",
-          icon: LuSettings2,
+          icon: GiDogHouse,
           ariaLabel: "View kennel"
         },
         {
