@@ -13,6 +13,22 @@ interface ExpiredApplication {
   }>;
 }
 
+type CronResult =
+  | {
+    applicationId: string;
+    success: false;
+    error: string;
+  }
+  | {
+    applicationId: string;
+    listingId: string;
+    seekerId: string;
+    breederId: string | undefined;
+    listingTitle: string;
+    listingReleased: boolean;
+    success: true;
+  };
+
 export async function POST(request: NextRequest) {
   // For Vercel cron, verify the authorization header
   const authHeader = request.headers.get('authorization');
@@ -84,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     let processedCount = 0;
     let errorCount = 0;
-    const results = [];
+    const results: CronResult[] = [];
 
     // Process each expired application
     for (const application of expiredApplications as ExpiredApplication[]) {
