@@ -275,6 +275,9 @@ const ListingForm: React.FC<ListingFormProps> = ({
   };
 
   const handlePublish = async () => {
+
+    setIsLoading(true);
+
     const data = formData;
     try {
       // First, create the listing without photos
@@ -390,6 +393,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
       });
 
       localStorage.removeItem('listingFormData');
+      setIsLoading(false);
 
       onClose()
     } catch (error) {
@@ -401,6 +405,8 @@ const ListingForm: React.FC<ListingFormProps> = ({
         duration: 5000,
         isClosable: true,
       });
+      setIsLoading(false);
+
     } finally {
       updateFormData({
         title: '',
@@ -612,6 +618,8 @@ const ListingForm: React.FC<ListingFormProps> = ({
         duration: 5000,
         isClosable: true,
       });
+      setIsLoading(false);
+
     } finally {
       // updateFormData({
       //   title: '',
@@ -697,7 +705,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
   return (
     <>
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl" scrollBehavior='inside'>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>

@@ -44,7 +44,7 @@ export const PetDetailsStep: React.FC<PetDetailsStepProps> = ({ data, updateData
         <AlertIcon />
         No breeds added yet. Please add a breed first.
 
-        <Button as={Link} href="/dashboard/breeds/manage">Add Breed</Button>
+        <Button as={Link} href="/dashboard/breeds">Add Breed</Button>
       </Alert>
     );
   }
@@ -80,7 +80,7 @@ export const PetDetailsStep: React.FC<PetDetailsStepProps> = ({ data, updateData
                 ))}
               </Select>
               <Text fontSize="xs" color="gray.500" mt={1}>
-                You can only select from the breeds you have added. To add a new breed, go to the  <a href="/dashboard/breeds/manage" rel="noopener noreferrer" className="font-bold">"Manage Breeds"</a> page.
+                You can only select from the breeds you have added. To add a new breed, go to the <Text as={Link} color="brand.600" cursor="pointer" href="/dashboard/breeds/manage">Manage Breeds</Text> page.
               </Text>
             </FormControl>
 
@@ -170,7 +170,7 @@ export const PetDetailsStep: React.FC<PetDetailsStepProps> = ({ data, updateData
                 ))}
               </Select>
               <Text fontSize="xs" color="gray.500" mt={1}>
-                You can only select from the breeds you have added. To add a new breed, go to the  <a href="/dashboard/breeds/manage" rel="noopener noreferrer" className="font-bold">"Manage Breeds"</a> page.
+                You can only select from the breeds you have added. To add a new breed, go to the <Text as={Link} color="brand.600" cursor="pointer" href="/dashboard/breeds/manage">Manage Breeds</Text> page.
               </Text>
             </FormControl>
 

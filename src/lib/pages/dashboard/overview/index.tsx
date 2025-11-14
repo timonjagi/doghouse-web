@@ -174,7 +174,7 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
       title: 'Manage Breeds',
       description: 'Update your existing breeds and add more breeds to your profile',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/dashboard/breeds/manage'
+      href: '/dashboard/breeds'
     },
     {
       title: 'Add Listings',

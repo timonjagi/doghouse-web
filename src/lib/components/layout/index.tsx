@@ -103,7 +103,7 @@ const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header profile={profile} />}
-      <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }}>
+      <Box as="main" h={{ base: "calc(100vh - 128px)", md: "100vh" }}>
         {children}{" "}
       </Box>
     </>
