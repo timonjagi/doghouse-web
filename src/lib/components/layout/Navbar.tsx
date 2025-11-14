@@ -121,7 +121,7 @@ export const Navbar = () => {
                 aria-label="Notifications"
                 onClick={onToggle}
               />
-              {unreadCount > 0 && <Circle size="2" bg="blue.400" display="relative" position="absolute" top={8} right={8} zIndex={1} />}
+              {unreadCount && unreadCount > 0 && <Circle size="2" bg="blue.400" display="relative" position="absolute" top={8} right={8} zIndex={1} />}
             </Box>
 
             <UserProfileMenu
@@ -150,14 +150,14 @@ export const Navbar = () => {
 
             Notifications
 
-            {unreadCount > 0 && (
+            {unreadCount && unreadCount > 0 && (
               <Badge colorScheme="red" borderRadius="full" px={2} fontSize="xs">
                 {unreadCount}
               </Badge>
             )}
 
 
-            {notifications && notifications.length > 0 && unreadCount > 0 && (
+            {notifications && notifications.length > 0 && unreadCount && unreadCount > 0 && (
               <Button
                 leftIcon={<FiCheck />}
                 variant="outline"
@@ -174,11 +174,11 @@ export const Navbar = () => {
           <NotificationsDrawer
             isOpen={isOpen}
             onClose={onClose}
-            userProfile={userProfile}
-            notifications={notifications}
+            userProfile={userProfile!}
+            notifications={notifications!}
             isLoading={isLoading}
             error={error}
-            unreadCount={unreadCount}
+            unreadCount={unreadCount!}
           />
         </DrawerContent>
       </Drawer>
