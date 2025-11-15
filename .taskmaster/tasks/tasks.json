@@ -565,6 +565,138 @@
       },
       {
         "id": 10,
+        "title": "Implement Matches Page (Complete flow for both breeders and seekers)",
+        "description": "Create intelligent matching system. For breeders: see matching seekers. For seekers: see matching breeders/listings.",
+        "details": "Build role-aware matches page with matching algorithm. Include preference settings, match notifications, and communication features.",
+        "testStrategy": "Test matching algorithm for both roles, verify notifications work correctly.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Role-Aware Matches Page Component",
+            "description": "Build main matches page that adapts based on user role.",
+            "dependencies": [],
+            "details": "Create src/lib/pages/dashboard/matches.tsx with role-based matching interface.",
+            "status": "pending",
+            "testStrategy": "Verify page loads correctly for both roles."
+          },
+          {
+            "id": 2,
+            "title": "Implement Matching Algorithm",
+            "description": "Create logic to match seekers with breeders based on preferences and offerings.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build matching algorithm using breed preferences, location, and other criteria.",
+            "status": "pending",
+            "testStrategy": "Test matching results, verify correct matches are shown for both roles."
+          },
+          {
+            "id": 3,
+            "title": "Implement Match Notifications",
+            "description": "Add notification system for new matches and updates.",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate with notifications system to alert users of new matches.",
+            "status": "pending",
+            "testStrategy": "Verify notifications are sent and received correctly for new matches."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement Role-Specific Dashboard Overview Pages",
+        "description": "Create comprehensive role-specific dashboard overview pages with relevant CTAs, summaries, and graphs for breeders, seekers, and admins.",
+        "details": "Transform the existing overview page into role-aware dashboards that display key metrics, quick actions, and relevant data visualizations based on each user's role and immediate interests upon logging in. Include charts for key metrics, summary cards, and contextual CTAs.",
+        "testStrategy": "Test each role dashboard: breeders see litter metrics and quick actions, seekers see match/application summaries, admins see platform overview stats. Verify all CTAs work correctly and data displays accurately.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          6,
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Breeder Dashboard Overview",
+            "description": "Build breeder-specific dashboard with litter metrics, application summaries, and quick management CTAs.",
+            "dependencies": [],
+            "details": "Create breeder overview showing: active litters count, pending applications, recent inquiries, earnings summary, quick actions (add litter, view applications, manage breeds). Include charts for application trends and litter performance.",
+            "status": "pending",
+            "testStrategy": "Log in as breeder and verify dashboard shows relevant metrics, charts display correctly, and all CTAs navigate to appropriate pages."
+          },
+          {
+            "id": 2,
+            "title": "Create Seeker Dashboard Overview",
+            "description": "Build seeker-specific dashboard with match summaries, application tracking, and discovery CTAs.",
+            "dependencies": [],
+            "details": "Create seeker overview showing: active applications, new matches, saved searches, recent activity, quick actions (browse listings, view matches, submit applications). Include charts for application status distribution and match activity.",
+            "status": "pending",
+            "testStrategy": "Log in as seeker and verify dashboard shows application status, match notifications, and discovery CTAs work correctly."
+          },
+          {
+            "id": 3,
+            "title": "Create Admin Dashboard Overview",
+            "description": "Build admin-specific dashboard with platform metrics, pending tasks, and management CTAs.",
+            "dependencies": [],
+            "details": "Create admin overview showing: pending verifications, platform stats (users, listings, applications), recent activity, system alerts, quick actions (verify breeders, view reports, manage users). Include charts for user growth, revenue trends, and engagement metrics.",
+            "status": "pending",
+            "testStrategy": "Log in as admin and verify dashboard shows platform overview, pending tasks are highlighted, and management CTAs work correctly."
+          },
+          {
+            "id": 4,
+            "title": "Implement Dashboard Analytics Components",
+            "description": "Create reusable chart and metric components for dashboard visualizations.",
+            "dependencies": [],
+            "details": "Build chart components using a charting library (Chart.js/Recharts), metric cards, progress indicators, and data visualization helpers. Ensure responsive design and accessibility.",
+            "status": "pending",
+            "testStrategy": "Test chart components with sample data, verify responsive behavior, and ensure accessibility compliance."
+          },
+          {
+            "id": 5,
+            "title": "Create Dashboard Data Hooks",
+            "description": "Build React Query hooks to fetch dashboard-specific data for each role.",
+            "dependencies": [
+              4
+            ],
+            "details": "Create useDashboardStats hooks for each role that aggregate relevant metrics from multiple data sources (applications, litters, users, transactions). Implement proper caching and error handling.",
+            "status": "pending",
+            "testStrategy": "Test data hooks return correct aggregated data, verify caching works, and error states are handled properly."
+          },
+          {
+            "id": 6,
+            "title": "Implement Quick Action Components",
+            "description": "Create reusable CTA components for common dashboard actions.",
+            "dependencies": [],
+            "details": "Build action card components, quick stat cards, and navigation helpers that provide contextual actions based on user role and current dashboard state.",
+            "status": "pending",
+            "testStrategy": "Test action components trigger correct navigation, verify role-based action visibility, and ensure proper loading states."
+          },
+          {
+            "id": 7,
+            "title": "Add Dashboard Personalization Features",
+            "description": "Implement dashboard customization and personalization options.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Add ability to reorder dashboard widgets, hide/show specific metrics, and save dashboard preferences. Include welcome messages and contextual tips based on user activity.",
+            "status": "pending",
+            "testStrategy": "Test dashboard customization saves correctly, verify personalization persists across sessions, and ensure tips display contextually."
+          }
+        ]
+      },
+      {
+        "id": 12,
         "title": "Build Admin Dashboard: Comprehensive Management Panel",
         "description": "Create a comprehensive admin dashboard with breeder verification, user management, listings oversight, and analytics capabilities.",
         "details": "Develop a secure admin dashboard with multiple management sections. Include breeder verification panel to review and approve breeder applications, user management to oversee all platform users, listings management to monitor all litters and wanted ads, and analytics dashboard to track platform metrics and engagement. All sections should have proper role-based access control and comprehensive management interfaces.",
@@ -706,51 +838,6 @@
             "details": "Build announcement management interface for creating, scheduling, and sending platform announcements. Include targeted notifications by user role, region, or segment. Support email notifications, in-app notifications, and push notifications.",
             "status": "pending",
             "testStrategy": "As admin, create and send announcements, target specific user groups, verify delivery across different notification channels, and track announcement engagement."
-          }
-        ]
-      },
-      {
-        "id": 11,
-        "title": "Implement Matches Page (Complete flow for both breeders and seekers)",
-        "description": "Create intelligent matching system. For breeders: see matching seekers. For seekers: see matching breeders/listings.",
-        "details": "Build role-aware matches page with matching algorithm. Include preference settings, match notifications, and communication features.",
-        "testStrategy": "Test matching algorithm for both roles, verify notifications work correctly.",
-        "priority": "medium",
-        "dependencies": [
-          7
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Role-Aware Matches Page Component",
-            "description": "Build main matches page that adapts based on user role.",
-            "dependencies": [],
-            "details": "Create src/lib/pages/dashboard/matches.tsx with role-based matching interface.",
-            "status": "pending",
-            "testStrategy": "Verify page loads correctly for both roles."
-          },
-          {
-            "id": 2,
-            "title": "Implement Matching Algorithm",
-            "description": "Create logic to match seekers with breeders based on preferences and offerings.",
-            "dependencies": [
-              1
-            ],
-            "details": "Build matching algorithm using breed preferences, location, and other criteria.",
-            "status": "pending",
-            "testStrategy": "Test matching results, verify correct matches are shown for both roles."
-          },
-          {
-            "id": 3,
-            "title": "Implement Match Notifications",
-            "description": "Add notification system for new matches and updates.",
-            "dependencies": [
-              2
-            ],
-            "details": "Integrate with notifications system to alert users of new matches.",
-            "status": "pending",
-            "testStrategy": "Verify notifications are sent and received correctly for new matches."
           }
         ]
       }

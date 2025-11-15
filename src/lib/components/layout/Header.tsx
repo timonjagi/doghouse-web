@@ -83,14 +83,22 @@ const Header = ({ profile }) => {
                 >
                   About
                 </Button>
-                {/* <Button
+                <Button
                   rounded="full"
                   as={Link}
                   aria-current={pathname.includes("breeds") ? "page" : false}
                   href="/breeds"
                 >
                   Breeds
-                </Button> */}
+                </Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("breeder") ? "page" : false}
+                  href="/breeder"
+                >
+                  Breeders
+                </Button>
                 <Button
                   rounded="full"
                   as={Link}
@@ -149,34 +157,21 @@ const Header = ({ profile }) => {
                 icon={<FiBell />}
                 mr={3}
               /> */}
-              <ToggleButton
-                isOpen={isOpen}
-                aria-label="Open Menu"
-                onClick={onToggle}
-              />
-              {/* {user ? (
+
+              {user ? (
                 <UserProfileMenu
-                  name={user?.displayName || ""}
-                  image={user?.photoURL || ""}
-                  phoneNumber={user?.phoneNumber || ""}
+                  name={user?.user_metadata?.name || user?.email || ""}
+                  image={user?.user_metadata?.avatar_url || ""}
+                  email={user?.email || ""}
                 />
               ) : (
-                <>
-                  {["login", "signup"].includes(router.pathname) && (
-                    <HStack spacing="3">
-                      <Button
-                        variant="secondary-on-accent"
-                        rounded="full"
-                        borderColor="white"
-                        onClick={() => router.push("/login")}
-                      >
-                        Log in
-                      </Button>
-                    </HStack>
-                  )}
-                </>
+                <ToggleButton
+                  isOpen={isOpen}
+                  aria-label="Open Menu"
+                  onClick={onToggle}
+                />
               )}
-               */}
+
               <Drawer
                 isOpen={isOpen}
                 placement="left"

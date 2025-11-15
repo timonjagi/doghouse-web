@@ -123,7 +123,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         direction={{ base: "column", md: "row" }}
         bg="bg-canvas"
         overflow="auto"
-        h={{ base: "calc(100vh - 128px)", md: "100vh" }}
+        h={{ base: "calc(100dvh - 128px)", md: "100vh" }}
         w="100vw"
         maxW="100vw"
       >

@@ -1,3 +1,3 @@
-import Breeds from "lib/pages/breeds";
+import PublicBreedsPage from "lib/pages/breeds";
 
-export default Breeds;
+export default PublicBreedsPage;

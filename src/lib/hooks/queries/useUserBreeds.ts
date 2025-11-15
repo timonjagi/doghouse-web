@@ -22,7 +22,7 @@ interface UpdateUserBreedData {
 export const useUserBreedsFromUser = (userId?: string) => {
   return useQuery({
     queryKey: queryKeys.breeds.userBreeds(userId),
-    queryFn: async () => {
+    queryFn: async (): Promise<any[]> => {
       if (!userId) return [];
       const { data, error } = await supabase
         .from('user_breeds')
