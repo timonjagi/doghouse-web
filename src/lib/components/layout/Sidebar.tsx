@@ -51,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
         justify="center"
         align="center"
         width="full"
-        h={{ base: "calc(100vh - 64px)", md: "full" }}
+        h={{ base: "calc(100dvh - 64px)", md: "full" }}
         as="nav"
         direction="column"
       >
@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
       maxW={{ base: "full", sm: "xs" }}
       justify="space-between"
       width="full"
-      h="full"
+      h={{ base: "calc(100dvh - 64px)", md: "full" }}
       as="nav"
       direction="column"
       overflowY="auto"
