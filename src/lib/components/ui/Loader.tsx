@@ -3,7 +3,7 @@ import { calc, Center, Flex, Spinner } from "@chakra-ui/react";
 export const Loader = () => {
   return (
     <Flex
-      h={{ base: 'calc(100vh - 64px)', md: 'calc(100vh - 104px)' }}
+      h={{ base: 'calc(100dvh - 128px)', md: 'calc(100vh - 104px)' }}
       w="full"
       align="center"
       justify="center">

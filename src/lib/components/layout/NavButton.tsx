@@ -17,6 +17,7 @@ interface NavButtonProps extends ButtonProps {
 
 export const NavButton = (props: NavButtonProps) => {
   const { icon, label, endElement, ...buttonProps } = props;
+
   return (
     <Button variant="ghost-on-accent" justifyContent="start" {...buttonProps}>
       <HStack justify="space-between" w="full">

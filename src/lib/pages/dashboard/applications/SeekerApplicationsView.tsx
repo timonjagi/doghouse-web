@@ -33,7 +33,7 @@ export const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = ({ 
   const [selectedTab, setSelectedTab] = useState(0);
 
   const groupedApplications = {
-    active: applications?.filter(app => ['submitted', 'pending', 'approved'].includes(app.status)) || [],
+    active: applications?.filter(app => ['submitted', 'pending', 'approved', 'reserved'].includes(app.status)) || [],
     completed: applications?.filter(app => ['rejected', 'completed'].includes(app.status)) || [],
   };
 

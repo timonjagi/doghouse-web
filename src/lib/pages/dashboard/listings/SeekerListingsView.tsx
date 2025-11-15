@@ -173,107 +173,103 @@ const BrowseListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) =>
 
 
   return (
-    <>
-      <NextSeo title="Browse Listings | DogHouse" />
-
-      <Container maxW="7xl" py={4}>
-        <VStack spacing={6} align="stretch">
-          <Box>
-            <Heading size={{ base: 'sm', lg: 'md' }} mb={2} >Browse Available Pets</Heading>
-            <Text color="gray.600">Find your perfect companion from verified breeders</Text>
-          </Box>
+    <Box>
+      <VStack spacing={6} align="stretch">
+        <Box>
+          <Heading size={{ base: 'sm', lg: 'md' }} mb={2} >Browse Available Pets</Heading>
+          <Text color="gray.600">Find your perfect companion from verified breeders</Text>
+        </Box>
 
 
-          <VStack spacing={4} align="stretch">
-            {/* Search Bar */}
-            <HStack justify="space-between" align="center">
-              <Button
-                as={IconButton}
-                icon={<MdFilterList />}
-                onClick={isMobile ? onToggle : () => setShowFilters(!showFilters)}
+        <VStack spacing={4} align="stretch">
+          {/* Search Bar */}
+          <HStack justify="space-between" align="center">
+            <Button
+              as={IconButton}
+              icon={<MdFilterList />}
+              onClick={isMobile ? onToggle : () => setShowFilters(!showFilters)}
 
-              >
-              </Button>
-              <InputGroup size="md">
-                <InputLeftElement pointerEvents="none">
-                  <SearchIcon color="gray.300" />
-                </InputLeftElement>
-                <Input
-                  placeholder="Search listings..."
-                  value={filters.search}
-                  onChange={(e) => updateFilter('search', e.target.value)}
-                  disabled={listingsLoading || breedsLoading}
-                />
-              </InputGroup>
-            </HStack>
-
-            <ActiveFilters filters={filters} clearFilters={clearFilters!} breeds={breeds!} />
-          </VStack>
-          {/* Results Count */}
-          <HStack justify="space-between">
-            <Text color="gray.600">
-            </Text>
+            >
+            </Button>
+            <InputGroup size="md">
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon color="gray.300" />
+              </InputLeftElement>
+              <Input
+                placeholder="Search listings..."
+                value={filters.search}
+                onChange={(e) => updateFilter('search', e.target.value)}
+                disabled={listingsLoading || breedsLoading}
+              />
+            </InputGroup>
           </HStack>
-          {filteredListings.length} listing{filteredListings.length !== 1 ? 's' : ''} found
-        </VStack>
 
-        <HStack align="start">
-          {/* Advanced Filters */}
-          {showFilters && !isMobile && (
-            <Filters bgColor={bgColor} filters={filters} updateFilter={updateFilter} breeds={breeds} breedsLoading={breedsLoading} listingsLoading={listingsLoading} />
+          <ActiveFilters filters={filters} clearFilters={clearFilters!} breeds={breeds!} />
+        </VStack>
+        {/* Results Count */}
+        <HStack justify="space-between">
+          <Text color="gray.600">
+          </Text>
+        </HStack>
+        {filteredListings.length} listing{filteredListings.length !== 1 ? 's' : ''} found
+      </VStack>
+
+      <HStack align="start">
+        {/* Advanced Filters */}
+        {showFilters && !isMobile && (
+          <Filters bgColor={bgColor} filters={filters} updateFilter={updateFilter} breeds={breeds} breedsLoading={breedsLoading} listingsLoading={listingsLoading} />
+        )}
+
+        <Stack flex={1} >
+          {listingsLoading || breedsLoading && (
+            <Center h="400px">
+              <Loader />
+            </Center>
           )}
 
-          <Stack flex={1} >
-            {listingsLoading || breedsLoading && (
-              <Center h="400px">
-                <Loader />
-              </Center>
-            )}
 
+          {/* Listings Grid */}
+          {!listingsLoading && !breedsLoading && filteredListings.length === 0 ? (
+            <Center h="300px" bg={bgColor} borderRadius="lg" border="2px dashed" borderColor="gray.300" p={8}>
+              <VStack spacing={4}>
+                <Text fontSize="lg" color="gray.500">No listings found</Text>
+                <Text color="gray.400" textAlign="center" maxW="md">
+                  Try adjusting your filters or search terms to find more results.
+                </Text>
+                <Button variant="outline" onClick={clearFilters}>
+                  Clear Filters
+                </Button>
+              </VStack>
+            </Center>
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: showFilters ? 2 : 3 }} spacing={4}>
+              {!listingsLoading && !breedsLoading && filteredListings.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  handleListingClick={handleListingClick}
+                  formatPrice={formatPrice}
+                  getStatusColor={getStatusColor}
+                />
+              ))}
+            </SimpleGrid>
+          )}
+        </Stack>
+      </HStack>
 
-            {/* Listings Grid */}
-            {!listingsLoading && !breedsLoading && filteredListings.length === 0 ? (
-              <Center h="300px" bg={bgColor} borderRadius="lg" border="2px dashed" borderColor="gray.300" p={8}>
-                <VStack spacing={4}>
-                  <Text fontSize="lg" color="gray.500">No listings found</Text>
-                  <Text color="gray.400" textAlign="center" maxW="md">
-                    Try adjusting your filters or search terms to find more results.
-                  </Text>
-                  <Button variant="outline" onClick={clearFilters}>
-                    Clear Filters
-                  </Button>
-                </VStack>
-              </Center>
-            ) : (
-              <SimpleGrid columns={{ base: 1, md: 2, lg: showFilters ? 2 : 3 }} spacing={4}>
-                {!listingsLoading && !breedsLoading && filteredListings.map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    listing={listing}
-                    handleListingClick={handleListingClick}
-                    formatPrice={formatPrice}
-                    getStatusColor={getStatusColor}
-                  />
-                ))}
-              </SimpleGrid>
-            )}
-          </Stack>
-        </HStack>
+      <Drawer
+        isOpen={isOpen}
+        placement="bottom"
+        onClose={onClose}
+        preserveScrollBarGap
 
-        <Drawer
-          isOpen={isOpen}
-          placement="bottom"
-          onClose={onClose}
-          preserveScrollBarGap
-
-        >
-          <DrawerOverlay />
-          <DrawerContent>
-            <Filters bgColor={bgColor} filters={filters} updateFilter={updateFilter} breeds={breeds} breedsLoading={breedsLoading} listingsLoading={listingsLoading} isMobile={isMobile} clearFilters={clearFilters} />
-          </DrawerContent>
-        </Drawer>
-      </Container >
-    </>
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <Filters bgColor={bgColor} filters={filters} updateFilter={updateFilter} breeds={breeds} breedsLoading={breedsLoading} listingsLoading={listingsLoading} isMobile={isMobile} clearFilters={clearFilters} />
+        </DrawerContent>
+      </Drawer>
+    </Box >
   );
 };
 

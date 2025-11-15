@@ -20,7 +20,7 @@ import { FiHelpCircle } from "react-icons/fi";
 import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
 
-import UserProfileMenu from "lib/components/auth/UserProfileMenu";
+import UserProfileMenu from "lib/components/layout/UserProfileMenu";
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 
 import { ToggleButton } from "./ToggleButton";
@@ -188,7 +188,7 @@ const Header = ({ profile }) => {
               >
                 <DrawerOverlay />
                 <DrawerContent>
-                  <Sidebar onClose={onClose} profile={profile} />
+                  <Sidebar onClose={onClose} />
                 </DrawerContent>
               </Drawer>
             </Flex>

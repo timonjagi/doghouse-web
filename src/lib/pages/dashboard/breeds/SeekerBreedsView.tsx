@@ -43,7 +43,7 @@ const DashboardBrowsePage = ({ userProfile }) => {
       <VStack spacing={6} align="stretch">
 
         <Stack>
-          <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
+          <Heading size={{ base: "sm", lg: "md" }}>
             Browse  Breeds
           </Heading>
           <Text color="gray.600">

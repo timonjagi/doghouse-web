@@ -71,7 +71,7 @@ function ParentInfoStep({ data, updateData, userBreeds }) {
               </Select>
 
               <Text fontSize="xs" color="gray.500" mt={1}>
-                You can only select from the breeds you have added. To add a new breed, go to the <Text as={Link} color="brand.600" cursor="pointer" href="/dashboard/breeds/manage">Manage Breeds</Text> page.
+                You can only select from the breeds you have added. To add a new breed, go to the <Text as={Link} color="brand.600" cursor="pointer" href="/dashboard/breeds">Manage Breeds</Text> page.
               </Text>
 
             </FormControl>
@@ -151,7 +151,7 @@ function ParentInfoStep({ data, updateData, userBreeds }) {
               </Select>
 
               <Text fontSize="xs" color="gray.500" mt={1}>
-                You can only select from the breeds you have added. To add a new breed, go to the <Text as={Link} color="brand.600" cursor="pointer" href="/dashboard/breeds/manage">Manage Breeds</Text> page.
+                You can only select from the breeds you have added. To add a new breed, go to the <Text as={Link} color="brand.600" cursor="pointer" href="/dashboard/breeds">Manage Breeds</Text> page.
               </Text>
             </FormControl>
 

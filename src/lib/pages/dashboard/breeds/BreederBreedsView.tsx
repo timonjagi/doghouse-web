@@ -65,7 +65,7 @@ const UserBreeds = ({ userProfile, onFormOpen }) => {
     <VStack spacing={6} align="stretch">
       <Stack>
         <HStack justify="space-between" align="center">
-          <Heading size={{ base: "sm", lg: "md" }} color="brand.500">
+          <Heading size={{ base: "sm", lg: "md" }}>
             Manage Breeds
           </Heading>
           <Button

@@ -7,7 +7,6 @@ import {
   useColorModeValue as mode,
   Box,
   Button,
-  Circle,
 } from "@chakra-ui/react";
 import * as React from "react";
 import {
@@ -26,26 +25,23 @@ import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
 
 import { NavSection, getNavigationForRole } from "lib/components/layout/navLinks";
-import { UserProfile } from "../auth/UserProfile";
 import { User } from "../../../../db/schema";
 import { BsTiktok } from "react-icons/bs";
-import { useCurrentUser } from "lib/hooks/queries";
 import { useEffect } from "react";
+import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
+import { useCurrentUser } from "lib/hooks/queries";
 
 interface SidebarProps {
   onClose: () => void;
-  profile: User;
-  loading?: boolean;
   navigationSections?: NavSection[];
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ profile, loading, onClose }) => {
-  const { data: user, isLoading: loadingCurrentUser } = useCurrentUser();
-
-  const isMobile = useBreakpointValue({ base: true, md: false });
+export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
+  const { data: user } = useCurrentUser();
+  const { data: profile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
 
   // Show loading state while checking auth
-  if (loadingCurrentUser) {
+  if (profileLoading) {
     return (
       <Flex
         flex="1"
@@ -55,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, loading, onClose }) =
         justify="center"
         align="center"
         width="full"
-        h={{ base: "calc(100vh - 64px)", md: "full" }}
+        h={{ base: "calc(100dvh - 64px)", md: "full" }}
         as="nav"
         direction="column"
       >
@@ -71,14 +67,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, loading, onClose }) =
       maxW={{ base: "full", sm: "xs" }}
       justify="space-between"
       width="full"
-      h={{ base: "calc(100vh - 64px)", md: "full" }}
+      h={{ base: "calc(100dvh - 64px)", md: "full" }}
       as="nav"
       direction="column"
       overflowY="auto"
     >
-      {user?.id ? (
+      {profile?.id && (
         <LoggedInSidebar profile={profile} onClose={onClose} />
-      ) : (
+      )}
+
+      {!profile?.id && (
         <LoggedOutSidebar onClose={onClose} />
       )}
     </Flex>
@@ -110,12 +108,12 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
 
   return (
     <Stack
-      py={{ base: "6", sm: "8" }}
+      py={{ base: "6", sm: "4" }}
       px={{ base: "4", sm: "6" }}
       justify="space-between"
-      h={{ base: "calc(100vh - 64px)", md: "full" }}
+      h="full"
     >
-      <Box>
+      <Stack spacing="2">
 
         <Logo />
 
@@ -145,11 +143,10 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
           ))}
         </Stack>
 
-      </Box>
+      </Stack>
       {/* Account Section */}
       <Stack
         spacing="2"
-
       >
         <Divider borderColor="bg-accent-subtle" />
 
@@ -160,20 +157,17 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
             aria-current={
               router.pathname.includes("/help-center") ? "page" : "false"
             }
-            onClick={() => onClickMenuLink("/dashboard/help-center")}
+            onClick={() => onClickMenuLink("/help-center")}
           />
           <NavButton
             label="Settings"
             icon={FiSettings}
-            onClick={() => onClickMenuLink("/dashboard/settings")}
+            onClick={() => onClickMenuLink("/dashboard/account/settings")}
             aria-current={
               router.pathname.includes("/settings") ? "page" : "false"
             }
           />
         </Stack>
-
-        <Divider borderColor="bg-accent-subtle" />
-        <UserProfile profile={profile} onClose={onClose} />
       </Stack>
     </Stack>
   );
@@ -200,8 +194,6 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
 
   return (
     <Stack
-      py={{ base: "6", sm: "8" }}
-      px={{ base: "4", sm: "6" }}
       justify="space-between"
       h={{ base: "calc(100vh - 64px)", md: "full" }}
     >
@@ -279,32 +271,29 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
       </Stack>
 
       <Box borderTopWidth="1px">
-        <NavButton2 href="/login" colorScheme="on-accent">Log in</NavButton2>
+        <Button
+          as="a"
+          width="full"
+          borderRadius="0"
+          variant="ghost-on-accent"
+          size="lg"
+          fontSize="sm"
+          _hover={{
+            bg: mode('brand.100', 'brand.700'),
+          }}
+          _active={{
+            bg: mode('brand.200', 'brand.600'),
+          }}
+          _focus={{
+            boxShadow: 'none',
+          }}
+          _focusVisible={{
+            boxShadow: 'outline',
+          }}
+          href="/login" colorScheme="on-accent"
+        >Log in</Button>
       </Box>
     </Stack>
   );
 };
 
-const NavButton2 = (props) => (
-  <Button
-    as="a"
-    width="full"
-    borderRadius="0"
-    variant="ghost-on-accent"
-    size="lg"
-    fontSize="sm"
-    _hover={{
-      bg: mode('brand.100', 'brand.700'),
-    }}
-    _active={{
-      bg: mode('brand.200', 'brand.600'),
-    }}
-    _focus={{
-      boxShadow: 'none',
-    }}
-    _focusVisible={{
-      boxShadow: 'outline',
-    }}
-    {...props}
-  />
-)

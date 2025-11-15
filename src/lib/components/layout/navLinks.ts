@@ -6,15 +6,15 @@ import {
   FiUsers,
   FiBarChart,
   FiShield,
-  FiSettings,
-  FiLogOut,
-  FiHeart,
   FiList,
-  FiEdit,
   FiMessageSquare,
   FiGitlab,
   FiCreditCard,
+  FiUser,
+  FiGrid,
 } from "react-icons/fi";
+import { GiDogHouse } from "react-icons/gi";
+import { LuDog, LuSettings2 } from "react-icons/lu";
 
 export type UserRole = 'breeder' | 'seeker' | 'admin';
 
@@ -46,12 +46,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiHome,
           ariaLabel: "Dashboard home"
         },
-        // {
-        //   label: "Inbox",
-        //   href: "/dashboard/inbox",
-        //   icon: FiMessageSquare,
-        //   ariaLabel: "Inbox"
-        // },
+        {
+          label: "Inbox",
+          href: "/dashboard/inbox",
+          icon: FiMessageSquare,
+          ariaLabel: "Inbox"
+        },
       ]
     },
     {
@@ -60,7 +60,7 @@ export const navigationConfig: NavigationConfig = {
         {
           label: "Breeds",
           href: "/dashboard/breeds",
-          icon: FiGitlab,
+          icon: LuDog,
           ariaLabel: "Manage breeds and listings"
         },
 
@@ -85,20 +85,26 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "Billing",
+      title: "Account",
       items: [
         {
-          label: "Earnings",
-          href: "/dashboard/billing/earnings",
-          icon: FiCreditCard,
-          ariaLabel: "View earnings and payouts"
+          label: "Profile",
+          href: "/dashboard/account/profile",
+          icon: FiUser,
+          ariaLabel: "View profile"
         },
         {
-          label: "Transactions",
-          href: "/dashboard/billing/transactions",
-          icon: FiBarChart,
-          ariaLabel: "View transaction history"
+          label: "Kennel",
+          href: "/dashboard/account/kennel",
+          icon: GiDogHouse,
+          ariaLabel: "View kennel"
         },
+        {
+          label: "Billing",
+          href: "/dashboard/account/billing",
+          icon: FiCreditCard,
+          ariaLabel: "View payment history"
+        }
       ]
     }
   ],
@@ -110,15 +116,15 @@ export const navigationConfig: NavigationConfig = {
         {
           label: "Overview",
           href: "/dashboard",
-          icon: FiHome,
+          icon: FiGrid,
           ariaLabel: "Dashboard home"
         },
-        // {
-        //   label: "Inbox",
-        //   href: "/dashboard/inbox",
-        //   icon: FiMessageSquare,
-        //   ariaLabel: "Inbox"
-        // },
+        {
+          label: "Inbox",
+          href: "/dashboard/inbox",
+          icon: FiMessageSquare,
+          ariaLabel: "Inbox"
+        },
       ]
     },
     {
@@ -151,19 +157,25 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "Billing",
+      title: "Account",
       items: [
         {
-          label: "Payments",
-          href: "/dashboard/billing/payments",
-          icon: FiCreditCard,
-          ariaLabel: "View payment history"
+          label: "Profile",
+          href: "/dashboard/account/profile",
+          icon: FiUser,
+          ariaLabel: "View profile"
         },
         {
-          label: "Transactions",
-          href: "/dashboard/billing/transactions",
-          icon: FiBarChart,
-          ariaLabel: "View transaction history"
+          label: "Preferences",
+          href: "/dashboard/account/preferences",
+          icon: LuSettings2,
+          ariaLabel: "View preferences"
+        },
+        {
+          label: "Billing",
+          href: "/dashboard/account/billing",
+          icon: FiCreditCard,
+          ariaLabel: "View billing history"
         },
       ]
     }
@@ -195,6 +207,12 @@ export const navigationConfig: NavigationConfig = {
           href: "/dashboard/admin/verification",
           icon: FiShield,
           ariaLabel: "Breeder verification"
+        },
+        {
+          label: "Payouts",
+          href: "/dashboard/admin/payouts",
+          icon: FiCreditCard,
+          ariaLabel: "Manage breeder payouts"
         },
 
       ]

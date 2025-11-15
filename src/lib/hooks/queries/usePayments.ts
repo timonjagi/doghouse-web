@@ -89,7 +89,7 @@ export const useInitiatePayment = () => {
           throw new Error('Final payment has already been completed');
         }
 
-        if (!application.contract_signed) {
+        if (!application.contract_signed && listing.requirements?.contract_required) {
           throw new Error('Contract must be signed before making the final payment');
         }
 

@@ -2,16 +2,11 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Card,
-  Center,
   Container,
   Flex,
   Heading,
   Icon,
   Img,
-  List,
-  ListIcon,
-  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -23,15 +18,15 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import HeaderButtonGroup from "./HeaderButtonGroup";
 import { Loader } from "../../../components/ui/Loader";
 import { useUserProfile } from "lib/hooks/queries";
 import { MdCheckCircle } from "react-icons/md";
 import { useSearchParams } from "next/navigation";
 import { RadioCard } from "lib/components/ui/RadioCard";
 import { RadioCardGroup } from "lib/components/ui/RadioCardGroup";
-import next from "next";
 import { NextSeo } from "next-seo";
+import CompleteProfileBanner from "./CompleteProfileBanner";
+import { Banner } from "lib/components/ui/Banner";
 
 const DashboardHome = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -40,6 +35,7 @@ const DashboardHome = () => {
   const { onClose } = useDisclosure();
   const { data: profile, isLoading: profileLoading } = useUserProfile();
 
+  const [showBanner, setShowBanner] = useState(true);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -61,43 +57,18 @@ const DashboardHome = () => {
   }
 
   return (
-    <Container h="full">
+    <Container maxW="7xl">
 
       <NextSeo title="Dashboard" />
 
-      <Box h="full">
-        <Box>
-          <Stack
-            direction={{ base: "column", lg: "row" }}
-            spacing={{ base: "5", lg: "8" }}
-            justify="space-between"
-          >
-            <Stack
-              spacing="4"
-              flex="1"
-              direction="column"
-              w={{ base: "full", lg: "lg" }}
-              minW="sm"
-            >
-              {/* <ActivityFeedCard
-                  activities={activities}
-                  userProfile={userProfile}
-                  isDesktop={isDesktop}
-                  onViewPost={onViewPost}
-                /> */}
-            </Stack>
-
-            <Flex
-              direction="column"
-              flex="1"
-              maxW={{ base: "none", lg: "sm" }}
-            >
-              {/* <CompleteProfileBanner />*/}
-              {/* <NewsletterForm /> */}
-            </Flex>
-          </Stack>
-        </Box>
-      </Box>
+      {!profile?.profile_photo_url && showBanner && (
+        <Banner
+          title="Complete your profile"
+          description="Complete your profile to start finding matches"
+          button={{ label: "Complete Profile", link: "/dashboard/account/profile" }}
+          onClose={() => setShowBanner(false)}
+        />
+      )}
 
       <Modal
         onClose={onClose}
@@ -203,7 +174,7 @@ const WhatsNext: React.FC<{ userRole: string, router: any, onClose: any }> = ({ 
       title: 'Manage Breeds',
       description: 'Update your existing breeds and add more breeds to your profile',
       icon: <Icon as={MdCheckCircle} color='green.500' />,
-      href: '/dashboard/breeds/manage'
+      href: '/dashboard/breeds'
     },
     {
       title: 'Add Listings',

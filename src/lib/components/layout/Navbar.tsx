@@ -1,65 +1,104 @@
 import {
+  Badge,
   Box,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  Button,
   ButtonGroup,
   Circle,
   Drawer,
+  DrawerCloseButton,
   DrawerContent,
+  DrawerHeader,
   DrawerOverlay,
   Flex,
-  Heading,
   HStack,
+  Icon,
   IconButton,
   Spacer,
   useBreakpointValue,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import * as React from "react";
 import { Logo } from "./Logo";
-import { Sidebar } from "./Sidebar";
-import { ToggleButton } from "./ToggleButton";
 
-import { FiBell } from "react-icons/fi";
+import { FiBell, FiCheck } from "react-icons/fi";
 import { useRouter } from "next/router";
-import { useUserProfile } from "lib/hooks/queries/useUserProfile";
+import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import Link from "next/link";
-import { useUnreadNotificationsCount } from "lib/hooks/queries/useNotifications";
+import { useMarkAllNotificationsAsRead, useNotifications, useUnreadNotificationsCount } from "lib/hooks/queries/useNotifications";
+import UserProfileMenu from "./UserProfileMenu";
+import { useCurrentUser } from "lib/hooks/queries";
 
 export const Navbar = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const router = useRouter();
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
-  const { data: unreadCount } = useUnreadNotificationsCount(profile?.id);
 
-  const currentRoute = router.pathname;
+  const toast = useToast();
+
+  const { data: user } = useCurrentUser();
+  const { data: userProfile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
+  const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
+
+  const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
+
+  const handleMarkAllAsRead = async () => {
+    if (!userProfile?.id) return;
+
+    try {
+      await markAllAsReadMutation.mutateAsync(userProfile.id);
+      toast({
+        title: 'All notifications marked as read',
+        status: 'success',
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error updating notifications',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+      });
+    }
+  };
+
   return (
     <>
-      {isMobile && <Box width="full" px={{ base: "4", md: "8" }} py="4" bg="bg-accent">
-        <Flex justify="space-between">
-          <Logo />
+      {isMobile ? (
+        <Box width="full" px={{ base: "4", md: "8" }} py="3" bg="bg-accent">
+          <Flex justify="space-between">
+            <Logo />
 
-          <HStack spacing="4">
-            <ButtonGroup variant="ghost-on-accent" spacing="1">
+            <HStack >
+              <ButtonGroup variant="ghost-on-accent" spacing="1">
 
-              <ToggleButton
-                isOpen={isOpen}
-                aria-label="Open Menu"
-                onClick={onToggle}
-              />
-            </ButtonGroup>
-          </HStack>
-        </Flex>
-      </Box>
-      }
+                <Button
+                  variant="ghost-on-accent"
+                  onClick={onToggle}
+                  m={0}
+                  p={0}
+                  aria-label="Open Notifications Drawer"
+                >
+                  <Icon as={FiBell} boxSize="6" color="on-accent-subtle" />
 
-      {!isMobile && (
+                </Button>
 
+                <UserProfileMenu
+                  name={userProfile?.display_name || ""}
+                  image={userProfile?.profile_photo_url || ""}
+                  email={userProfile?.email || ""}
+                />
+              </ButtonGroup>
+            </HStack>
+          </Flex>
+        </Box>
+      ) : (
         <HStack spacing="1" flex="1" p={8}>
-
           <Breadcrumb>
             {router.pathname.split("/").map((item, index) => (
               <BreadcrumbItem>
@@ -74,22 +113,30 @@ export const Navbar = () => {
             ))}
           </Breadcrumb>
           <Spacer />
-          <Box >
-            <IconButton
-              icon={<FiBell />}
-              aria-label="Notifications"
-              onClick={onToggle}
+          <ButtonGroup variant="ghost-on-accent" spacing="2">
+
+            <Box >
+              <IconButton
+                icon={<FiBell />}
+                aria-label="Notifications"
+                onClick={onToggle}
+              />
+              {unreadCount && unreadCount > 0 && <Circle size="2" bg="blue.400" display="relative" position="absolute" top={8} right={8} zIndex={1} />}
+            </Box>
+
+            <UserProfileMenu
+              name={userProfile?.display_name || ""}
+              image={userProfile?.profile_photo_url || ""}
+              email={userProfile?.email || ""}
             />
-            {unreadCount > 0 && <Circle size="2" bg="blue.400" display="relative" position="absolute" top={8} right={8} zIndex={1} />}
-          </Box>
+          </ButtonGroup>
         </HStack>
       )}
 
-      {/* Mobile Drawer with Sidebar */}
 
       <Drawer
         isOpen={isOpen}
-        placement={isMobile ? 'left' : 'right'}
+        placement="right"
         onClose={onClose}
         isFullHeight
         preserveScrollBarGap
@@ -98,16 +145,43 @@ export const Navbar = () => {
       >
         <DrawerOverlay />
         <DrawerContent>
-          {isMobile ? (
-            <Sidebar onClose={onClose} profile={profile} loading={profileLoading} />
-          ) :
-            <NotificationsDrawer isOpen={isOpen} onClose={onClose} />
-          }
+          <DrawerCloseButton />
+          <DrawerHeader>
 
+            Notifications
+
+            {unreadCount > 0 && (
+              <Badge colorScheme="red" borderRadius="full" px={2} fontSize="xs">
+                {unreadCount}
+              </Badge>
+            )}
+
+
+            {notifications && notifications.length > 0 && unreadCount > 0 && (
+              <Button
+                leftIcon={<FiCheck />}
+                variant="outline"
+                size="xs"
+                onClick={handleMarkAllAsRead}
+                isLoading={markAllAsReadMutation.isPending}
+              >
+                Mark All Read
+              </Button>
+            )}
+
+          </DrawerHeader>
+
+          <NotificationsDrawer
+            isOpen={isOpen}
+            onClose={onClose}
+            userProfile={userProfile!}
+            notifications={notifications!}
+            isLoading={isLoading}
+            error={error}
+            unreadCount={unreadCount!}
+          />
         </DrawerContent>
       </Drawer>
-
-
 
     </>)
 

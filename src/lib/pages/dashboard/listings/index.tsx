@@ -1,26 +1,50 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Container,
-  Heading,
   Text,
   VStack,
-  HStack,
   Button,
-  Spinner,
   Center,
+  Alert,
+  AlertIcon,
   Box,
 } from '@chakra-ui/react';
 import { useUserProfile } from '../../../hooks/queries';
 import { useRouter } from 'next/router';
 import { NextSeo } from 'next-seo';
 import { Loader } from 'lib/components/ui/Loader';
-import profile from '../profile';
 import BreederListingsView from './BreederListingsView';
 import SeekerListingsView from './SeekerListingsView';
 
 const ListingsPage: React.FC = () => {
-  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+  const { data: userProfile, isLoading: profileLoading, error } = useUserProfile();
   const router = useRouter();
+
+
+
+
+  if (profileLoading) {
+    return (
+      <Loader />
+    );
+  }
+
+  if (error || !userProfile) {
+    return (
+      <Container maxW="6xl" py={8}>
+        <Alert status="error">
+          <AlertIcon />
+          <Box>
+            <Text fontWeight="bold">Error loading listings</Text>
+            <Text fontSize="sm">
+              {error?.message || 'Unable to load user profile'}
+            </Text>
+          </Box>
+        </Alert>
+      </Container>
+    );
+  }
+
 
   const renderRoleSpecificContent = () => {
     switch (userProfile.role) {
@@ -45,18 +69,14 @@ const ListingsPage: React.FC = () => {
     }
   };
 
-
-  if (profileLoading) {
-    return (
-      <Loader />
-    );
-  }
-
   return (
     <>
       <NextSeo title="Listings - DogHouse Kenya" />
 
-      {renderRoleSpecificContent()}
+      <Container maxW="7xl" py={{ base: 4, md: 0 }}>
+
+        {renderRoleSpecificContent()}
+      </Container>
     </>
   );
 };

@@ -4,7 +4,7 @@ const VerificationPage = () => {
   return (
     <Container maxW="7xl" py={8}>
       <VStack spacing={6} align="stretch">
-        <Heading size="lg" color="brand.500">
+        <Heading size="lg" >
           Breeder Verification
         </Heading>
         <Text color="gray.600">

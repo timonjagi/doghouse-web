@@ -21,7 +21,7 @@ function ApplicationStatusDialog({
   isLoading
 }) {
   return (
-    <AlertDialog isOpen={isOpen} leastDestructiveRef={undefined} onClose={() => {
+    <AlertDialog isCentered isOpen={isOpen} leastDestructiveRef={undefined} onClose={() => {
       setPendingAction(null);
       onClose();
     }}>
@@ -42,7 +42,8 @@ function ApplicationStatusDialog({
                       placeholder={
                         pendingAction?.type === 'approve'
                           ? "Add a welcome message for the applicant..."
-                          : "Add a reason for rejection..."
+                          : pendingAction?.type === 'reject' ? "Add a reason for rejection..."
+                            : "Add a message for the applicant..."
                       }
                       rows={3}
                     />

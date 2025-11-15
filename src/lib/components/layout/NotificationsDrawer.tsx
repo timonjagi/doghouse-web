@@ -26,25 +26,30 @@ import {
   useMarkAllNotificationsAsRead,
   useUnreadNotificationsCount,
 } from '../../../lib/hooks/queries/useNotifications';
-import { Notification } from '../../../../db/schema';
+import { Notification, User } from '../../../../db/schema';
 interface NotificationsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  userProfile: User;
+  notifications: Notification[];
+  isLoading: boolean;
+  error: any;
+  unreadCount: number;
 }
 
 export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
   isOpen,
   onClose,
+  userProfile,
+  notifications,
+  isLoading,
+  error,
+  unreadCount,
 }) => {
   const router = useRouter();
-  const toast = useToast();
-  const { data: userProfile } = useUserProfile();
-
-  const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
-  const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
 
   const markAsReadMutation = useMarkNotificationAsRead();
-  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
+
 
   const handleNotificationClick = async (notification: Notification) => {
     // Mark as read if not already read
@@ -55,7 +60,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
     // Navigate based on notification type and data
     if (notification.type === 'payment_completed' || notification.type === 'payment_received') {
       // For payment notifications, navigate to transactions page
-      router.push('/dashboard/billing/transactions');
+      router.push('/dashboard/account/billing');
     } else if ((notification.meta as any)?.applicationId) {
       // For application status changes, navigate to applications page
       router.push(`/dashboard/applications/${(notification.meta as any).applicationId}`);
@@ -67,28 +72,9 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
     onClose();
   };
 
-  const handleMarkAllAsRead = async () => {
-    if (!userProfile?.id) return;
-
-    try {
-      await markAllAsReadMutation.mutateAsync(userProfile.id);
-      toast({
-        title: 'All notifications marked as read',
-        status: 'success',
-        duration: 2000,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error updating notifications',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-      });
-    }
-  };
 
   const handleViewAll = () => {
-    router.push('/account/notifications');
+    router.push('/dashboard/account/notifications');
     onClose();
   };
 
@@ -137,7 +123,6 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
   // Get only the latest 5 notifications for the drawer
   const latestNotifications = notifications?.slice(0, 5) || [];
 
-  console.log('latestNotifications', latestNotifications);
   return (
     <Flex
       flex="1"
@@ -150,33 +135,6 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
       overflowY="auto"
     >
       <VStack spacing={0} align="stretch" height="100%">
-        {/* Header */}
-        <Box p={6} borderBottom="1px solid" borderColor="gray.200">
-          <HStack justify="space-between" align="center">
-            <HStack justify="center">
-              {/* <FiBell size={20} /> */}
-              <Heading size="xs">Notifications</Heading>
-              {unreadCount > 0 && (
-                <Badge colorScheme="red" borderRadius="full" px={2} fontSize="xs">
-                  {unreadCount}
-                </Badge>
-              )}
-            </HStack>
-
-            {notifications && notifications.length > 0 && unreadCount > 0 && (
-              <Button
-                leftIcon={<FiCheck />}
-                variant="outline"
-                size="xs"
-                onClick={handleMarkAllAsRead}
-                isLoading={markAllAsReadMutation.isPending}
-              >
-                Mark All Read
-              </Button>
-            )}
-          </HStack>
-        </Box>
-
         {/* Content */}
         <Box flex={1} overflowY="auto">
           {isLoading ? (
@@ -214,7 +172,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
                   border="none"
                   borderBottom="1px solid"
                   borderColor="gray.100"
-                  bg={notification.is_read ? 'white' : 'blue.50'}
+                  bg={notification.is_read ? 'white' : 'brand.50'}
                 >
                   <CardBody p={4}>
                     <HStack align="start" spacing={3}>
@@ -232,7 +190,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
                               {formatDate(notification.created_at.toString())}
                             </Text>
                             {!notification.is_read && (
-                              <Badge colorScheme="blue" variant="solid" fontSize="xs" px={1}>
+                              <Badge colorScheme="brand" variant="solid" fontSize="xs" px={1}>
                                 New
                               </Badge>
                             )}
@@ -258,7 +216,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
                     size="sm"
                     width="full"
                     onClick={handleViewAll}
-                    color="blue.500"
+                    color="brand.500"
                   >
                     View All Notifications ({notifications.length})
                   </Button>
