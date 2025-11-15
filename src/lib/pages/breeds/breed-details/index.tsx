@@ -34,13 +34,13 @@ export default function BreedDetails({
           setSelectedBreed(breedInfo);
           const breedImages = breedInfo.images
             ? breedInfo.images.map((image) => ({
-                src: image,
-                alt: "",
-              }))
+              src: image,
+              alt: "",
+            }))
             : [breedInfo.image].map((image) => ({
-                src: image,
-                alt: "",
-              }));
+              src: image,
+              alt: "",
+            }));
           setImages(breedImages);
         }
       } catch (err) {

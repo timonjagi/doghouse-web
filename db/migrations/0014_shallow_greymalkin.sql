@@ -1,0 +1,1 @@
+ALTER TABLE "transactions" ADD COLUMN "payout_status" varchar(50) DEFAULT 'pending' NOT NULL;

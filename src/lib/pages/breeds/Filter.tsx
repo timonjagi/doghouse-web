@@ -95,7 +95,7 @@ export const Filter = () => {
                   as="button"
                   textDecor="underline"
                   fontSize="sm"
-                  onClick={() => {}}
+                  onClick={() => { }}
                   color="on-accent-subtle"
                 >
                   Clear

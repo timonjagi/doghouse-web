@@ -1,0 +1,17 @@
+- [x] Create Role-Aware Applications Page Component
+- [x] Update useApplications hook to match current database schema
+- [x] Update query keys with missing methods (byListing, received)
+- [x] Create SeekerApplicationsView component with application submission flow
+- [x] Create BreederApplicationsView component with application management interface
+- [x] Create shared application details page with timeline and action buttons
+- [x] Update Taskmaster subtask 7.1 as completed
+- [x] Implement application submission form with validation (optimized to use seeker profile data)
+- [x] Create reusable ApplicationCard component for both seeker and breeder views
+- [x] **Replace seeker profile info with listing requirements in application form**
+- [x] **Remove seeker profile fields from application_data (use seeker_profiles join instead)**
+- [x] **Application status tracking infrastructure**
+- [x] **Notifications infrastructure (hooks, queries, UI)**
+- [x] **Create notifications page with navigation to application details**
+- [x] **Add notification triggers for application events**
+- [x] **Create notifications drawer for desktop navbar**
+- [ ] Test application flow for both roles

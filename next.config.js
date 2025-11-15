@@ -8,6 +8,7 @@ const nextConfig = {
     dirs: ["src"],
     ignoreDuringBuilds: true,
   },
+  output: "standalone",
 };
 
 module.exports = withNextVideo(nextConfig);
