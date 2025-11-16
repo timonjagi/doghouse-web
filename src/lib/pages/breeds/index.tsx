@@ -14,8 +14,8 @@ import { GetStaticProps } from 'next';
 import { useAllAvailableUserBreeds } from "lib/hooks/queries/useUserBreeds";
 import { Loader } from "lib/components/ui/Loader";
 import { NextSeo } from 'next-seo';
-import { supabaseServer } from 'lib/supabase/server';
 import { BreedList } from "lib/pages/dashboard/breeds/BreedList";
+import { supabase } from "lib/supabase/client";
 
 interface BreedsPageProps {
   initialBreeds?: any[];
@@ -44,6 +44,14 @@ export default function Breeds({ initialBreeds }: BreedsPageProps) {
 
   return (
     <>
+
+      <Head >
+        <title>Dog Breeds Available | DogHouse Kenya</title>
+        <meta name="description" content="Browse dog breeds from verified breeders in Kenya. Connect with professional breeders and find your perfect companion." />
+        <meta name="keywords" content="dog breeds Kenya, puppies for sale, dog breeders Kenya, Golden Retriever, Boerboel, Great Dane, verified breeders" />
+        <meta name="robots" content="index, follow" />
+      </Head>
+
       <NextSeo
         title="Dog Breeds Available | DogHouse Kenya"
         description="Explore dog breeds available from verified breeders in Kenya. Find Golden Retrievers, Boerboels, Great Danes, and more from reputable breeders across the country."
@@ -109,7 +117,7 @@ export default function Breeds({ initialBreeds }: BreedsPageProps) {
 export const getStaticProps: GetStaticProps = async () => {
   try {
     // Fetch available breeds data from Supabase for SEO
-    const { data, error } = await supabaseServer
+    const { data, error } = await supabase
       .from('user_breeds')
       .select(`
         id,
