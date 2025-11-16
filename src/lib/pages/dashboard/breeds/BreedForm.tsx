@@ -153,17 +153,13 @@ export const BreedForm = ({
   const handleUpdate = async () => {
     setIsSubmitting(true);
 
-
-    const retainedPhotos = selectedImages.filter((image) => typeof image === 'string');
-
-    console.log('retained', retainedPhotos);
+    const retainedPhotos = (selectedImages as any[]).filter((image) => typeof image === 'string');
 
     const deletedPhotos = editingBreed.images.filter((image: string) => {
       !retainedPhotos.includes(image)
     });
 
-    const newPhotos = selectedImages.filter((image) => image instanceof File);
-
+    const newPhotos = (selectedImages as any[]).filter((image) => image instanceof File);
 
     try {
       let uploadedUrls = [];

@@ -85,7 +85,7 @@ export const Navbar = () => {
                   aria-label="Open Notifications Drawer"
                 >
                   <Icon as={FiBell} boxSize="6" color="on-accent-subtle" />
-                  {<Circle size="2" bg="blue.400" position="absolute" top={0} right={0} zIndex={1} />}
+                  {unreadCount > 0 && <Circle size="2" bg="brand.100" position="absolute" top={0} right={1} zIndex={1} />}
 
                 </Button>
 
