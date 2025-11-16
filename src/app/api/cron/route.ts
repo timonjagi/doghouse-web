@@ -1,8 +1,5 @@
-'use server'
-
-import { createClient } from 'lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
-
+import { createClient } from '@supabase/supabase-js';
 
 interface ExpiredApplication {
   id: string;
@@ -43,7 +40,16 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    );
 
     // Calculate the cutoff time (24 hours ago)
     const cutoffTime = new Date();
