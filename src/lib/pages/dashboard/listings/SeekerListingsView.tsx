@@ -41,7 +41,7 @@ import { useBreeds } from '../../../hooks/queries/useBreeds';
 import { NextSeo } from 'next-seo';
 import { Loader } from 'lib/components/ui/Loader';
 import { MdFilterList } from 'react-icons/md';
-import ListingCard from './ListingCard';
+import ListingCard from '../../../components/ui/ListingCard';
 import { Select } from 'chakra-react-select';
 import { User } from '../../../../../db/schema';
 
@@ -55,7 +55,7 @@ interface FilterState {
   status: string;
 }
 
-const BrowseListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) => {
+const BrowseListingsPage: React.FC = () => {
   const router = useRouter();
   const bgColor = useColorModeValue('white', 'gray.800');
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -184,13 +184,15 @@ const BrowseListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) =>
         <VStack spacing={4} align="stretch">
           {/* Search Bar */}
           <HStack justify="space-between" align="center">
-            <Button
-              as={IconButton}
-              icon={<MdFilterList />}
-              onClick={isMobile ? onToggle : () => setShowFilters(!showFilters)}
+            {isMobile && (
+              <Button
+                as={IconButton}
+                icon={<MdFilterList />}
+                onClick={onToggle}
+              ></Button>
+            )}
 
-            >
-            </Button>
+
             <InputGroup size="md">
               <InputLeftElement pointerEvents="none">
                 <SearchIcon color="gray.300" />
@@ -203,6 +205,15 @@ const BrowseListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) =>
               />
             </InputGroup>
           </HStack>
+          {!isMobile && (
+            <Filters
+              bgColor={bgColor}
+              filters={filters}
+              updateFilter={updateFilter}
+              breeds={breeds}
+              breedsLoading={breedsLoading}
+              listingsLoading={listingsLoading} />
+          )}
 
           <ActiveFilters filters={filters} clearFilters={clearFilters!} breeds={breeds!} />
         </VStack>
@@ -288,7 +299,7 @@ interface FilterProps {
 
 const Filters = ({ bgColor, filters, updateFilter, breedsLoading, listingsLoading, breeds, isMobile, clearFilters }: FilterProps) => {
   return (
-    <Card minW="200px" maxW="300px" bg={bgColor} mr={{ base: 0, md: 4 }} borderRadius="lg">
+    <Card bg={bgColor} borderRadius="lg" boxShadow="none">
       {isMobile && <CardHeader >
         <HStack justify="space-between" align="center">
 
@@ -300,9 +311,8 @@ const Filters = ({ bgColor, filters, updateFilter, breedsLoading, listingsLoadin
       </CardHeader>}
       <CardBody>
 
-        <Stack spacing={4}>
+        <Stack spacing={4} direction={{ base: 'column', md: 'row' }}>
           {isMobile && <ActiveFilters filters={filters} clearFilters={clearFilters!} breeds={breeds!} isMobile={isMobile} />}
-
 
           <FormControl>
             <FormLabel>Breed</FormLabel>
@@ -359,7 +369,7 @@ const Filters = ({ bgColor, filters, updateFilter, breedsLoading, listingsLoadin
           </FormControl>
         </Stack>
       </CardBody>
-    </Card>
+    </Card >
   )
 };
 

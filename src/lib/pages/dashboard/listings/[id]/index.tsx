@@ -199,7 +199,6 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           leftIcon={<ArrowBackIcon />}
           variant="ghost"
           onClick={() => router.push('/dashboard/listings')}
-          mb={4}
           p={0}
         >
           Back to Listings
@@ -216,9 +215,9 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 <Badge colorScheme={getStatusColor(listing.status)}>
                   {formatStatus(listing.status)}
                 </Badge>
-                <Text fontSize="sm" color="gray.500">
+                {/* <Text fontSize="sm" color="gray.500">
                   Listed: {formatDate(listing.created_at.toString())}
-                </Text>
+                </Text> */}
               </HStack>
 
             </Box>

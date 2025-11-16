@@ -75,7 +75,7 @@ export const Navbar = () => {
             <Logo />
 
             <HStack >
-              <ButtonGroup variant="ghost-on-accent" spacing="1">
+              <ButtonGroup variant="ghost-on-accent" spacing="4">
 
                 <Button
                   variant="ghost-on-accent"
@@ -85,6 +85,7 @@ export const Navbar = () => {
                   aria-label="Open Notifications Drawer"
                 >
                   <Icon as={FiBell} boxSize="6" color="on-accent-subtle" />
+                  {<Circle size="2" bg="blue.400" position="absolute" top={0} right={0} zIndex={1} />}
 
                 </Button>
 
@@ -113,15 +114,16 @@ export const Navbar = () => {
             ))}
           </Breadcrumb>
           <Spacer />
-          <ButtonGroup variant="ghost-on-accent" spacing="2">
+          <ButtonGroup variant="ghost-on-accent" spacing="4">
 
-            <Box >
+            <Box position="relative">
               <IconButton
                 icon={<FiBell />}
                 aria-label="Notifications"
                 onClick={onToggle}
+                variant="on-accent"
               />
-              {unreadCount && unreadCount > 0 && <Circle size="2" bg="blue.400" display="relative" position="absolute" top={8} right={8} zIndex={1} />}
+              {unreadCount > 0 && <Circle size="2" bg="blue.400" position="absolute" top={0} right={0} zIndex={1} />}
             </Box>
 
             <UserProfileMenu

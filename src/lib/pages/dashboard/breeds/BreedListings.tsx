@@ -1,20 +1,24 @@
-import { Card, CardHeader, Heading, CardBody, SimpleGrid, VStack, Button, Image, Text, Alert, AlertIcon, Center, useColorModeValue, useToast, useDisclosure, Box } from "@chakra-ui/react";
+import { Card, CardHeader, Heading, CardBody, SimpleGrid, VStack, Button, Image, Text, Alert, AlertIcon, Center, useColorModeValue, useToast, useDisclosure, Box, AlertDescription, AlertTitle } from "@chakra-ui/react";
 import { Loader } from "lib/components/ui/Loader";
 import { useIncrementListingViews, useUpdateListing } from "lib/hooks/queries/useListings";
-import { formatPrice } from "lib/pages/breeds/ExploreBreeds/PriceTag";
-import ListingCard from "../listings/ListingCard";
-import ManageListingCard from "../listings/ManageListingCard";
+import { formatPrice } from "lib/components/ui/PriceTag";
+import ListingCard from "../../../components/ui/ListingCard";
+import ManageListingCard from "../../../components/ui/ManageListingCard";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
-export const BreedListings = ({ listings, loading, error, isManaging }) => {
+interface BreedListingsProps {
+  listings: any[];
+  loading: boolean;
+  error: any;
+  isManaging?: boolean;
+}
+export const BreedListings: React.FC<BreedListingsProps> = ({ listings, loading, error, isManaging }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const router = useRouter();
   const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
-  const handleEditListing = (listingId: string) => {
-    router.push(`/dashboard/listings/${listingId}/edit`);
-  };
 
   const handleViewListing = (listingId: string) => {
     router.push(`/dashboard/listings/${listingId}?from=breed`);
@@ -89,16 +93,41 @@ export const BreedListings = ({ listings, loading, error, isManaging }) => {
   }
 
   if (listings?.length === 0) {
-    return (
-      <Alert status="info">
-        <AlertIcon />
-        No listings found for this breed.
-      </Alert>
-    );
+    return <>
+      {isManaging ? (
+        <Alert
+          status='info'
+          variant='subtle'
+          flexDirection='column'
+          alignItems='center'
+          justifyContent='center'
+          textAlign='center'
+          height='200px'
+          maxW="xl"
+        >
+          <AlertIcon boxSize='40px' mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize='lg'>
+            No listings found
+          </AlertTitle>
+          <AlertDescription maxWidth='sm'>
+            No listings found for this breed.
+          </AlertDescription>
+          <Button colorScheme='teal' size='lg' as={Link} href="/dashboard/listings/" mt={4}>
+            Add Listing
+          </Button>
+        </Alert>
+      )
+        : (
+          <Alert status="info">
+            <AlertIcon />
+            No listings found for this breed.
+          </Alert>
+        )}
+    </>
   }
 
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
       {listings?.map((listing) => (
         <>
           {isManaging ?

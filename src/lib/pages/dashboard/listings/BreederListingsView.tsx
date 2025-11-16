@@ -19,7 +19,7 @@ import { useRouter } from 'next/router';
 import { useListingsByOwner } from '../../../hooks/queries/useListings';
 import { NextSeo } from 'next-seo';
 import { Loader } from 'lib/components/ui/Loader';
-import ManageListingCard from './ManageListingCard';
+import ManageListingCard from '../../../components/ui/ManageListingCard';
 import { User } from '../../../../../db/schema';
 import ListingForm from './ListingForm';
 import { useUserBreedsFromUser } from 'lib/hooks/queries';
@@ -83,51 +83,49 @@ const ManageListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) =>
     <>
       <NextSeo title="Manage Listings - DogHouse Kenya" />
 
-      <Container maxW="7xl" py={4}>
-        <VStack spacing={6} align="stretch">
-          <HStack justify="space-between">
-            <Box >
-              <Heading size={{ base: 'sm', lg: 'md' }} mb={2}>Manage Listings</Heading>
-              <Text color="gray.600">Edit, view, or update the status of your listings</Text>
-            </Box>
+      <VStack spacing={6} align="stretch" p={0}>
+        <HStack justify="space-between" wrap="wrap">
+          <Box >
+            <Heading size={{ base: 'sm', lg: 'md' }} mb={2}>Manage Listings</Heading>
+            <Text color="gray.600">Edit, view, or update the status of your listings</Text>
+          </Box>
 
-            {listings?.length > 0 && <Button
-              leftIcon={<AddIcon />}
-              colorScheme="brand"
-              onClick={onListingFormOpen}
-            >
-              Create
-            </Button>}
-          </HStack>
+          {listings?.length > 0 && <Button
+            leftIcon={<AddIcon />}
+            colorScheme="brand"
+            onClick={onListingFormOpen}
+          >
+            Create
+          </Button>}
+        </HStack>
 
-          {listings?.length === 0 ? (
-            <Center h="300px" bg={bgColor} borderRadius="lg" border="2px dashed" borderColor="gray.300">
-              <VStack spacing={4}>
-                <Text fontSize="xl" fontWeight="semibold" color="gray.500">No listings yet</Text>
-                <Text color="gray.400" textAlign="center" maxW="md">
-                  Create your first listing to start connecting with potential pet adopters.
-                </Text>
-                <Button colorScheme="brand" onClick={() => router.push('/dashboard/listings/create')}>
-                  Create Your First Listing
-                </Button>
-              </VStack>
-            </Center>
-          ) : (
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-              {listings?.map((listing) => (
-                <ManageListingCard
-                  key={listing.id}
-                  listing={listing}
-                  handleViewListing={handleViewListing}
-                  getStatusColor={getStatusColor}
-                  bgColor={bgColor}
-                  formatPrice={formatPrice}
-                />
-              ))}
-            </SimpleGrid>
-          )}
-        </VStack>
-      </Container>
+        {listings?.length === 0 ? (
+          <Center h="300px" bg={bgColor} borderRadius="lg" border="2px dashed" borderColor="gray.300">
+            <VStack spacing={4}>
+              <Text fontSize="xl" fontWeight="semibold" color="gray.500">No listings yet</Text>
+              <Text color="gray.400" textAlign="center" maxW="md">
+                Create your first listing to start connecting with potential pet adopters.
+              </Text>
+              <Button colorScheme="brand" onClick={() => router.push('/dashboard/listings/create')}>
+                Create Your First Listing
+              </Button>
+            </VStack>
+          </Center>
+        ) : (
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+            {listings?.map((listing) => (
+              <ManageListingCard
+                key={listing.id}
+                listing={listing}
+                handleViewListing={handleViewListing}
+                getStatusColor={getStatusColor}
+                bgColor={bgColor}
+                formatPrice={formatPrice}
+              />
+            ))}
+          </SimpleGrid>
+        )}
+      </VStack>
 
       <ListingForm
         isOpen={isListingFormOpen}

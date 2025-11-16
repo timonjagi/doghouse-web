@@ -43,6 +43,7 @@ import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { PaymentModal } from '../../../../components/payments/PaymentModal';
 import { PaymentStatusModal } from '../../../../components/payments/PaymentStatusModal';
 import ApplicationStatusDialog from '../ApplicationStatusDialog';
+import { formatPrice } from 'lib/components/ui/PriceTag';
 
 interface ApplicationDetailPageProps {
   id: string;
@@ -100,17 +101,6 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     expectedAmount: 0,
   });
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Not specified';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'submitted': return 'blue';
@@ -123,6 +113,14 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
   };
   const formatStatus = (status: string) => {
     return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString as string).toLocaleDateString('en-KE', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   const handleStatusUpdate = async (e: React.FormEvent) => {
@@ -411,16 +409,13 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
             )}
           </HStack>
 
-          {/* <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6} minChildWidth="300px"> */}
-          <Box
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6} minChildWidth="300px">
+            {/* <Box
             sx={{
               columnCount: [1, 2], // Responsive column count
               columnGap: 4,
             }}
-          >
-
-
-
+          > */}
             <Card
               sx={{ display: 'inline-block', width: '100%' }}
               mb={4}
@@ -454,7 +449,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
               </CardBody>
             </Card>
 
-            <Card
+            {/* <Card
               sx={{ display: 'inline-block', width: '100%' }}
               mb={4}
             >
@@ -462,9 +457,11 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
                 <Heading size="xs">Application Details</Heading>
               </CardHeader>
               <CardBody>
-                <ApplicationDetails application={application} />
+                <ApplicationDetails application={application} formatDate={formatDate} />
               </CardBody>
-            </Card>
+            </Card> */}
+
+
 
             <Card
               sx={{ display: 'inline-block', width: '100%' }}
@@ -478,28 +475,28 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
               </CardBody>
             </Card>
 
-            <Card
-              sx={{ display: 'inline-block', width: '100%' }}
-              mb={4}
-            >
-              <CardHeader>
-                <Heading size="xs">
-                  {isOwner ? 'Applicant Information' : 'Breeder Information'}
-                </Heading>
-              </CardHeader>
-              <CardBody>
-                {isOwner ? (
-                  <ApplicantInfo application={application} />
-                ) : (
-                  <BreederInfo application={application} formatDate={formatDate} />
-                )}
-              </CardBody>
-            </Card>
 
 
-          </Box>
-          {/* </SimpleGrid> */}
 
+            {/* </Box> */}
+          </SimpleGrid>
+          <Card
+            // sx={{ display: 'inline-block', width: '100%' }}
+            mb={4}
+          >
+            <CardHeader>
+              <Heading size="xs">
+                {isOwner ? 'Applicant Information' : 'Breeder Information'}
+              </Heading>
+            </CardHeader>
+            <CardBody>
+              {isOwner ? (
+                <ApplicantInfo application={application} />
+              ) : (
+                <BreederInfo application={application} formatDate={formatDate} />
+              )}
+            </CardBody>
+          </Card>
         </Stack>
       </Container>
 
@@ -537,25 +534,25 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
 };
 
 // Application Details Component
-const ApplicationDetails = ({ application }) => {
+const ApplicationDetails = ({ application, formatDate }) => {
   return (
     <VStack spacing={4} align="stretch">
       <SimpleGrid columns={2} spacing={4}>
+
+        <Box>
+          <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
+            Application Date
+          </Text>
+          <Text>{formatDate(application.created_at.toString())}</Text>
+        </Box>
+
+
         <Box>
           <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
             Application Message
           </Text>
           <Text>{application.application_data?.message || 'No message provided'}</Text>
         </Box>
-
-        {application.application_data?.timeline && (
-          <Box>
-            <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
-              Timeline
-            </Text>
-            <Text>{application.application_data.timeline}</Text>
-          </Box>
-        )}
 
         {application.application_data?.offer_price && (
           <Box>
@@ -566,26 +563,16 @@ const ApplicationDetails = ({ application }) => {
           </Box>
         )}
 
-        {application.application_data?.contact_preference && (
+        {application.listings.type === 'litter' && application.application_data?.quantity && (
           <Box>
             <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
-              Preferred Contact
+              Quantity
             </Text>
-            <Text>{application.application_data.contact_preference}</Text>
+            <Text>{application.application_data.quantity}</Text>
           </Box>
         )}
 
-        {application.application_data?.allergies && (
-          <Box>
-            <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
-              Allergies/Concerns
-            </Text>
-            <Text>{application.application_data.allergies}</Text>
-          </Box>
-        )}
       </SimpleGrid>
-
-      {/* Profile Information */}
 
     </VStack>
   );
@@ -653,16 +640,29 @@ const ListingInfo = ({ application }) => {
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Price
           </Text>
-          <Text>Ksh. {
-            application.listings.price || 'Not specified'
-          }</Text>
+
+          <Box>
+            <Text>
+              {formatPrice(application.listings.price * (application.application_data?.quantity || 1))}
+            </Text>
+            {application.listings.type === 'litter' && <Text fontSize="xs" color="muted">
+              {formatPrice(application.listings.price)} each x {application.application_data?.quantity || 1}
+            </Text>}
+          </Box>
+
         </Box>
 
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Reservation Fee
           </Text>
-          <Text>{application.listings.reservation_fee || 'Not specified'}</Text>
+          <Box>
+            <Text>{formatPrice(application.listings.reservation_fee * (application.application_data?.quantity || 1))}</Text>
+
+            {application.listings.type === 'litter' && <Text fontSize="xs" color="muted">
+              {formatPrice(application.listings.reservation_fee)} each x {application.application_data?.quantity || 1}
+            </Text>}
+          </Box>
         </Box>
 
 
@@ -674,37 +674,35 @@ const ListingInfo = ({ application }) => {
 // Applicant Information Component
 const ApplicantInfo = ({ application }) => {
   return (
-    <Stack spacing={4}>
+    <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
 
-      <HStack spacing={4}>
-        <Avatar
-          src={application.users.profile_photo_url || undefined}
-          name={application.users.display_name}
-          size="lg"
-        />
-        <VStack align="start" spacing={1}>
-          <Text fontWeight="bold" fontSize="lg">{application.users.display_name}</Text>
-          <Text color="gray.600">{application.users.email.replace(
-            application.users.email.split('@')[0],
-            application.users.email.split('@')[0].slice(0, 3) + '***'
-          )}</Text>
-        </VStack>
-      </HStack>
+      <Stack>
+        <HStack spacing={4}>
+          <Avatar
+            src={application.users.profile_photo_url || undefined}
+            name={application.users.display_name}
+            size="lg"
+          />
+          <VStack align="start" spacing={1}>
+            <Text fontWeight="bold" fontSize="lg">{application.users.display_name}</Text>
+            <Text color="gray.600">{application.users.email.replace(
+              application.users.email.split('@')[0],
+              application.users.email.split('@')[0].slice(0, 3) + '***'
+            )}</Text>
+          </VStack>
+        </HStack>
 
 
-      {application?.reservation_paid && <HStack spacing={4} pt={2}>
-        <Button leftIcon={<EmailIcon />} size="sm" variant="outline">
-          Email Applicant
-        </Button>
-        <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
-          Call Applicant
-        </Button>
-        <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
-          Message
-        </Button>
-      </HStack>}
+        <HStack spacing={4} pt={2}>
+          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline" isDisabled={!application?.reservation_paid}>
+            Call Applicant
+          </Button>
+          <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={!application?.reservation_paid}>
+            Message Applicant
+          </Button>
+        </HStack>
+      </Stack>
 
-      <Divider />
 
       <SimpleGrid columns={2} spacing={4}>
         <Box>
@@ -744,43 +742,43 @@ const ApplicantInfo = ({ application }) => {
           <Text>{application.users?.seeker_profiles?.has_other_pets ? 'Yes' : 'No'}</Text>
         </Box>
       </SimpleGrid>
-    </Stack>
+    </SimpleGrid>
   );
 };
 
 // Breeder Information Component
 const BreederInfo = ({ application, formatDate }) => {
   return (
-    <Stack spacing={4} >
-      <HStack spacing={4}>
-        <Avatar
-          src={application.listings.users?.profile_photo_url || undefined}
-          name={application.listings.users?.display_name || 'Breeder'}
-          size="lg"
-        />
-        <VStack align="start" spacing={1}>
-          <Text fontWeight="bold" fontSize="lg">
-            {application.listings.users?.display_name || 'Breeder'}
-          </Text>
-          <Text color="gray.600">{application.listings.users?.email.replace(
-            application.listings.users?.email.split('@')[0],
-            application.listings.users?.email.split('@')[0].slice(0, 3) + '***'
-          )}</Text>
-        </VStack>
-      </HStack>
+    <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
 
-      {application?.reservation_paid && <HStack spacing={4} pt={2}>
-        <Button leftIcon={<EmailIcon />} size="sm" variant="outline">
-          Contact Breeder
-        </Button>
-        <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
-          Call Breeder
-        </Button>
-        {/* <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
-              Message
-            </Button> */}
-      </HStack>
-      }
+      <Stack spacing={4} >
+        <HStack spacing={4}>
+          <Avatar
+            src={application.listings.users?.profile_photo_url || undefined}
+            name={application.listings.users?.display_name || 'Breeder'}
+            size="lg"
+          />
+          <VStack align="start" spacing={1}>
+            <Text fontWeight="bold" fontSize="lg">
+              {application.listings.users?.display_name || 'Breeder'}
+            </Text>
+            <Text color="gray.600">{application.listings.users?.email.replace(
+              application.listings.users?.email.split('@')[0],
+              application.listings.users?.email.split('@')[0].slice(0, 3) + '***'
+            )}</Text>
+          </VStack>
+        </HStack>
+
+        <HStack spacing={4} pt={2}>
+
+          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline" isDisabled={application?.reservation_paid}>
+            Call Breeder
+          </Button>
+          <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={application?.reservation_paid}>
+            Message Breeder
+          </Button>
+        </HStack>
+      </Stack>
 
       <SimpleGrid columns={2} spacing={4}>
         <Box>
@@ -796,7 +794,7 @@ const BreederInfo = ({ application, formatDate }) => {
           <Text>{formatDate(application.listings.created_at)}</Text>
         </Box>
       </SimpleGrid>
-    </Stack>
+    </SimpleGrid>
   );
 };
 

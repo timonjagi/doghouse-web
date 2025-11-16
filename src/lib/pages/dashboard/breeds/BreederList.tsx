@@ -3,9 +3,15 @@ import { Loader } from "lib/components/ui/Loader";
 import { useBreedersForBreed } from "lib/hooks/queries/useUserBreeds";
 import { FaStar } from "react-icons/fa";
 import Link from "next/link";
+import { BreederCard } from "../../../components/ui/BreederCard";
+import { use, useEffect, useState } from "react";
+import { useCurrentUser } from "lib/hooks/queries/useAuth";
 
-export const BreedersList = ({ breed }) => {
-
+interface BreedersListProps {
+  breed: any;
+  userRole?: string;
+}
+export const BreedersList: React.FC<BreedersListProps> = ({ breed, userRole }) => {
   const { data: breedersForBreed, isLoading: isLoadingBreeders, error } = useBreedersForBreed(breed?.id);
 
   if (isLoadingBreeders) {
@@ -13,6 +19,7 @@ export const BreedersList = ({ breed }) => {
       <Loader />
     );
   }
+
 
   if (error) {
     return (
@@ -24,50 +31,21 @@ export const BreedersList = ({ breed }) => {
     );
   }
 
-  console.log('Breeders for breed:', breedersForBreed);
+
+  if (breedersForBreed?.length === 0) {
+    return (
+      <Alert status="warning">
+        <AlertIcon />
+        No breeders found for this breed.
+      </Alert>
+    );
+  }
+
+
   return (
     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
       {breedersForBreed?.map((breeder) => (
-        <Card key={breeder?.id} size="sm" variant="outline">
-          <CardBody>
-            <Stack spacing={3}>
-              <HStack spacing={4}>
-                <Avatar
-                  src={breeder?.users?.[0]?.profile_photo_url}
-                  name={breeder?.users?.[0]?.display_name}
-                  title={breeder?.users?.[0]?.display_name}
-                  size="md"
-                />
-                <VStack align="start" spacing={1} flex={1}>
-                  <Text fontWeight="medium">
-                    {breeder?.users?.[0]?.breeder_profiles?.[0]?.kennel_name || breeder?.users?.[0]?.display_name}
-                  </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    {breeder?.users?.[0]?.breeder_profiles?.[0]?.kennel_location}
-                  </Text>
-                </VStack>
-              </HStack>
-
-              {breeder?.users?.[0]?.breeder_profiles?.[0]?.rating && (
-                <HStack>
-                  <HStack spacing={1}>
-                    <Icon as={FaStar} color="yellow.400" />
-                    <Text fontSize="sm">{breeder?.users[0].breeder_profiles[0].rating.toFixed(1)}</Text>
-                  </HStack>
-                  <Text fontSize="sm" color="gray.500">
-                    Rating
-                  </Text>
-                </HStack>
-              )}
-
-              <Link href={`/breeder/${breeder?.user_id}`} passHref>
-                <Button size="sm" colorScheme="brand" w="full" as="a">
-                  View Profile
-                </Button>
-              </Link>
-            </Stack>
-          </CardBody>
-        </Card>
+        <BreederCard key={breeder?.id} breeder={breeder} />
       ))}
     </SimpleGrid>
   )

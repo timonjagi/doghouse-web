@@ -20,9 +20,9 @@ import {
 } from '@chakra-ui/react';
 import { useApplicationsByUser } from '../../../hooks/queries/useApplications';
 import { User } from '../../../../../db/schema';
-import { ApplicationCard } from './ApplicationCard';
 import { Loader } from 'lib/components/ui/Loader';
 import Link from 'next/link';
+import { ApplicationCard } from 'lib/components/ui/ApplicationCard';
 
 interface SeekerApplicationsViewProps {
   userProfile: User;

@@ -59,7 +59,7 @@ const BreedDetailPage = () => {
         <meta name="robots" content="index, follow" />
       </Head>
 
-      <Container maxW="7xl" py={{ base: '4', md: '0' }}>
+      <Container maxW="7xl" py={{ base: '4', md: '8' }}>
         <Button
           leftIcon={<ArrowBackIcon />}
           variant="ghost"
@@ -70,7 +70,7 @@ const BreedDetailPage = () => {
           Back to Breeds
         </Button>
         <Stack
-          spacing={{ base: "6", lg: "12", xl: "16" }}
+          spacing="8"
         >
           <Heading
             size={{ base: "sm", md: "md" }}
@@ -78,16 +78,15 @@ const BreedDetailPage = () => {
           >
             {breed?.name}
           </Heading>
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
 
-            <Stack flex="1" spacing="6">
-              <Gallery
-                rootProps={{ flex: "1", flexGrow: 1, minHeight: "100%", }}
-                images={[{ src: breed?.featured_image_url, alt: "" }]}
-              />
-            </Stack>
+          <Stack flex="1" spacing="6" direction={{ base: "column", md: "row-reverse" }}>
+            <Gallery
+              rootProps={{ flex: "1", flexGrow: 1, minHeight: "100%", }}
+              images={[{ src: breed?.featured_image_url, alt: breed?.name }]}
 
-            <Tabs variant='soft-rounded' colorScheme='brand'>
+            />
+
+            <Tabs variant='soft-rounded' colorScheme='brand' w={{ base: "full", md: "50vw" }}>
               <TabList>
                 <Tab>Details</Tab>
                 <Tab>Traits</Tab>
@@ -178,8 +177,8 @@ const BreedDetailPage = () => {
                 </TabPanel>
               </TabPanels>
             </Tabs>
+          </Stack>
 
-          </SimpleGrid>
 
           <WhatsIncluded />
         </Stack>

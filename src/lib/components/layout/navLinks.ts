@@ -12,6 +12,7 @@ import {
   FiCreditCard,
   FiUser,
   FiGrid,
+  FiShoppingBag,
 } from "react-icons/fi";
 import { GiDogHouse } from "react-icons/gi";
 import { LuDog, LuSettings2 } from "react-icons/lu";
@@ -58,6 +59,12 @@ export const navigationConfig: NavigationConfig = {
       title: "Manage",
       items: [
         {
+          label: "Kennel",
+          href: "/dashboard/account/kennel",
+          icon: GiDogHouse,
+          ariaLabel: "View kennel"
+        },
+        {
           label: "Breeds",
           href: "/dashboard/breeds",
           icon: LuDog,
@@ -67,7 +74,7 @@ export const navigationConfig: NavigationConfig = {
         {
           label: "Listings",
           href: "/dashboard/listings",
-          icon: FiList,
+          icon: FiShoppingBag,
           ariaLabel: "Manage listings"
         },
         {
@@ -76,12 +83,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiClipboard,
           ariaLabel: "View applications"
         },
-        {
-          label: "Matches",
-          href: "/dashboard/matches",
-          icon: FiTarget,
-          ariaLabel: "View matches"
-        },
+        // {
+        //   label: "Matches",
+        //   href: "/dashboard/matches",
+        //   icon: FiTarget,
+        //   ariaLabel: "View matches"
+        // },
       ]
     },
     {
@@ -93,12 +100,7 @@ export const navigationConfig: NavigationConfig = {
           icon: FiUser,
           ariaLabel: "View profile"
         },
-        {
-          label: "Kennel",
-          href: "/dashboard/account/kennel",
-          icon: GiDogHouse,
-          ariaLabel: "View kennel"
-        },
+
         {
           label: "Billing",
           href: "/dashboard/account/billing",
@@ -131,15 +133,21 @@ export const navigationConfig: NavigationConfig = {
       title: "Browse",
       items: [
         {
+          label: "Breeders",
+          href: "/dashboard/breeders",
+          icon: GiDogHouse,
+          ariaLabel: "View kennel"
+        },
+        {
           label: "Breeds",
           href: "/dashboard/breeds",
-          icon: FiSearch,
+          icon: LuDog,
           ariaLabel: "Browse breeds and listings"
         },
         {
           label: "Listings",
           href: "/dashboard/listings",
-          icon: FiList,
+          icon: FiShoppingBag,
           ariaLabel: "Browse listings"
         },
         {
@@ -148,12 +156,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiClipboard,
           ariaLabel: "My applications"
         },
-        {
-          label: "Matches",
-          href: "/dashboard/matches",
-          icon: FiTarget,
-          ariaLabel: "My matches"
-        },
+        // {
+        //   label: "Matches",
+        //   href: "/dashboard/matches",
+        //   icon: FiTarget,
+        //   ariaLabel: "My matches"
+        // },
       ]
     },
     {

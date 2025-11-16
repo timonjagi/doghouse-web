@@ -27,6 +27,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  Box,
+  Skeleton,
 } from "@chakra-ui/react";
 import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
@@ -35,6 +37,9 @@ import { useDeleteUserBreed, useUserBreed } from "lib/hooks/queries/useUserBreed
 import { BreedListings } from "../BreedListings";
 import { useListingsForUserBreed } from "lib/hooks/queries/useListings";
 import { Loader } from "lib/components/ui/Loader";
+import { BreedersList } from "../BreederList";
+import { FiEdit } from "react-icons/fi";
+import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 
 interface Breed {
   id: string;
@@ -62,6 +67,8 @@ export const ManageBreedDetailView = () => {
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
 
   const deleteUserBreed = useDeleteUserBreed();
+
+  const activeListings = listingsForBreed?.filter((listing) => listing.status !== "sold");
 
   const handleDeleteBreed = async () => {
     try {
@@ -96,12 +103,11 @@ export const ManageBreedDetailView = () => {
   }
 
   return (
-    <Container maxW="7xl" >
+    <Container maxW="7xl" py={{ base: 4, md: 0 }} >
       {isMobile && <Button
         leftIcon={<ArrowBackIcon />}
         variant="ghost"
         onClick={() => router.back()}
-        my={4}
         px={0}
       >
         Back to Manage Breeds
@@ -110,13 +116,25 @@ export const ManageBreedDetailView = () => {
 
       <VStack spacing={6} align="stretch">
 
-        <VStack align="stretch" spacing={1}>
-          <HStack justify="space-between" align="center">
-            <Heading size={{ base: 'sm', lg: 'md' }}>
-              Manage {userBreed?.breeds.name}
-            </Heading>
+        <VStack align="stretch" spacing={{ base: 4, md: 6 }}>
+          <HStack justify="space-between" align="center" wrap="wrap">
+            <Box>
+              <Heading size={{ base: 'sm', lg: 'md' }}>
+                Manage {userBreed?.breeds.name}
+              </Heading>
+              <Text color="gray.600">
+                Manage your {userBreed?.breeds.name}'s breed information, photos, and availability.
+              </Text>
+            </Box>
 
             <ButtonGroup>
+              <Button
+                onClick={onFormOpen}
+                colorScheme="brand"
+                leftIcon={<FiEdit />}
+              >
+                Edit
+              </Button>
 
               <Button
                 leftIcon={<DeleteIcon />}
@@ -131,61 +149,36 @@ export const ManageBreedDetailView = () => {
 
           </HStack>
 
-          <Text color="gray.600">
-            Manage your {userBreed?.breeds.name} breed information, photos, and availability.
-          </Text>
+
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+            <Gallery images={userBreed.images?.map((image) => ({ src: image, alt: userBreed.breeds.name })) || []} />
+
+
+
+            <Tabs variant='soft-rounded' colorScheme='brand'>
+              <TabList>
+
+                <Tab>Listings</Tab>
+                <Tab>Other Breeders</Tab>
+
+              </TabList>
+
+              <TabPanels>
+
+                <TabPanel px={0}>
+                  <BreedListings listings={listingsForBreed} loading={isLoadingListings} error={error} isManaging={true} />
+                </TabPanel>
+
+                <TabPanel px={0}>
+                  <BreedersList breed={userBreed?.breeds} userRole="breeder" />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+
+          </SimpleGrid>
+
         </VStack>
 
-
-        <Tabs variant='soft-rounded' colorScheme='brand'>
-          <TabList>
-            <Tab>Photos</Tab>
-
-            <Tab>Listings</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel px={0}>
-              {/* Breed Images */}
-              {userBreed?.images && userBreed.images.length > 0 && (
-                <Card>
-
-                  <CardBody>
-                    <SimpleGrid columns={{ base: 2, lg: 3 }} spacing={4}>
-                      {userBreed.images.map((image, index) => (
-                        <Image
-                          key={index}
-                          src={image}
-                          alt={`${userBreed.breeds.name} ${index + 1}`}
-                          borderRadius="md"
-                          objectFit="cover"
-                          height="200px"
-                        />
-                      ))}
-                    </SimpleGrid>
-                  </CardBody>
-                </Card>
-              )}
-            </TabPanel>
-
-            <TabPanel px={0}>
-              <BreedListings listings={listingsForBreed} loading={isLoadingListings} error={error} isManaging={true} />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-
-
-
-        {/* Breed Notes */}
-        {userBreed?.notes && (
-          <Card>
-            <CardHeader>
-              <Heading size="md">Notes</Heading>
-            </CardHeader>
-            <CardBody>
-              <Text color="gray.600">{userBreed.notes}</Text>
-            </CardBody>
-          </Card>
-        )}
 
         <BreedForm
           isOpen={isFormOpen}
@@ -195,7 +188,7 @@ export const ManageBreedDetailView = () => {
       </VStack>
 
 
-      <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={undefined} onClose={onDeleteClose}>
+      <AlertDialog isCentered isOpen={isDeleteOpen} leastDestructiveRef={undefined} onClose={onDeleteClose}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -203,6 +196,13 @@ export const ManageBreedDetailView = () => {
             </AlertDialogHeader>
             <AlertDialogBody>
               Are you sure you want to delete this breed? This action cannot be undone.
+
+              {activeListings.length > 0 && (
+                <Alert status="warning" mt={4}>
+                  <AlertIcon />
+                  This breed has {activeListings.length} active listings. Deleting this breed will also delete these listings.
+                </Alert>
+              )}
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button onClick={onDeleteClose}>Cancel</Button>
@@ -212,7 +212,7 @@ export const ManageBreedDetailView = () => {
                 ml={3}
                 isLoading={deleteUserBreed.isPending}
               >
-                Delete Listing
+                Delete Breed
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>

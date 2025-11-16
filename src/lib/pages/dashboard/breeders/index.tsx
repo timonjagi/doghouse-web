@@ -7,29 +7,21 @@ import {
   Center,
   Alert,
   AlertIcon,
-  Box,
   Stack,
   SimpleGrid,
-  Card,
-  CardBody,
-  Avatar,
   HStack,
-  Badge,
   Button,
   Input,
   InputGroup,
   InputLeftElement,
   Select,
-  useBreakpointValue,
-  IconButton,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
-import { MdLocationOn, MdStar, MdFilterList } from "react-icons/md";
 import { Loader } from "lib/components/ui/Loader";
 import { useAllAvailableUserBreeds } from "lib/hooks/queries/useUserBreeds";
-import { useBreederProfile } from "lib/hooks/queries/useBreederProfile";
 import { NextSeo } from 'next-seo';
-import Link from "next/link";
+import Head from 'next/head';
+import { BreederCard } from '../../../components/ui/BreederCard';
 
 // Hook to get all breeders
 const useAllBreeders = () => {
@@ -64,77 +56,8 @@ const useAllBreeders = () => {
   };
 };
 
-interface BreederCardProps {
-  breeder: any;
-}
 
-const BreederCard: React.FC<BreederCardProps> = ({ breeder }) => {
-  const user = breeder.userBreed.users?.[0];
-  const breederProfile = user?.breeder_profiles?.[0];
-
-  if (!user) return null;
-
-  return (
-    <Card variant="outline" _hover={{ shadow: "md", transform: "translateY(-2px)" }} transition="all 0.2s">
-      <CardBody>
-        <Stack spacing={4}>
-          <HStack spacing={4}>
-            <Avatar
-              src={user.profile_photo_url}
-              name={breederProfile?.kennel_name || user.display_name}
-              size="lg"
-            />
-            <VStack align="start" spacing={1} flex={1}>
-              <Text fontWeight="semibold" fontSize="lg">
-                {breederProfile?.kennel_name || user.display_name}
-              </Text>
-              {breederProfile?.kennel_name && (
-                <Text color="gray.600" fontSize="sm">
-                  {user.display_name}
-                </Text>
-              )}
-              {breederProfile?.kennel_location && (
-                <HStack>
-                  <MdLocationOn size={16} />
-                  <Text fontSize="sm" color="gray.600">
-                    {breederProfile.kennel_location}
-                  </Text>
-                </HStack>
-              )}
-            </VStack>
-          </HStack>
-
-          <HStack spacing={2} flexWrap="wrap">
-            {breederProfile?.rating && (
-              <HStack>
-                <MdStar color="gold" />
-                <Text fontSize="sm">{breederProfile.rating.toFixed(1)}</Text>
-              </HStack>
-            )}
-            {breederProfile?.verified_at && (
-              <Badge colorScheme="green" size="sm">Verified</Badge>
-            )}
-            <Badge colorScheme="blue" size="sm">
-              {breeder.breeds.length} breed{breeder.breeds.length !== 1 ? 's' : ''}
-            </Badge>
-          </HStack>
-
-          <Text fontSize="sm" color="gray.600" noOfLines={2}>
-            Specializing in: {breeder.breeds.map(b => b.breeds?.name).filter(Boolean).join(', ')}
-          </Text>
-
-          <Link href={`/breeder/${breeder.id}`} passHref>
-            <Button colorScheme="brand" size="sm" w="full" as="a">
-              View Profile
-            </Button>
-          </Link>
-        </Stack>
-      </CardBody>
-    </Card>
-  );
-};
-
-export const PublicBreedersPage: React.FC = () => {
+const BreedersPage: React.FC = () => {
   const { data: breeders, isLoading, error } = useAllBreeders();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -228,6 +151,13 @@ export const PublicBreedersPage: React.FC = () => {
         ]}
       />
 
+      <Head>
+        <title>Dog Breeders in Kenya | DogHouse Kenya</title>
+        <meta name="description" content="Browse verified dog breeders across Kenya. Find breeders for your preferred dog breeds and connect directly." />
+        <meta name="keywords" content="dog breeders Kenya, verified breeders, puppy breeders, dog farms Kenya, professional breeders" />
+        <meta name="robots" content="index, follow" />
+      </Head>
+
       <Container maxW="7xl" py={{ base: 4, md: 8 }}>
         <VStack spacing={8} align="stretch">
           <Stack>
@@ -240,7 +170,7 @@ export const PublicBreedersPage: React.FC = () => {
           </Stack>
 
           {/* Filters */}
-          <Stack spacing={4}>
+          <Stack spacing={4} >
             <InputGroup>
               <InputLeftElement pointerEvents="none">
                 <SearchIcon color="gray.300" />
@@ -300,7 +230,7 @@ export const PublicBreedersPage: React.FC = () => {
 
           {/* Breeders Grid */}
           {filteredBreeders.length > 0 ? (
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
               {filteredBreeders.map((breeder) => (
                 <BreederCard key={breeder.id} breeder={breeder} />
               ))}
@@ -317,3 +247,5 @@ export const PublicBreedersPage: React.FC = () => {
     </>
   );
 };
+
+export default BreedersPage;

@@ -20,8 +20,8 @@ import {
 } from '@chakra-ui/react';
 import { ApplicationWithListing, useApplicationsReceived, useUpdateApplication } from '../../../hooks/queries/useApplications';
 import { User } from '../../../../../db/schema';
-import { ApplicationCard } from './ApplicationCard';
 import { Loader } from 'lib/components/ui/Loader';
+import { ApplicationCard } from 'lib/components/ui/ApplicationCard';
 
 interface BreederApplicationsViewProps {
   userProfile: User;

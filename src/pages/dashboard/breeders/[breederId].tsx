@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { PublicBreederProfile } from 'lib/pages/breeder/[breederId]';
+import { BreederProfile } from 'lib/pages/dashboard/breeders/BreederProfile';
 
 export default function BreederProfilePage() {
   const router = useRouter();
@@ -9,5 +9,5 @@ export default function BreederProfilePage() {
     return null; // or loading state
   }
 
-  return <PublicBreederProfile breederId={breederId} />;
+  return <BreederProfile breederId={breederId} />;
 }

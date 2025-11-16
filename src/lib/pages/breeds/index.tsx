@@ -7,6 +7,12 @@ import {
   SimpleGrid,
   Alert,
   AlertIcon,
+  Center,
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Select,
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { GetStaticProps } from 'next';
@@ -16,6 +22,11 @@ import { Loader } from "lib/components/ui/Loader";
 import { NextSeo } from 'next-seo';
 import { BreedList } from "lib/pages/dashboard/breeds/BreedList";
 import { supabase } from "lib/supabase/client";
+import { SearchIcon } from "@chakra-ui/icons";
+import { useMemo, useState } from "react";
+import { SortbySelect } from "../../components/ui/SortBySelect";
+import { useRouter } from "next/router";
+import { BreedCard } from "lib/components/ui/BreedCard";
 
 interface BreedsPageProps {
   initialBreeds?: any[];
@@ -23,9 +34,39 @@ interface BreedsPageProps {
 
 export default function Breeds({ initialBreeds }: BreedsPageProps) {
   const { data: availableBreeds, isLoading, error } = useAllAvailableUserBreeds();
-
   // Use server-side data if available, otherwise client-side data
   const breeds = availableBreeds || initialBreeds || [];
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState("");
+
+  const router = useRouter();
+
+  // Filter breeds based on search and group
+  const filteredBreeds = useMemo(() => {
+    return breeds.filter((userBreed) => {
+      const breed = userBreed.breeds;
+      if (!breed) return false;
+
+      const matchesSearch = breed.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        breed.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesGroup = !selectedGroup || breed.group === selectedGroup;
+
+      return matchesSearch && matchesGroup;
+    });
+  }, [breeds, searchTerm, selectedGroup]);
+
+  // Get unique breed groups for filter
+  const breedGroups = useMemo(() => {
+    const groups = new Set();
+    breeds.forEach((userBreed) => {
+      if (userBreed.breeds?.group) {
+        groups.add(userBreed.breeds.group);
+      }
+    });
+    return Array.from(groups) as string[];
+  }, [breeds]);
 
   if (isLoading && !initialBreeds) {
     return <Loader />;
@@ -79,36 +120,87 @@ export default function Breeds({ initialBreeds }: BreedsPageProps) {
         ]}
       />
 
-      <Box as="section">
-        <Container
-          pt={{
-            base: "4",
-            lg: "8",
-          }}
-          pb={{
-            base: "12",
-            lg: "24",
-          }}
-        >
-          <Stack spacing="5">
-            <Stack spacing="1">
-              <Heading size="md" mb={{ base: "3", md: "0" }}>
-                Available Dog Breeds
-              </Heading>
+      <Container
+        pt={{
+          base: "4",
+          lg: "8",
+        }}
+        pb={{
+          base: "12",
+          lg: "24",
+        }}
+      >
+        <Stack spacing="5">
+          <Stack spacing="1">
+            <Heading size="md" mb={{ base: "3", md: "0" }}>
+              Available Dog Breeds
+            </Heading>
 
-              <Text color="muted">
-                Explore our comprehensive list of dog breeds from verified breeders across Kenya.
-                Each breed is offered by professional breeders committed to ethical breeding practices.
-              </Text>
-            </Stack>
-
-            <BreedList
-              breeds={breeds}
-              userRole="seeker"
-            />
+            <Text color="muted">
+              Explore our comprehensive list of dog breeds from verified breeders across Kenya.
+            </Text>
           </Stack>
-        </Container>
-      </Box>
+
+
+          <Stack spacing="4" direction={{ base: "column", md: "row" }}>
+
+            <Select
+              placeholder="All Groups"
+              value={selectedGroup}
+              onChange={(e) => { setSelectedGroup(e.target.value) }}
+              maxW="200px"
+            >
+              {breedGroups.map((group) => (
+                <option key={group} value={group}>
+                  {group}
+                </option>
+              ))}
+            </Select>
+
+            <InputGroup flex="1" minW="50vw">
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon color="gray.300" />
+              </InputLeftElement>
+              <Input
+                placeholder="Search breeds..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </InputGroup>
+          </Stack>
+
+          <HStack spacing={4} justify="space-between">
+            {/* Results count */}
+            <Text color="gray.600" fontSize="sm">
+              Showing {filteredBreeds.length} of {breeds.length} breeds
+            </Text>
+            <SortbySelect
+              width="120px"
+              defaultValue="23"
+              placeholder="Sort"
+            />
+
+          </HStack>
+          {filteredBreeds.length > 0 ? (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={6}>
+              {filteredBreeds.map((userBreed) => (
+                <BreedCard
+                  key={userBreed.id}
+                  userBreed={userBreed}
+                  userRole={'seeker'}
+                  onClick={() => router.push(`/breeds/${userBreed.breeds?.name.replace(/\s+/g, '-').toLowerCase()}`)}
+                />
+              ))}
+            </SimpleGrid>
+          ) : (
+            <Center py={12}>
+              <Text color="gray.500">
+                No breeds found matching your criteria.
+              </Text>
+            </Center>
+          )}
+        </Stack>
+      </Container>
     </>
   );
 }

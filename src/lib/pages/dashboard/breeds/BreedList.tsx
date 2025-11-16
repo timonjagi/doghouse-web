@@ -26,9 +26,10 @@ import {
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 import { useState, useMemo } from "react";
-import { BreedCard } from "./BreedCard";
-import { SortbySelect } from "lib/pages/breeds/SortBySelect";
+import { SortbySelect } from "lib/components/ui/SortBySelect";
 import { MdFilterList } from "react-icons/md";
+import { useRouter } from "next/router";
+import { BreedCard } from "lib/components/ui/BreedCard";
 
 // Local types for now - will fix imports later
 interface Breed {
@@ -70,6 +71,7 @@ export const BreedList = ({
   const [showFilters, setShowFilters] = useState(isMobile ? false : true);
   const bgColor = useColorModeValue('white', 'gray.800');
 
+  const router = useRouter();
 
   // Filter breeds based on search and group
   const filteredBreeds = useMemo(() => {
@@ -98,10 +100,11 @@ export const BreedList = ({
   }, [breeds]);
 
   const handleBreedClick = (userBreed: UserBreed) => {
-    if (userRole === 'breeder' && onEditBreed) {
-      onEditBreed();
+    if (userRole === 'seeker') {
+      router.push(`/dashboard/breeds/${userBreed.breeds.name.replace(/\s+/g, '-').toLowerCase()}`);
+    } else if (userRole === 'breeder') {
+      router.push(`/dashboard/breeds/${userBreed.id}`);
     }
-    // For seekers, navigation to detail page will be handled by the card component
   };
   const updateFilter = () => {
     // setFilters(prev => ({ ...prev, [key]: value }));
@@ -128,12 +131,27 @@ export const BreedList = ({
 
         {/* */}
 
-        <IconButton
+        {isMobile ? <IconButton
           aria-label="Filter"
           icon={<MdFilterList />}
-          onClick={isMobile ? onToggle : () => setShowFilters(!showFilters)}
+          onClick={onToggle}
 
-        />
+        /> : (
+          <Select
+            placeholder="All Groups"
+            value={selectedGroup}
+            onChange={(e) => { setSelectedGroup(e.target.value); }}
+            maxW="200px"
+          >
+            {breedGroups.map((group) => (
+              <option key={group} value={group}>
+                {group}
+              </option>
+            ))}
+          </Select>
+        )}
+
+
 
         <InputGroup flex="1" minW="50vw">
           <InputLeftElement pointerEvents="none">
@@ -145,23 +163,6 @@ export const BreedList = ({
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </InputGroup>
-        {/* Results count */}
-
-        {/* 
-        <HStack
-          as="button"
-          fontSize="sm"
-          type="button"
-          px="3"
-          py="1"
-          onClick={onOpen}
-          borderWidth="1px"
-          rounded="md"
-        >
-          <Icon as={MdFilterList} />
-          <Text>Filters</Text>
-        </HStack> */}
-
 
       </HStack>
 
@@ -178,30 +179,24 @@ export const BreedList = ({
 
       </HStack>
 
-      <HStack flex={1} align="start">
-        {showFilters && !isMobile && (<Filters bgColor={bgColor} selectedGroup={selectedGroup} setSelectedGroup={setSelectedGroup} breedGroups={breedGroups} isMobile={isMobile} clearFilters={() => setSelectedGroup('')} />)}
-
-        {filteredBreeds.length > 0 ? (
-          <SimpleGrid columns={{ base: 1, md: 2, lg: showFilters ? 2 : 3 }} spacing={6}>
-            {filteredBreeds.map((userBreed) => (
-              <BreedCard
-                key={userBreed.id}
-                userBreed={userBreed}
-                userRole={userRole}
-                onClick={() => handleBreedClick(userBreed)}
-              />
-            ))}
-          </SimpleGrid>
-        ) : (
-          <Center py={12}>
-            <Text color="gray.500">
-              No breeds found matching your criteria.
-            </Text>
-          </Center>
-        )}
-      </HStack>
-      {/* Breed Grid */}
-
+      {filteredBreeds.length > 0 ? (
+        <SimpleGrid columns={{ base: 1, md: 2, lg: showFilters ? 2 : 3 }} spacing={6}>
+          {filteredBreeds.map((userBreed) => (
+            <BreedCard
+              key={userBreed.id}
+              userBreed={userBreed}
+              userRole={userRole}
+              onClick={() => handleBreedClick(userBreed)}
+            />
+          ))}
+        </SimpleGrid>
+      ) : (
+        <Center py={12}>
+          <Text color="gray.500">
+            No breeds found matching your criteria.
+          </Text>
+        </Center>
+      )}
 
       <Drawer
         isOpen={isOpen}

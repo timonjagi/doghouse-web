@@ -1,15 +1,12 @@
 import { Button, ButtonProps, Flex, Icon, Stack, Text } from "@chakra-ui/icons";
-import { useUserProfile } from "lib/hooks/queries/useUserProfile";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ElementType } from "react";
-import { FiClipboard, FiGitlab, FiHome, FiList, FiSearch, FiTarget } from "react-icons/fi";
+import { FiClipboard, FiHome, FiMessageSquare, FiShoppingBag } from "react-icons/fi";
 import { LuDog } from "react-icons/lu";
 
 export const BottomNavbar = () => {
   const router = useRouter();
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
-
   return (
     <Flex
       bg="bg-accent"
@@ -35,7 +32,7 @@ export const BottomNavbar = () => {
 
       <NavButton
         label="Breeds"
-        icon={profile?.role === "breeder" ? LuDog : FiSearch}
+        icon={LuDog}
         href="/dashboard/breeds"
         aria-current={
           router.pathname.includes("breeds") ? "page" : "false"
@@ -44,18 +41,8 @@ export const BottomNavbar = () => {
       />
 
       <NavButton
-        label="Matches"
-        icon={FiTarget}
-        href="/dashboard/matches"
-        aria-current={
-          router.pathname.includes("matches") ? "page" : "false"
-        }
-
-      />
-
-      <NavButton
         label="Listings"
-        icon={FiList}
+        icon={FiShoppingBag}
         href="/dashboard/listings"
         aria-current={
           router.pathname.includes("listings") ? "page" : "false"
@@ -69,6 +56,17 @@ export const BottomNavbar = () => {
         href="/dashboard/applications"
         aria-current={
           router.pathname.includes("applications") ? "page" : "false"
+        }
+
+      />
+
+
+      <NavButton
+        label="Inbox"
+        icon={FiMessageSquare}
+        href="/dashboard/inbox"
+        aria-current={
+          router.pathname.includes("inbox") ? "page" : "false"
         }
 
       />

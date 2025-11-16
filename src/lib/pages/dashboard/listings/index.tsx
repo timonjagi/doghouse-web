@@ -55,7 +55,7 @@ const ListingsPage: React.FC = () => {
 
       default:
         return (
-          <Container maxW="7xl" py={8}>
+          <Container maxW="7xl" py={{ base: 4, md: 0 }}>
             <Center h="400px">
               <VStack spacing={4}>
                 <Text fontSize="lg" color="gray.500">Please complete your profile setup first</Text>

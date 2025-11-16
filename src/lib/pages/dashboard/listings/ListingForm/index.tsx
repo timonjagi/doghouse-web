@@ -518,19 +518,15 @@ const ListingForm: React.FC<ListingFormProps> = ({
       const retainedCerts = [...formData.health?.certificates].filter((file) => !(file instanceof File)) as any[] || [];
 
       const deletedPhotos = Array.from(listing?.photos as string[] || [])?.filter((photo) => !retainedPhotos.includes(photo)) || [];
-      console.log('deletedPhotos', deletedPhotos);
 
       //@ts-ignore
       const deletedSirePhotos = Array.from(listing?.parents?.sire?.photos as string[] || [])?.filter((photo) => !retainedSirePhotos.includes(photo)) || [];
-      console.log('deletedParentPhotos', deletedSirePhotos);
 
       //@ts-ignore
       const deletedDamPhotos = Array.from(listing?.parents?.dam?.photos as string[] || [])?.filter((photo) => !retainedDamPhotos.includes(photo)) || [];
-      console.log('deletedDamPhotos', deletedDamPhotos);
 
       //@ts-ignore
       const deletedCerts = Array.from(listing?.health?.certificates as string[] || [])?.filter((photo) => !retainedCerts.includes(photo)) || [];
-      console.log('deletedCerts', deletedCerts);
 
       if (deletedPhotos.length > 0 || deletedSirePhotos.length > 0 || deletedDamPhotos.length > 0 || deletedCerts.length > 0) {
         const { error: deleteError } = await supabase.storage
@@ -541,19 +537,15 @@ const ListingForm: React.FC<ListingFormProps> = ({
       }
 
       const updatedPhotos = [...(Array.from(listing?.photos as string[] || [])?.filter((photo) => !deletedPhotos.includes(photo)) || []), ...photoUrls];
-      console.log('updatedPhotos', updatedPhotos);
 
       //@ts-ignore
       const updatedSirePhotos = [...(Array.from(listing?.parents?.sire.photos as string[] || [])?.filter((photo) => !deletedSirePhotos.includes(photo)) || []), ...sirePhotoUrls];
-      console.log('updatedSirePhotos', updatedSirePhotos);
 
       //@ts-ignore
       const updatedDamPhotos = [...(Array.from(listing?.parents?.dam.photos as string[] || [])?.filter((photo) => !deletedDamPhotos.includes(photo)) || []), ...damPhotoUrls];
-      console.log('updatedDamPhotos', updatedDamPhotos);
 
       //@ts-ignore
       const updatedCerts = [...(Array.from(listing?.health?.certificates as string[] || [])?.filter((photo) => !deletedCerts.includes(photo)) || []), ...certUrls];
-      console.log('updatedCerts', updatedCerts);
 
       // Update the listing
       const updateData = {

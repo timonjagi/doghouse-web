@@ -95,7 +95,7 @@ const Header = ({ profile }) => {
                   rounded="full"
                   as={Link}
                   aria-current={pathname.includes("breeder") ? "page" : false}
-                  href="/breeder"
+                  href="/breeders"
                 >
                   Breeders
                 </Button>

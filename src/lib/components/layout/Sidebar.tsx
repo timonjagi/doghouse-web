@@ -31,6 +31,7 @@ import { useEffect } from "react";
 import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
 import { useCurrentUser } from "lib/hooks/queries";
 import { LuDog } from "react-icons/lu";
+import { GiDogHouse } from "react-icons/gi";
 
 interface SidebarProps {
   onClose: () => void;
@@ -230,7 +231,7 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
 
           <NavButton
             label="Breeders"
-            icon={LuDog}
+            icon={GiDogHouse}
             onClick={() => onClickMenuLink("/breeders")}
             aria-current={
               router.pathname.includes("breeders") ? "page" : "false"
