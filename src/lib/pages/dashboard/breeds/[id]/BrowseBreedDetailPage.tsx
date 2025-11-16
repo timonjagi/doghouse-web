@@ -194,8 +194,6 @@ const BreedDetailPage = () => {
 
           </SimpleGrid>
 
-          <WhatsIncluded />
-
         </Stack>
       </Container>
     </>

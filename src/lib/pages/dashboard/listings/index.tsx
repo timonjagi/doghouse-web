@@ -49,7 +49,7 @@ const ListingsPage: React.FC = () => {
   const renderRoleSpecificContent = () => {
     switch (userProfile.role) {
       case 'seeker':
-        return <SeekerListingsView userProfile={userProfile} />;
+        return <SeekerListingsView />;
       case 'breeder':
         return <BreederListingsView userProfile={userProfile} />;
 
