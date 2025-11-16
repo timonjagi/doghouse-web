@@ -10,6 +10,7 @@ import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import { Rating } from "lib/pages/breeds/breed-details/BreedInfo";
 import { useListingsForBreed } from "lib/hooks/queries/useListings";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import WhatsIncluded from "lib/pages/breeds/breed-details/WhatsIncluded";
 
 const BreedDetailPage = () => {
   const router = useRouter();
@@ -25,8 +26,6 @@ const BreedDetailPage = () => {
       <Loader />
     );
   }
-
-  console.log(breed)
 
   if (errorLoadingBreed) {
     return (
@@ -189,6 +188,9 @@ const BreedDetailPage = () => {
             </Tabs>
 
           </SimpleGrid>
+
+          <WhatsIncluded />
+
         </Stack>
       </Container>
     </>

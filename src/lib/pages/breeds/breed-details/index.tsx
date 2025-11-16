@@ -11,6 +11,7 @@ import { Rating } from "./BreedInfo";
 import { useListingsForBreed } from "lib/hooks/queries/useListings";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { NextSeo } from 'next-seo';
+import WhatsIncluded from "./WhatsIncluded";
 
 const BreedDetailPage = () => {
   const router = useRouter();
@@ -41,11 +42,11 @@ const BreedDetailPage = () => {
     <>
       <NextSeo
         title={`${breed?.name || breedName} - Dog Breed Information | DogHouse Kenya`}
-        description={`Learn everything about the ${breed?.name || breedName} dog breed. Find breeders, view puppies for sale, and get detailed breed characteristics.`}
+        description={`Learn everything about the ${breed?.name || breedName} dog breed?. Find breeders, view puppies for sale, and get detailed breed characteristics.`}
         openGraph={{
           title: `${breed?.name || breedName} - Dog Breed Information`,
           description: breed?.description || `Detailed information about the ${breed?.name || breedName} dog breed in Kenya.`,
-          images: breed?.featured_image_url ? [{ url: breed.featured_image_url }] : [],
+          images: breed?.featured_image_url ? [{ url: breed?.featured_image_url }] : [],
         }}
       />
 
@@ -66,7 +67,7 @@ const BreedDetailPage = () => {
             size={{ base: "sm", md: "md" }}
             textTransform="capitalize"
           >
-            {breed.name}
+            {breed?.name}
           </Heading>
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
 
@@ -88,26 +89,26 @@ const BreedDetailPage = () => {
               <TabPanels>
                 <TabPanel>
                   <Stack>
-                    <Text color="muted">{breed.description}</Text>
+                    <Text color="muted">{breed?.description}</Text>
 
                     <TableContainer >
                       <Table variant='striped' colorScheme='brand' maxWidth="sm">
                         <Tbody>
                           <Tr>
                             <Td>Breed Group</Td>
-                            <Td>{breed.group} group</Td>
+                            <Td>{breed?.group} group</Td>
                           </Tr>
                           <Tr>
                             <Td>Height</Td>
-                            <Td>{breed.height}</Td>
+                            <Td>{breed?.height}</Td>
                           </Tr>
                           <Tr>
                             <Td>Weight</Td>
-                            <Td>{breed.weight}</Td>
+                            <Td>{breed?.weight}</Td>
                           </Tr>
                           <Tr>
                             <Td>Life Span</Td>
-                            <Td>{breed.life_span}</Td>
+                            <Td>{breed?.life_span}</Td>
                           </Tr>
                         </Tbody>
                       </Table>
@@ -118,9 +119,9 @@ const BreedDetailPage = () => {
                 <TabPanel>
                   <Stack spacing="2" bg={useColorModeValue("gray.50", "gray.700")}>
                     <Accordion allowToggle>
-                      {breed.traits &&
+                      {breed?.traits &&
                         // @ts-ignore
-                        breed.traits.map((group) => (
+                        breed?.traits.map((group) => (
                           <AccordionItem key={group.category}>
                             <h2>
                               <AccordionButton>
@@ -170,6 +171,8 @@ const BreedDetailPage = () => {
             </Tabs>
 
           </SimpleGrid>
+
+          <WhatsIncluded />
         </Stack>
       </Container>
     </>
