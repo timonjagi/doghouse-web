@@ -50,6 +50,15 @@ const BreedDetailPage = () => {
         }}
       />
 
+      <Head >
+        <title>
+          {breed?.name}
+        </title>
+        <meta name="description" content={`Detailed information about the ${breed?.name || breedName} dog breed in Kenya.`} />
+        <meta name="keywords" content="dog breeds Kenya, puppies for sale, dog breeders Kenya, Golden Retriever, Boerboel, Great Dane, verified breeders" />
+        <meta name="robots" content="index, follow" />
+      </Head>
+
       <Container maxW="7xl" py={{ base: '4', md: '0' }}>
         <Button
           leftIcon={<ArrowBackIcon />}
@@ -118,7 +127,7 @@ const BreedDetailPage = () => {
 
                 <TabPanel>
                   <Stack spacing="2" bg={useColorModeValue("gray.50", "gray.700")}>
-                    <Accordion allowToggle>
+                    <Accordion allowToggle defaultIndex={0}>
                       {breed?.traits &&
                         // @ts-ignore
                         breed?.traits.map((group) => (
