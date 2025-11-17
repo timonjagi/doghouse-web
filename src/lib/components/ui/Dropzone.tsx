@@ -78,6 +78,7 @@ export const Dropzone = ({
                     as={Button}
                     w="full"
                     h="full"
+                    aspectRatio={1 / 1}
                     bg="bg-subtle"
                     borderRadius="lg"
                     onClick={() => selectedFileRef.current?.click()}

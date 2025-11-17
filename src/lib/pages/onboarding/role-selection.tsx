@@ -47,6 +47,11 @@ const RoleSelectionStep = () => {
 
       await updateUserProfile.mutateAsync({ role: dbRole });
 
+      await supabase.auth.updateUser({
+        data: {
+          role: dbRole,
+        }
+      })
     } catch (err: any) {
       toast({
         title: "Error saving role",

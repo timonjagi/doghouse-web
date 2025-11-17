@@ -10,16 +10,14 @@ import {
 } from "@chakra-ui/react";
 import { StarIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
-import { UserBreed } from "../../../../../db/schema";
 
 interface BreedCardProps {
   userBreed: any;
-  userRole: 'breeder' | 'seeker' | 'admin';
+  userRole: 'breeder' | 'seeker' | 'admin' | 'public';
   onClick?: () => void;
 }
 
 export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
-  const router = useRouter();
   const breed = userBreed.breeds;
 
   const bgColor = useColorModeValue("white", "gray.800");
@@ -29,14 +27,6 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
     return null;
   }
 
-  const handleCardClick = () => {
-    if (userRole === 'seeker') {
-      router.push(`/dashboard/breeds/${userBreed.breeds.name.replace(/\s+/g, '-').toLowerCase()}`);
-    } else {
-      router.push(`/dashboard/breeds/${userBreed.id}`);
-    }
-  };
-
   const featuredImage = userRole === 'seeker' ? breed.featured_image_url : userBreed?.images && userBreed?.images[0] || '/images/placeholder-breed.jpg';
   return (
     <Box
@@ -45,8 +35,8 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
       borderColor={borderColor}
       borderRadius="lg"
       overflow="hidden"
-      cursor={userRole === 'seeker' ? "pointer" : "default"}
-      onClick={handleCardClick}
+      cursor="pointer"
+      onClick={onClick}
       transition="all 0.2s"
       _hover={{
         transform: "translateY(-2px)",
@@ -95,7 +85,7 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
           </Text>
         )}
 
-        {userRole === 'seeker' && (
+        {userRole === 'seeker' && userBreed.breeder_count && (
           <HStack spacing={1}>
             <StarIcon color="yellow.400" boxSize={3} />
             <Text fontSize="xs" color="brand.600" fontWeight="medium">

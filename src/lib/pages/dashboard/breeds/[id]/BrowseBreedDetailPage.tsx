@@ -10,6 +10,7 @@ import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import { Rating } from "lib/pages/breeds/breed-details/BreedInfo";
 import { useListingsForBreed } from "lib/hooks/queries/useListings";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import WhatsIncluded from "lib/pages/breeds/breed-details/WhatsIncluded";
 
 const BreedDetailPage = () => {
   const router = useRouter();
@@ -25,8 +26,6 @@ const BreedDetailPage = () => {
       <Loader />
     );
   }
-
-  console.log(breed)
 
   if (errorLoadingBreed) {
     return (
@@ -59,6 +58,7 @@ const BreedDetailPage = () => {
         >
           Back to Breeds
         </Button>
+
         <Stack
           spacing={{ base: "6", lg: "12", xl: "16" }}
         >
@@ -74,7 +74,9 @@ const BreedDetailPage = () => {
 
               <Gallery
                 rootProps={{ flex: "1", flexGrow: 1, minHeight: "100%", }}
-                images={[{ src: breed?.featured_image_url, alt: "" }]}
+                images={[{ src: breed?.featured_image_url, alt: "" },
+                  //  ...breed?.images?.map((image) => ({ src: image, alt: "" }))
+                ]}
               />
             </Stack>
 
@@ -83,9 +85,9 @@ const BreedDetailPage = () => {
 
                 <Tab>Details</Tab>
                 <Tab>Traits</Tab>
+                <Tab>Breeders</Tab>
                 <Tab>Listings</Tab>
 
-                <Tab>Breeders</Tab>
               </TabList>
 
               <TabPanels>
@@ -174,6 +176,11 @@ const BreedDetailPage = () => {
 
                   </Stack>
                 </TabPanel>
+
+                <TabPanel>
+                  <BreedersList breed={breed} />
+                </TabPanel>
+
                 <TabPanel>
                   <BreedListings
                     listings={listingsForBreed}
@@ -182,13 +189,11 @@ const BreedDetailPage = () => {
                     isManaging={true}
                   />
                 </TabPanel>
-                <TabPanel>
-                  <BreedersList breed={breed} />
-                </TabPanel>
               </TabPanels>
             </Tabs>
 
           </SimpleGrid>
+
         </Stack>
       </Container>
     </>

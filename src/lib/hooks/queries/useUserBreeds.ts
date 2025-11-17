@@ -22,7 +22,7 @@ interface UpdateUserBreedData {
 export const useUserBreedsFromUser = (userId?: string) => {
   return useQuery({
     queryKey: queryKeys.breeds.userBreeds(userId),
-    queryFn: async () => {
+    queryFn: async (): Promise<any[]> => {
       if (!userId) return [];
       const { data, error } = await supabase
         .from('user_breeds')
@@ -122,6 +122,18 @@ export const useAllAvailableUserBreeds = () => {
             weight,
             life_span,
             traits
+          ),
+          users (
+            id,
+            profile_photo_url,
+            display_name,
+            breeder_profiles (
+              id,
+              user_id,
+              kennel_name,
+              kennel_location,
+              rating
+            )
           )
         `)
         .order('created_at', { ascending: false });
@@ -155,7 +167,10 @@ export const useAllAvailableUserBreeds = () => {
 export const useBreedersForBreed = (breedId: string) => {
   return useQuery({
     queryKey: queryKeys.breeds.breedBreeders(breedId),
-    queryFn: async () => {
+    queryFn: async (): Promise<any[]> => {
+
+      const { data: { user } } = await supabase.auth.getUser();
+
       const { data, error } = await supabase
         .from('user_breeds')
         .select(`
@@ -181,6 +196,10 @@ export const useBreedersForBreed = (breedId: string) => {
         .eq('is_owner', true);
 
       if (error) throw error;
+
+      if (user && user?.user_metadata?.role === 'breeder') {
+        return data?.filter(item => item.user_id !== user.id) || [];
+      }
       return data || [];
     },
     enabled: !!breedId,

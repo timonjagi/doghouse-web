@@ -64,10 +64,16 @@ const UserBreeds = ({ userProfile, onFormOpen }) => {
   return (
     <VStack spacing={6} align="stretch">
       <Stack>
-        <HStack justify="space-between" align="center">
-          <Heading size={{ base: "sm", lg: "md" }}>
-            Manage Breeds
-          </Heading>
+        <HStack justify="space-between" align="center" wrap="wrap">
+          <Box maxW="xl">
+            <Heading size={{ base: "sm", lg: "md" }}>
+              Manage Breeds
+            </Heading>
+            <Text color="gray.600" >
+              View and manage your breeds. Add, edit, and delete breeds as needed.
+            </Text>
+          </Box>
+
           <Button
             leftIcon={<AddIcon />}
             colorScheme="brand"
@@ -77,11 +83,6 @@ const UserBreeds = ({ userProfile, onFormOpen }) => {
             Add Breed
           </Button>
         </HStack>
-        <Box maxW="xl">
-          <Text color="gray.600" >
-            View and manage your breeds. Add, edit, and delete breeds as needed.
-          </Text>
-        </Box>
 
       </Stack>
 

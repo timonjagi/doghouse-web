@@ -2,16 +2,24 @@ import { Card, CardHeader, Heading, CardBody, Center, Alert, AlertIcon, SimpleGr
 import { Loader } from "lib/components/ui/Loader";
 import { useBreedersForBreed } from "lib/hooks/queries/useUserBreeds";
 import { FaStar } from "react-icons/fa";
+import Link from "next/link";
+import { BreederCard } from "../../../components/ui/BreederCard";
+import { use, useEffect, useState } from "react";
+import { useCurrentUser } from "lib/hooks/queries/useAuth";
 
-export const BreedersList = ({ breed }) => {
-
-  const { data: breedersForBreed, isLoading: isLoadingBreeders, error } = useBreedersForBreed(breed.id);
+interface BreedersListProps {
+  breed: any;
+  userRole?: string;
+}
+export const BreedersList: React.FC<BreedersListProps> = ({ breed, userRole }) => {
+  const { data: breedersForBreed, isLoading: isLoadingBreeders, error } = useBreedersForBreed(breed?.id);
 
   if (isLoadingBreeders) {
     return (
       <Loader />
     );
   }
+
 
   if (error) {
     return (
@@ -23,41 +31,22 @@ export const BreedersList = ({ breed }) => {
     );
   }
 
-  console.log('Breeders for breed:', breedersForBreed);
+
+  if (breedersForBreed?.length === 0) {
+    return (
+      <Alert status="warning">
+        <AlertIcon />
+        No breeders found for this breed.
+      </Alert>
+    );
+  }
+
+
   return (
     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
       {breedersForBreed?.map((breeder) => (
-        <Card key={breeder.id} size="sm" variant="outline">
-          <CardBody>
-            <Stack>
-              {/* <HStack spacing={4}>
-                <Avatar src={breeder.images[0]} name={breeder.users.display_name} title={breeder.users.display_name} />
-                <VStack align="start" spacing={1} flex={1}>
-                  <Text fontWeight="medium">{breeder.users.display_name}</Text>
-                  <Text fontSize="sm" color="gray.600">{breeder.users.breeder_profiles.kennel_location}</Text>
-
-                </VStack>
-
-              </HStack>
-
-              <HStack>
-                <HStack spacing={1}>
-                  <Icon as={FaStar} color="yellow.400" />
-                  <Text fontSize="sm">{breeder.users.breeder_profiles.rating}</Text>
-                </HStack>
-                <Text fontSize="sm" color="gray.500">
-                  ({breeder.users.breeder_profiles.reviewCount} reviews)
-                </Text>
-              </HStack> */}
-              <Button size="sm" colorScheme="brand" w="full">
-                View Profile
-              </Button>
-            </Stack>
-
-          </CardBody>
-        </Card>
+        <BreederCard key={breeder?.id} breeder={breeder} />
       ))}
     </SimpleGrid>
   )
 }
-

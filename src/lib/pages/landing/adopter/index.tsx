@@ -16,7 +16,7 @@ import { Cta } from "./Cta";
 
 const Home = () => {
   return (
-    <Box as="section" bg="bg-surface">
+    <Box as="section" bg="bg-surface" h="full">
       <Flex
         direction="column"
         alignItems="center"

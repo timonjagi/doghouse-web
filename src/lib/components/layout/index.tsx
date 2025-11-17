@@ -24,12 +24,13 @@ const Layout = ({ children }: LayoutProps) => {
 
   const routes: any = [
     { path: "/", layout: HeaderLayout },
-    { path: "/breeder", layout: HeaderLayout },
     { path: "/login", layout: HeaderLayout },
     { path: "/signup", layout: HeaderLayout },
     { path: "/onboarding", layout: HeaderLayout },
     { path: "/breeds", layout: HeaderLayout },
     { path: "/breeds/[breedName]", layout: HeaderLayout },
+    { path: "/breeders", layout: HeaderLayout },
+    { path: "/breeders/[id]", layout: HeaderLayout },
     { path: "/contact", layout: HeaderLayout },
     { path: "/about", layout: HeaderLayout },
     { path: '/blog', layout: HeaderLayout },
@@ -43,6 +44,8 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/inbox/[chatId]", layout: DashboardLayout },
     { path: "/dashboard/breeds", layout: DashboardLayout },
     { path: "/dashboard/breeds/[id]", layout: DashboardLayout },
+    { path: "/dashboard/breeders", layout: DashboardLayout },
+    { path: "/dashboard/breeders/[id]", layout: DashboardLayout },
     { path: "/dashboard/listings", layout: DashboardLayout },
     { path: "/dashboard/listings/[id]", layout: DashboardLayout },
     { path: "/dashboard/matches", layout: DashboardLayout },
@@ -103,7 +106,8 @@ const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header profile={profile} />}
-      <Box as="main" h={{ base: "calc(100dvh - 128px)", md: "100dvh" }}>
+      <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }} overflow="auto"
+      >
         {children}{" "}
       </Box>
     </>
@@ -123,7 +127,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         direction={{ base: "column", md: "row" }}
         bg="bg-canvas"
         overflow="auto"
-        h={{ base: "calc(100vh - 128px)", md: "100vh" }}
+        h={{ base: "calc(100dvh - 128px)", md: "100vh" }}
         w="100vw"
         maxW="100vw"
       >

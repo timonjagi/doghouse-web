@@ -5,7 +5,6 @@ import {
   HStack,
   Text,
   Badge,
-  Avatar,
   Image,
   Skeleton,
   useColorModeValue,
@@ -16,12 +15,11 @@ import {
   WarningIcon,
   TimeIcon,
   CalendarIcon,
-  EmailIcon,
 } from '@chakra-ui/icons';
-import { MdLocationOn } from 'react-icons/md';
-import { ApplicationWithListing } from '../../../hooks/queries/useApplications';
+import { ApplicationWithListing } from '../../hooks/queries/useApplications';
 import { useRouter } from 'next/router';
 import { FiUser } from 'react-icons/fi';
+import { PriceTag } from './PriceTag';
 
 interface ApplicationCardProps {
   application: ApplicationWithListing;
@@ -60,13 +58,6 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
     return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString as string).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
 
   const handleViewDetails = () => {
     router.push(`/dashboard/applications/${application.id}`);
@@ -124,15 +115,14 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
           <HStack align="center" spacing={1}>
             <Icon as={FiUser} boxSize={4} color="gray.500" />
             <Text fontSize="sm" color="gray.500">
-              {application.users.display_name} |  Applied: {formatDate(application.created_at.toString())}
+              {application.users.display_name}
             </Text>
 
           </HStack>
         )}
 
-        <Text fontSize="lg" fontWeight="semibold" color="brand.600">
-          Ksh. {application.listings.price.toLocaleString()}
-        </Text>
+        <PriceTag price={application.listings.price} currency='KES' />
+
       </VStack>
     </Box>
   );

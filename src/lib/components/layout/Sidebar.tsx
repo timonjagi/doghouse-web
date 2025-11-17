@@ -30,6 +30,8 @@ import { BsTiktok } from "react-icons/bs";
 import { useEffect } from "react";
 import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
 import { useCurrentUser } from "lib/hooks/queries";
+import { LuDog } from "react-icons/lu";
+import { GiDogHouse } from "react-icons/gi";
 
 interface SidebarProps {
   onClose: () => void;
@@ -51,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
         justify="center"
         align="center"
         width="full"
-        h={{ base: "calc(100dvh - 64px)", md: "full" }}
+        h="full"
         as="nav"
         direction="column"
       >
@@ -67,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
       maxW={{ base: "full", sm: "xs" }}
       justify="space-between"
       width="full"
-      h={{ base: "calc(100dvh - 64px)", md: "full" }}
+      h="full"
       as="nav"
       direction="column"
       overflowY="auto"
@@ -117,7 +119,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
 
         <Logo />
 
-        <Stack>
+        <Stack pt={2}>
           {/* Render dynamic navigation sections */}
           {navigationSections.map((section) => (
             <Stack key={section.title} spacing="2">
@@ -195,7 +197,7 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
   return (
     <Stack
       justify="space-between"
-      h={{ base: "calc(100vh - 64px)", md: "full" }}
+      h="full"
     >
       <Stack
         py={{ base: "6", sm: "8" }}
@@ -203,7 +205,7 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
       >
         <Logo />
 
-        <Stack spacing="3">
+        <Stack spacing="3" pt={2}>
           <NavButton
             label="Home"
             icon={FiHome}
@@ -215,6 +217,24 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
             onClick={() => onClickMenuLink("/about")}
             aria-current={
               router.pathname.includes("about") ? "page" : "false"
+            }
+          />
+
+          <NavButton
+            label="Breeds"
+            icon={LuDog}
+            onClick={() => onClickMenuLink("/breeds")}
+            aria-current={
+              router.pathname.includes("breeds") ? "page" : "false"
+            }
+          />
+
+          <NavButton
+            label="Breeders"
+            icon={GiDogHouse}
+            onClick={() => onClickMenuLink("/breeders")}
+            aria-current={
+              router.pathname.includes("breeders") ? "page" : "false"
             }
           />
           <NavButton
@@ -233,7 +253,7 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
           />
         </Stack>
 
-        <Stack spacing="3">
+        <Stack spacing="3" >
           <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
             Socials
           </Text>

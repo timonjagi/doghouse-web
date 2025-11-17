@@ -11,14 +11,14 @@ const defaultSEOConfig = {
     description: "",
     images: [
       {
-        url: "",
+        url: "images/logo.png",
         alt: "Doghouse og-image",
       },
     ],
     site_name: "Doghouse",
   },
   twitter: {
-    handle: "@sozonome",
+    handle: "@doghousekenya",
     cardType: "summary_large_image",
   },
 };

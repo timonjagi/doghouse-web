@@ -28,7 +28,7 @@ import { UserBreed } from "../../../../../db/schema";
 interface BreedFormProps {
   isOpen: boolean;
   onClose: () => void;
-  editingBreed?: UserBreed | null;
+  editingBreed?: any | null;
 }
 
 export const BreedForm = ({
@@ -38,12 +38,24 @@ export const BreedForm = ({
 }: BreedFormProps) => {
   const toast = useToast();
   const [selectedBreed, setSelectedBreed] = useState<any>(null);
-  const [breedImages, setBreedImages] = useState<File[]>([]);
+  const [breedImages, setBreedImages] = useState<File[] | string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createUserBreed = useCreateUserBreed();
   const updateUserBreed = useUpdateUserBreed();
 
+  useEffect(() => {
+    if (editingBreed) {
+      const breed = breedsData.find((breed) => breed.name === editingBreed.breeds?.name);
+
+      if (breed) {
+        setSelectedBreed(breed);
+      }
+
+      setBreedImages(editingBreed.images as string[] || []);
+
+    }
+  }, [editingBreed]);
   // Get current user for image upload
   const { data: currentUser } = useCurrentUser();
 
@@ -138,24 +150,82 @@ export const BreedForm = ({
     }
   }
 
+  const handleUpdate = async () => {
+    setIsSubmitting(true);
+
+    const retainedPhotos = (selectedImages as any[]).filter((image) => typeof image === 'string');
+
+    const deletedPhotos = editingBreed.images.filter((image: string) => {
+      !retainedPhotos.includes(image)
+    });
+
+    const newPhotos = (selectedImages as any[]).filter((image) => image instanceof File);
+
+    try {
+      let uploadedUrls = [];
+      if (newPhotos.length > 0) {
+        uploadedUrls = await uploadImages(newPhotos as File[]);
+      }
+
+      if (deletedPhotos.length > 0) {
+        const { error: deleteError } = await supabase.storage
+          .from('breed-images')
+          .remove(deletedPhotos);
+
+        if (deleteError) throw new Error(`Failed to delete images: ${deleteError.message}`);
+      }
+
+      await updateUserBreed.mutateAsync({
+        id: editingBreed.id,
+        updates: {
+          images: [...retainedPhotos, ...uploadedUrls],
+        }
+      });
+
+      toast({
+        title: "Success",
+        description: `Breed updated successfully.`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      onClose();
+
+
+    } catch (error) {
+      console.error("Error updating breed:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update breed. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+    } finally {
+      setIsSubmitting(false);
+    }
+
+
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isCentered isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          Add Breed
+          {editingBreed ? 'Edit Breed' : 'Add Breed '}
         </ModalHeader>
         <ModalCloseButton />
 
         <ModalBody>
           <VStack spacing={6} align="stretch">
             <Text color="gray.600">
-              Select breed you offer and add photos
+              {editingBreed ? 'Edit' : 'Select'} the breed you offer and add photos
             </Text>
 
             <FormControl>
               <FormLabel htmlFor="breed" fontWeight="semibold">
-                Primary Breed
+                Breed
               </FormLabel>
               <Select
                 placeholder="Select breed..."
@@ -163,6 +233,7 @@ export const BreedForm = ({
                 options={breedOptions}
                 value={selectedBreed ? { label: selectedBreed.name, value: selectedBreed.id } : null}
                 onChange={onSelectBreed}
+                isDisabled={editingBreed}
               />
             </FormControl>
 
@@ -193,11 +264,11 @@ export const BreedForm = ({
             </Button>
             <Button
               colorScheme="brand"
-              onClick={handleSubmit}
+              onClick={editingBreed ? handleUpdate : handleSubmit}
               isLoading={isSubmitting}
               loadingText="Saving..."
             >
-              Add Breed
+              {editingBreed ? 'Update Breed' : 'Add Breed '}
             </Button>
           </HStack>
         </ModalFooter>
