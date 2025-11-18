@@ -565,55 +565,10 @@
       },
       {
         "id": 10,
-        "title": "Implement Matches Page (Complete flow for both breeders and seekers)",
-        "description": "Create intelligent matching system. For breeders: see matching seekers. For seekers: see matching breeders/listings.",
-        "details": "Build role-aware matches page with matching algorithm. Include preference settings, match notifications, and communication features.",
-        "testStrategy": "Test matching algorithm for both roles, verify notifications work correctly.",
-        "priority": "medium",
-        "dependencies": [
-          7
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Role-Aware Matches Page Component",
-            "description": "Build main matches page that adapts based on user role.",
-            "dependencies": [],
-            "details": "Create src/lib/pages/dashboard/matches.tsx with role-based matching interface.",
-            "status": "pending",
-            "testStrategy": "Verify page loads correctly for both roles."
-          },
-          {
-            "id": 2,
-            "title": "Implement Matching Algorithm",
-            "description": "Create logic to match seekers with breeders based on preferences and offerings.",
-            "dependencies": [
-              1
-            ],
-            "details": "Build matching algorithm using breed preferences, location, and other criteria.",
-            "status": "pending",
-            "testStrategy": "Test matching results, verify correct matches are shown for both roles."
-          },
-          {
-            "id": 3,
-            "title": "Implement Match Notifications",
-            "description": "Add notification system for new matches and updates.",
-            "dependencies": [
-              2
-            ],
-            "details": "Integrate with notifications system to alert users of new matches.",
-            "status": "pending",
-            "testStrategy": "Verify notifications are sent and received correctly for new matches."
-          }
-        ]
-      },
-      {
-        "id": 11,
         "title": "Implement Role-Specific Dashboard Overview Pages",
         "description": "Create comprehensive role-specific dashboard overview pages with relevant CTAs, summaries, and graphs for breeders, seekers, and admins.",
         "details": "Transform the existing overview page into role-aware dashboards that display key metrics, quick actions, and relevant data visualizations based on each user's role and immediate interests upon logging in. Include charts for key metrics, summary cards, and contextual CTAs.",
-        "testStrategy": "Test each role dashboard: breeders see litter metrics and quick actions, seekers see match/application summaries, admins see platform overview stats. Verify all CTAs work correctly and data displays accurately.",
+        "testStrategy": "Test each role dashboard: breeders see listing metrics and quick actions, seekers see match/application summaries, admins see platform overview stats. Verify all CTAs work correctly and data displays accurately.",
         "priority": "high",
         "dependencies": [
           1,
@@ -627,20 +582,20 @@
           {
             "id": 1,
             "title": "Create Breeder Dashboard Overview",
-            "description": "Build breeder-specific dashboard with litter metrics, application summaries, and quick management CTAs.",
+            "description": "Build breeder-specific dashboard with litter metrics, application summaries, matching seekers, and quick management CTAs.",
             "dependencies": [],
-            "details": "Create breeder overview showing: active litters count, pending applications, recent inquiries, earnings summary, quick actions (add litter, view applications, manage breeds). Include charts for application trends and litter performance.",
+            "details": "Create breeder overview showing: active listings count, pending applications, recent inquiries, earnings summary, potential matches (seekers who recently viewed listings), quick actions (add listing, view applications, manage breeds, contact matches). Include charts for application trends and listing performance.",
             "status": "pending",
-            "testStrategy": "Log in as breeder and verify dashboard shows relevant metrics, charts display correctly, and all CTAs navigate to appropriate pages."
+            "testStrategy": "Log in as breeder and verify dashboard shows relevant metrics, potential matches section, charts display correctly, and all CTAs navigate to appropriate pages."
           },
           {
             "id": 2,
             "title": "Create Seeker Dashboard Overview",
-            "description": "Build seeker-specific dashboard with match summaries, application tracking, and discovery CTAs.",
+            "description": "Build seeker-specific dashboard with match summaries, application tracking, recommended listings, and discovery CTAs.",
             "dependencies": [],
-            "details": "Create seeker overview showing: active applications, new matches, saved searches, recent activity, quick actions (browse listings, view matches, submit applications). Include charts for application status distribution and match activity.",
+            "details": "Create seeker overview showing: active applications, new matches, recommended listings (intelligent matches based on preferences), saved searches, recent activity, quick actions (browse listings, view matches, submit applications, contact breeders). Include charts for application status distribution and match activity.",
             "status": "pending",
-            "testStrategy": "Log in as seeker and verify dashboard shows application status, match notifications, and discovery CTAs work correctly."
+            "testStrategy": "Log in as seeker and verify dashboard shows application status, match notifications, recommended listings, and discovery CTAs work correctly."
           },
           {
             "id": 3,
@@ -667,7 +622,7 @@
             "dependencies": [
               4
             ],
-            "details": "Create useDashboardStats hooks for each role that aggregate relevant metrics from multiple data sources (applications, litters, users, transactions). Implement proper caching and error handling.",
+            "details": "Create useDashboardStats hooks for each role that aggregate relevant metrics from multiple data sources (applications, listings, users, transactions). Implement proper caching and error handling.",
             "status": "pending",
             "testStrategy": "Test data hooks return correct aggregated data, verify caching works, and error states are handled properly."
           },
@@ -696,7 +651,152 @@
         ]
       },
       {
+        "id": 11,
+        "title": "Implement Inbox & Messaging System",
+        "description": "Transform existing Firebase-based chat components into Supabase-powered inbox system with real-time messaging and conversation management.",
+        "details": "Refactor existing Firebase chat components (ChatBox, ChatHeader, ChatInputBox, ChatSidebar, SingleChat) to use Supabase real-time messaging. Create conversations and messages tables with proper RLS policies. Implement unified inbox interface for conversations and platform communications.",
+        "testStrategy": "Test real-time messaging between verified users, verify conversation creation/deletion, ensure proper message threading and delivery, test unified inbox displays conversations correctly.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Database Schema Updates for Messaging",
+            "description": "Create conversations and messages tables with proper relationships and RLS policies.",
+            "dependencies": [],
+            "details": "Add conversations table for chat threads, messages table for individual messages with proper relationships and RLS policies for secure messaging between verified users.",
+            "status": "pending",
+            "testStrategy": "Run migrations and verify conversations and messages tables are created with correct relationships and RLS policies."
+          },
+          {
+            "id": 2,
+            "title": "Refactor Chat Components to Supabase",
+            "description": "Convert Firebase-based chat components to use Supabase real-time subscriptions and database operations.",
+            "dependencies": [
+              1
+            ],
+            "details": "Update ChatBox, ChatHeader, ChatInputBox, ChatSidebar, SingleChat components to use Supabase client, implement real-time message subscriptions, add conversation management features.",
+            "status": "pending",
+            "testStrategy": "Test real-time messaging between users, verify conversation creation/deletion, ensure proper message threading and delivery."
+          },
+          {
+            "id": 3,
+            "title": "Enhance Inbox UI with Unified Communications",
+            "description": "Create comprehensive inbox interface for conversations and platform communications.",
+            "dependencies": [
+              2
+            ],
+            "details": "Update inbox to display conversations in unified timeline. Add real-time indicators, search/filtering, conversation categorization, and proper navigation between chat and other communications.",
+            "status": "pending",
+            "testStrategy": "Test unified inbox displays conversations correctly, verify real-time updates work, ensure proper categorization and search functionality."
+          }
+        ]
+      },
+      {
         "id": 12,
+        "title": "Implement Comprehensive Notifications System",
+        "description": "Build multi-channel notifications service with admin-configurable rules, database storage, and automated dispatch system.",
+        "details": "Create comprehensive notifications service with database storage, multi-channel dispatch (email, SMS, WhatsApp, push), admin-configurable rules, and automated notifications for platform events. Integrate with applications, payments, matching, and admin systems.",
+        "testStrategy": "Test multi-channel notification delivery, verify admin rule configuration, test automated notifications for platform events, ensure user preferences are respected.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          7,
+          8,
+          13
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Database Schema Updates for Notifications",
+            "description": "Create enhanced notifications, notification_types, and notification_rules tables.",
+            "dependencies": [],
+            "details": "Enhance notifications table with delivery tracking, add notification_types table for predefined categories, add notification_rules table for admin configuration with proper relationships and RLS policies.",
+            "status": "pending",
+            "testStrategy": "Run migrations and verify notification-related tables are created with correct relationships and RLS policies."
+          },
+          {
+            "id": 2,
+            "title": "Build Notifications Service Core",
+            "description": "Create comprehensive NotificationService with database storage and multi-channel dispatch capabilities.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement NotificationService class with DatabaseService, DispatchService, TemplateService, and RulesEngine. Support in-app, email, SMS, WhatsApp, and push notification delivery.",
+            "status": "pending",
+            "testStrategy": "Test notification creation, storage, and delivery through different channels. Verify service architecture handles various notification types."
+          },
+          {
+            "id": 3,
+            "title": "Implement Multi-Channel Dispatch System",
+            "description": "Build email, SMS, WhatsApp, and push notification delivery systems with proper integrations.",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate SendGrid for email, Africa's Talking/Twilio for SMS, WhatsApp Business API for WhatsApp messaging, and web push API for browser notifications. Implement delivery tracking and error handling for all channels.",
+            "status": "pending",
+            "testStrategy": "Test each delivery channel individually (email, SMS, WhatsApp, push), verify delivery confirmations, and ensure proper fallback mechanisms for failed deliveries."
+          },
+          {
+            "id": 4,
+            "title": "Create Notification Types & Rules Configuration",
+            "description": "Build comprehensive system for defining notification types and admin-configurable rules.",
+            "dependencies": [
+              2
+            ],
+            "details": "Define taxonomy of notification types (application updates, payments, matches, announcements), create admin interface for rule configuration, implement user preference management.",
+            "status": "pending",
+            "testStrategy": "Test admin rule configuration, verify notification type definitions, ensure user preferences are respected in delivery decisions."
+          },
+          {
+            "id": 5,
+            "title": "Integrate with Platform Systems",
+            "description": "Connect notifications service with applications, payments, matching, and admin systems.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Implement automated notifications for application status changes, payment confirmations, new matches, and admin announcements. Ensure proper integration with existing workflows.",
+            "status": "pending",
+            "testStrategy": "Test end-to-end notification flows for key platform events, verify proper triggering and delivery across all integrated systems."
+          },
+          {
+            "id": 6,
+            "title": "Refactor Notification Dispatch in Business Logic Hooks",
+            "description": "Update hooks like useApplications, useListings, and usePayments to use the new NotificationService for dispatching notifications instead of direct Supabase calls.",
+            "dependencies": [
+              2
+            ],
+            "details": "Refactor notification dispatch logic in src/lib/hooks/queries/useApplications.ts, src/lib/hooks/queries/useListings.ts, and src/lib/hooks/queries/usePayments.ts to use the centralized NotificationService instead of direct supabase.from('notifications').insert() calls.",
+            "status": "pending",
+            "testStrategy": "Verify that all existing notification dispatch functionality still works correctly after refactoring, and that business logic hooks now use the centralized NotificationService for consistent notification handling."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Implement Breeder Verification Application Flow",
+        "description": "Create a system for breeders to submit verification applications, including document uploads and profile information, to establish their credibility on the platform.",
+        "details": "This task involves building the frontend and backend components for the breeder verification process. It will serve as a prerequisite for the admin verification panel (Task 11).\n\n1.  **Data Model**: Create a new table in Supabase named `breeder_verifications` with columns for `id`, `user_id` (foreign key to `auth.users`), `status` (enum: 'unverified', 'pending', 'approved', 'rejected'), `documents` (JSONB array of file info), `submitted_at`, `reviewed_at`, and `notes` (for admin feedback).\n\n2.  **API & State Management**: Develop a new hook, `useBreederVerification`, that handles fetching the user's verification status from the new table and manages the application submission process. This hook should encapsulate all API calls to Supabase for this feature.\n\n3.  **UI Development**: \n    - Create a new page at `/account/verification`.\n    - Use Chakra UI to build the application form, ensuring a consistent look and feel with the User Profile page (Task 9).\n    - The page should conditionally render content based on the breeder's verification status: an application form for 'unverified'/'rejected' users, and a status display for 'pending'/'approved' users.\n\n4.  **File Uploads**:\n    - Implement a secure file upload component for necessary documents (e.g., kennel club registrations, health clearances).\n    - Utilize Supabase Storage, creating a new, secured bucket named `breeder-verification-docs`.\n    - Leverage patterns from existing file upload implementations for validation (file size, type) and upload logic, similar to the component seen in the codebase for chat attachments.",
+        "testStrategy": "1.  **Unverified Breeder Flow**: Log in as a breeder, navigate to `/account/verification`. Confirm the application form is displayed. Fill out the form, upload several documents (e.g., PDF, JPG), and submit. Verify the UI updates to a 'Pending' status. Check the `breeder_verifications` table in Supabase for a new 'pending' record and confirm the files exist in the `breeder-verification-docs` storage bucket.\n\n2.  **File Validation**: Attempt to upload a file larger than the defined limit (e.g., >5MB) and an unsupported file type (e.g., .exe). Verify that user-friendly error messages are displayed and the files are not uploaded.\n\n3.  **Status Display**: Manually update a breeder's status in the database to 'approved' and then to 'rejected'. Log in as that breeder each time and confirm the `/account/verification` page correctly displays the 'Verified' and 'Rejected' statuses respectively, without showing the application form.\n\n4.  **Role Gating**: Log in as a 'seeker' and attempt to access the `/account/verification` URL. Verify that access is denied or the user is redirected.",
+        "status": "pending",
+        "dependencies": [
+          1,
+          2,
+          9
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 14,
         "title": "Build Admin Dashboard: Comprehensive Management Panel",
         "description": "Create a comprehensive admin dashboard with breeder verification, user management, listings oversight, and analytics capabilities.",
         "details": "Develop a secure admin dashboard with multiple management sections. Include breeder verification panel to review and approve breeder applications, user management to oversee all platform users, listings management to monitor all litters and wanted ads, and analytics dashboard to track platform metrics and engagement. All sections should have proper role-based access control and comprehensive management interfaces.",
@@ -844,7 +944,7 @@
     ],
     "metadata": {
       "created": "2025-10-13T22:58:47.382Z",
-      "updated": "2025-10-14T08:24:57.151Z",
+      "updated": "2025-11-18T09:16:15.112Z",
       "description": "Tasks for master context"
     }
   }
