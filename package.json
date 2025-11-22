@@ -62,6 +62,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
     "react-select": "^5.7.0",
+    "recharts": "^3.4.1",
     "recoil": "^0.7.7",
     "safe-json-stringify": "^1.2.0",
     "uuid": "^13.0.0",

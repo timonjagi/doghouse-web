@@ -1,20 +1,19 @@
 import {
   Box,
-  Button,
-  ButtonGroup,
   Container,
-  Flex,
-  Heading,
-  Icon,
-  Img,
+  useDisclosure,
   Modal,
+  ModalOverlay,
+  ModalContent,
   ModalBody,
   ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
   Stack,
+  Heading,
   Text,
-  useDisclosure,
+  Button,
+  ButtonGroup,
+  Img,
+  Icon,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -27,6 +26,9 @@ import { RadioCardGroup } from "lib/components/ui/RadioCardGroup";
 import { NextSeo } from "next-seo";
 import CompleteProfileBanner from "./CompleteProfileBanner";
 import { Banner } from "lib/components/ui/Banner";
+import BreederDashboardOverview from "./BreederDashboardOverview";
+import SeekerDashboardOverview from "./SeekerDashboardOverview";
+import AdminDashboardOverview from "./AdminDashboardOverview";
 
 const DashboardHome = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -53,12 +55,23 @@ const DashboardHome = () => {
   }, [profile, searchParams]);
 
   if (profileLoading) {
-    <Loader />
+    return <Loader />
   }
 
+  // Show role-specific dashboard if user is onboarded
+  if (profile?.onboarding_completed) {
+    if (profile.role === 'breeder') {
+      return <BreederDashboardOverview />;
+    } else if (profile.role === 'seeker') {
+      return <SeekerDashboardOverview />;
+    } else if (profile.role === 'admin') {
+      return <AdminDashboardOverview />;
+    }
+  }
+
+  // Show onboarding flow for new users
   return (
     <Container maxW="7xl">
-
       <NextSeo title="Dashboard" />
 
       {!profile?.profile_photo_url && showBanner && (
