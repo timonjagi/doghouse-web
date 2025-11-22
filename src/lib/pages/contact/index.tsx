@@ -24,6 +24,7 @@ import { useState } from "react";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 
 import Footer from "lib/components/layout/Footer";
+import { NextSeo } from "next-seo";
 
 const MapSection = () => {
   // Using a placeholder for the map - you can replace this with an actual map component
@@ -311,6 +312,8 @@ const FAQSection = () => {
 function Contact() {
   return (
     <Box as="section" bg="bg-surface" minH="100vh">
+      <NextSeo title="Contact | Doghouse" />
+
       <Container maxW="7xl" py={{ base: 8, md: 12, lg: 16 }}>
         <Stack spacing={{ base: 8, md: 12, lg: 16 }}>
           {/* Header Section */}

@@ -1,0 +1,1 @@
+ALTER TABLE "applications" RENAME COLUMN "payment_complete" TO "payment_completed";

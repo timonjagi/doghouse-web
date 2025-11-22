@@ -21,6 +21,12 @@
     "baseUrl": "src",
     "incremental": true,
     "noImplicitAny": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": false
   },
   "include": [
     "video.d.ts",
@@ -30,9 +36,11 @@
     "**/*.tsx",
     "src",
     "commitlint.config.js",
-    "globals.d.ts"
+    "globals.d.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "typeRoots": []
 }

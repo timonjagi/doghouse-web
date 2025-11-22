@@ -1,0 +1,951 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Database Schema and Implement Role-Based Auth",
+        "description": "Set up the foundational database structure using the provided Drizzle schema and configure Supabase for role-based authentication (Breeder, Seeker, Admin).",
+        "details": "Take the Drizzle schema from `db/schema.ts`, generate the SQL migration, and apply it to the Supabase PostgreSQL database. Implement sign-up and sign-in logic that correctly assigns a 'role' to the user in the 'users' table. Create RLS policies for the 'users' table allowing users to only access and modify their own data.",
+        "testStrategy": "Verify that `drizzle-kit push:pg` or `migrate` runs successfully. Test the sign-up flow for a new seeker and a new breeder, and confirm their roles are correctly set in the database via the Supabase table editor. Ensure a logged-in user cannot fetch data for another user.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Finalize Drizzle Schema and Apply to Supabase Database",
+            "description": "Review the existing schema in `db/schema.ts`, ensuring all necessary tables (`users`, `litters`, etc.) and columns (like `users.role`) are correctly defined. Generate the SQL migration files using Drizzle Kit and apply them to the Supabase PostgreSQL database.",
+            "dependencies": [],
+            "details": "Use `drizzle-kit generate:pg` to create the migration script. Then, use `drizzle-kit push:pg` or a custom migration script to apply the schema changes to the remote Supabase database configured via environment variables. Verify table creation in the Supabase dashboard.",
+            "status": "done",
+            "testStrategy": "Run the Drizzle Kit commands and ensure they complete without errors. Manually inspect the Supabase database via its web UI to confirm that all tables and columns from `db/schema.ts` have been created correctly."
+          },
+          {
+            "id": 2,
+            "title": "Decommission Existing Firebase Authentication Implementation",
+            "description": "Systematically remove all Firebase authentication logic from the codebase to prepare for the Supabase migration. This includes removing SDKs, configuration files, and references in UI components.",
+            "dependencies": [],
+            "details": "Delete `src/lib/firebase/client.ts` and `src/lib/firebase/server.ts`. Uninstall the `firebase` npm package. Go through auth-related components like `src/app/(auth)/login/index.tsx` and remove Firebase-specific function calls (`signInWithEmailAndPassword`, etc.). Remove Firebase-related environment variables from `.env` files.",
+            "status": "done",
+            "testStrategy": "After removal, the application's login and sign-up pages should be broken or in a clean state, ready for new logic. The app should build without errors related to missing Firebase modules. Run `npm ls firebase` to ensure the package is gone."
+          },
+          {
+            "id": 3,
+            "title": "Implement Supabase User Authentication and Session Management",
+            "description": "Replace the decommissioned Firebase logic with Supabase for user sign-up, sign-in, sign-out, and session management. This includes creating a Supabase client and integrating it into the auth UI and server-side logic.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create Supabase clients in `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts`. Update `src/pages/signup/index.tsx` to use `supabase.auth.signUp`. On successful sign-up, insert a record into the public `users` table with the user's `id`, `email`, and selected `role`. Update the login page `src/pages/login/index.tsx`  to use `supabase.auth.signInWithPassword`. Implement session management using Supabase's cookie-based helpers for Next.js.",
+            "status": "done",
+            "testStrategy": "Test the full sign-up flow for both a 'seeker' and a 'breeder'. Verify that `auth.users` and the public `users` table are populated correctly in Supabase. Test login and logout functionality. Ensure user sessions persist across page reloads."
+          },
+          {
+            "id": 4,
+            "title": "Configure Initial Row-Level Security (RLS) Policies",
+            "description": "Implement the initial set of Row-Level Security (RLS) policies on core database tables like 'users' and 'litters' to enforce data access rules, ensuring users can only access and modify their own data.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "In the Supabase SQL editor, enable RLS for the `users` and `litters` tables. For `users`, create policies allowing users to SELECT and UPDATE only their own record (`uid() = id`). For `litters`, allow breeders to CUD their own litters (`uid() = breeder_id`) and all authenticated users to SELECT litters. Policies must be created using SQL statements in a new Supabase migration file.",
+            "status": "done",
+            "testStrategy": "Log in as a user and use a client-side query to fetch all users; it should only return the current user's data. As a breeder, verify you can create/edit your litters. As a seeker, verify you can read litters but cannot create or edit them. Attempting to update another user's data should result in an RLS violation error."
+          },
+          {
+            "id": 5,
+            "title": "Fix Remaining Firebase Authentication References",
+            "description": "Update all remaining components that use Firebase authentication hooks (useAuthState, useSignOut) to use the new Supabase authentication system",
+            "details": "Search through the codebase for any remaining Firebase authentication references and replace them with Supabase equivalents. Update Header.tsx, UserProfileMenu.tsx, and any other components that still import from 'lib/firebase/client' or use Firebase hooks.",
+            "status": "done",
+            "dependencies": "",
+            "testStrategy": "Run the application and verify that all Firebase authentication hooks are replaced with Supabase equivalents. Verify that the application still functions as expected."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Setup React Query and State Management",
+        "description": "Establish a robust data fetching and state management foundation by integrating React Query and a global state manager like Zustand.",
+        "details": "Install React Query and its devtools. Configure a global QueryClientProvider in the main app layout. Create a centralized factory for query keys to ensure consistency. Set up a Zustand store for managing global UI state and the user session.",
+        "testStrategy": "Verify that the React Query devtools are visible in development mode. Create a simple test component that uses a query hook to fetch data and confirms the data is cached and available. Test that a Zustand store can be updated and its state is accessible from different components.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install React Query and Devtools packages",
+            "description": "Add `@tanstack/react-query` and `@tanstack/react-query-devtools` to the project's dependencies using npm or yarn.",
+            "dependencies": [],
+            "details": "Update the `package.json` file by adding the necessary React Query dependencies. Run `npm install` or `yarn add` to install them. This is a foundational step before any configuration.",
+            "status": "done",
+            "testStrategy": "Verify the presence of `@tanstack/react-query` and `@tanstack/react-query-devtools` in `package.json` and `node_modules`."
+          },
+          {
+            "id": 2,
+            "title": "Configure QueryClientProvider globally",
+            "description": "Initialize a new `QueryClient` instance with default options and wrap the entire Next.js application with `QueryClientProvider`.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a `QueryClient` instance, potentially in a new file like `src/lib/queryClient.ts` or `src/utils/queryClient.ts`. Configure default options such as `staleTime` and `cacheTime`. Then, integrate `QueryClientProvider` in the root layout file (e.g., `src/app/layout.tsx` or a custom `_app.tsx` if using pages directory) to make React Query available throughout the app. Also, include `ReactQueryDevtools` for development environments.",
+            "status": "done",
+            "testStrategy": "Verify that React Query Devtools are visible in the browser during development. Create a temporary page with a basic `useQuery` call to ensure the provider is correctly set up and no errors occur."
+          },
+          {
+            "id": 3,
+            "title": "Create a centralized query key factory",
+            "description": "Implement a utility file that provides a structured and consistent way to define query keys for different data entities.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create a new file, for example, `src/lib/queryKeys.ts`, which exports an object or functions to generate unique and descriptive query keys. For instance, `queryKeys.users.all`, `queryKeys.users.detail(userId)`, `queryKeys.profile.all`, `queryKeys.litters.all`, `queryKeys.litters.byBreeder(breederId)`. This ensures type safety and avoids key collisions.",
+            "status": "done",
+            "testStrategy": "Write unit tests for the query key factory to ensure it generates correct and consistent key structures. Ensure that keys are deterministic for the same inputs."
+          },
+          {
+            "id": 4,
+            "title": "Set up Zustand store for global state management",
+            "description": "Initialize a Zustand store to manage global application state, including user session information and general UI state.",
+            "dependencies": [],
+            "details": "Install `zustand`. Create a new file (e.g., `src/stores/useAppStore.ts`). Define the store to hold global states such as `userSession` (e.g., `userId`, `role`, `isAuthenticated`), and UI states like `isSidebarOpen` or `isLoadingOverlayVisible`. Implement actions for updating these states.",
+            "status": "done",
+            "testStrategy": "Create a temporary component that consumes and modifies the Zustand store state. Verify that changes to the store are reflected across different components without prop drilling. Ensure `userSession` can be updated correctly."
+          },
+          {
+            "id": 5,
+            "title": "Develop custom React Query hooks for Supabase integration",
+            "description": "Create reusable custom hooks that abstract common data fetching patterns from Supabase using React Query.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Develop custom hooks (e.g., `useUserProfile`, `useLitters`, `useBreederProfiles`) in a directory like `src/hooks/queries`. These hooks will encapsulate the logic of fetching data from Supabase using the Supabase client and `useQuery`, `useMutation` from React Query. Utilize the centralized query key factory (from subtask 3) for defining query keys within these hooks.",
+            "status": "done",
+            "testStrategy": "Implement a simple component that uses one of the new custom hooks (e.g., `useUserProfile`). Verify that data is fetched and displayed correctly. Use React Query Devtools to confirm caching and query states (loading, success, error) are managed as expected. Simulate a data update to test `useMutation` if implemented."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Refactor Onboarding Flow to Use Supabase",
+        "description": "Migrate the multi-step onboarding process from Firebase to Supabase, ensuring user data is correctly captured in the new Drizzle schema.",
+        "details": "Refactor the components in `src/lib/pages/onboarding/` to use Supabase for user session management and data persistence. Replace `useAuthState` with a Supabase equivalent and update the logic that saves user profile information (`name`, `location`, `roles`, `user_breeds`) to write to the new PostgreSQL tables.",
+        "testStrategy": "Complete the onboarding flow as a new user. Verify that the user's role, contact details, and initial breed preferences are correctly saved to the 'users' and 'user_breeds' tables in Supabase. Ensure the user session is correctly managed by Supabase throughout the flow.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Restructure Onboarding with Role-Specific Flows",
+            "description": "Create separate onboarding directories for breeders and seekers with role-specific components and flows.",
+            "dependencies": [],
+            "details": "Create `src/lib/pages/onboarding/breeder/` and `src/lib/pages/onboarding/seeker/` directories. Move existing components to appropriate directories and create new role-specific components for unique requirements.",
+            "status": "done",
+            "testStrategy": "Verify that the new directory structure exists and components are properly organized by role."
+          },
+          {
+            "id": 2,
+            "title": "Update Database Schema for Enhanced Profiles",
+            "description": "Add new fields to users and wanted_listings tables to support enhanced onboarding features.",
+            "dependencies": [],
+            "details": "Add living_situation, experience_level, kennel_name, kennel_location, facility_type to users table. Add preference fields to wanted_listings table.",
+            "status": "done",
+            "testStrategy": "Run database migration and verify new columns exist in Supabase tables."
+          },
+          {
+            "id": 3,
+            "title": "Create Role-Specific React Query Hooks",
+            "description": "Develop hooks for wanted listings, enhanced user profiles, and breed image uploads.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create useWantedListings, useCreateWantedListing, useUploadBreedImage, and enhanced useUpdateUserProfile hooks.",
+            "status": "done",
+            "testStrategy": "Test hooks individually to ensure they properly interact with the updated database schema."
+          },
+          {
+            "id": 3,
+            "title": "Integrate 'useUserProfile' Hook into DashboardLayout",
+            "description": "Modify the main `DashboardLayout.tsx` component to use the new `useUserProfile` hook. This component will be responsible for fetching the user's role and passing it down to its children, specifically the Sidebar.",
+            "dependencies": [
+              1
+            ],
+            "details": "In `src/lib/components/layout/DashboardLayout.tsx`, call the `useUserProfile` hook to get the user's role. Pass the retrieved role as a prop to the `<Sidebar />` component. Handle loading states by displaying a layout-level skeleton or spinner.",
+            "status": "pending",
+            "testStrategy": "Add a `console.log` in `DashboardLayout.tsx` to print the role received from the hook. Log in as a Seeker and verify that 'Seeker' is logged. Check that the layout shows a loading state while the profile is being fetched."
+          },
+          {
+            "id": 4,
+            "title": "Refactor Sidebar.tsx to Render Links Dynamically",
+            "description": "Update `Sidebar.tsx` to accept the user's role as a prop and dynamically render the appropriate navigation links based on the configuration created in the previous subtask.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Modify `src/lib/components/layout/Sidebar.tsx` to accept a `role` prop. Use this prop to look up the correct array of links from the `navLinks` configuration. Map over the retrieved array to render the `<Link>` components. If the `role` prop is null or undefined, render a skeleton version of the navigation.",
+            "status": "done",
+            "testStrategy": "Log in as a Seeker and verify the sidebar shows 'Browse', 'Matches', and 'Applications'. Log in as a Breeder and see 'My Breeds', 'My Listings', 'Applications'. Log in as an Admin and see 'Verification', 'Users', 'Listings', 'Analytics'."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Complete Listings Ecosystem",
+        "description": "Create a comprehensive listings system with creation, management, discovery, and editing capabilities for both breeders and seekers.",
+        "details": "Build a complete listings ecosystem including: smart router that redirects by role, multi-step creation flow with image upload, management interface for breeders, discovery interface for seekers, detail pages, and edit functionality.",
+        "testStrategy": "Test complete user flows: breeders create and manage listings, seekers browse and filter listings, both roles view details, breeders edit their listings. Verify all CRUD operations work correctly.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "completed",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Smart Router for Role-Based Navigation",
+            "description": "Implement intelligent root listings page that redirects users to appropriate interfaces based on their role.",
+            "dependencies": [],
+            "details": "Create src/lib/pages/dashboard/listings.tsx that detects user role and redirects: breeders to /manage, seekers to /browse. Include proper loading states and onboarding prompts for unverified users.",
+            "status": "completed",
+            "testStrategy": "Log in as breeder and verify redirect to manage page. Log in as seeker and verify redirect to browse page. Test loading states and onboarding prompts."
+          },
+          {
+            "id": 2,
+            "title": "Implement Multi-Step Listing Creation Flow",
+            "description": "Build comprehensive 5-step creation flow: Basic Info → Pet Details → Photos → Pricing → Review & Publish.",
+            "dependencies": [],
+            "details": "Create step components with proper validation, form state management, and Supabase integration. Include drag-and-drop photo upload, conditional fields based on listing type, and comprehensive review step.",
+            "status": "completed",
+            "testStrategy": "Complete full creation flow as a breeder. Verify all steps work correctly, photos upload to Supabase Storage, and listing appears in database with correct data."
+          },
+          {
+            "id": 3,
+            "title": "Implement Breeder Listing Management Interface",
+            "description": "Create comprehensive management dashboard for breeders to view, edit, and manage their listings.",
+            "dependencies": [
+              2
+            ],
+            "details": "Build listing cards with photos, status management, edit functionality, and proper access control. Include confirmation dialogs for status changes and visual indicators for listing states.",
+            "status": "completed",
+            "testStrategy": "As a breeder, view all listings, edit existing ones, change status, and verify all changes persist correctly in the database."
+          },
+          {
+            "id": 4,
+            "title": "Implement Seeker Listing Discovery Interface",
+            "description": "Create advanced browsing interface with real-time filtering, search, and responsive listing cards.",
+            "dependencies": [],
+            "details": "Build filter controls for breed, location, price range, and listing type. Implement search functionality, responsive grid layout, and proper loading states. Include view count tracking.",
+            "status": "completed",
+            "testStrategy": "As a seeker, browse listings, test all filter combinations, verify search works, and confirm responsive design on different screen sizes."
+          },
+          {
+            "id": 5,
+            "title": "Implement Listing Detail Pages",
+            "description": "Create rich detail pages that adapt based on user role with different actions and information display.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Build detail pages with image galleries, comprehensive listing information, role-based action buttons, and proper navigation. Include photo galleries and metadata display.",
+            "status": "completed",
+            "testStrategy": "View listing details as both breeder and seeker. Verify different actions are shown based on role and all information displays correctly."
+          },
+          {
+            "id": 6,
+            "title": "Implement Edit Listing Functionality",
+            "description": "Create complete edit flow that reuses creation components but pre-populates with existing data.",
+            "dependencies": [
+              5
+            ],
+            "details": "Build edit interface that loads existing listing data, allows modifications across all steps, and updates the database. Include ownership validation and proper form pre-population.",
+            "status": "completed",
+            "testStrategy": "Edit an existing listing as a breeder, modify various fields and photos, save changes, and verify all updates persist correctly."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Applications Page (Complete flow for both breeders and seekers)",
+        "description": "Create unified applications page. For breeders: manage applications for their listings. For seekers: submit and track applications.",
+        "details": "Build role-aware applications page using applications table and existing hooks. Include application forms, status tracking, and management interfaces.",
+        "testStrategy": "Test as seeker: submit applications. Test as breeder: manage received applications.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "completed",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Role-Aware Applications Page Component",
+            "description": "Build main applications page that adapts based on user role.",
+            "dependencies": [],
+            "details": "Create src/lib/pages/dashboard/applications.tsx with role-based content.",
+            "status": "completed",
+            "testStrategy": "Verify page loads correctly for both roles."
+          },
+          {
+            "id": 2,
+            "title": "Implement Seeker Application Submission",
+            "description": "For seekers: submit applications for listings with detailed forms.",
+            "dependencies": [
+              1
+            ],
+            "details": "Integrate with useApplications hook and create comprehensive application forms.",
+            "status": "completed",
+            "testStrategy": "As a seeker, submit applications and verify they appear in database."
+          },
+          {
+            "id": 3,
+            "title": "Implement Breeder Application Management",
+            "description": "For breeders: view, approve, reject applications for their listings.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create application management interface with status updates and communication features.",
+            "status": "completed",
+            "testStrategy": "As a breeder, view and manage applications, verify status changes work correctly."
+          },
+          {
+            "id": 4,
+            "title": "Implement Application Status Tracking Infrastructure",
+            "description": "Create comprehensive status tracking with timeline and notifications.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Build status tracking system with timeline views, status change notifications, and proper data persistence.",
+            "status": "completed",
+            "testStrategy": "Verify status changes trigger notifications and timeline updates correctly."
+          },
+          {
+            "id": 5,
+            "title": "Implement Notifications Infrastructure",
+            "description": "Create complete notifications system with hooks, queries, UI components, and triggers.",
+            "dependencies": [
+              4
+            ],
+            "details": "Build notifications hooks, queries, page, drawer component, and automatic triggers for application events.",
+            "status": "completed",
+            "testStrategy": "Test notification creation, display, and navigation for both application submission and status changes."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement Billing & Payment System with Paystack",
+        "description": "Create comprehensive payment processing system with Paystack integration, reservation fees, commission tracking, and billing dashboard.",
+        "details": "Build complete payment infrastructure using Paystack for multi-channel payments (M-Pesa, cards, bank transfers), reservation fee processing (deducted from final price), 10% platform commission system, transaction tracking, and billing management dashboard for users to view payment history and earnings.",
+        "testStrategy": "Test complete payment flow: reservation payments, final payments, commission calculations, transaction tracking, and billing dashboard functionality across multiple payment channels.",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "in_progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Update applications table schema",
+            "description": "Add reservation_paid, contract_signed, payment_complete boolean flags to applications table",
+            "dependencies": [],
+            "details": "Add three boolean columns to applications table in db/schema.ts and create migration file for existing database.",
+            "status": "completed",
+            "testStrategy": "Run migration and verify new columns exist in Supabase applications table."
+          },
+          {
+            "id": 2,
+            "title": "Create database migration for application fields",
+            "description": "Generate and apply Drizzle migration for new application table columns",
+            "dependencies": [
+              1
+            ],
+            "details": "Use drizzle-kit generate to create migration file, then apply with drizzle-kit push.",
+            "status": "completed",
+            "testStrategy": "Verify migration completes successfully and new columns are added to database."
+          },
+          {
+            "id": 3,
+            "title": "Consolidate payment hooks into single usePayments hook",
+            "description": "Create comprehensive usePayments hook that handles all payment operations",
+            "dependencies": [],
+            "details": "Build src/hooks/usePayments.ts with methods for payment initiation, status checking, transactions, reservation/final payments, and billing history.",
+            "status": "completed",
+            "testStrategy": "Test hook integration and verify all payment methods work correctly."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Paystack Payment Gateway",
+            "description": "Set up Paystack API integration with support for multiple Kenyan payment channels",
+            "dependencies": [
+              3
+            ],
+            "details": "Configure Paystack credentials, implement transaction initialization, handle webhooks for payment confirmations, support M-Pesa, cards, bank transfers.",
+            "status": "completed",
+            "testStrategy": "Test payment initiation across different channels and verify webhook confirmations work correctly."
+          },
+          {
+            "id": 5,
+            "title": "Implement Reservation Payment Flow",
+            "description": "Create reservation payment system using Paystack with 24-hour expiry",
+            "dependencies": [
+              4
+            ],
+            "details": "Build reservation payment UI, integrate with Paystack transactions, handle expiry logic, implement refund processing for expired reservations.",
+            "status": "completed",
+            "testStrategy": "Test reservation payment flow, expiry handling, and refund processing for both successful and failed payments."
+          },
+          {
+            "id": 6,
+            "title": "Implement Commission & Payout System",
+            "description": "Build 10% platform commission system with Paystack payout integration",
+            "dependencies": [
+              5
+            ],
+            "details": "Implement commission calculation logic, track earnings/payouts in transactions table, create payout scheduling system using Paystack transfers for breeders after commission deduction.",
+            "status": "completed",
+            "testStrategy": "Verify commission calculations, payout tracking, and ensure breeders receive correct amounts after platform fees."
+          },
+          {
+            "id": 7,
+            "title": "Create Billing Dashboard",
+            "description": "Build comprehensive billing dashboards for seekers and breeders",
+            "dependencies": [
+              6
+            ],
+            "details": "Create billing pages for seekers (payment history) and breeders (earnings, payouts), implement transaction filtering and export functionality with Paystack transaction data.",
+            "status": "completed",
+            "testStrategy": "Test billing dashboard for both seeker and breeder roles, verify transaction history, filtering, and data accuracy."
+          },
+          {
+            "id": 8,
+            "title": "Implement Payment Security & Compliance",
+            "description": "Add payment security measures leveraging Paystack's compliance features",
+            "dependencies": [
+              7
+            ],
+            "details": "Implement payment verification, webhook signature validation, secure transaction logging, leverage Paystack's PCI compliance and fraud detection.",
+            "status": "pending",
+            "testStrategy": "Test security measures, verify webhook validation, and ensure secure payment processing."
+          },
+          {
+            "id": 9,
+            "title": "Connect ApplicationTimeline action buttons to Paystack",
+            "description": "Integrate payment handlers with existing ApplicationTimeline component",
+            "dependencies": [
+              5
+            ],
+            "details": "Connect 'Pay Reservation Fee' and 'Complete Payment' buttons to usePayments hook, implement proper loading states and error handling.",
+            "status": "completed",
+            "testStrategy": "Test payment button integration in application timeline for both reservation and final payments."
+          },
+          {
+            "id": 10,
+            "title": "Build payment modals and status displays",
+            "description": "Create payment initiation modals and real-time status components",
+            "dependencies": [
+              9
+            ],
+            "details": "Build PaymentModal, PaymentStatusModal components with Paystack integration, implement real-time payment status updates. Refactor usePayments hook to follow patterns in other hooks and pass application data from components.",
+            "status": "completed",
+            "testStrategy": "Test payment modals and verify real-time status updates work correctly."
+          },
+          {
+            "id": 11,
+            "title": "Add billing navigation and dashboard routes",
+            "description": "Add billing sections to sidebar navigation and create dashboard routes",
+            "dependencies": [
+              7
+            ],
+            "details": "Update navLinks configuration to include billing sections, create /dashboard/billing and /dashboard/payouts routes.",
+            "status": "completed",
+            "testStrategy": "Test navigation to billing sections and verify dashboard routes load correctly."
+          },
+          {
+            "id": 12,
+            "title": "Implement real-time payment status updates",
+            "description": "Add real-time updates for payment status changes via webhooks",
+            "dependencies": [
+              10
+            ],
+            "details": "Implement webhook handlers to update application status in real-time, add status polling for pending payments.",
+            "status": "pending",
+            "testStrategy": "Test real-time status updates and verify application timeline reflects payment changes immediately."
+          },
+          {
+            "id": 13,
+            "title": "Create admin payment oversight features",
+            "description": "Add payment analytics and management to admin dashboard",
+            "dependencies": [
+              7
+            ],
+            "details": "Create admin payment analytics dashboard with transaction overview, payment method breakdown, commission tracking, and payment management tools.",
+            "status": "completed",
+            "testStrategy": "Test admin payment oversight features and verify analytics data accuracy."
+          },
+          {
+            "id": 14,
+            "title": "Add payout status tracking (separate from payment status)",
+            "description": "Implement separate payout status tracking to distinguish between payment completion and breeder payout",
+            "dependencies": [
+              7
+            ],
+            "details": "Add payout_status field to transactions table, update payment verification logic to set payout_status to 'pending', update billing dashboards to show separate payment and payout statuses, add payment notifications for both seekers and breeders.",
+            "status": "completed",
+            "testStrategy": "Test payment flow and verify payout status is properly tracked separately from payment status. Check billing dashboards show correct status indicators."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Develop User Profile Management Component",
+        "description": "Create a shared component for users of all roles to view and edit their profile information, including bio, photo, location, and contact details using Chakra UI.",
+        "details": "Build a profile management system using the existing useUserProfile hook. Create components under account/profile structure with Chakra UI styling. Implement profile photo upload to Supabase Storage and form validation with Zod.",
+        "testStrategy": "Log in as a user, navigate to /account/profile, change the bio and display name, and verify the changes persist after a page refresh. Test the image upload functionality and confirm the new image is displayed. Check the Supabase Storage bucket to ensure the file was uploaded.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          3
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Profile Page Structure",
+            "description": "Create the main profile page components under account/profile structure.",
+            "dependencies": [],
+            "details": "Create `src/pages/account/profile/index.tsx` and `src/lib/pages/account/profile/index.tsx`. Use the existing useUserProfile hook to fetch current user data. Implement proper loading and error states with Chakra UI components.",
+            "status": "done",
+            "testStrategy": "Navigate to /account/profile while logged in. Verify the page loads without errors and displays user data from useUserProfile hook."
+          },
+          {
+            "id": 2,
+            "title": "Build ProfileForm Component with Chakra UI",
+            "description": "Develop the main profile form component using Chakra UI components.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create `src/lib/pages/account/profile/ProfileForm.tsx` with Chakra UI form components (Input, Textarea, Button, FormControl). Include fields for display name, bio, and location.",
+            "status": "done",
+            "testStrategy": "Render the ProfileForm component. Verify all Chakra UI components display correctly and form validation works as expected."
+          },
+          {
+            "id": 3,
+            "title": "Implement ProfilePhotoUpload Component",
+            "description": "Create photo upload component with drag-and-drop functionality.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create `src/lib/pages/account/profile/ProfilePhotoUpload.tsx` with Chakra UI styling. Implement drag-and-drop upload, image preview, and Supabase Storage integration. Show current profile photo and allow replacement.",
+            "status": "done",
+            "testStrategy": "Test photo upload functionality. Verify drag-and-drop works, preview displays correctly, and images are uploaded to Supabase Storage."
+          },
+          {
+            "id": 4,
+            "title": "Create useUpdateProfile Hook",
+            "description": "Build a React Query mutation hook for profile updates.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create `src/lib/hooks/queries/useUpdateProfile.ts` following existing hook patterns. Handle both text field updates and photo URL updates. Include proper error handling and success callbacks.",
+            "status": "done",
+            "testStrategy": "Test the useUpdateProfile hook with mock data. Verify it properly updates the database and invalidates relevant queries."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Role-Specific Dashboard Overview Pages",
+        "description": "Create comprehensive role-specific dashboard overview pages with relevant CTAs, summaries, and graphs for breeders, seekers, and admins.",
+        "details": "Transform the existing overview page into role-aware dashboards that display key metrics, quick actions, and relevant data visualizations based on each user's role and immediate interests upon logging in. Include charts for key metrics, summary cards, and contextual CTAs.",
+        "testStrategy": "Test each role dashboard: breeders see listing metrics and quick actions, seekers see match/application summaries, admins see platform overview stats. Verify all CTAs work correctly and data displays accurately.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          6,
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Breeder Dashboard Overview",
+            "description": "Build breeder-specific dashboard with litter metrics, application summaries, matching seekers, and quick management CTAs.",
+            "dependencies": [],
+            "details": "Create breeder overview showing: active listings count, pending applications, recent inquiries, earnings summary, potential matches (seekers who recently viewed listings), quick actions (add listing, view applications, manage breeds, contact matches). Include charts for application trends and listing performance.",
+            "status": "pending",
+            "testStrategy": "Log in as breeder and verify dashboard shows relevant metrics, potential matches section, charts display correctly, and all CTAs navigate to appropriate pages."
+          },
+          {
+            "id": 2,
+            "title": "Create Seeker Dashboard Overview",
+            "description": "Build seeker-specific dashboard with match summaries, application tracking, recommended listings, and discovery CTAs.",
+            "dependencies": [],
+            "details": "Create seeker overview showing: active applications, new matches, recommended listings (intelligent matches based on preferences), saved searches, recent activity, quick actions (browse listings, view matches, submit applications, contact breeders). Include charts for application status distribution and match activity.",
+            "status": "pending",
+            "testStrategy": "Log in as seeker and verify dashboard shows application status, match notifications, recommended listings, and discovery CTAs work correctly."
+          },
+          {
+            "id": 3,
+            "title": "Create Admin Dashboard Overview",
+            "description": "Build admin-specific dashboard with platform metrics, pending tasks, and management CTAs.",
+            "dependencies": [],
+            "details": "Create admin overview showing: pending verifications, platform stats (users, listings, applications), recent activity, system alerts, quick actions (verify breeders, view reports, manage users). Include charts for user growth, revenue trends, and engagement metrics.",
+            "status": "pending",
+            "testStrategy": "Log in as admin and verify dashboard shows platform overview, pending tasks are highlighted, and management CTAs work correctly."
+          },
+          {
+            "id": 4,
+            "title": "Implement Dashboard Analytics Components",
+            "description": "Create reusable chart and metric components for dashboard visualizations.",
+            "dependencies": [],
+            "details": "Build chart components using a charting library (Chart.js/Recharts), metric cards, progress indicators, and data visualization helpers. Ensure responsive design and accessibility.",
+            "status": "pending",
+            "testStrategy": "Test chart components with sample data, verify responsive behavior, and ensure accessibility compliance."
+          },
+          {
+            "id": 5,
+            "title": "Create Dashboard Data Hooks",
+            "description": "Build React Query hooks to fetch dashboard-specific data for each role.",
+            "dependencies": [
+              4
+            ],
+            "details": "Create useDashboardStats hooks for each role that aggregate relevant metrics from multiple data sources (applications, listings, users, transactions). Implement proper caching and error handling.",
+            "status": "pending",
+            "testStrategy": "Test data hooks return correct aggregated data, verify caching works, and error states are handled properly."
+          },
+          {
+            "id": 6,
+            "title": "Implement Quick Action Components",
+            "description": "Create reusable CTA components for common dashboard actions.",
+            "dependencies": [],
+            "details": "Build action card components, quick stat cards, and navigation helpers that provide contextual actions based on user role and current dashboard state.",
+            "status": "pending",
+            "testStrategy": "Test action components trigger correct navigation, verify role-based action visibility, and ensure proper loading states."
+          },
+          {
+            "id": 7,
+            "title": "Add Dashboard Personalization Features",
+            "description": "Implement dashboard customization and personalization options.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Add ability to reorder dashboard widgets, hide/show specific metrics, and save dashboard preferences. Include welcome messages and contextual tips based on user activity.",
+            "status": "pending",
+            "testStrategy": "Test dashboard customization saves correctly, verify personalization persists across sessions, and ensure tips display contextually."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement Inbox & Messaging System",
+        "description": "Transform existing Firebase-based chat components into Supabase-powered inbox system with real-time messaging and conversation management.",
+        "details": "Refactor existing Firebase chat components (ChatBox, ChatHeader, ChatInputBox, ChatSidebar, SingleChat) to use Supabase real-time messaging. Create conversations and messages tables with proper RLS policies. Implement unified inbox interface for conversations and platform communications.",
+        "testStrategy": "Test real-time messaging between verified users, verify conversation creation/deletion, ensure proper message threading and delivery, test unified inbox displays conversations correctly.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Database Schema Updates for Messaging",
+            "description": "Create conversations and messages tables with proper relationships and RLS policies.",
+            "dependencies": [],
+            "details": "Add conversations table for chat threads, messages table for individual messages with proper relationships and RLS policies for secure messaging between verified users.",
+            "status": "pending",
+            "testStrategy": "Run migrations and verify conversations and messages tables are created with correct relationships and RLS policies."
+          },
+          {
+            "id": 2,
+            "title": "Refactor Chat Components to Supabase",
+            "description": "Convert Firebase-based chat components to use Supabase real-time subscriptions and database operations.",
+            "dependencies": [
+              1
+            ],
+            "details": "Update ChatBox, ChatHeader, ChatInputBox, ChatSidebar, SingleChat components to use Supabase client, implement real-time message subscriptions, add conversation management features.",
+            "status": "pending",
+            "testStrategy": "Test real-time messaging between users, verify conversation creation/deletion, ensure proper message threading and delivery."
+          },
+          {
+            "id": 3,
+            "title": "Enhance Inbox UI with Unified Communications",
+            "description": "Create comprehensive inbox interface for conversations and platform communications.",
+            "dependencies": [
+              2
+            ],
+            "details": "Update inbox to display conversations in unified timeline. Add real-time indicators, search/filtering, conversation categorization, and proper navigation between chat and other communications.",
+            "status": "pending",
+            "testStrategy": "Test unified inbox displays conversations correctly, verify real-time updates work, ensure proper categorization and search functionality."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Implement Comprehensive Notifications System",
+        "description": "Build multi-channel notifications service with admin-configurable rules, database storage, and automated dispatch system.",
+        "details": "Create comprehensive notifications service with database storage, multi-channel dispatch (email, SMS, WhatsApp, push), admin-configurable rules, and automated notifications for platform events. Integrate with applications, payments, matching, and admin systems.",
+        "testStrategy": "Test multi-channel notification delivery, verify admin rule configuration, test automated notifications for platform events, ensure user preferences are respected.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          7,
+          8,
+          13
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Database Schema Updates for Notifications",
+            "description": "Create enhanced notifications, notification_types, and notification_rules tables.",
+            "dependencies": [],
+            "details": "Enhance notifications table with delivery tracking, add notification_types table for predefined categories, add notification_rules table for admin configuration with proper relationships and RLS policies.",
+            "status": "pending",
+            "testStrategy": "Run migrations and verify notification-related tables are created with correct relationships and RLS policies."
+          },
+          {
+            "id": 2,
+            "title": "Build Notifications Service Core",
+            "description": "Create comprehensive NotificationService with database storage and multi-channel dispatch capabilities.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement NotificationService class with DatabaseService, DispatchService, TemplateService, and RulesEngine. Support in-app, email, SMS, WhatsApp, and push notification delivery.",
+            "status": "pending",
+            "testStrategy": "Test notification creation, storage, and delivery through different channels. Verify service architecture handles various notification types."
+          },
+          {
+            "id": 3,
+            "title": "Implement Multi-Channel Dispatch System",
+            "description": "Build email, SMS, WhatsApp, and push notification delivery systems with proper integrations.",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate SendGrid for email, Africa's Talking/Twilio for SMS, WhatsApp Business API for WhatsApp messaging, and web push API for browser notifications. Implement delivery tracking and error handling for all channels.",
+            "status": "pending",
+            "testStrategy": "Test each delivery channel individually (email, SMS, WhatsApp, push), verify delivery confirmations, and ensure proper fallback mechanisms for failed deliveries."
+          },
+          {
+            "id": 4,
+            "title": "Create Notification Types & Rules Configuration",
+            "description": "Build comprehensive system for defining notification types and admin-configurable rules.",
+            "dependencies": [
+              2
+            ],
+            "details": "Define taxonomy of notification types (application updates, payments, matches, announcements), create admin interface for rule configuration, implement user preference management.",
+            "status": "pending",
+            "testStrategy": "Test admin rule configuration, verify notification type definitions, ensure user preferences are respected in delivery decisions."
+          },
+          {
+            "id": 5,
+            "title": "Integrate with Platform Systems",
+            "description": "Connect notifications service with applications, payments, matching, and admin systems.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Implement automated notifications for application status changes, payment confirmations, new matches, and admin announcements. Ensure proper integration with existing workflows.",
+            "status": "pending",
+            "testStrategy": "Test end-to-end notification flows for key platform events, verify proper triggering and delivery across all integrated systems."
+          },
+          {
+            "id": 6,
+            "title": "Refactor Notification Dispatch in Business Logic Hooks",
+            "description": "Update hooks like useApplications, useListings, and usePayments to use the new NotificationService for dispatching notifications instead of direct Supabase calls.",
+            "dependencies": [
+              2
+            ],
+            "details": "Refactor notification dispatch logic in src/lib/hooks/queries/useApplications.ts, src/lib/hooks/queries/useListings.ts, and src/lib/hooks/queries/usePayments.ts to use the centralized NotificationService instead of direct supabase.from('notifications').insert() calls.",
+            "status": "pending",
+            "testStrategy": "Verify that all existing notification dispatch functionality still works correctly after refactoring, and that business logic hooks now use the centralized NotificationService for consistent notification handling."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Implement Breeder Verification Application Flow",
+        "description": "Create a system for breeders to submit verification applications, including document uploads and profile information, to establish their credibility on the platform.",
+        "details": "This task involves building the frontend and backend components for the breeder verification process. It will serve as a prerequisite for the admin verification panel (Task 11).\n\n1.  **Data Model**: Create a new table in Supabase named `breeder_verifications` with columns for `id`, `user_id` (foreign key to `auth.users`), `status` (enum: 'unverified', 'pending', 'approved', 'rejected'), `documents` (JSONB array of file info), `submitted_at`, `reviewed_at`, and `notes` (for admin feedback).\n\n2.  **API & State Management**: Develop a new hook, `useBreederVerification`, that handles fetching the user's verification status from the new table and manages the application submission process. This hook should encapsulate all API calls to Supabase for this feature.\n\n3.  **UI Development**: \n    - Create a new page at `/account/verification`.\n    - Use Chakra UI to build the application form, ensuring a consistent look and feel with the User Profile page (Task 9).\n    - The page should conditionally render content based on the breeder's verification status: an application form for 'unverified'/'rejected' users, and a status display for 'pending'/'approved' users.\n\n4.  **File Uploads**:\n    - Implement a secure file upload component for necessary documents (e.g., kennel club registrations, health clearances).\n    - Utilize Supabase Storage, creating a new, secured bucket named `breeder-verification-docs`.\n    - Leverage patterns from existing file upload implementations for validation (file size, type) and upload logic, similar to the component seen in the codebase for chat attachments.",
+        "testStrategy": "1.  **Unverified Breeder Flow**: Log in as a breeder, navigate to `/account/verification`. Confirm the application form is displayed. Fill out the form, upload several documents (e.g., PDF, JPG), and submit. Verify the UI updates to a 'Pending' status. Check the `breeder_verifications` table in Supabase for a new 'pending' record and confirm the files exist in the `breeder-verification-docs` storage bucket.\n\n2.  **File Validation**: Attempt to upload a file larger than the defined limit (e.g., >5MB) and an unsupported file type (e.g., .exe). Verify that user-friendly error messages are displayed and the files are not uploaded.\n\n3.  **Status Display**: Manually update a breeder's status in the database to 'approved' and then to 'rejected'. Log in as that breeder each time and confirm the `/account/verification` page correctly displays the 'Verified' and 'Rejected' statuses respectively, without showing the application form.\n\n4.  **Role Gating**: Log in as a 'seeker' and attempt to access the `/account/verification` URL. Verify that access is denied or the user is redirected.",
+        "status": "pending",
+        "dependencies": [
+          1,
+          2,
+          9
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Build Admin Dashboard: Comprehensive Management Panel",
+        "description": "Create a comprehensive admin dashboard with breeder verification, user management, listings oversight, and analytics capabilities.",
+        "details": "Develop a secure admin dashboard with multiple management sections. Include breeder verification panel to review and approve breeder applications, user management to oversee all platform users, listings management to monitor all litters and wanted ads, and analytics dashboard to track platform metrics and engagement. All sections should have proper role-based access control and comprehensive management interfaces.",
+        "testStrategy": "Log in as an admin and verify access to all management panels. Test breeder verification workflow, user management capabilities, listings oversight, and analytics functionality. Verify that non-admin users are denied access to all admin sections.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Admin Dashboard Layout with Role-Based Access",
+            "description": "Build main admin dashboard layout with proper role-based access control and navigation.",
+            "dependencies": [],
+            "details": "Create src/lib/pages/dashboard/admin/index.tsx with admin-only access control. Use existing useUserProfile hook to verify admin role and restrict access. Display appropriate error message for non-admin users. Set up navigation structure for all admin management sections.",
+            "status": "pending",
+            "testStrategy": "Log in as admin and verify dashboard loads. Log in as breeder/seeker and verify access is denied with appropriate error message."
+          },
+          {
+            "id": 2,
+            "title": "Implement Breeder Verification Panel",
+            "description": "Build comprehensive breeder verification interface to review and approve breeder applications.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create verification panel that fetches breeders with `is_verified = false`. Display breeder information, submitted verification documents, and kennel details. Implement approve/reject functionality that updates both users.is_verified and breeder_profiles.verified_at fields. Include document viewer for verification_docs.",
+            "status": "pending",
+            "testStrategy": "As admin, view list of unverified breeders with their details and documents. Approve a breeder and verify their status changes to verified in both users and breeder_profiles tables."
+          },
+          {
+            "id": 3,
+            "title": "Implement User Management Panel",
+            "description": "Create interface for admins to manage all platform users with search and filtering capabilities.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build user management interface that displays all users with their roles, verification status, and activity information. Include search functionality, role filtering, and user detail views. Allow admins to update user roles and manage user accounts.",
+            "status": "pending",
+            "testStrategy": "As admin, browse all users, filter by role, search by name/email, and view detailed user information. Test user management capabilities."
+          },
+          {
+            "id": 4,
+            "title": "Implement Listings Management Panel",
+            "description": "Create admin interface to oversee all platform listings (litters and wanted ads).",
+            "dependencies": [
+              1
+            ],
+            "details": "Build listings management panel that displays all litters and wanted listings with filtering and moderation capabilities. Allow admins to view, edit, or remove inappropriate listings. Include status management and quality control features.",
+            "status": "pending",
+            "testStrategy": "As admin, view all listings, filter by status/type, moderate content, and manage listing visibility. Test listing management and moderation features."
+          },
+          {
+            "id": 5,
+            "title": "Implement Analytics Dashboard",
+            "description": "Create comprehensive analytics dashboard for admins to monitor platform performance and metrics.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build analytics interface that displays key platform metrics including user growth, listing activity, application success rates, and engagement statistics. Include charts, graphs, and exportable reports for data analysis.",
+            "status": "pending",
+            "testStrategy": "As admin, view platform analytics, check key metrics, and verify data accuracy. Test data visualization and reporting features."
+          },
+          {
+            "id": 6,
+            "title": "Implement Payout Management Panel",
+            "description": "Create comprehensive payout management interface for admins to oversee breeder earnings and payout processing.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build payout management panel that displays all breeder earnings, payout history, pending payouts, and payout processing. Include manual payout approval, payout scheduling, payout method management, and payout status tracking. Integrate with Paystack payout system for automated processing.",
+            "status": "pending",
+            "testStrategy": "As admin, view all breeder payouts, approve pending payouts, verify payout processing works correctly, and check payout history and status tracking."
+          },
+          {
+            "id": 7,
+            "title": "Implement Financial Reports & Revenue Analytics",
+            "description": "Create detailed financial reporting system for platform revenue, commission tracking, and business metrics.",
+            "dependencies": [
+              5,
+              6
+            ],
+            "details": "Build financial reports dashboard with revenue breakdowns, commission earnings, payment method analytics, geographic revenue distribution, and exportable financial reports. Include profit/loss analysis and financial forecasting tools.",
+            "status": "pending",
+            "testStrategy": "As admin, view comprehensive financial reports, verify revenue calculations, test report exports, and validate financial analytics accuracy."
+          },
+          {
+            "id": 8,
+            "title": "Implement Dispute Resolution Panel",
+            "description": "Create dispute management system for handling conflicts between breeders and seekers.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build dispute resolution interface that allows admins to view reported disputes, mediate between parties, make binding decisions, and track dispute resolution outcomes. Include dispute categories, evidence management, and communication tools.",
+            "status": "pending",
+            "testStrategy": "As admin, view dispute queue, mediate sample disputes, verify decision enforcement, and test dispute tracking and resolution workflows."
+          },
+          {
+            "id": 9,
+            "title": "Implement Content Management System",
+            "description": "Create CMS for managing platform content including blog posts, static pages, and promotional content.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build content management interface for creating, editing, and publishing blog posts, managing static pages, and controlling promotional content. Include rich text editor, image management, SEO optimization, and content scheduling.",
+            "status": "pending",
+            "testStrategy": "As admin, create and publish blog posts, edit static pages, manage promotional content, and verify content appears correctly on the public site."
+          },
+          {
+            "id": 10,
+            "title": "Implement System Configuration & Settings",
+            "description": "Create system-wide configuration panel for platform settings, feature flags, and operational parameters.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build configuration management interface for platform settings including commission rates, payment settings, feature toggles, email templates, notification settings, and system maintenance controls.",
+            "status": "pending",
+            "testStrategy": "As admin, modify system settings, toggle features, update configuration parameters, and verify changes take effect across the platform."
+          },
+          {
+            "id": 11,
+            "title": "Implement Support Ticket Management",
+            "description": "Create comprehensive support ticket system for handling user inquiries and technical issues.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build support ticket management interface with ticket creation, assignment, status tracking, priority management, and resolution workflows. Include canned responses, ticket categories, and escalation procedures.",
+            "status": "pending",
+            "testStrategy": "As admin, manage support tickets, assign tickets to team members, track resolution progress, and verify ticket management workflows function correctly."
+          },
+          {
+            "id": 12,
+            "title": "Implement Platform Announcements & Notifications",
+            "description": "Create system for broadcasting platform-wide announcements and targeted notifications to users.",
+            "dependencies": [
+              1
+            ],
+            "details": "Build announcement management interface for creating, scheduling, and sending platform announcements. Include targeted notifications by user role, region, or segment. Support email notifications, in-app notifications, and push notifications.",
+            "status": "pending",
+            "testStrategy": "As admin, create and send announcements, target specific user groups, verify delivery across different notification channels, and track announcement engagement."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-10-13T22:58:47.382Z",
+      "updated": "2025-11-18T09:16:15.112Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

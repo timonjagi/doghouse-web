@@ -19,9 +19,13 @@ import { FiHelpCircle } from "react-icons/fi";
 
 import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
+
+import UserProfileMenu from "lib/components/layout/UserProfileMenu";
+import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+
 import { ToggleButton } from "./ToggleButton";
 
-const Header = () => {
+const Header = ({ profile }) => {
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
@@ -29,6 +33,8 @@ const Header = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
   const { pathname } = router;
+
+  const { user } = useSupabaseAuth();
 
   return (
     <Box
@@ -61,16 +67,13 @@ const Header = () => {
                   icon={<FiSettings fontSize='1.25rem' />}
                   aria-label='Settings'
                 /> */}
-                {/* {user && ( */}
-                {/* <Button
+                <Button
                   rounded="full"
                   as={Link}
-                  aria-current={pathname.includes("home") ? "page" : false}
                   href="/"
                 >
                   Home
-                </Button> */}
-                {/* )} */}
+                </Button>
 
                 <Button
                   rounded="full"
@@ -87,6 +90,14 @@ const Header = () => {
                   href="/breeds"
                 >
                   Breeds
+                </Button>
+                <Button
+                  rounded="full"
+                  as={Link}
+                  aria-current={pathname.includes("breeder") ? "page" : false}
+                  href="/breeders"
+                >
+                  Breeders
                 </Button>
                 <Button
                   rounded="full"
@@ -118,11 +129,11 @@ const Header = () => {
                 )} */}
               </ButtonGroup>
 
-              {/* {user ? (
+              {user ? (
                 <UserProfileMenu
-                  name={user?.displayName || ""}
-                  image={user?.photoURL || ""}
-                  phoneNumber={user?.phoneNumber || ""}
+                  name={user?.user_metadata?.name || user?.email || ""}
+                  image={user?.user_metadata?.avatar_url || ""}
+                  email={user?.email || ""}
                 />
               ) : (
                 <HStack spacing="3">
@@ -135,7 +146,7 @@ const Header = () => {
                     Log in
                   </Button>
                 </HStack>
-              )} */}
+              )}
             </HStack>
           ) : (
             <Flex align="center">
@@ -146,33 +157,20 @@ const Header = () => {
                 icon={<FiBell />}
                 mr={3}
               /> */}
-              <ToggleButton
-                isOpen={isOpen}
-                aria-label="Open Menu"
-                onClick={onToggle}
-              />
-              {/* {user ? (
+
+              {user ? (
                 <UserProfileMenu
-                  name={user?.displayName || ""}
-                  image={user?.photoURL || ""}
-                  phoneNumber={user?.phoneNumber || ""}
+                  name={user?.user_metadata?.name || user?.email || ""}
+                  image={user?.user_metadata?.avatar_url || ""}
+                  email={user?.email || ""}
                 />
               ) : (
-                <>
-                  {["login", "signup"].includes(router.pathname) && (
-                    <HStack spacing="3">
-                      <Button
-                        variant="secondary-on-accent"
-                        rounded="full"
-                        borderColor="white"
-                        onClick={() => router.push("/login")}
-                      >
-                        Log in
-                      </Button>
-                    </HStack>
-                  )}
-                </>
-              )} */}
+                <ToggleButton
+                  isOpen={isOpen}
+                  aria-label="Open Menu"
+                  onClick={onToggle}
+                />
+              )}
 
               <Drawer
                 isOpen={isOpen}

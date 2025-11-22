@@ -60,6 +60,10 @@ const FeatureCard = (props: any) => {
         base: "6",
         lg: "8",
       }}
+      px={{
+        base: "6",
+        lg: "8",
+      }}
       {...props}
     >
       <Stack
@@ -129,7 +133,7 @@ const FeatureCard = (props: any) => {
               width="full"
               rounded="full"
               as={Link}
-              href="/contact/adoption"
+              href="/signup"
             >
               Start Your Journey
             </Button>
