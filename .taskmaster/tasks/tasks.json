@@ -814,7 +814,7 @@
             "description": "Build main admin dashboard layout with proper role-based access control and navigation.",
             "dependencies": [],
             "details": "Create src/lib/pages/dashboard/admin/index.tsx with admin-only access control. Use existing useUserProfile hook to verify admin role and restrict access. Display appropriate error message for non-admin users. Set up navigation structure for all admin management sections.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Log in as admin and verify dashboard loads. Log in as breeder/seeker and verify access is denied with appropriate error message."
           },
           {
