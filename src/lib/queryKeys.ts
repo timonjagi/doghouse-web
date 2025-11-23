@@ -14,6 +14,7 @@ export const queryKeys = {
     detail: (id: string): readonly string[] => ['users', 'detail', id] as const,
     profile: (id?: string): readonly string[] => ['users', 'detail', 'profile', id].filter(Boolean) as any,
     currentProfile: (): readonly string[] => ['users', 'current-profile'] as const,
+    featured: (limit?: number): readonly string[] => ['users', 'featured', limit].filter(Boolean) as any,
   },
 
   // Breed related queries
@@ -26,6 +27,7 @@ export const queryKeys = {
     userBreeds: (userId?: string): readonly string[] => ['breeds', 'user-breeds', userId].filter(Boolean) as any,
     available: (): readonly string[] => ['breeds', 'available'] as const,
     breedBreeders: (breedId: string): readonly string[] => ['breeds', 'breed-breeders', breedId] as const,
+    categories: (limit?: number): readonly string[] => ['breeds', 'categories', limit].filter(Boolean) as any,
   },
 
   // Listing related queries (unified litters + wanted listings)
@@ -37,6 +39,8 @@ export const queryKeys = {
     detail: (id: string): readonly string[] => ['listings', 'detail', id] as const,
     byOwner: (ownerId: string): readonly string[] => ['listings', 'owner', ownerId] as const,
     featured: (): readonly string[] => ['listings', 'featured'] as const,
+    popular: (limit?: number): readonly string[] => ['listings', 'popular', limit].filter(Boolean) as any,
+    new: (limit?: number): readonly string[] => ['listings', 'new', limit].filter(Boolean) as any,
     byType: (type: string): readonly string[] => ['listings', 'type', type] as const,
     byBreed: (breedId: string): readonly string[] => ['listings', 'breed', breedId] as const,
   },

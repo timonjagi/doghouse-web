@@ -7,305 +7,320 @@ import {
   Text,
   Button,
   useColorModeValue,
+  Heading,
+  SimpleGrid,
+  Container,
 } from '@chakra-ui/react';
-import { FiSearch, FiClipboard, FiTarget, FiTrendingUp, FiTrendingDown } from 'react-icons/fi';
+import { FiSearch, FiHeart, FiMapPin, FiFilter } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 
 import { useSeekerDashboardStats } from '../../../hooks/queries/useSeekerDashboardStats';
-import { MetricCard } from '../../../components/ui/charts/MetricCard';
-import { LineChart } from '../../../components/ui/charts/LineChart';
-import { PieChart } from '../../../components/ui/charts/PieChart';
+import { usePopularListings } from '../../../hooks/queries/usePopularListings';
+import { useNewListings } from '../../../hooks/queries/useNewListings';
+import { useFeaturedBreeders } from '../../../hooks/queries/useFeaturedBreeders';
+import { useBreedCategories } from '../../../hooks/queries/useBreedCategories';
 import { useUserProfile } from 'lib/hooks/queries/useUserProfile';
 import { Loader } from 'lib/components/ui/Loader';
+import { SearchBar } from '../../../components/ui/SearchBar';
+import ListingCard from '../../../components/ui/ListingCard';
+import { BreederCard } from '../../../components/ui/BreederCard';
+import { BreedCard } from '../../../components/ui/BreedCard';
 
 const SeekerDashboardOverview: React.FC = () => {
   const router = useRouter();
-  const { data: stats, isLoading } = useSeekerDashboardStats();
   const { data: profile, isLoading: profileLoading } = useUserProfile();
   const bgColor = useColorModeValue('gray.50', 'gray.900');
 
-  const handleQuickAction = (action: string) => {
-    switch (action) {
-      case 'browse-listings':
-        router.push('/dashboard/listings');
-        break;
-      case 'view-applications':
-        router.push('/dashboard/applications');
-        break;
-      case 'find-matches':
-        router.push('/dashboard/matches');
-        break;
-      case 'update-preferences':
-        router.push('/dashboard/account/preferences');
-        break;
+  // Discovery data hooks
+  const { data: popularListings, isLoading: popularLoading } = usePopularListings(6);
+  const { data: newListings, isLoading: newLoading } = useNewListings(6);
+  const { data: featuredBreeders, isLoading: breedersLoading } = useFeaturedBreeders(4);
+  const { data: breedCategories, isLoading: categoriesLoading } = useBreedCategories(8);
+
+  // Legacy stats for application cards
+  const { data: stats, isLoading: statsLoading } = useSeekerDashboardStats();
+
+  const handleListingClick = (listingId: string) => {
+    router.push(`/dashboard/listings/${listingId}`);
+  };
+
+  const handleBreederClick = (breederId: string) => {
+    router.push(`/dashboard/breeders/${breederId}`);
+  };
+
+  const handleBreedClick = (breedId: string) => {
+    router.push(`/dashboard/listings?breed=${breedId}`);
+  };
+
+  const formatPrice = (price?: number) => {
+    if (!price) return 'Price not set';
+    return `KSH ${price.toLocaleString()}`;
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'available': return 'green';
+      case 'reserved': return 'yellow';
+      case 'sold': return 'red';
+      default: return 'gray';
     }
   };
 
-  // Prepare application status data for pie chart
-  const applicationStatusData = React.useMemo(() => {
-    if (!stats?.activeApplications && !stats?.completedApplications) return [];
-
-    return [
-      {
-        name: 'Active',
-        value: stats.activeApplications || 0,
-      },
-      {
-        name: 'Completed',
-        value: stats.completedApplications || 0,
-      },
-    ].filter(item => item.value > 0);
-  }, [stats]);
-
-  if (isLoading) {
-    return (
-      <Loader />
-    );
+  if (profileLoading || statsLoading) {
+    return <Loader />;
   }
 
   return (
-    <Box p={6} bg={bgColor} minH="100vh">
+    <Container maxW="7xl" py={6}>
       <VStack spacing={8} align="stretch">
         {/* Welcome Header */}
-        <Box>
-          <Text fontSize="2xl" fontWeight="bold" mb={2}>
+        <Box textAlign="center">
+          <Heading size="lg" mb={2}>
             Welcome back, {profile?.display_name}!
-          </Text>
+          </Heading>
           <Text color="gray.600" fontSize="lg">
-            Find your perfect companion. Here's your application progress.
+            Discover your perfect furry companion
           </Text>
         </Box>
 
-        {/* Key Metrics */}
-        <Grid templateColumns="repeat(auto-fit, minmax(250px, 1fr))" gap={6}>
-          <MetricCard
-            title="Active Applications"
-            value={stats?.activeApplications || 0}
-            icon={FiClipboard}
-            colorScheme="blue"
-          />
-          <MetricCard
-            title="Completed Adoptions"
-            value={stats?.completedApplications || 0}
-            icon={FiTarget}
-            colorScheme="green"
-          />
-          <MetricCard
-            title="Total Spent"
-            value={`$${stats?.totalSpent?.toLocaleString() || 0}`}
-            change={{
-              value: stats?.spendingChange || 0,
-              type: (stats?.spendingChange || 0) >= 0 ? 'increase' : 'decrease',
-            }}
-            icon={FiTrendingUp}
-            colorScheme="purple"
-          />
-          <MetricCard
-            title="Application Rate"
-            value={`${stats?.applicationTrend?.[stats.applicationTrend.length - 1]?.applications || 0}/month`}
-            icon={FiTrendingDown}
-            colorScheme="orange"
-          />
-        </Grid>
+        {/* Search Bar */}
+        <SearchBar placeholder="Find your dream dog..." />
 
-        {/* Charts Section */}
-        <Grid templateColumns="repeat(auto-fit, minmax(400px, 1fr))" gap={6}>
-          <LineChart
-            data={stats?.applicationTrend || []}
-            xKey="month"
-            yKey="applications"
-            title="Application Trends"
-            color="#3182ce"
-            height="300px"
-          />
-          <PieChart
-            data={applicationStatusData}
-            title="Application Status"
-            height="300px"
-          />
-        </Grid>
-
-        {/* Recommended Listings */}
-        {stats?.recommendedListings && stats.recommendedListings.length > 0 && (
-          <Box>
-            <Text fontSize="xl" fontWeight="semibold" mb={4}>
-              Recommended for You
-            </Text>
-            <Grid templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gap={4}>
-              {stats.recommendedListings.map((listing) => (
-                <Box
+        {/* Popular Listings Section */}
+        <Box>
+          <HStack justify="space-between" align="center" mb={4}>
+            <Heading size="md">Popular Listings</Heading>
+            <Button
+              variant="ghost"
+              colorScheme="blue"
+              onClick={() => router.push('/dashboard/listings')}
+            >
+              View All
+            </Button>
+          </HStack>
+          {popularLoading ? (
+            <Loader />
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+              {popularListings?.map((listing) => (
+                <ListingCard
                   key={listing.id}
-                  p={4}
+                  listing={listing}
+                  handleListingClick={handleListingClick}
+                  formatPrice={formatPrice}
+                  getStatusColor={getStatusColor}
+                />
+              ))}
+            </SimpleGrid>
+          )}
+        </Box>
+
+        {/* New Arrivals Section */}
+        <Box>
+          <HStack justify="space-between" align="center" mb={4}>
+            <Heading size="md">New Arrivals</Heading>
+            <Button
+              variant="ghost"
+              colorScheme="blue"
+              onClick={() => router.push('/dashboard/listings?sort=newest')}
+            >
+              View All
+            </Button>
+          </HStack>
+          {newLoading ? (
+            <Loader />
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+              {newListings?.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  handleListingClick={handleListingClick}
+                  formatPrice={formatPrice}
+                  getStatusColor={getStatusColor}
+                />
+              ))}
+            </SimpleGrid>
+          )}
+        </Box>
+
+        {/* Featured Breeders Section */}
+        <Box>
+          <HStack justify="space-between" align="center" mb={4}>
+            <Heading size="md">Featured Breeders</Heading>
+            <Button
+              variant="ghost"
+              colorScheme="blue"
+              onClick={() => router.push('/dashboard/breeders')}
+            >
+              View All
+            </Button>
+          </HStack>
+          {breedersLoading ? (
+            <Loader />
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+              {featuredBreeders?.map((breeder) => (
+                <BreederCard
+                  key={breeder.id}
+                  breeder={breeder}
+                />
+              ))}
+            </SimpleGrid>
+          )}
+        </Box>
+
+        {/* Breed Categories Section */}
+        <Box>
+          <HStack justify="space-between" align="center" mb={4}>
+            <Heading size="md">Browse by Breed</Heading>
+            <Button
+              variant="ghost"
+              colorScheme="blue"
+              onClick={() => router.push('/dashboard/breeds')}
+            >
+              View All Breeds
+            </Button>
+          </HStack>
+          {categoriesLoading ? (
+            <Loader />
+          ) : (
+            <SimpleGrid columns={{ base: 2, md: 4, lg: 8 }} spacing={4}>
+              {breedCategories?.map((category) => (
+                <BreedCard
+                  key={category.id}
+                  userBreed={{
+                    id: category.id,
+                    breeds: {
+                      name: category.name,
+                      featured_image_url: category.featuredImage,
+                    },
+                    breeder_count: category.listingCount,
+                  }}
+                  userRole="seeker"
+                  onClick={() => handleBreedClick(category.id)}
+                />
+              ))}
+            </SimpleGrid>
+          )}
+        </Box>
+
+        {/* Application Status Cards */}
+        {stats && (stats.activeApplications > 0 || stats.completedApplications > 0) && (
+          <Box>
+            <Heading size="md" mb={4}>Your Applications</Heading>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+              {stats.activeApplications > 0 && (
+                <Box
+                  p={6}
                   bg="white"
                   borderRadius="lg"
                   shadow="md"
                   border="1px"
                   borderColor="gray.200"
                   cursor="pointer"
-                  onClick={() => router.push(`/dashboard/listings/${listing.id}`)}
+                  onClick={() => router.push('/dashboard/applications')}
                   _hover={{ transform: 'translateY(-2px)', shadow: 'lg' }}
                   transition="all 0.2s"
                 >
-                  <HStack spacing={3} mb={3}>
-                    <Box
-                      w="60px"
-                      h="60px"
-                      borderRadius="md"
-                      bg="gray.200"
-                      bgImage={listing.photos[0] ? `url(${listing.photos[0]})` : undefined}
-                      bgSize="cover"
-                      bgPosition="center"
-                    />
-                    <Box flex={1}>
-                      <Text fontWeight="semibold" fontSize="md" noOfLines={1}>
-                        {listing.title}
-                      </Text>
-                      <Text fontSize="sm" color="gray.600">
-                        {listing.breed} • {listing.location}
-                      </Text>
-                      <HStack spacing={2} mt={1}>
-                        <Text fontSize="sm" color="green.600" fontWeight="medium">
-                          {listing.matchScore}% match
-                        </Text>
-                        {listing.price && (
-                          <Text fontSize="sm" color="gray.500">
-                            ${listing.price}
-                          </Text>
-                        )}
-                      </HStack>
-                    </Box>
-                  </HStack>
-                  <Button
-                    size="sm"
-                    colorScheme="blue"
-                    variant="outline"
-                    width="full"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(`/dashboard/listings/${listing.id}`);
-                    }}
-                  >
-                    View Details
-                  </Button>
+                  <VStack spacing={2} align="center">
+                    <Text fontSize="3xl">📋</Text>
+                    <Text fontSize="2xl" fontWeight="bold" color="blue.600">
+                      {stats.activeApplications}
+                    </Text>
+                    <Text fontWeight="medium">Active Applications</Text>
+                    <Text fontSize="sm" color="gray.600">
+                      Track your ongoing adoption processes
+                    </Text>
+                  </VStack>
                 </Box>
-              ))}
-            </Grid>
+              )}
+
+              {stats.completedApplications > 0 && (
+                <Box
+                  p={6}
+                  bg="white"
+                  borderRadius="lg"
+                  shadow="md"
+                  border="1px"
+                  borderColor="gray.200"
+                  cursor="pointer"
+                  onClick={() => router.push('/dashboard/applications')}
+                  _hover={{ transform: 'translateY(-2px)', shadow: 'lg' }}
+                  transition="all 0.2s"
+                >
+                  <VStack spacing={2} align="center">
+                    <Text fontSize="3xl">🏆</Text>
+                    <Text fontSize="2xl" fontWeight="bold" color="green.600">
+                      {stats.completedApplications}
+                    </Text>
+                    <Text fontWeight="medium">Successful Adoptions</Text>
+                    <Text fontSize="sm" color="gray.600">
+                      Congratulations on finding your companions!
+                    </Text>
+                  </VStack>
+                </Box>
+              )}
+            </SimpleGrid>
           </Box>
         )}
 
         {/* Quick Actions */}
         <Box>
-          <Text fontSize="xl" fontWeight="semibold" mb={4}>
-            Quick Actions
-          </Text>
-          <Grid templateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap={4}>
+          <Heading size="md" mb={4}>Quick Actions</Heading>
+          <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4}>
             <Button
               leftIcon={<FiSearch />}
               colorScheme="blue"
               variant="outline"
               size="lg"
               height="60px"
-              onClick={() => handleQuickAction('browse-listings')}
+              onClick={() => router.push('/dashboard/listings')}
               _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
               transition="all 0.2s"
             >
-              Browse Listings
+              Browse All
             </Button>
             <Button
-              leftIcon={<FiClipboard />}
-              colorScheme="orange"
+              leftIcon={<FiHeart />}
+              colorScheme="pink"
               variant="outline"
               size="lg"
               height="60px"
-              onClick={() => handleQuickAction('view-applications')}
+              onClick={() => router.push('/dashboard/matches')}
               _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
               transition="all 0.2s"
             >
-              My Applications
+              My Matches
             </Button>
             <Button
-              leftIcon={<FiTarget />}
+              leftIcon={<FiMapPin />}
               colorScheme="green"
               variant="outline"
               size="lg"
               height="60px"
-              onClick={() => handleQuickAction('find-matches')}
+              onClick={() => router.push('/dashboard/listings?nearby=true')}
               _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
               transition="all 0.2s"
             >
-              Find Matches
+              Nearby
             </Button>
             <Button
-              leftIcon={<FiTrendingUp />}
+              leftIcon={<FiFilter />}
               colorScheme="purple"
               variant="outline"
               size="lg"
               height="60px"
-              onClick={() => handleQuickAction('update-preferences')}
+              onClick={() => router.push('/dashboard/account/preferences')}
               _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
               transition="all 0.2s"
             >
-              Update Preferences
+              Preferences
             </Button>
-          </Grid>
-        </Box>
-
-        {/* Recent Activity */}
-        <Box>
-          <Text fontSize="xl" fontWeight="semibold" mb={4}>
-            Recent Activity
-          </Text>
-          <VStack spacing={3} align="stretch">
-            {stats?.recentActivity?.map((activity) => (
-              <HStack
-                key={activity.id}
-                p={4}
-                bg="white"
-                borderRadius="md"
-                shadow="sm"
-                border="1px"
-                borderColor="gray.200"
-              >
-                <Box flex={1}>
-                  <Text fontWeight="medium">{activity.title}</Text>
-                  <Text fontSize="sm" color="gray.500">
-                    {new Date(activity.timestamp).toLocaleDateString()}
-                  </Text>
-                </Box>
-                {activity.status && (
-                  <Text
-                    fontSize="sm"
-                    px={2}
-                    py={1}
-                    borderRadius="sm"
-                    bg={
-                      activity.status === 'pending'
-                        ? 'orange.100'
-                        : activity.status === 'approved'
-                          ? 'green.100'
-                          : activity.status === 'submitted'
-                            ? 'blue.100'
-                            : 'gray.100'
-                    }
-                    color={
-                      activity.status === 'pending'
-                        ? 'orange.800'
-                        : activity.status === 'approved'
-                          ? 'green.800'
-                          : activity.status === 'submitted'
-                            ? 'blue.800'
-                            : 'gray.800'
-                    }
-                  >
-                    {activity.status}
-                  </Text>
-                )}
-              </HStack>
-            )) || []}
-          </VStack>
+          </SimpleGrid>
         </Box>
       </VStack>
-    </Box>
+    </Container>
   );
 };
 
