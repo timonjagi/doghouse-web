@@ -67,6 +67,7 @@ function ListingCard({
             w="full"
             h="200px"
             mb={4}
+            aspectRatio="1/1"
             fallback={<Skeleton width="100%" height="100%" />}
             loading="lazy"
           />

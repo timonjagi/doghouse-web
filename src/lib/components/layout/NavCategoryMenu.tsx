@@ -88,7 +88,7 @@ export const DesktopNavCategoryMenu: React.FC<NavCategoryMenuProps> = ({
       href: '/dashboard',
     },
     ...(breeds.length > 0 ? [{ label: 'Popular Breeds', href: '/dashboard/search?tab=breeds' }] : []),
-    ...(listings.length > 0 ? [{ label: 'Listings', href: '/dashboard/search?tab=listings' }] : []),
+    ...(listings.length > 0 ? [{ label: 'Available Pets', href: '/dashboard/search?tab=listings' }] : []),
 
     ...(breeders.length > 0 ? [{ label: 'Breeders', href: '/dashboard/search?tab=breeders' }] : []),
     { label: 'Services', href: '/dashboard/search?tab=services' },

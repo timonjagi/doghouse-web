@@ -117,9 +117,9 @@ export const navigationConfig: NavigationConfig = {
       title: "Dashboard",
       items: [
         {
-          label: "Overview",
+          label: "Home",
           href: "/dashboard",
-          icon: FiGrid,
+          icon: FiHome,
           ariaLabel: "Dashboard home"
         },
         {
@@ -238,7 +238,7 @@ export const navigationConfig: NavigationConfig = {
           ariaLabel: "Manage all listings"
         },
         {
-          label: "Applications",
+          label: "Adoptions",
           href: "/dashboard/admin/applications",
           icon: FiClipboard,
           ariaLabel: "My applications"

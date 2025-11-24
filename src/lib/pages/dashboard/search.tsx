@@ -24,7 +24,7 @@ import {
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import ListingCard from '../../../lib/components/ui/ListingCard'
-import { BreedCard } from '../../../lib/components/ui/BreedCard'
+import { BreedCard } from '../../../lib/components/ui/BreedCard2'
 import { useListings, useIncrementListingViews } from '../../../lib/hooks/queries/useListings'
 import { useAllAvailableUserBreeds } from '../../../lib/hooks/queries/useUserBreeds'
 import { Loader } from 'lib/components/ui/Loader'
@@ -302,6 +302,9 @@ export const UnifiedSearchPage = () => {
                             id: breed.id,
                             breeds: {
                               name: breed.breeds?.name || '',
+                              breed_group: breed.breeds?.group || '',
+                              description: breed.breeds?.description || '',
+                              images: breed.breeds?.images || [],
                               featured_image_url: breed.breeds?.featured_image_url,
                             },
                             breeder_count: breed.breeder_count,
