@@ -45,27 +45,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   // Show loading state while checking auth
   if (profileLoading) {
     return (
-      <Flex
-        flex="1"
-        bg="bg-accent"
-        color="on-accent"
-        maxW={{ base: "full", sm: "xs" }}
-        justify="center"
-        align="center"
-        width="full"
-        h="full"
-        as="nav"
-        direction="column"
-      >
-      </Flex>
+      <></>
     );
   }
 
   return (
     <Flex
       flex="1"
-      bg="bg-accent"
-      color="on-accent"
+      bg={profile?.role === "seeker" ? "bg-canvas" : "bg-accent"}
+      color={profile?.role === "seeker" ? "on-bg" : "on-accent"}
       maxW={{ base: "full", sm: "xs" }}
       justify="space-between"
       width="full"
@@ -117,7 +105,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
     >
       <Stack spacing="2">
 
-        <Logo />
+        <Logo color={profile?.role === "seeker" ? "on-brand" : "on-accent"} />
 
         <Stack pt={2}>
           {/* Render dynamic navigation sections */}
@@ -203,7 +191,7 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
         py={{ base: "6", sm: "8" }}
         px={{ base: "4", sm: "6" }}
       >
-        <Logo />
+        <Logo color="on-accent" />
 
         <Stack spacing="3" pt={2}>
           <NavButton

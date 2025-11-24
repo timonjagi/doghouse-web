@@ -14,6 +14,11 @@ import {
 import { ReactNode } from "react";
 import { useUserProfile } from "lib/hooks/queries";
 import { BottomNavbar } from "./BottomNavbar";
+import { MobileBottomNav } from "./MobileBottomNav";
+import DashboardHeader from "./DashboardHeader";
+import { TopBanner } from "../ui/TopBanner";
+import { DashboardLayout } from "./DashboardLayout";
+import { HeaderFooterLayout } from "./HeaderFooterLayout";
 
 type LayoutProps = {
   children: ReactNode;
@@ -22,57 +27,58 @@ type LayoutProps = {
 const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
 
-  const routes: any = [
-    { path: "/", layout: HeaderLayout },
-    { path: "/login", layout: HeaderLayout },
-    { path: "/signup", layout: HeaderLayout },
-    { path: "/onboarding", layout: HeaderLayout },
-    { path: "/breeds", layout: HeaderLayout },
-    { path: "/breeds/[breedName]", layout: HeaderLayout },
-    { path: "/breeders", layout: HeaderLayout },
-    { path: "/breeders/[id]", layout: HeaderLayout },
-    { path: "/contact", layout: HeaderLayout },
-    { path: "/about", layout: HeaderLayout },
-    { path: '/blog', layout: HeaderLayout },
-    { path: '/blog/[slug]', layout: HeaderLayout },
-    { path: "/terms", layout: HeaderLayout },
-    { path: "/privacy", layout: HeaderLayout },
+  const headerFooterRoutes: any = [
+    { path: "/", layout: 'headerfooter' },
+    { path: "/login", layout: 'headerfooter' },
+    { path: "/signup", layout: 'headerfooter' },
+    { path: "/onboarding", layout: 'headerfooter' },
+    { path: "/breeds", layout: 'headerfooter' },
+    { path: "/breeds/[breedName]", layout: 'headerfooter' },
+    { path: "/breeders", layout: 'headerfooter' },
+    { path: "/breeders/[id]", layout: 'headerfooter' },
+    { path: "/contact", layout: 'headerfooter' },
+    { path: "/about", layout: 'headerfooter' },
+    { path: '/blog', layout: 'headerfooter' },
+    { path: '/blog/[slug]', layout: 'headerfooter' },
+    { path: "/terms", layout: 'headerfooter' },
+    { path: "/privacy", layout: 'headerfooter' },
+  ]
 
+  const dashboardRoutes = [
     // Dashboard routes
-    { path: "/dashboard", layout: DashboardLayout },
-    { path: "/dashboard/inbox", layout: DashboardLayout },
-    { path: "/dashboard/inbox/[chatId]", layout: DashboardLayout },
-    { path: "/dashboard/breeds", layout: DashboardLayout },
-    { path: "/dashboard/breeds/[id]", layout: DashboardLayout },
-    { path: "/dashboard/breeders", layout: DashboardLayout },
-    { path: "/dashboard/breeders/[id]", layout: DashboardLayout },
-    { path: "/dashboard/listings", layout: DashboardLayout },
-    { path: "/dashboard/listings/[id]", layout: DashboardLayout },
-    { path: "/dashboard/matches", layout: DashboardLayout },
-    { path: "/dashboard/applications", layout: DashboardLayout },
-    { path: "/dashboard/applications/[id]", layout: DashboardLayout },
-    { path: "/dashboard/account", layout: DashboardLayout },
-    { path: "/dashboard/account/notifications", layout: DashboardLayout },
-    { path: "/dashboard/account/profile", layout: DashboardLayout },
-    { path: "/dashboard/account/settings", layout: DashboardLayout },
-    { path: "/dashboard/account/billing", layout: DashboardLayout },
-    { path: "/dashboard/account/preferences", layout: DashboardLayout },
-    { path: "/dashboard/account/kennel", layout: DashboardLayout },
+    { path: "/dashboard", layout: 'dashboard' },
+    { path: "/dashboard/search", layout: 'dashboard' },
+    { path: "/dashboard/inbox", layout: 'dashboard' },
+    { path: "/dashboard/inbox/[chatId]", layout: 'dashboard' },
+    { path: "/dashboard/breeds", layout: 'dashboard' },
+    { path: "/dashboard/breeds/[id]", layout: 'dashboard' },
+    { path: "/dashboard/breeders", layout: 'dashboard' },
+    { path: "/dashboard/breeders/[id]", layout: 'dashboard' },
+    { path: "/dashboard/listings", layout: 'dashboard' },
+    { path: "/dashboard/listings/[id]", layout: 'dashboard' },
+    { path: "/dashboard/wishlist", layout: 'dashboard' },
+    { path: "/dashboard/applications", layout: 'dashboard' },
+    { path: "/dashboard/applications/[id]", layout: 'dashboard' },
+    { path: "/dashboard/account", layout: 'dashboard' },
+    { path: "/dashboard/account/notifications", layout: 'dashboard' },
+    { path: "/dashboard/account/profile", layout: 'dashboard' },
+    { path: "/dashboard/account/settings", layout: 'dashboard' },
+    { path: "/dashboard/account/billing", layout: 'dashboard' },
+    { path: "/dashboard/account/preferences", layout: 'dashboard' },
+    { path: "/dashboard/account/kennel", layout: 'dashboard' },
 
 
     // Admin dashboard routes
-    { path: "/dashboard/admin", layout: DashboardLayout },
-    { path: "/dashboard/admin/verification", layout: DashboardLayout },
-    { path: "/dashboard/admin/users", layout: DashboardLayout },
-    { path: "/dashboard/admin/listings", layout: DashboardLayout },
-    { path: "/dashboard/admin/analytics", layout: DashboardLayout },
-    { path: "/dashboard/admin/profile", layout: DashboardLayout },
-
-    // Legacy routes (for backward compatibility)
+    { path: "/dashboard/admin", layout: 'dashboard' },
+    { path: "/dashboard/admin/verification", layout: 'dashboard' },
+    { path: "/dashboard/admin/users", layout: 'dashboard' },
+    { path: "/dashboard/admin/listings", layout: 'dashboard' },
+    { path: "/dashboard/admin/analytics", layout: 'dashboard' },
+    { path: "/dashboard/admin/profile", layout: 'dashboard' },
 
   ];
 
-  const matchedRoute = routes.find((route) => {
+  const matchedRoute = [...headerFooterRoutes, ...dashboardRoutes].find((route) => {
     if (route.path.includes("[")) {
       // If the route has square brackets, treat it as a dynamic route
       const regex = new RegExp(`^${route.path.replace(/\[.*\]/, ".*")}$`);
@@ -86,11 +92,13 @@ const Layout = ({ children }: LayoutProps) => {
     return <div>Route not found</div>; // Handle not found routes
   }
 
-  const { layout: LayoutComponent } = matchedRoute;
-  console.log("matched route", matchedRoute);
+  const { layout } = matchedRoute;
+
+  // switch case
   return (
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out" overflow="hidden">
-      <LayoutComponent>{children}</LayoutComponent>
+      {layout === 'dashboard' && <DashboardLayout>{children}</DashboardLayout>}
+      {layout === 'headerfooter' && <HeaderFooterLayout>{children}</HeaderFooterLayout>}
     </Box >
   );
 };
@@ -98,51 +106,4 @@ const Layout = ({ children }: LayoutProps) => {
 export default Layout;
 
 // Separate layout components based on your needs
-const HeaderLayout: React.FC<LayoutProps> = ({ children }) => {
-  const router = useRouter();
-  const isMobile = useBreakpointValue({ base: true, md: false });
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
 
-  return (
-    <>
-      {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header profile={profile} />}
-      <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }} overflow="auto"
-      >
-        {children}{" "}
-      </Box>
-    </>
-  );
-};
-
-const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
-  const isDesktop = useBreakpointValue({ base: false, md: true });
-  const isMobile = useBreakpointValue({ base: true, md: false });
-  const { onClose } = useDisclosure();
-
-  return (
-    <>
-      {isMobile && <Navbar />}
-      <Flex
-        as="section"
-        direction={{ base: "column", md: "row" }}
-        bg="bg-canvas"
-        overflow="auto"
-        h={{ base: "calc(100dvh - 128px)", md: "100vh" }}
-        w="100vw"
-        maxW="100vw"
-      >
-        {isDesktop &&
-          <Sidebar onClose={onClose} />
-        }
-
-        <Box bg="bg-canvas" flex="1" overflow="auto" w="full">
-          <Box height="full">
-            {isDesktop && <Navbar />}
-            <RouteGuard>{children}</RouteGuard>
-          </Box>
-        </Box>
-      </Flex>
-      {isMobile && <BottomNavbar />}
-    </>
-  );
-};

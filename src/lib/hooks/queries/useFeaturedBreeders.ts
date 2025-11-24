@@ -27,9 +27,9 @@ export const useFeaturedBreeders = (limit: number = 4) => {
           )
         `)
         .eq('role', 'breeder')
-        .not('breeder_profiles.verified_at', 'is', null)
-        .eq('listings.status', 'available')
-        .order('breeder_profiles.rating', { ascending: false, nullsFirst: false })
+        // .not('breeder_profiles.verified_at', 'is', null)
+        //.eq('listings.status', 'available')
+        //.order('breeder_profiles.rating', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(limit);
 

@@ -24,7 +24,7 @@ import {
 import * as React from "react";
 import { Logo } from "./Logo";
 
-import { FiBell, FiCheck } from "react-icons/fi";
+import { FiBell, FiCheck, FiHelpCircle } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
 import { NotificationsDrawer } from "./NotificationsDrawer";
@@ -32,6 +32,7 @@ import Link from "next/link";
 import { useMarkAllNotificationsAsRead, useNotifications, useUnreadNotificationsCount } from "lib/hooks/queries/useNotifications";
 import UserProfileMenu from "./UserProfileMenu";
 import { useCurrentUser } from "lib/hooks/queries";
+import { ToggleButton } from "./ToggleButton";
 
 export const Navbar = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
@@ -114,23 +115,37 @@ export const Navbar = () => {
             ))}
           </Breadcrumb>
           <Spacer />
-          <ButtonGroup variant="ghost-on-accent" spacing="4">
 
-            <Box position="relative">
-              <IconButton
-                icon={<FiBell />}
-                aria-label="Notifications"
-                onClick={onToggle}
-                variant="on-accent"
-              />
-              {unreadCount > 0 && <Circle size="2" bg="blue.400" position="absolute" top={0} right={0} zIndex={1} />}
-            </Box>
+          <ButtonGroup variant="ghost-on-accent" spacing="2">
+            <Button
+              variant="ghost"
+              onClick={onToggle}
+              m={0}
+              p={0}
+              aria-label="Help Center"            >
+              <Icon as={FiHelpCircle} boxSize="5" color="subtle" />
 
-            <UserProfileMenu
-              name={userProfile?.display_name || ""}
-              image={userProfile?.profile_photo_url || ""}
-              email={userProfile?.email || ""}
+            </Button>
+
+            <Button
+              variant="ghost"
+              onClick={onToggle}
+              m={0}
+              p={0}
+              aria-label="Open Notifications Drawer"
+            >
+              <Icon as={FiBell} boxSize="5" color="subtle" />
+              {unreadCount > 0 && <Circle size="2" bg="brand.100" position="absolute" top={0} right={1} zIndex={1} />}
+
+            </Button>
+
+
+            <ToggleButton
+              isOpen={isOpen}
+              aria-label="Open Menu"
+              onClick={onToggle}
             />
+
           </ButtonGroup>
         </HStack>
       )}
@@ -176,7 +191,6 @@ export const Navbar = () => {
           <NotificationsDrawer
             isOpen={isOpen}
             onClose={onClose}
-            userProfile={userProfile!}
             notifications={notifications!}
             isLoading={isLoading}
             error={error}

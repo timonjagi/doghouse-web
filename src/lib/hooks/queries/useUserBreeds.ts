@@ -97,7 +97,7 @@ export const useUserBreed = (breedId: string) => {
   });
 };
 
-export const useAllAvailableUserBreeds = () => {
+export const useAllAvailableUserBreeds = (limit: number = 4) => {
   return useQuery({
     queryKey: queryKeys.breeds.available(),
     queryFn: async () => {
@@ -136,7 +136,8 @@ export const useAllAvailableUserBreeds = () => {
             )
           )
         `)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+
 
       if (error) throw error;
 
@@ -156,7 +157,7 @@ export const useAllAvailableUserBreeds = () => {
         return acc;
       }, [] as any[]) || [];
 
-      return uniqueBreeds;
+      return uniqueBreeds.slice(0, limit);
     },
     staleTime: 1000 * 60 * 15, // 15 minutes - available breeds don't change often
   });

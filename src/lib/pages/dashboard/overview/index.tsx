@@ -59,14 +59,18 @@ const DashboardHome = () => {
   }
 
   // Show role-specific dashboard if user is onboarded
-  if (profile?.onboarding_completed) {
-    if (profile.role === 'breeder') {
-      return <BreederDashboardOverview />;
-    } else if (profile.role === 'seeker') {
-      return <SeekerDashboardOverview />;
-    } else if (profile.role === 'admin') {
-      return <AdminDashboardOverview />;
+  const renderRoleSpecificDashboardOverview = () => {
+    switch (profile?.role) {
+      case 'breeder':
+        return <BreederDashboardOverview />;
+      case 'seeker':
+        return <SeekerDashboardOverview />;
+      case 'admin':
+        return <AdminDashboardOverview />;
+      default:
+        break;
     }
+
   }
 
   // Show onboarding flow for new users
@@ -83,6 +87,7 @@ const DashboardHome = () => {
         />
       )}
 
+      {renderRoleSpecificDashboardOverview()}
       <Modal
         onClose={onClose}
         isOpen={showWelcomeModal}

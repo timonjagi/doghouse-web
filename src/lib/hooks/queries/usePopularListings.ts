@@ -30,7 +30,7 @@ export const usePopularListings = (limit: number = 6) => {
             profile_photo_url
           )
         `)
-        .eq('status', 'available')
+        // .eq('status', 'available')
         .order('view_count', { ascending: false })
         .order('updated_at', { ascending: false })
         .limit(limit);

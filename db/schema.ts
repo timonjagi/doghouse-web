@@ -210,6 +210,17 @@ export const activity_logs = pgTable("activity_logs", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
+// WISHLISTS (user saved listings and user_breeds for notifications)
+export const wishlists = pgTable("wishlists", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  user_id: uuid("user_id").notNull().references(() => users.id),
+  listing_id: uuid("listing_id").references(() => listings.id), // optional - for saved listings
+  user_breed_id: uuid("user_breed_id").references(() => user_breeds.id), // optional - for saved breeds without listings
+  notify_when_available: boolean("notify_when_available").notNull().default(false),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Optional transactions table for reservation payments
 export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -238,3 +249,4 @@ export type Message = typeof messages.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type ActivityLog = typeof activity_logs.$inferSelect;
 export type Transaction = typeof transactions.$inferSelect;
+export type Wishlist = typeof wishlists.$inferSelect;
