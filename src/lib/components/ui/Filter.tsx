@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Popover, Box, Flex, HStack, SimpleGrid, Text, useColorMode as mode, Stack } from '@chakra-ui/react'
 import { CheckboxFilter } from './CheckboxFilter'
 // import { ColorPicker } from './ColorPicker'
@@ -9,6 +9,20 @@ import { FilterPopoverButton, FilterPopoverContent } from './FilterPopover'
 import { useFilterState } from './useFilterState'
 import { MobileFilter } from './MobileFilter'
 import { SortbySelect } from './SortBySelect'
+import PetTypePicker from './PetTypePicker'
+import { useRouter } from 'next/router'
+
+const breedFilters = {
+  defaultValue: [],
+  options: [
+    { label: '', value: 'golden-retriever', count: 25 },
+    { label: 'Labrador Retriever', value: 'labrador-retriever', count: 30 },
+    { label: 'German Shepherd', value: 'german-shepherd', count: 15 },
+    { label: 'Bulldog', value: 'bulldog', count: 12 },
+    { label: 'Poodle', value: 'poodle', count: 18 },
+    { label: 'Beagle', value: 'beagle', count: 10 },
+  ],
+}
 
 // Breed filter options for dog breeds
 const breedGroupFilters = {
@@ -63,6 +77,7 @@ export const SizeFilterPopover = ({ onFilterChange }: { onFilterChange?: (filter
         isCancelDisabled={!state.canCancel}
         onClickApply={state.onSubmit}
         onClickCancel={state.onReset}
+
       >
         <Box px="2" pt="2">
           <SizePicker
@@ -112,6 +127,35 @@ export const PriceFilterPopover = ({ onFilterChange }: { onFilterChange?: (filte
   );
 };
 
+export const PetTypeFilterPopover = ({ onFilterChange }: { onFilterChange?: (filters: any) => void }) => {
+
+  const state = useFilterState({
+    defaultValue: '',
+    onSubmit: (value) => {
+      if (onFilterChange) {
+        onFilterChange({ pet_type: value });
+      }
+    },
+  });
+
+  return (
+    <Popover placement="bottom-start" colorScheme='brand'>
+      <FilterPopoverButton label="Pet Type" selected={!!state.value} />
+      <FilterPopoverContent
+        isCancelDisabled={!state.canCancel}
+        onClickApply={state.onSubmit}
+        onClickCancel={state.onReset}
+      >
+        <PetTypePicker
+          hideLabel
+          value={state.value}
+          onChange={state.onChange}
+        />
+      </FilterPopoverContent>
+    </Popover>
+  );
+};
+
 export const BreedGroupFilterPopover = ({ onFilterChange }: { onFilterChange?: (filters: any) => void }) => {
   const state = useFilterState({
     defaultValue: [],
@@ -124,7 +168,8 @@ export const BreedGroupFilterPopover = ({ onFilterChange }: { onFilterChange?: (
 
   return (
     <Popover placement="bottom-start">
-      <FilterPopoverButton label="Breed" selected={state.value && state.value.length > 0} />
+
+      <FilterPopoverButton label="Breed Group" selected={state.value && state.value.length > 0} />
       <FilterPopoverContent
         isCancelDisabled={!state.canCancel}
         onClickApply={state.onSubmit}
@@ -135,6 +180,36 @@ export const BreedGroupFilterPopover = ({ onFilterChange }: { onFilterChange?: (
           value={state.value}
           onChange={(v: string[]) => state.onChange(v)}
           options={breedGroupFilters.options}
+        />
+      </FilterPopoverContent>
+    </Popover>
+  );
+};
+
+export const BreedFilterPopover = ({ onFilterChange }: { onFilterChange?: (filters: any) => void }) => {
+  const state = useFilterState({
+    defaultValue: [],
+    onSubmit: (value) => {
+      if (onFilterChange) {
+        onFilterChange({ tab: 'listings', breeds: value });
+      }
+    },
+  });
+
+  return (
+    <Popover placement="bottom-start">
+
+      <FilterPopoverButton label="Breed" selected={state.value && state.value.length > 0} />
+      <FilterPopoverContent
+        isCancelDisabled={!state.canCancel}
+        onClickApply={state.onSubmit}
+        onClickCancel={state.onReset}
+      >
+        <CheckboxFilter
+          hideLabel
+          value={state.value}
+          onChange={(v: string[]) => state.onChange(v)}
+          options={breedFilters.options}
           showSearch
         />
       </FilterPopoverContent>
@@ -185,10 +260,69 @@ export const LocationFilterPopover = ({ onFilterChange }: { onFilterChange?: (fi
   );
 };
 
+
 // Alias for backward compatibility and clarity
 export const CheckboxFilterPopover = BreedGroupFilterPopover;
 
 export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ onFilterChange }) => {
+  const router = useRouter();
+  const [currentPath, setCurrentPath] = useState(router.pathname);
+
+  useEffect(() => {
+    // console.log('Current path:', router.pathname);
+
+    const {
+      q: searchQuery,
+      tab,
+      sort,
+      breed,
+      featured,
+      rescue,
+      training,
+      care,
+      ...otherQueries
+    } = router.query;
+
+    setCurrentPath(tab as string || '');
+  }, [router.query]);
+
+  const breedFilterState = useFilterState({
+    defaultValue: [],
+    onSubmit: (value) => {
+      if (onFilterChange) {
+        onFilterChange({ breeds: value });
+      }
+    },
+  });
+
+
+  const breedGroupFilterState = useFilterState({
+    defaultValue: [],
+    onSubmit: (value) => {
+      if (onFilterChange) {
+        onFilterChange({ group: value });
+      }
+    },
+  });
+
+  const priceFilterState = useFilterState({
+    defaultValue: priceFilter.defaultValue,
+    onSubmit: (value) => {
+      if (onFilterChange) {
+        onFilterChange({ price_min: value[0], price_max: value[1] });
+      }
+    },
+  });
+
+  const sizeFilterState = useFilterState({
+    defaultValue: '',
+    onSubmit: (value) => {
+      if (onFilterChange) {
+        onFilterChange({ size: value });
+      }
+    },
+  });
+
   return (
     <Box py="4">
       <Flex
@@ -196,21 +330,41 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
         align="center"
         display={{ base: 'none', md: 'flex' }}
       >
-        <Stack spacing="6" direction={{ base: 'column', md: 'row' }} align="center"
+        <Stack
+          spacing="6"
+          direction={{ base: 'column', md: 'row' }}
+          align="center"
         >
           <Text fontWeight="medium" fontSize="sm">
             Filter by
           </Text>
+
+
           <SimpleGrid
             display="inline-grid"
             spacing="4"
             columns={{ base: 1, md: 4 }}
           >
-            <BreedGroupFilterPopover onFilterChange={(f) => onFilterChange(f)} />
-            <SizeFilterPopover onFilterChange={(f) => onFilterChange(f)} />
-            <PriceFilterPopover onFilterChange={(f) => onFilterChange(f)} />
+            <PetTypeFilterPopover
+              onFilterChange={(f) => onFilterChange && onFilterChange(f)}
+            />
+            {currentPath.includes('breeds') && (
+              <BreedGroupFilterPopover
+                onFilterChange={(f) => onFilterChange(f)}
+              />
+            )}
 
+            {currentPath.includes('listings') && (
+              <BreedFilterPopover
+                onFilterChange={(f) => onFilterChange(f)}
+              />
+            )}
             <LocationFilterPopover onFilterChange={(f) => onFilterChange(f)} />
+
+
+            {currentPath.includes('listings') && <PriceFilterPopover onFilterChange={(f) => onFilterChange(f)} />}
+
+            {currentPath.includes('breeds') && <SizeFilterPopover onFilterChange={(f) => onFilterChange(f)} />}
           </SimpleGrid>
         </Stack>
 
@@ -219,6 +373,48 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
       </Flex>
 
 
+      <Stack display={{ base: 'flex', md: 'none' }}
+      >
+        <PetTypePicker onFilterChange={(f) => onFilterChange(f)} />
+
+        <CheckboxFilter
+          hideLabel
+          value={breedGroupFilterState.value}
+          onChange={(v: string[]) => breedGroupFilterState.onChange(v)}
+          options={breedGroupFilters.options}
+        />
+
+        <CheckboxFilter
+          hideLabel
+          value={breedFilterState.value}
+          onChange={(v: string[]) => breedFilterState.onChange(v)}
+          options={breedFilters.options}
+        />
+
+        <Box px="2" pt="2">
+          <PriceRangePicker
+            step={1000}
+            min={priceFilter.min}
+            max={priceFilter.max}
+            value={priceFilterState.value}
+            onChange={priceFilterState.onChange}
+          />
+          <Box as="output" mt="2" fontSize="sm">
+            {priceFilterState.value?.map((v: number) => formatPrice(v, { currency: 'KES' })).join(' — ')}
+          </Box>
+        </Box>
+
+
+        <SizePicker
+          hideLabel
+          value={sizeFilterState.value}
+          onChange={sizeFilterState.onChange}
+          options={sizeFilter.options}
+        />
+
+
+
+      </Stack>
     </Box>
 
   )

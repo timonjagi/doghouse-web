@@ -29,10 +29,11 @@ const getNavData = (breedCategories: any[] = [], popularBreeds: any[] = []) => (
   featured: {
     label: 'Popular Breeds',
     // Use popularBreeds, already sorted by breeder_count field
-    links: popularBreeds.map((breed: any) => ({
-      label: breed.breeds?.name || 'Unknown Breed',
-      url: `/dashboard/search?tab=breeds&q=${encodeURIComponent(breed.breeds?.name || '')}`
-    }))
+    links: popularBreeds
+      .map((breed: any) => ({
+        label: breed.breeds?.name.charAt(0).toUpperCase() + breed.breeds?.name.slice(1) || 'Unknown Breed',
+        url: `/dashboard/search?tab=breeds&q=${encodeURIComponent(breed.breeds?.name || '')}`
+      }))
   },
 })
 
@@ -54,7 +55,7 @@ export const DesktopNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({
             </Text>
             <Stack spacing="4" align="flex-start">
               {navData.category.links.map((link, i) => (
-                <Link key={i} href={link.url}>{link.label}</Link>
+                <Link as={NextLink} key={i} href={link.url}>{link.label}</Link>
               ))}
             </Stack>
           </Box>
@@ -64,8 +65,8 @@ export const DesktopNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({
             </Text>
             <Stack spacing="4" align="flex-start">
               {navData.featured.links.map((breed: any) => (
-                <Link as={NextLink} key={breed.id} href={`/dashboard/breeds/${breed.id}`}>
-                  {breed.name}
+                <Link as={NextLink} key={breed.id} href={breed.url}>
+                  {breed.label}
                 </Link>
               ))}
 
@@ -162,16 +163,10 @@ const MobileNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({ ...props 
             </Text>
             <SimpleGrid columns={2} spacing="4">
               {!navData.featured.links.slice(0, 6).map((link, i) => (
-                link.url && link.url.startsWith('/dashboard/breeds/')
-                  ? (
-                    <Link as={NextLink} key={i} href={link.url}>
-                      {link.label}
-                    </Link>
-                  ) : (
-                    <Link key={`${link.label}-${i}`} href={link.url}>
-                      {link.label}
-                    </Link>
-                  )
+
+                <Link as={NextLink} key={i} href={link.url}>
+                  {link.label}
+                </Link>
               ))}
 
             </SimpleGrid>

@@ -41,25 +41,11 @@ function ListingCard({
   }
 
   return (
-    <Box
-      key={listing.id}
-      bg={bgColor}
-      overflow="hidden"
-      border="1px solid"
-      borderColor={borderColor}
-      borderRadius="lg"
-      cursor="pointer"
-      onClick={() => handleListingClick(listing.id)}
-      transition="all 0.2s"
-      _hover={{
-        transform: "translateY(-2px)",
-        shadow: "md",
-        borderColor: "gray.200"
-      }}
-    >
+
+    <Box key={listing.id} >
       {/* Main Photo */}
       {listing.photos && listing.photos.length > 0 && (
-        <Box position="relative" height="200px" overflow="hidden">
+        <Box position="relative" height="200px" overflow="hidden" borderRadius="lg">
           <Image
             src={listing.photos[0]}
             alt={listing.title}
@@ -82,6 +68,15 @@ function ListingCard({
           </HStack>
         </Box>
       )}
+      {/* <Box mt="2">
+        <Text fontSize="sm" noOfLines={{ base: 2, md: 1 }}>{listing.title}</Text>
+        <Text fontSize="sm" fontWeight="semibold">
+          {new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'KES',
+          }).format(listing.price)}
+        </Text>
+      </Box> */}
 
       <VStack spacing={2} align="stretch" p={4}>
 
@@ -116,9 +111,9 @@ function ListingCard({
 
 
 
-        {/* <Text fontSize="xs" color="gray.500">
-                              👁️ {listing.view_count || 0} views
-                            </Text> */}
+        <Text fontSize="xs" color="gray.500">
+          👁️ {listing.view_count || 0} views
+        </Text>
       </VStack>
     </Box>
   )

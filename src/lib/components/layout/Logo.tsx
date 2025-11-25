@@ -4,7 +4,7 @@ import Link from "next/link";
 interface LogoProps {
   color: 'on-accent' | 'on-brand';
 }
-export const Logo: React.FC<LogoProps> = ({ color }) => (
+export const DoghouseLogo: React.FC<LogoProps> = ({ color }) => (
   <Link href="/">
     <HStack align="center">
       <Image src={color === 'on-accent' ? "/images/logo_white.png" : "images/logo_brand.png"} height={8} />
@@ -17,7 +17,7 @@ export const Logo: React.FC<LogoProps> = ({ color }) => (
 );
 
 
-const PethouseLogo: React.FC<LogoProps> = ({ color }) => {
+export const Logo: React.FC<LogoProps> = ({ color }) => {
   return (
     <Link href="/">
       <HStack align="center">
@@ -32,7 +32,6 @@ const PethouseLogo: React.FC<LogoProps> = ({ color }) => {
           fontStyle=""
 
         >
-          PETHOUSE
         </Text>
       </HStack>
     </Link >

@@ -201,7 +201,7 @@ export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep })
               Preferred Age
             </FormLabel>
             <RadioGroup
-              size="md"
+
               value={preferredAge}
               onChange={setPreferredAge}
               colorScheme="brand"

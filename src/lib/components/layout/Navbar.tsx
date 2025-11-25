@@ -73,7 +73,7 @@ export const Navbar = () => {
       {isMobile ? (
         <Box width="full" px={{ base: "4", md: "8" }} py="3" bg="bg-accent">
           <Flex justify="space-between">
-            <Logo />
+            <Logo color="on-accent" />
 
             <HStack >
               <ButtonGroup variant="ghost-on-accent" spacing="4">

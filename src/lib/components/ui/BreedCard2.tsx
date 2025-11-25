@@ -17,7 +17,7 @@ export const BreedCard = ({ userBreed }: any) => {
   return (
     <Box position="relative" key={breed?.breeds?.name} borderRadius="xl" overflow="hidden">
       <Link
-        href={`/breeds/${breed?.breeds?.name?.toLowerCase().replaceAll(" ", "-")}`}
+        href={`/dashboard/breeds/${breed?.breeds?.name?.toLowerCase().replaceAll(" ", "-")}`}
       // as={`/breeds/${breed?.name.replaceAll(" ", "-")}`}
       >
         <AspectRatio ratio={1}>
@@ -26,7 +26,7 @@ export const BreedCard = ({ userBreed }: any) => {
 
         <Box
           position="absolute"
-          bg="brand.900"
+          bg="brand.100"
           boxSize="full"
         >
           <ProductBadge />
@@ -46,7 +46,7 @@ export const BreedCard = ({ userBreed }: any) => {
           px={4}
           blur="2px"
         >
-          <Stack spacing="1">
+          <Stack spacing="0">
             <Text color="white" fontSize="lg" fontWeight="semibold" pb={0}>
               {breed?.name}
             </Text>

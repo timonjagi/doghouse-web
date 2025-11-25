@@ -21,6 +21,12 @@ import {
   useColorModeValue,
   VisuallyHidden,
   useBreakpointValue,
+  useDisclosure,
+  Drawer,
+  DrawerContent,
+  DrawerOverlay,
+  DrawerHeader,
+  DrawerCloseButton,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import ListingCard from '../../../lib/components/ui/ListingCard'
@@ -29,7 +35,7 @@ import { useListings, useIncrementListingViews } from '../../../lib/hooks/querie
 import { useAllAvailableUserBreeds } from '../../../lib/hooks/queries/useUserBreeds'
 import { Loader } from 'lib/components/ui/Loader'
 import { Filter } from 'lib/components/ui/Filter'
-import { NavCategoryMenu } from 'lib/components/layout/NavCategoryMenu'
+import { DesktopNavItem, NavCategoryMenu } from 'lib/components/layout/NavCategoryMenu'
 import { MobileFilter } from 'lib/components/ui/MobileFilter'
 
 export const UnifiedSearchPage = () => {
@@ -56,6 +62,8 @@ export const UnifiedSearchPage = () => {
       default: return 0
     }
   }
+
+  const { isOpen, onOpen, onToggle, onClose } = useDisclosure()
 
   const [activeTab, setActiveTab] = useState(getTabIndex(tab))
   const [filters, setFilters] = useState(() => ({
@@ -210,6 +218,9 @@ export const UnifiedSearchPage = () => {
 
 
       <Box >
+
+        <CustomTabBar tab={tab as string} />
+
         {isLoading ? (
           <Loader />
         ) : error ? (
@@ -237,6 +248,7 @@ export const UnifiedSearchPage = () => {
             </VStack>
           </Center>
         ) : (
+
           <Tabs index={activeTab} onChange={handleTabChange} variant="soft-rounded" colorScheme="brand">
 
             <VisuallyHidden>
@@ -249,24 +261,23 @@ export const UnifiedSearchPage = () => {
 
             </VisuallyHidden>
 
-            <MobileFilter />
-
-            <Box display={{ base: 'none', md: 'block' }}>
-              <NavCategoryMenu.Desktop
-                listings={listings}
-                breeds={filteredBreeds}
-                breeders={[0, 0]}
-              />
 
 
-            </Box>
+            <MobileFilter
+              onToggle={onToggle}
+            />
+
+
 
             <Box bg={{ base: '', md: mode('white', 'gray.800') }}
               px={{ base: 2, md: 8 }}
-              pt={{ base: 0, md: 4 }}
-              pb="10"
+
             >
-              {isDesktop && <Filter onFilterChange={handleSearch} />}
+              {isDesktop && (
+                <Filter
+                  onFilterChange={(filters) => handleSearch(searchQuery as string, { ...filters })}
+                />
+              )}
 
               <TabPanels>
 
@@ -349,8 +360,79 @@ export const UnifiedSearchPage = () => {
           </Tabs>
         )}
       </Box>
+
+      <Drawer
+        isOpen={isOpen}
+        placement="bottom"
+        onClose={onClose}
+
+      >
+
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>
+
+            Filters
+
+            {/* {unreadCount > 0 && (
+              <Badge colorScheme="red" borderRadius="full" px={2} fontSize="xs">
+                {unreadCount}
+              </Badge>
+            )}
+ */}
+
+            {/* {notifications && notifications.length > 0 && unreadCount > 0 && (
+              <Button
+                leftIcon={<FiCheck />}
+                variant="outline"
+                size="xs"
+                onClick={handleMarkAllAsRead}
+                isLoading={markAllAsReadMutation.isPending}
+              >
+                Mark All Read
+              </Button>
+            )} */}
+
+          </DrawerHeader>
+          <Filter
+            onFilterChange={(filters) => {
+              handleSearch(searchQuery as string, { ...filters })
+              onClose()
+            }}
+          />
+        </DrawerContent>
+      </Drawer>
     </Container>
   )
 }
 
+const CustomTabBar = ({ tab }: { tab: string }) => {
+
+  const menuItems = [
+    { label: 'All Categories', href: '/dashboard' },
+    { label: 'Available Pets', href: '/dashboard/search?tab=listings' },
+    { label: 'Popular Breeds', href: '/dashboard/search?tab=breeds' },
+    { label: 'Breeders Near You', href: '/dashboard/search?tab=breeders' },
+    { label: 'Pet Care Services', href: '/dashboard/search?tab=services' },
+  ];
+
+  return (
+    <Box
+      borderTopWidth="1px"
+      borderBottomWidth="1px"
+      borderColor={mode('gray.200', 'gray.700')}
+      bg={mode('white', 'gray.800')}
+      px="8"
+    >
+      <Box maxW="8xl" mx="auto">
+        <HStack spacing="8">
+          {menuItems.map((link) => (
+            <DesktopNavItem key={link.label} {...link} isActive={link.href.includes(tab)} />
+          ))}
+        </HStack>
+      </Box>
+    </Box>
+  )
+}
 export default UnifiedSearchPage

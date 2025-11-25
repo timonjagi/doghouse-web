@@ -2,7 +2,7 @@ import { Icon, Input, InputGroup, InputLeftElement } from '@chakra-ui/react'
 import * as React from 'react'
 import { FiSearch } from 'react-icons/fi'
 
-export const SearchInput = () => {
+export const SearchInput = (props) => {
   return (
     <InputGroup>
       <InputLeftElement>
@@ -16,6 +16,7 @@ export const SearchInput = () => {
         type="text"
         placeholder="What are you looking for?"
         autoComplete="off"
+        {...props}
       />
     </InputGroup>
   )

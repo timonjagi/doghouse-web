@@ -47,7 +47,7 @@ export const CheckboxFilter = (props: CheckboxFilterProps) => {
       )}
       <CheckboxGroup {...rest}>
         {options.map((option) => (
-          <Checkbox key={option.value} value={option.value} colorScheme="blue">
+          <Checkbox key={option.value} value={option.value} colorScheme="brand">
             <span>{option.label}</span>
             {option.count != null && (
               <Box as="span" color="gray.500" fontSize="sm">

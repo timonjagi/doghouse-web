@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Container,
   Drawer,
   DrawerContent,
@@ -8,21 +7,21 @@ import {
   useDisclosure,
   Flex,
   HStack,
-  IconButton,
   useBreakpointValue,
+  IconButton,
+  Select,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FiBell, FiHelpCircle, FiMenu } from "react-icons/fi";
 
 import { Logo } from "./Logo";
-import UserProfileMenu from "lib/components/layout/UserProfileMenu";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import { SearchInput } from "./SearchInput";
-import { useUserProfile } from "lib/stores/useAppStore";
 import { Sidebar } from "./Sidebar";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { MdMenu } from "react-icons/md";
 import { useEffect, useState } from "react";
+import { CurrencySelect } from "../ui/CurrencySelect";
 
 const DashboardHeader = () => {
   const isDesktop = useBreakpointValue({
@@ -34,14 +33,32 @@ const DashboardHeader = () => {
 
   const router = useRouter();
   const { pathname } = router;
-
   // Show search bar only on Home (/dashboard) and Search (/dashboard/search) pages
   const [showSearchBar, setShowSearchbar] = useState(true);
 
   //pathname && pathname === '/dashboard' || pathname === '/dashboard/search';
   useEffect(() => {
     setShowSearchbar(pathname === '/dashboard' || pathname === '/dashboard/search')
+    setSearchQuery(router.query?.q as string || '');
   }, [pathname, router]);
+
+  const [searchQuery, setSearchQuery] = useState(router.query?.q as string || '');
+
+  const handleSearch = () => {
+    // Default behavior: navigate to listings page with search params
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('q', searchQuery);
+    // if (location) params.set('location', location);
+
+    router.push(`/dashboard/search?${params.toString()}`);
+  }
+
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
 
   return (
@@ -60,16 +77,16 @@ const DashboardHeader = () => {
       >
         <Flex justify="space-between" align="center">
           {/* Left side - Logo and Menu Button */}
-          <HStack spacing="4">
-            {/* <IconButton
+          <HStack spacing="0" align="center">
+            <IconButton
               icon={<FiMenu fontSize="1.25rem" />}
               aria-label="Open Menu"
-              variant="ghost-on-accent"
+              variant="ghost"
               onClick={onToggleSidebar}
-            /> */}
-
-            <Box as={MdMenu} fontSize="3xl" onClick={onToggleSidebar}
             />
+
+            {/* <Box as={MdMenu} fontSize="3xl" onClick={onToggleSidebar} */}
+
 
             <Logo color="on-brand" />
 
@@ -77,34 +94,42 @@ const DashboardHeader = () => {
 
           {/* Center - Conditional Search Bar */}
           {isDesktop && showSearchBar && (
-            <Box flex="1" mx="8">
-              <SearchInput />
-            </Box>
+
+            <HStack flex="1" mx="8">
+
+              <SearchInput
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleKeyPress}
+              />
+            </HStack>
           )}
 
           {/* Right side - Notifications and Profile */}
-          <HStack spacing="4">
-            {/* {user && (
-              <IconButton
-                icon={<FiBell fontSize="1.25rem" />}
-                aria-label="Notifications"
-                variant="ghost-on-accent"
-                onClick={onToggleNotifications}
-              />
-            )} */}
-
-            <Box
-              as={FiHelpCircle}
-              fontSize="2xl"
-              onClick={() => router.push("/help")}
-              color="subtle"
+          <HStack spacing="1">
+            <CurrencySelect />
+            <IconButton
+              icon={<FiHelpCircle fontSize="1.25rem" />}
+              aria-label="Help & Support"
+              variant="ghost-on-accent"
+              onClick={() => router.push('/support')}
             />
-            <Box
+
+            <IconButton
+              icon={<FiBell fontSize="1.25rem" />}
+              aria-label="Notifications"
+              variant="ghost-on-accent"
+              onClick={onToggleNotifications}
+            />
+
+
+
+            {/* <Box
               as={FiBell}
               aria-label="Notifications"
               fontSize="2xl"
               onClick={onToggleNotifications}
-            />
+            /> */}
 
 
             {/* {user ? (
@@ -128,9 +153,10 @@ const DashboardHeader = () => {
 
         {/* Mobile Search Bar */}
         {!isDesktop && showSearchBar && (
-          <Box mt="4">
+          <HStack flex="1" >
+
             <SearchInput />
-          </Box>
+          </HStack>
         )}
       </Container>
 

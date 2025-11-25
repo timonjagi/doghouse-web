@@ -8,6 +8,7 @@ import {
   useColorModeValue as mode,
 } from '@chakra-ui/react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import * as React from 'react'
 
 type NavItemProps = {
@@ -16,7 +17,7 @@ type NavItemProps = {
   label?: string
 }
 
-const DesktopNavItem = (props: FlexProps & NavItemProps) => {
+export const DesktopNavItem = (props: FlexProps & NavItemProps) => {
   const { isActive, label, href = '#', ...rest } = props
   return (
     <Flex
@@ -81,19 +82,26 @@ export const DesktopNavCategoryMenu: React.FC<NavCategoryMenuProps> = ({
   breeders = [],
   breeds = []
 }) => {
+  const router = useRouter();
+
+
+  React.useEffect(() => {
+
+  }, [router.pathname]);
   // Generate dynamic menu items based on data, all linking to unified search
-  const menuItems = [
-    {
-      label: 'All Categories',
-      href: '/dashboard',
-    },
-    ...(breeds.length > 0 ? [{ label: 'Popular Breeds', href: '/dashboard/search?tab=breeds' }] : []),
-    ...(listings.length > 0 ? [{ label: 'Available Pets', href: '/dashboard/search?tab=listings' }] : []),
+  const menuItems =
+    [
+      {
+        label: 'All Categories',
+        href: '/dashboard',
+      },
+      ...(listings.length > 0 ? [{ label: 'Available Pets', href: '/dashboard/search?tab=listings' }] : []),
+      ...(breeds.length > 0 ? [{ label: 'Popular Breeds', href: '/dashboard/search?tab=breeds' }] : []),
 
-    ...(breeders.length > 0 ? [{ label: 'Breeders', href: '/dashboard/search?tab=breeders' }] : []),
-    { label: 'Services', href: '/dashboard/search?tab=services' },
+      ...(breeders.length > 0 ? [{ label: 'Breeders Near You', href: '/dashboard/search?tab=breeders' }] : []),
+      { label: 'Pet Care Services', href: '/dashboard/search?tab=services' },
 
-  ];
+    ]
 
   return (
     <Box
@@ -119,11 +127,21 @@ export const MobileNavCategoryMenu: React.FC<NavCategoryMenuProps> = ({
   breeders = [],
   breeds = []
 }) => {
+
+  const router = useRouter();
   // Generate dynamic menu items based on data, all linking to unified search
   const menuItems = [
     { label: 'All Categories', href: '/dashboard/search' },
     ...(listings.length > 0 ? [{ label: 'Popular Listings', href: '/dashboard/search?tab=listings' }] : []),
     ...(breeds.length > 0 ? [{ label: 'Popular Breeds', href: '/dashboard/search?tab=breeds' }] : []),
+    ...(breeders.length > 0 ? [{ label: 'Breeders', href: '/dashboard/search?tab=breeders' }] : []),
+    { label: 'New Arrivals', href: '/dashboard/search?tab=listings&sort=newest' },
+  ];
+
+  const searchMenuItems = [
+    { label: 'All Categories', href: '/dashboard/search' },
+    ...(listings.length > 0 ? [{ label: 'Listings', href: '/dashboard/search?tab=listings' }] : []),
+    ...(breeds.length > 0 ? [{ label: 'Breeds', href: '/dashboard/search?tab=breeds' }] : []),
     ...(breeders.length > 0 ? [{ label: 'Breeders', href: '/dashboard/search?tab=breeders' }] : []),
     { label: 'New Arrivals', href: '/dashboard/search?tab=listings&sort=newest' },
   ];
@@ -137,11 +155,18 @@ export const MobileNavCategoryMenu: React.FC<NavCategoryMenuProps> = ({
       borderEndWidth="1px"
       py="6"
     >
-      <Stack spacing="1">
+      {router.pathname === '/dashboard' && <Stack spacing="1">
         {menuItems.map((link) => (
           <NavItem.Mobile key={link.label} {...link} isActive={link.label === 'Breeds'} />
         ))}
-      </Stack>
+      </Stack>}
+      {router.pathname === '/dashboard/search' && <Stack spacing="1">
+        {searchMenuItems.map((link) => (
+          <NavItem.Mobile key={link.label} {...link} isActive={link.label === 'Breeds'} />
+        ))}
+      </Stack>}
+
+
     </Box>
   )
 }

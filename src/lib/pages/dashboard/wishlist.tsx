@@ -23,8 +23,8 @@ import {
 } from '@chakra-ui/react';
 import { FiHeart, FiTrash2, FiMapPin, FiDollarSign } from 'react-icons/fi';
 import { useRouter } from 'next/router';
-import { useWishlist, useRemoveFromWishlist, useToggleWishlistNotification, WishlistItem } from '../../../hooks/queries/useWishlist';
-import { formatPrice } from '../../../components/ui/PriceTag';
+import { useWishlist, useRemoveFromWishlist, useToggleWishlistNotification, WishlistItem } from 'lib/hooks/queries/useWishlist';
+import { formatPrice } from 'lib/components/ui/PriceTag';
 
 const WishlistPage = () => {
   const router = useRouter();

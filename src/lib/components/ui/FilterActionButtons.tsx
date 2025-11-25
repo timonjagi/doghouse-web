@@ -14,7 +14,7 @@ export const FilterActionButtons = (props: FilterActionButtonsProps) => {
       <Button size="sm" variant="ghost" onClick={onClickCancel} isDisabled={isCancelDisabled}>
         Cancel
       </Button>
-      <Button size="sm" colorScheme="blue" onClick={onClickApply}>
+      <Button size="sm" colorScheme="brand" onClick={onClickApply}>
         Apply
       </Button>
     </HStack>
