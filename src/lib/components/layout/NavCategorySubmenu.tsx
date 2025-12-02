@@ -46,7 +46,7 @@ export const DesktopNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({
   const navData = getNavData(breedCategories, popularBreeds)
 
   return (
-    <Box bg={mode('white', 'gray.800')} px="8" pt="8" pb="10">
+    <Box bg={mode('white', 'gray.800')} >
       <Flex justify="space-between" width="full" fontSize="sm" maxW="8xl" mx="auto">
         <Flex width="480px" justify="space-between">
           <Box width="full">

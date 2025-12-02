@@ -27,16 +27,22 @@ import {
   DrawerOverlay,
   DrawerHeader,
   DrawerCloseButton,
+  Stack,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import ListingCard from '../../../lib/components/ui/ListingCard'
-import { BreedCard } from '../../../lib/components/ui/BreedCard2'
-import { useListings, useIncrementListingViews } from '../../../lib/hooks/queries/useListings'
-import { useAllAvailableUserBreeds } from '../../../lib/hooks/queries/useUserBreeds'
+import ListingCard from 'lib/components/ui/ListingCard'
+import { BreedCard } from 'lib/components/ui/BreedCard2'
+import { useListings, useIncrementListingViews } from 'lib/hooks/queries/useListings'
+import { useAllAvailableUserBreeds } from 'lib/hooks/queries/useUserBreeds'
 import { Loader } from 'lib/components/ui/Loader'
 import { Filter } from 'lib/components/ui/Filter'
 import { DesktopNavItem, NavCategoryMenu } from 'lib/components/layout/NavCategoryMenu'
 import { MobileFilter } from 'lib/components/ui/MobileFilter'
+import { NavCategorySubmenu } from 'lib/components/layout/NavCategorySubmenu'
+import { useBreedCategories } from 'lib/hooks/queries/useBreedCategories'
+import { useFeaturedBreeders, useAllBreeders } from 'lib/hooks/queries/useBreeders'
+import { usePopularListings } from 'lib/hooks/queries/usePopularListings'
+import { BreederCard } from 'lib/components/ui/BreederCard'
 
 export const UnifiedSearchPage = () => {
   const router = useRouter()
@@ -55,10 +61,10 @@ export const UnifiedSearchPage = () => {
   // Map tab parameter to tab index
   const getTabIndex = (tabParam: string | string[] | undefined): number => {
     switch (tabParam?.toString()) {
-      case 'listings': return 0
-      case 'breeds': return 1
-      case 'breeders': return 2
-      case 'services': return 3
+      case 'all': return 0
+      case 'listings': return 1
+      case 'breeds': return 2
+      case 'breeders': return 3
       default: return 0
     }
   }
@@ -109,7 +115,7 @@ export const UnifiedSearchPage = () => {
 
     const queryParams: any = {}
     if (query) queryParams.q = query
-    if (activeTab > 0) queryParams.tab = ['all', 'listings', 'breeds', 'breeders', 'services'][activeTab]
+    if (activeTab > 0) queryParams.tab = ['all', 'listings', 'breeds', 'breeders',][activeTab]
 
     // Add all filter parameters
     Object.entries(newFilters).forEach(([key, value]) => {
@@ -157,6 +163,15 @@ export const UnifiedSearchPage = () => {
     isLoading: breedsLoading,
     error: breedsError
   } = useAllAvailableUserBreeds()
+
+  const { data: allBreeders = [], isLoading: allBreedersLoading, error: allBreedersError } = useAllBreeders(8);
+
+
+  const { data: popularBreeds = [], isLoading: popularBreedsLoading, error: popularBreedsError } = useAllAvailableUserBreeds(8);
+  const { data: popularListings = [], isLoading: popularListingsLoading, error: popularListingsError } = usePopularListings(4);
+  const { data: featuredBreeders = [], isLoading: featuredBreedersLoading, error: featuredBreedersError } = useFeaturedBreeders(4);
+  const { data: breedCategories = [], isLoading: categoriesLoading, error: categoriesError } = useBreedCategories(8);
+
 
   const filteredBreeds = useMemo(() => {
     if (!availableBreeds) return []
@@ -208,9 +223,11 @@ export const UnifiedSearchPage = () => {
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
+
   const isDesktop = useBreakpointValue({ base: false, md: true })
   const totalResults = listings.length + filteredBreeds.length
-  const isLoading = listingsLoading || breedsLoading
+  const isLoading = breedsLoading || popularBreedsLoading || popularListingsLoading || featuredBreedersLoading || allBreedersLoading || categoriesLoading
+
   const error = listingsError || breedsError
 
   return (
@@ -253,6 +270,7 @@ export const UnifiedSearchPage = () => {
 
             <VisuallyHidden>
               <TabList>
+                <Tab>All ({totalResults})</Tab>
                 <Tab>Listings ({listings.length})</Tab>
                 <Tab>Breeds ({filteredBreeds.length})</Tab>
                 <Tab>Breeders (0)</Tab>
@@ -267,19 +285,33 @@ export const UnifiedSearchPage = () => {
               onToggle={onToggle}
             />
 
-
-
             <Box bg={{ base: '', md: mode('white', 'gray.800') }}
               px={{ base: 2, md: 8 }}
 
             >
-              {isDesktop && (
+              {isDesktop && activeTab > 0 && (
                 <Filter
                   onFilterChange={(filters) => handleSearch(searchQuery as string, { ...filters })}
                 />
               )}
 
               <TabPanels>
+
+                <TabPanel px={0}>
+                  <Stack>
+                    {/* Desktop Layout - Categories and Navigation */}
+                    <Box display={{ base: 'none', md: 'block' }}>
+                      <NavCategorySubmenu.Desktop breedCategories={breedCategories} popularBreeds={popularBreeds} popularListings={popularListings} />
+                    </Box>
+
+                    {/* Mobile Layout - Categories and Navigation */}
+                    <Box display={{ base: 'block', md: 'none' }}>
+                      <Flex flex="1" fontSize="sm" overflow="auto">
+                        <NavCategorySubmenu.Mobile breedCategories={breedCategories} popularBreeds={popularBreeds} popularListings={popularListings} />
+                      </Flex>
+                    </Box>
+                  </Stack>
+                </TabPanel>
 
                 {/* Listings Tab */}
                 <TabPanel px={0}>
@@ -332,29 +364,25 @@ export const UnifiedSearchPage = () => {
                   )}
                 </TabPanel>
 
-                {/* Breeders Tab - Coming Soon */}
+
+                {/* Breeders Tab */}
                 <TabPanel px={0}>
-                  <Center py={12}>
-                    <VStack spacing={4}>
-                      <Text fontSize="lg" color="gray.500">Breeders Search Coming Soon</Text>
-                      <Text color="gray.400" textAlign="center">
-                        We're working on advanced breeder search and filtering features.
-                      </Text>
-                    </VStack>
-                  </Center>
+                  {allBreeders.length > 0 ? (
+                    <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={6}>
+                      {allBreeders.map((breeder) => (
+                        <BreederCard
+                          key={breeder.id}
+                          breeder={breeder}
+                        />
+                      ))}
+                    </SimpleGrid>
+                  ) : (
+                    <Center py={12}>
+                      <Text fontSize="lg" color="gray.500">No breeders found</Text>
+                    </Center>
+                  )}
                 </TabPanel>
 
-                {/* Services Tab - Coming Soon */}
-                <TabPanel px={0}>
-                  <Center py={12}>
-                    <VStack spacing={4}>
-                      <Text fontSize="lg" color="gray.500">Services Search Coming Soon</Text>
-                      <Text color="gray.400" textAlign="center">
-                        Dog training, grooming, and pet care services will be available here.
-                      </Text>
-                    </VStack>
-                  </Center>
-                </TabPanel>
               </TabPanels>
             </Box>
           </Tabs>
@@ -408,13 +436,18 @@ export const UnifiedSearchPage = () => {
 }
 
 const CustomTabBar = ({ tab }: { tab: string }) => {
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
-  const menuItems = [
-    { label: 'All Categories', href: '/dashboard' },
+  const menuItems = isMobile ? [
+    { label: 'All', href: '/dashboard/search?tab=all' },
+    { label: 'Pets', href: '/dashboard/search?tab=listings' },
+    { label: 'Breeds', href: '/dashboard/search?tab=breeds' },
+    { label: 'Breeders', href: '/dashboard/search?tab=breeders' },
+  ] : [
+    { label: 'All Categories', href: '/dashboard/search?tab=all' },
     { label: 'Available Pets', href: '/dashboard/search?tab=listings' },
     { label: 'Popular Breeds', href: '/dashboard/search?tab=breeds' },
     { label: 'Breeders Near You', href: '/dashboard/search?tab=breeders' },
-    { label: 'Pet Care Services', href: '/dashboard/search?tab=services' },
   ];
 
   return (

@@ -28,12 +28,15 @@ const breedFilters = {
 const breedGroupFilters = {
   defaultValue: [],
   options: [
-    { label: '', value: 'golden-retriever', count: 25 },
-    { label: 'Labrador Retriever', value: 'labrador-retriever', count: 30 },
-    { label: 'German Shepherd', value: 'german-shepherd', count: 15 },
-    { label: 'Bulldog', value: 'bulldog', count: 12 },
-    { label: 'Poodle', value: 'poodle', count: 18 },
-    { label: 'Beagle', value: 'beagle', count: 10 },
+    { label: 'Toy Group', value: 'toy-group' },
+    // pastoral, working, terrier, gun dog, hound,  hybrid
+    { label: 'Pastoral Group', value: 'pastoral-group' },
+    { label: 'Working Group', value: 'working-group' },
+    { label: 'Terrier Group', value: 'terrier-group' },
+    { label: 'Gun Dog Group', value: 'gun-dog-group' },
+    { label: 'Hound Group', value: 'hound-group' },
+    { label: 'Hybrid Group', value: 'hybrid-group' },
+
   ],
 }
 
@@ -368,7 +371,7 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
           </SimpleGrid>
         </Stack>
 
-        <SortbySelect maxW="200px" />
+        <SortbySelect maxW="150px" />
 
       </Flex>
 

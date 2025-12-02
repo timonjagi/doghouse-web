@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { usePopularListings } from './usePopularListings';
 import { useNewListings } from './useNewListings';
-import { useFeaturedBreeders } from './useFeaturedBreeders';
+import { useFeaturedBreeders } from './useBreeders';
 import { useBreedCategories } from './useBreedCategories';
 import { useSeekerDashboardStats } from './useSeekerDashboardStats';
 import { useAllAvailableUserBreeds } from './useUserBreeds';

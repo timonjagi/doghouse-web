@@ -7,7 +7,7 @@ interface LogoProps {
 export const DoghouseLogo: React.FC<LogoProps> = ({ color }) => (
   <Link href="/">
     <HStack align="center">
-      <Image src={color === 'on-accent' ? "/images/logo_white.png" : "images/logo_brand.png"} height={8} />
+      <Image src={color === 'on-accent' ? "images/logo_white.png" : "images/logo_brand.png"} height={8} />
       {color === 'on-accent' && <Text fontWeight="semibold" fontSize="20pt" color="white">
         doghouse
       </Text>
