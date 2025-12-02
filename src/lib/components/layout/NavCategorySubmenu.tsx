@@ -22,7 +22,7 @@ interface NavCategorySubmenuProps {
 // Takes breedCategories and popularBreeds (sorted by breeder_count field)
 const getNavData = (breedCategories: any[] = [], popularBreeds: any[] = []) => ({
   category: {
-    label: 'Breed Categories',
+    label: 'Categories',
     // Use breedCategories for categories (breeds grouped by name/listing count)
     links: breedCategories
   },
@@ -104,15 +104,12 @@ export const DesktopNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({
   )
 }
 
-const MobileNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({ ...props }) => {
-  // Hooks for data fetching
-  const { breedCategories, popularBreeds, popularListings } = props;
-
+const MobileNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({ breedCategories, popularBreeds, popularListings }) => {
   // Get dynamic nav data with breed categories
   const navData = getNavData(breedCategories, popularBreeds)
-
+  console.log(navData)
   return (
-    <Box p="5" width="full" height="100%" overflowY="auto">
+    <Box width="full" height="100%" overflowY="auto">
       <Stack spacing="2">
         <Text fontWeight="bold" mb="4">
           Discover
@@ -145,28 +142,28 @@ const MobileNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({ ...props 
         </SimpleGrid>
 
         <Stack spacing="10" mt="10">
-          <Box>
+          <Box width="full">
             <Text fontWeight="bold" mb="4">
               {navData.category.label}
             </Text>
             <SimpleGrid columns={2} spacing="4">
-              {navData.category.links.slice(0, 8).map((link) => (
-                <Link as={NextLink} key={link.label} href={link.url}>
+              {navData.category.links.map((link) => (
+                <NextLink key={link.label} href={link.url}>
                   {link.label}
-                </Link>
+                </NextLink>
               ))}
             </SimpleGrid>
           </Box>
-          <Box>
+
+          <Box width="full">
             <Text fontWeight="bold" mb="4">
               {navData.featured.label}
             </Text>
             <SimpleGrid columns={2} spacing="4">
-              {!navData.featured.links.slice(0, 6).map((link, i) => (
-
-                <Link as={NextLink} key={i} href={link.url}>
+              {navData.featured.links.map((link, i) => (
+                <NextLink key={i} href={link.url}>
                   {link.label}
-                </Link>
+                </NextLink>
               ))}
 
             </SimpleGrid>

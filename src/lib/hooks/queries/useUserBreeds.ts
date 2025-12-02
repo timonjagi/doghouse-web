@@ -97,7 +97,7 @@ export const useUserBreed = (breedId: string) => {
   });
 };
 
-export const useAllAvailableUserBreeds = (limit: number = 4) => {
+export const useAllAvailableUserBreeds = (limit: number) => {
   return useQuery({
     queryKey: queryKeys.breeds.available(),
     queryFn: async () => {

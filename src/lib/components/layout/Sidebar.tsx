@@ -52,8 +52,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   return (
     <Flex
       flex="1"
-      bg={profile?.role === "seeker" ? "bg-canvas" : "bg-accent"}
-      color={profile?.role === "seeker" ? "on-bg" : "on-accent"}
+      bg="bg-accent"
+      color="on-accent"
       maxW={{ base: "full", sm: "xs" }}
       justify="space-between"
       width="full"
@@ -93,7 +93,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
   }, [profile]);
   const onClickMenuLink = (link: string) => {
     router.push(link);
-    if (isMobile) onClose();
+    if (isMobile && profile?.role === "seeker") onClose();
   };
 
   return (
@@ -105,7 +105,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
     >
       <Stack spacing="2">
 
-        <Logo color={profile?.role === "seeker" ? "on-brand" : "on-accent"} />
+        <Logo color="on-accent" />
 
         <Stack pt={2}>
           {/* Render dynamic navigation sections */}

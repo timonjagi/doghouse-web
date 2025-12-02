@@ -1,10 +1,10 @@
-import { Box, Image, Link, Skeleton, Text } from '@chakra-ui/react'
+import { Box, Image, Link, Skeleton, Spacer, Text } from '@chakra-ui/react'
 import * as React from 'react'
 
 export const NavProductItem = (props) => {
   const { imageUrl, name, price, currency, href } = props
   return (
-    <Box as={Link} href={href} width="full">
+    <Box as={Link} href={href} width="full" flex="1">
       <Image
         fit="cover"
         width="full"
@@ -14,11 +14,15 @@ export const NavProductItem = (props) => {
           base: '7.5rem',
           lg: '12.5rem',
         }}
-        fallback={<Skeleton width="full" height="full" />}
+        fallback={<Skeleton width="full" height={{
+          base: '7.5rem',
+          lg: '12.5rem',
+        }} />}
         rounded="lg"
       />
-      <Box mt="2">
-        <Text fontSize="sm" noOfLines={{ base: 2, md: 1 }}>{name}</Text>
+      <Box mt="2" flex="1">
+        <Text fontSize="sm" noOfLines={1}>{name}</Text>
+        <Spacer flexGrow={1} />
         <Text fontSize="sm" fontWeight="semibold">
           {new Intl.NumberFormat('en-US', {
             style: 'currency',

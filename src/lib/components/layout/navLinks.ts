@@ -131,26 +131,20 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "Search",
+      title: "Explore",
       items: [
 
         {
-          label: "Breeds",
-          href: "/dashboard/breeds",
-          icon: LuDog,
+          label: "Search",
+          href: "/dashboard/search",
+          icon: FiSearch,
           ariaLabel: "Browse breeds and listings"
         },
         {
-          label: "Listings",
-          href: "/dashboard/listings",
-          icon: FiShoppingBag,
+          label: "Wishlist",
+          href: "/dashboard/wishlist",
+          icon: FiHeart,
           ariaLabel: "Browse listings"
-        },
-        {
-          label: "Breeders",
-          href: "/dashboard/breeders",
-          icon: GiDogHouse,
-          ariaLabel: "View kennel"
         },
 
       ]
@@ -165,15 +159,9 @@ export const navigationConfig: NavigationConfig = {
           ariaLabel: "View profile"
         },
         {
-          label: "Wishlist",
-          href: "/dashboard/wishlist",
-          icon: FiHeart,
-          ariaLabel: "My matches"
-        },
-        {
-          label: "Applications",
+          label: "Adoptions",
           href: "/dashboard/applications",
-          icon: FiClipboard,
+          icon: LuDog,
           ariaLabel: "My applications"
         },
         {

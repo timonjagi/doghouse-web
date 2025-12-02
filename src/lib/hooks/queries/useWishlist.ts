@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../../supabase';
+import { supabase } from 'lib/supabase/client';
 
 export interface WishlistItem {
   id: string;

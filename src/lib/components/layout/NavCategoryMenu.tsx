@@ -111,7 +111,7 @@ export const DesktopNavCategoryMenu: React.FC<NavCategoryMenuProps> = ({
       bg={mode('white', 'gray.800')}
       px="8"
     >
-      <Box maxW="8xl" mx="auto">
+      <Box maxW="8xl" mx="auto" overflowX="scroll" whiteSpace="nowrap">
         <HStack spacing="8">
           {menuItems.map((link) => (
             <NavItem.Desktop key={link.label} {...link} isActive={link.label === 'Breeds'} />

@@ -15,9 +15,9 @@ export const BreedCard = ({ userBreed }: any) => {
   const breed = userBreed.breeds;
 
   return (
-    <Box position="relative" key={breed?.breeds?.name} borderRadius="xl" overflow="hidden">
+    <Box position="relative" key={breed?.name} borderRadius="xl" overflow="hidden">
       <Link
-        href={`/dashboard/breeds/${breed?.breeds?.name?.toLowerCase().replaceAll(" ", "-")}`}
+        href={`/dashboard/breeds/${encodeURIComponent(breed?.name?.toLowerCase().replaceAll(" ", "-") || '')}`}
       // as={`/breeds/${breed?.name.replaceAll(" ", "-")}`}
       >
         <AspectRatio ratio={1}>
@@ -52,7 +52,7 @@ export const BreedCard = ({ userBreed }: any) => {
             </Text>
 
             <Text color="white" fontSize="sm" fontWeight="light" pt={0}>
-              {breed?.breed_group} group
+              {breed?.group} group
             </Text>
           </Stack>
         </Box>

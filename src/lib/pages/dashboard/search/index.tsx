@@ -51,6 +51,7 @@ export const UnifiedSearchPage = () => {
     tab,
     sort,
     breed,
+    breed_groups,
     featured,
     rescue,
     training,
@@ -72,6 +73,7 @@ export const UnifiedSearchPage = () => {
   const { isOpen, onOpen, onToggle, onClose } = useDisclosure()
 
   const [activeTab, setActiveTab] = useState(getTabIndex(tab))
+
   const [filters, setFilters] = useState(() => ({
     q: searchQuery?.toString() || '',
     tab: tab?.toString() || '',
@@ -85,6 +87,7 @@ export const UnifiedSearchPage = () => {
     price_min: otherQueries.price_min?.toString() || '',
     price_max: otherQueries.price_max?.toString() || '',
     breeds: typeof otherQueries.breeds === 'string' ? otherQueries.breeds.split(',') : [],
+    breed_groups: typeof otherQueries.breed_groups === 'string' ? otherQueries.breed_groups.split(',') : [],
     location: otherQueries.location?.toString() || '',
   }))
 
@@ -162,14 +165,14 @@ export const UnifiedSearchPage = () => {
     data: availableBreeds = [],
     isLoading: breedsLoading,
     error: breedsError
-  } = useAllAvailableUserBreeds()
+  } = useAllAvailableUserBreeds(8)
 
   const { data: allBreeders = [], isLoading: allBreedersLoading, error: allBreedersError } = useAllBreeders(8);
 
 
   const { data: popularBreeds = [], isLoading: popularBreedsLoading, error: popularBreedsError } = useAllAvailableUserBreeds(8);
   const { data: popularListings = [], isLoading: popularListingsLoading, error: popularListingsError } = usePopularListings(4);
-  const { data: featuredBreeders = [], isLoading: featuredBreedersLoading, error: featuredBreedersError } = useFeaturedBreeders(4);
+  // const { data: featuredBreeders = [], isLoading: featuredBreedersLoading, error: featuredBreedersError } = useFeaturedBreeders(4);
   const { data: breedCategories = [], isLoading: categoriesLoading, error: categoriesError } = useBreedCategories(8);
 
 
@@ -203,8 +206,8 @@ export const UnifiedSearchPage = () => {
     router.push(`/dashboard/listings/${listingId}`)
   }
 
-  const handleBreedClick = (breedId: string) => {
-    router.push(`/dashboard/breeds/${breedId}`)
+  const handleBreedClick = (breedName: string) => {
+    router.push(`/dashboard/breeds/${encodeURIComponent(breedName)}`)
   }
 
   const formatPrice = (price?: number) => {
@@ -226,17 +229,17 @@ export const UnifiedSearchPage = () => {
 
   const isDesktop = useBreakpointValue({ base: false, md: true })
   const totalResults = listings.length + filteredBreeds.length
-  const isLoading = breedsLoading || popularBreedsLoading || popularListingsLoading || featuredBreedersLoading || allBreedersLoading || categoriesLoading
+  const isLoading = breedsLoading || popularBreedsLoading || popularListingsLoading || allBreedersLoading || categoriesLoading
 
   const error = listingsError || breedsError
 
   return (
     <Container maxW="7xl" mx="auto" >
 
+      <CustomTabBar tab={tab as string} />
 
-      <Box >
+      <Box overflowX="hidden">
 
-        <CustomTabBar tab={tab as string} />
 
         {isLoading ? (
           <Loader />
@@ -281,9 +284,11 @@ export const UnifiedSearchPage = () => {
 
 
 
-            <MobileFilter
-              onToggle={onToggle}
-            />
+            {activeTab > 0 && (
+              <MobileFilter
+                onToggle={onToggle}
+              />
+            )}
 
             <Box bg={{ base: '', md: mode('white', 'gray.800') }}
               px={{ base: 2, md: 8 }}
@@ -341,19 +346,9 @@ export const UnifiedSearchPage = () => {
                       {filteredBreeds.map((breed) => (
                         <BreedCard
                           key={breed.id}
-                          userBreed={{
-                            id: breed.id,
-                            breeds: {
-                              name: breed.breeds?.name || '',
-                              breed_group: breed.breeds?.group || '',
-                              description: breed.breeds?.description || '',
-                              images: breed.breeds?.images || [],
-                              featured_image_url: breed.breeds?.featured_image_url,
-                            },
-                            breeder_count: breed.breeder_count,
-                          }}
+                          userBreed={breed}
                           userRole="seeker"
-                          onClick={() => handleBreedClick(breed.id)}
+                          onClick={() => { console.log(breed); handleBreedClick(breed.breeds?.name) }}
                         />
                       ))}
                     </SimpleGrid>
@@ -439,7 +434,7 @@ const CustomTabBar = ({ tab }: { tab: string }) => {
   const isMobile = useBreakpointValue({ base: true, md: false })
 
   const menuItems = isMobile ? [
-    { label: 'All', href: '/dashboard/search?tab=all' },
+    { label: 'All Categories', href: '/dashboard/search?tab=all' },
     { label: 'Pets', href: '/dashboard/search?tab=listings' },
     { label: 'Breeds', href: '/dashboard/search?tab=breeds' },
     { label: 'Breeders', href: '/dashboard/search?tab=breeders' },
@@ -456,7 +451,7 @@ const CustomTabBar = ({ tab }: { tab: string }) => {
       borderBottomWidth="1px"
       borderColor={mode('gray.200', 'gray.700')}
       bg={mode('white', 'gray.800')}
-      px="8"
+      px={{ base: 2, md: 8 }}
     >
       <Box maxW="8xl" mx="auto">
         <HStack spacing="8">

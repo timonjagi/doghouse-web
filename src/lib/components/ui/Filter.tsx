@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Popover, Box, Flex, HStack, SimpleGrid, Text, useColorMode as mode, Stack } from '@chakra-ui/react'
+import { Popover, Box, Flex, HStack, SimpleGrid, Text, useColorMode as mode, Stack, FormLabel } from '@chakra-ui/react'
 import { CheckboxFilter } from './CheckboxFilter'
 // import { ColorPicker } from './ColorPicker'
 import { PriceRangePicker } from './PriceRangePicker'
@@ -28,14 +28,14 @@ const breedFilters = {
 const breedGroupFilters = {
   defaultValue: [],
   options: [
-    { label: 'Toy Group', value: 'toy-group' },
+    { label: 'Toy Group', value: 'toy' },
     // pastoral, working, terrier, gun dog, hound,  hybrid
-    { label: 'Pastoral Group', value: 'pastoral-group' },
-    { label: 'Working Group', value: 'working-group' },
-    { label: 'Terrier Group', value: 'terrier-group' },
-    { label: 'Gun Dog Group', value: 'gun-dog-group' },
-    { label: 'Hound Group', value: 'hound-group' },
-    { label: 'Hybrid Group', value: 'hybrid-group' },
+    { label: 'Pastoral Group', value: 'pastoral' },
+    { label: 'Working Group', value: 'working' },
+    { label: 'Terrier Group', value: 'terrier' },
+    { label: 'Gun Dog Group', value: 'gun-dog' },
+    { label: 'Hound Group', value: 'hound' },
+    { label: 'Hybrid Group', value: 'hybrid' },
 
   ],
 }
@@ -58,9 +58,9 @@ const priceFilter = {
     currency: 'KES',
     maximumFractionDigits: 0,
   },
-  defaultValue: [5000, 100000],
+  defaultValue: [5000, 50000],
   min: 1000,
-  max: 500000,
+  max: 200000,
 }
 
 export const SizeFilterPopover = ({ onFilterChange }: { onFilterChange?: (filters: any) => void }) => {
@@ -164,7 +164,7 @@ export const BreedGroupFilterPopover = ({ onFilterChange }: { onFilterChange?: (
     defaultValue: [],
     onSubmit: (value) => {
       if (onFilterChange) {
-        onFilterChange({ breeds: value });
+        onFilterChange({ breed_groups: value });
       }
     },
   });
@@ -376,44 +376,53 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
       </Flex>
 
 
-      <Stack display={{ base: 'flex', md: 'none' }}
+      <Stack
+        display={{ base: 'flex', md: 'none' }}
+        spacing="2"
+        px="8"
       >
-        <PetTypePicker onFilterChange={(f) => onFilterChange(f)} />
+        {/* <PetTypePicker onFilterChange={(f) => onFilterChange(f)} /> */}
 
-        <CheckboxFilter
-          hideLabel
+        {currentPath.includes('breeds') && <CheckboxFilter
+          hideLabel={false}
+          label="Breed Group"
           value={breedGroupFilterState.value}
           onChange={(v: string[]) => breedGroupFilterState.onChange(v)}
           options={breedGroupFilters.options}
-        />
+        />}
 
-        <CheckboxFilter
-          hideLabel
+        {currentPath.includes('listings') && <CheckboxFilter
+          hideLabel={false}
+          label="Breed"
           value={breedFilterState.value}
           onChange={(v: string[]) => breedFilterState.onChange(v)}
           options={breedFilters.options}
-        />
+        />}
 
-        <Box px="2" pt="2">
-          <PriceRangePicker
-            step={1000}
-            min={priceFilter.min}
-            max={priceFilter.max}
-            value={priceFilterState.value}
-            onChange={priceFilterState.onChange}
-          />
-          <Box as="output" mt="2" fontSize="sm">
-            {priceFilterState.value?.map((v: number) => formatPrice(v, { currency: 'KES' })).join(' — ')}
-          </Box>
-        </Box>
+        {currentPath.includes('listings') &&
+          <>
+            <FormLabel fontWeight="semibold" as="legend" mb="0">
+              Price Range
+            </FormLabel>
+            <PriceRangePicker
+              step={1000}
+              min={priceFilter.min}
+              max={priceFilter.max}
+              value={priceFilterState.value}
+              onChange={priceFilterState.onChange}
+            />
+            <Box as="output" mt="2" fontSize="sm">
+              {priceFilterState.value?.map((v: number) => formatPrice(v, { currency: 'KES' })).join(' — ')}
+            </Box>
+          </>}
 
 
-        <SizePicker
+        {currentPath.includes('breeds') && <SizePicker
           hideLabel
           value={sizeFilterState.value}
           onChange={sizeFilterState.onChange}
           options={sizeFilter.options}
-        />
+        />}
 
 
 

@@ -77,7 +77,9 @@ const DashboardHeader = () => {
       >
         <Flex justify="space-between" align="center">
           {/* Left side - Logo and Menu Button */}
-          <HStack spacing="0" align="center">
+
+
+          {!isDesktop && <HStack spacing="0" align="center">
             <IconButton
               icon={<FiMenu fontSize="1.25rem" />}
               aria-label="Open Menu"
@@ -90,12 +92,12 @@ const DashboardHeader = () => {
 
             <Logo color="on-brand" />
 
-          </HStack>
+          </HStack>}
 
           {/* Center - Conditional Search Bar */}
           {isDesktop && showSearchBar && (
 
-            <HStack flex="1" mx="8">
+            <HStack flex="1" mx={{ base: "8", lg: "0" }}>
 
               <SearchInput
                 value={searchQuery}
@@ -107,7 +109,7 @@ const DashboardHeader = () => {
 
           {/* Right side - Notifications and Profile */}
           <HStack spacing="1">
-            <CurrencySelect />
+
             <IconButton
               icon={<FiHelpCircle fontSize="1.25rem" />}
               aria-label="Help & Support"

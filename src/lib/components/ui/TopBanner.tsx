@@ -4,7 +4,7 @@ import React from 'react'
 export const TopBanner = ({ label, ...props }) => {
   return (
     <Box
-      bg="brand.500"
+      bg="bg-accent"
       color="white"
       textAlign="center"
       py="2"

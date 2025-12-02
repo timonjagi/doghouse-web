@@ -34,8 +34,8 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         maxW="100vw"
       >
         {isDesktop &&
-          user &&
-          ['breeder, admin'].includes(user.user_metadata?.role) &&
+          // user &&
+          // ['breeder, admin'].includes(user.user_metadata?.role) &&
           <Sidebar onClose={onClose} />
         }
 
