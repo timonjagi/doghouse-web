@@ -18,9 +18,9 @@ export const SearchInput = (props) => {
         autoComplete="off"
         {...props}
       />
-      <InputRightElement onClick={props.onClear} >
+      {props.searchQuery && <InputRightElement onClick={props.onClear} >
         <Icon as={FiX} color="gray.500" fontSize="lg" cursor="pointer" />
-      </InputRightElement>
+      </InputRightElement>}
     </InputGroup>
   )
 }

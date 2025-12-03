@@ -23,8 +23,9 @@ import {
 } from '@chakra-ui/react';
 import { FiHeart, FiTrash2, FiMapPin, FiDollarSign } from 'react-icons/fi';
 import { useRouter } from 'next/router';
-import { useWishlist, useRemoveFromWishlist, useToggleWishlistNotification, WishlistItem } from 'lib/hooks/queries/useWishlist';
+import { useWishlist, useRemoveFromWishlist, useToggleWishlistNotification } from 'lib/hooks/queries/useWishlist';
 import { formatPrice } from 'lib/components/ui/PriceTag';
+import { Wishlist } from '../../../../../db/schema';
 
 const WishlistPage = () => {
   const router = useRouter();
@@ -69,7 +70,7 @@ const WishlistPage = () => {
     }
   };
 
-  const handleViewItem = (item: WishlistItem) => {
+  const handleViewItem = (item: Wishlist) => {
     if (item.listing_id) {
       router.push(`/dashboard/listings/${item.listing_id}`);
     } else if (item.user_breed_id) {

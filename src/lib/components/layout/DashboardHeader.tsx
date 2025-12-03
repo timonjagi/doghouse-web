@@ -117,6 +117,8 @@ const DashboardHeader = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
+                searchQuery={searchQuery}
+                onClear={() => setSearchQuery('')}
               />
             </HStack>
           )}

@@ -110,7 +110,7 @@ const SignUp = () => {
             minW={{ base: "none", md: "sm", lg: "md" }}
           >
             <Flex align="center" h="24">
-              <Logo />
+              <Logo color="on-accent" />
             </Flex>
 
             <Flex

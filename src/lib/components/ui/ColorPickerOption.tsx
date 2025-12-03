@@ -18,7 +18,7 @@ interface ColorPickerOptionProps extends UseRadioProps {
 
 export const ColorPickerOption = (props: ColorPickerOptionProps) => {
   const { color, value } = props
-  const { getInputProps, htmlProps, getCheckboxProps, getLabelProps, state } = useRadio(props)
+  const { getInputProps, htmlProps, getRadioProps, getLabelProps, state } = useRadio(props)
   const theme = useTheme()
 
   return (
@@ -31,7 +31,7 @@ export const ColorPickerOption = (props: ColorPickerOptionProps) => {
           borderWidth: '2px',
           borderColor: useColorModeValue('blue.500', 'blue.200'),
         }}
-        {...getCheckboxProps()}
+        {...getRadioProps()}
       >
         <Circle size="8" bg={color}>
           {state.isChecked && (

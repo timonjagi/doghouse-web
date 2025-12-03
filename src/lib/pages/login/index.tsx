@@ -44,7 +44,7 @@ const Login = () => {
               color="on-accent"
             >
               <Flex align="center" h="24">
-                <Logo />
+                <Logo color="on-accent" />
               </Flex>
               <Flex flex="1" align="center">
                 <Stack spacing="8">

@@ -1,21 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from 'lib/supabase/client';
-
-export interface WishlistItem {
-  id: string;
-  user_id: string;
-  listing_id?: string;
-  user_breed_id?: string;
-  notify_when_available: boolean;
-  created_at: string;
-  updated_at: string;
-}
+import { Wishlist } from '../../../../db/schema';
 
 // Get user's wishlist
 export const useWishlist = () => {
   return useQuery({
     queryKey: ['wishlist'],
-    queryFn: async () => {
+    queryFn: async (): Promise<any[]> => {
       const { data, error } = await supabase
         .from('wishlists')
         .select(`
@@ -44,7 +35,7 @@ export const useWishlist = () => {
         `);
 
       if (error) throw error;
-      return data as WishlistItem[];
+      return data
     },
   });
 };
