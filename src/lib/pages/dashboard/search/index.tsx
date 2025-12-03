@@ -216,14 +216,14 @@ export const UnifiedSearchPage = () => {
       <Box overflowX="hidden">
         <Tabs index={activeTab} onChange={handleTabChange} variant="soft-rounded" colorScheme="brand">
 
-          <VisuallyHidden>
-            <TabList>
-              <Tab>All ({totalResults})</Tab>
-              <Tab>Listings ({listings.length})</Tab>
-              <Tab>Breeds ({availableBreeds.length})</Tab>
-              <Tab>Breeders ({allBreeders.length})</Tab>
-            </TabList>
-          </VisuallyHidden>
+
+          <TabList>
+            <Tab>All ({totalResults})</Tab>
+            <Tab>Listings ({listings.length})</Tab>
+            <Tab>Breeds ({availableBreeds.length})</Tab>
+            <Tab>Breeders ({allBreeders.length})</Tab>
+          </TabList>
+
 
           {activeTab > 0 && (
             <MobileFilter
@@ -231,7 +231,7 @@ export const UnifiedSearchPage = () => {
             />
           )}
 
-          <Box
+          <Stack
             bg={{ base: '', md: mode('white', 'gray.800') }}
             px={{ base: 2, md: 8 }}
           >
@@ -513,7 +513,7 @@ export const UnifiedSearchPage = () => {
 
               </TabPanels>
             )}
-          </Box>
+          </Stack>
         </Tabs>
       </Box>
 
