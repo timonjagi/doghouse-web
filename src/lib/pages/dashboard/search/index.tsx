@@ -244,16 +244,7 @@ export const UnifiedSearchPage = () => {
                 <Filter
                   onFilterChange={(newFilters) => handleSearch(filters.q || '', { ...newFilters })}
                 />
-                {searchService.hasActiveFilters(filters) && (
-                  <Button
-                    variant="ghost"
-                    color="subtle"
-                    size="sm"
-                    onClick={handleReset}
-                  >
-                    Clear Filters
-                  </Button>
-                )}
+
               </HStack>
             )}
 
@@ -264,14 +255,16 @@ export const UnifiedSearchPage = () => {
                 {activeTab === 2 && availableBreeds.length + ' result' + (availableBreeds.length === 1 ? '' : 's')}
                 {activeTab === 3 && allBreeders.length + ' result' + (allBreeders.length === 1 ? '' : 's')}
               </Text>
-
-              <HStack>
-                <Text fontSize="sm">
-                  Sort by
-                </Text>
-                <SortbySelect maxW="150px" />
-              </HStack>
-
+              {searchService.hasActiveFilters(filters) && (
+                <Button
+                  variant="ghost"
+                  color="subtle"
+                  size="sm"
+                  onClick={handleReset}
+                >
+                  Clear Filters
+                </Button>
+              )}
             </HStack>
 
             {isLoading ? (
