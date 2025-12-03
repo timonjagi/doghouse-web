@@ -49,29 +49,24 @@ const BreedDetailPage = () => {
         </title>
       </Head>
       <Container maxW="7xl" py={{ base: '4', md: '0' }}>
-        <Button
-          leftIcon={<ArrowBackIcon />}
-          variant="ghost"
-          onClick={() => router.back()}
-          mb={4}
-          p={0}
-        >
-          Back to Breeds
-        </Button>
+        <Stack spacing="6">
+          <HStack align="center">
+            <Button
+              leftIcon={<ArrowBackIcon boxSize={6} />}
+              variant="ghost"
+              onClick={() => router.back()}
+              p={0}
+            />
+            <Heading
+              size={{ base: "xs", lg: "sm" }}
+              textTransform="capitalize"
+            >
+              {breed.name}
+            </Heading>
+          </HStack>
 
-        <Stack
-          spacing={{ base: "6", lg: "12", xl: "16" }}
-        >
-          <Heading
-            size={{ base: "sm", md: "md" }}
-            textTransform="capitalize"
-          >
-            {breed.name}
-          </Heading>
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-
             <Stack flex="1" spacing="6">
-
               <Gallery
                 rootProps={{ flex: "1", flexGrow: 1, minHeight: "100%", }}
                 images={[{ src: breed?.featured_image_url, alt: "" },
@@ -82,17 +77,14 @@ const BreedDetailPage = () => {
 
             <Tabs variant='soft-rounded' colorScheme='brand'>
               <TabList>
-
                 <Tab>Details</Tab>
                 <Tab>Traits</Tab>
                 <Tab>Breeders</Tab>
                 <Tab>Listings</Tab>
-
               </TabList>
 
               <TabPanels>
                 <TabPanel>
-
                   <Stack>
                     <Text color="muted">{breed.description}</Text>
 
@@ -123,7 +115,7 @@ const BreedDetailPage = () => {
 
                 <TabPanel>
                   <Stack spacing="2" bg={useColorModeValue("gray.50", "gray.700")}>
-                    <Accordion allowToggle>
+                    <Accordion allowToggle defaultIndex={0}>
 
                       {breed.traits &&
                         // @ts-ignore
@@ -186,7 +178,7 @@ const BreedDetailPage = () => {
                     listings={listingsForBreed}
                     loading={isLoadingListings}
                     error={error}
-                    isManaging={true}
+                    isManaging={false}
                   />
                 </TabPanel>
               </TabPanels>

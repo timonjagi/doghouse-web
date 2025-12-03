@@ -41,7 +41,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
 
         <Box bg="bg-canvas" flex="1" overflow="auto" w="full">
           <Box height="full">
-            {isDesktop && <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." mb="4" />}
+            {/* {isDesktop && <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." mb="4" />} */}
             {isDesktop && <DashboardHeader />}
             <RouteGuard>{children}</RouteGuard>
           </Box>

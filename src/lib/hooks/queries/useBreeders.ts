@@ -2,7 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 
-export const useAllBreeders = (limit: number = 4) => {
+export const useAllBreeders = (
+  limit?: number,
+  options?: {
+    search?: string;
+    location?: string;
+    page?: number;
+    pageSize?: number;
+  }
+) => {
   return useQuery({
     queryKey: queryKeys.users.featured(limit),
     queryFn: async (): Promise<any[]> => {

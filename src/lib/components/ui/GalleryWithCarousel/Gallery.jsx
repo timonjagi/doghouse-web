@@ -29,6 +29,8 @@ export const Gallery = (props) => {
           objectFit="cover"
           alt={images[index].alt}
           fallback={<Skeleton />}
+          borderRadius="lg"
+
         />
       </AspectRatio>
       <HStack spacing="4">
@@ -49,7 +51,13 @@ export const Gallery = (props) => {
                   opacity: 1,
                 }}
               >
-                <Image src={image.src} objectFit="cover" alt={image.alt} fallback={<Skeleton />} />
+                <Image
+                  src={image.src}
+                  objectFit="cover"
+                  lt={image.alt}
+                  fallback={<Skeleton />}
+                  borderRadius="sm"
+                />
               </AspectRatio>
             </CarouselSlide>
           ))}

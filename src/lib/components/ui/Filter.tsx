@@ -371,7 +371,6 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
           </SimpleGrid>
         </Stack>
 
-        <SortbySelect maxW="150px" />
 
       </Flex>
 
@@ -381,7 +380,7 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
         spacing="2"
         px="8"
       >
-        {/* <PetTypePicker onFilterChange={(f) => onFilterChange(f)} /> */}
+        <PetTypePicker onFilterChange={(f) => onFilterChange(f)} />
 
         {currentPath.includes('breeds') && <CheckboxFilter
           hideLabel={false}

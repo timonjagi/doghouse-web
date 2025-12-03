@@ -97,11 +97,20 @@ export const useUserBreed = (breedId: string) => {
   });
 };
 
-export const useAllAvailableUserBreeds = (limit: number) => {
+export const useAllAvailableUserBreeds = (
+  limit?: number,
+  options?: {
+    search?: string;
+    breed_ids?: string[];
+    breed_groups?: string[];
+    page?: number;
+    pageSize?: number;
+  }
+) => {
   return useQuery({
     queryKey: queryKeys.breeds.available(),
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('user_breeds')
         .select(`
           id,
@@ -135,14 +144,17 @@ export const useAllAvailableUserBreeds = (limit: number) => {
               rating
             )
           )
-        `)
-        .order('created_at', { ascending: false })
+        `);
 
+      // Apply sorting
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
       // Deduplicate by breed_id and return unique breeds
-      const uniqueBreeds = data?.reduce((acc, userBreed) => {
+      let uniqueBreeds = data?.reduce((acc, userBreed) => {
         if (userBreed.breeds && !acc.some(item => item.breed_id === userBreed.breed_id)) {
           acc.push({
             ...userBreed,
@@ -157,7 +169,43 @@ export const useAllAvailableUserBreeds = (limit: number) => {
         return acc;
       }, [] as any[]) || [];
 
-      return uniqueBreeds.slice(0, limit);
+      // Apply search filter on unique breeds
+      if (options?.search) {
+        const searchLower = options.search.toLowerCase();
+        uniqueBreeds = uniqueBreeds.filter(breed =>
+          breed.breeds?.name?.toLowerCase().includes(searchLower) ||
+          breed.breeds?.description?.toLowerCase().includes(searchLower) ||
+          breed.breeds?.group?.toLowerCase().includes(searchLower)
+        );
+      }
+
+      // Apply breed_ids filter
+      if (options?.breed_ids && options.breed_ids.length > 0) {
+        uniqueBreeds = uniqueBreeds.filter(breed =>
+          options.breed_ids!.includes(breed.breed_id)
+        );
+      }
+
+      // Apply breed_groups filter
+      if (options?.breed_groups && options.breed_groups.length > 0) {
+        uniqueBreeds = uniqueBreeds.filter(breed =>
+          options.breed_groups!.includes(breed.breeds?.group?.toLowerCase())
+        );
+      }
+
+      // Apply pagination
+      if (options?.page !== undefined && options?.pageSize !== undefined) {
+        const startIdx = options.page * options.pageSize;
+        const endIdx = (options.page + 1) * options.pageSize;
+        return uniqueBreeds.slice(startIdx, endIdx);
+      }
+
+      // Apply limit if provided and no pagination
+      if (limit !== undefined) {
+        return uniqueBreeds.slice(0, limit);
+      }
+
+      return uniqueBreeds;
     },
     staleTime: 1000 * 60 * 15, // 15 minutes - available breeds don't change often
   });

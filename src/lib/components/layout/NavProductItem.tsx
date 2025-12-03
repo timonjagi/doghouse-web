@@ -22,7 +22,7 @@ export const NavProductItem = (props) => {
       />
       <Box mt="2" flex="1">
         <Text fontSize="sm" noOfLines={1}>{name}</Text>
-        <Spacer flexGrow={1} />
+
         <Text fontSize="sm" fontWeight="semibold">
           {new Intl.NumberFormat('en-US', {
             style: 'currency',

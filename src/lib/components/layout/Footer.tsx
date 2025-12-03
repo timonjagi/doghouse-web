@@ -16,7 +16,7 @@ const Footer = () => (
     <Container as="footer" role="contentinfo" py={{ base: "12", md: "16" }}>
       <Stack spacing={{ base: "4", md: "5" }}>
         <Stack justify="space-between" direction="row" align="center">
-          <Logo />
+          <Logo color="on-accent" />
           <ButtonGroup variant="ghost-on-accent">
             <IconButton
               as="a"

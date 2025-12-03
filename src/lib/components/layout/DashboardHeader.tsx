@@ -22,6 +22,7 @@ import { Sidebar } from "./Sidebar";
 import { MdMenu } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { CurrencySelect } from "../ui/CurrencySelect";
+import * as searchService from "lib/services/searchService";
 
 const DashboardHeader = () => {
   const isDesktop = useBreakpointValue({
@@ -45,12 +46,25 @@ const DashboardHeader = () => {
   const [searchQuery, setSearchQuery] = useState(router.query?.q as string || '');
 
   const handleSearch = () => {
-    // Default behavior: navigate to listings page with search params
-    const params = new URLSearchParams();
-    if (searchQuery) params.set('q', searchQuery);
-    // if (location) params.set('location', location);
+    // Parse existing filters from URL if on search page
+    const currentFilters = pathname === '/dashboard/search'
+      ? searchService.parseSearchParams(router.query)
+      : searchService.getDefaultFilters();
 
-    router.push(`/dashboard/search?${params.toString()}`);
+    // Update search query while preserving other filters
+    const updatedFilters: searchService.SearchFilters = {
+      ...currentFilters,
+      q: searchQuery,
+      tab: currentFilters.tab || 'all', // Default to all tab to show summary
+    };
+
+    // Build query params using search service
+    const params = searchService.buildQueryParams(updatedFilters);
+
+    router.push({
+      pathname: '/dashboard/search',
+      query: params
+    });
   }
 
 
@@ -95,7 +109,7 @@ const DashboardHeader = () => {
           </HStack>}
 
           {/* Center - Conditional Search Bar */}
-          {isDesktop && showSearchBar && (
+          {isDesktop && (
 
             <HStack flex="1" mx={{ base: "8", lg: "0" }}>
 
@@ -154,7 +168,7 @@ const DashboardHeader = () => {
         </Flex>
 
         {/* Mobile Search Bar */}
-        {!isDesktop && showSearchBar && (
+        {!isDesktop && (
           <HStack flex="1" >
 
             <SearchInput />

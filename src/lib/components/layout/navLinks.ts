@@ -114,7 +114,7 @@ export const navigationConfig: NavigationConfig = {
 
   seeker: [
     {
-      title: "Dashboard",
+      title: "DASHBOARD",
       items: [
         {
           label: "Home",
@@ -131,7 +131,7 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "Explore",
+      title: "EXPLORE",
       items: [
 
         {
@@ -139,6 +139,12 @@ export const navigationConfig: NavigationConfig = {
           href: "/dashboard/search",
           icon: FiSearch,
           ariaLabel: "Browse breeds and listings"
+        },
+        {
+          label: "Adoptions",
+          href: "/dashboard/applications",
+          icon: LuDog,
+          ariaLabel: "My applications"
         },
         {
           label: "Wishlist",
@@ -150,19 +156,13 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "Account",
+      title: "ACCOUNT",
       items: [
         {
           label: "Profile",
           href: "/dashboard/account/profile",
           icon: FiUser,
           ariaLabel: "View profile"
-        },
-        {
-          label: "Adoptions",
-          href: "/dashboard/applications",
-          icon: LuDog,
-          ariaLabel: "My applications"
         },
         {
           label: "Billing",

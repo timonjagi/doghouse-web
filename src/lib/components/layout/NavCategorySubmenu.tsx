@@ -32,7 +32,7 @@ const getNavData = (breedCategories: any[] = [], popularBreeds: any[] = []) => (
     links: popularBreeds
       .map((breed: any) => ({
         label: breed.breeds?.name.charAt(0).toUpperCase() + breed.breeds?.name.slice(1) || 'Unknown Breed',
-        url: `/dashboard/search?tab=breeds&q=${encodeURIComponent(breed.breeds?.name || '')}`
+        url: `/dashboard/search?tab=listings&q=${encodeURIComponent(breed.breeds?.name || '')}`
       }))
   },
 })

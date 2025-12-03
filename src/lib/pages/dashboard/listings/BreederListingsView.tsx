@@ -118,9 +118,6 @@ const ManageListingsPage: React.FC<{ userProfile: User }> = ({ userProfile }) =>
                 key={listing.id}
                 listing={listing}
                 handleViewListing={handleViewListing}
-                getStatusColor={getStatusColor}
-                bgColor={bgColor}
-                formatPrice={formatPrice}
               />
             ))}
           </SimpleGrid>

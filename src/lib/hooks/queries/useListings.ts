@@ -63,7 +63,16 @@ export const useListings = (filters?: {
   status?: string;
   owner_id?: string;
   breed_id?: string;
+  breed_ids?: string[];
   owner_type?: string;
+  search?: string;
+  size?: string;
+  price_min?: string;
+  price_max?: string;
+  location?: string;
+  sort?: string;
+  page?: number;
+  pageSize?: number;
 }) => {
   return useQuery({
     queryKey: queryKeys.listings.list(filters),
@@ -100,23 +109,90 @@ export const useListings = (filters?: {
         )
         `);
       console.log('Fetching listings with filters:', filters);
+
+      // Apply type filter
       if (filters?.type) {
         query = query.eq('type', filters.type);
       }
+
+      // Apply status filter
       if (filters?.status) {
         query = query.eq('status', filters.status);
       }
+
+      // Apply owner filter
       if (filters?.owner_id) {
         query = query.eq('owner_id', filters.owner_id);
       }
+
+      // Apply breed filter (single breed)
       if (filters?.breed_id) {
         query = query.eq('breed_id', filters.breed_id);
       }
+
+      // Apply breed filter (multiple breeds)
+      if (filters?.breed_ids && filters.breed_ids.length > 0) {
+        query = query.in('breed_id', filters.breed_ids);
+      }
+
+      // Apply owner type filter
       if (filters?.owner_type) {
         query = query.eq('owner_type', filters.owner_type);
       }
 
-      const { data, error } = await query.order('created_at', { ascending: false });
+      // Apply search filter
+      if (filters?.search) {
+        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+      }
+
+      // Apply size filter
+      if (filters?.size) {
+        query = query.eq('size', filters.size);
+      }
+
+      // Apply price range filters
+      if (filters?.price_min) {
+        query = query.gte('price', parseFloat(filters.price_min));
+      }
+      if (filters?.price_max) {
+        query = query.lte('price', parseFloat(filters.price_max));
+      }
+
+      // Apply location filter
+      if (filters?.location) {
+        query = query.ilike('location_text', `%${filters.location}%`);
+      }
+
+      // Apply sorting
+      if (filters?.sort) {
+        switch (filters.sort) {
+          case 'price_asc':
+            query = query.order('price', { ascending: true });
+            break;
+          case 'price_desc':
+            query = query.order('price', { ascending: false });
+            break;
+          case 'newest':
+            query = query.order('created_at', { ascending: false });
+            break;
+          case 'oldest':
+            query = query.order('created_at', { ascending: true });
+            break;
+          default:
+            query = query.order('created_at', { ascending: false });
+        }
+      } else {
+        query = query.order('created_at', { ascending: false });
+      }
+
+      // Apply pagination
+      const page = filters?.page ?? 0;
+      const pageSize = filters?.pageSize ?? 12;
+      const startRange = page * pageSize;
+      const endRange = (page + 1) * pageSize - 1;
+      query = query.range(startRange, endRange);
+
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },

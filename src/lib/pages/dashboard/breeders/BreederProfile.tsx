@@ -103,25 +103,6 @@ export const BreederProfile: React.FC<BreederProfileProps> = ({ breederId }) => 
     });
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-    }).format(price);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'available':
-        return 'green';
-      case 'reserved':
-        return 'yellow';
-      case 'sold':
-        return 'red';
-      default:
-        return 'gray';
-    }
-  };
 
   const handleListingClick = async (listingId: string) => {
     // Increment view count
@@ -263,8 +244,6 @@ export const BreederProfile: React.FC<BreederProfileProps> = ({ breederId }) => 
                         key={listing.id}
                         listing={listing}
                         handleListingClick={handleListingClick}
-                        getStatusColor={getStatusColor}
-                        formatPrice={formatPrice}
                       />
                     ))}
                   </SimpleGrid>

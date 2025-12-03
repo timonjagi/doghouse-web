@@ -1,4 +1,4 @@
-import { Card, CardHeader, Heading, CardBody, SimpleGrid, VStack, Button, Image, Text, Alert, AlertIcon, Center, useColorModeValue, useToast, useDisclosure, Box, AlertDescription, AlertTitle } from "@chakra-ui/react";
+import { Card, CardHeader, Heading, CardBody, SimpleGrid, VStack, Button, Image, Text, Alert, AlertIcon, Center, useColorModeValue, useToast, useDisclosure, Box, AlertDescription, AlertTitle, Stack, Spacer } from "@chakra-ui/react";
 import { Loader } from "lib/components/ui/Loader";
 import { useIncrementListingViews, useUpdateListing } from "lib/hooks/queries/useListings";
 import { formatPrice } from "lib/components/ui/PriceTag";
@@ -74,6 +74,15 @@ export const BreedListings: React.FC<BreedListingsProps> = ({ listings, loading,
     onClose();
   };
 
+  const onAddToWishlist = () => {
+    toast({
+      title: "Added to wishlist",
+      description: "Listing has been added to your wishlist",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    })
+  }
 
   if (loading) {
     return (
@@ -94,35 +103,47 @@ export const BreedListings: React.FC<BreedListingsProps> = ({ listings, loading,
 
   if (listings?.length === 0) {
     return <>
-      {isManaging ? (
-        <Alert
-          status='info'
-          variant='subtle'
-          flexDirection='column'
-          alignItems='center'
-          justifyContent='center'
-          textAlign='center'
-          height='200px'
-          maxW="xl"
-        >
-          <AlertIcon boxSize='40px' mr={0} />
+      <Alert
+        status='info'
+        variant='brand'
+        flexDirection='column'
+        alignItems='center'
+        justifyContent='center'
+        textAlign='center'
+        maxW="xl"
+        borderRadius="lg"
+        bgColor="brand.50"
+      >
+        <VStack spacing="2">
+          <AlertIcon boxSize='50px' mr={0} color="brand.500" />
           <AlertTitle mt={4} mb={1} fontSize='lg'>
             No listings found
           </AlertTitle>
           <AlertDescription maxWidth='sm'>
-            No listings found for this breed.
+            {isManaging ? 'Click the button below to add a new listing.' : 'Add the breed to your wishlist to be notified when a new pet becomes available.'}
           </AlertDescription>
-          <Button colorScheme='teal' size='lg' as={Link} href="/dashboard/listings/" mt={4}>
+
+          <Spacer />
+
+          {isManaging && <Button
+            colorScheme='teal'
+            size='lg' as={Link}
+            href="/dashboard/listings/"
+          >
             Add Listing
-          </Button>
-        </Alert>
-      )
-        : (
-          <Alert status="info">
-            <AlertIcon />
-            No listings found for this breed.
-          </Alert>
-        )}
+          </Button>}
+
+          {!isManaging && <Button
+            colorScheme='brand'
+            size='lg'
+            onClick={onAddToWishlist}
+
+          >
+            Add to Wishlist
+          </Button>}
+        </VStack>
+
+      </Alert>
     </>
   }
 
@@ -135,16 +156,11 @@ export const BreedListings: React.FC<BreedListingsProps> = ({ listings, loading,
               key={listing.id}
               listing={listing}
               handleViewListing={handleViewListing}
-              getStatusColor={getStatusColor}
-              bgColor={bgColor}
-              formatPrice={formatPrice}
             />
             : <ListingCard
               key={listing.id}
               listing={listing}
               handleListingClick={handleListingClick}
-              formatPrice={formatPrice}
-              getStatusColor={getStatusColor}
             />
           }
         </>

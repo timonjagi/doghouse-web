@@ -259,8 +259,6 @@ const BrowseListingsPage: React.FC = () => {
                   key={listing.id}
                   listing={listing}
                   handleListingClick={handleListingClick}
-                  formatPrice={formatPrice}
-                  getStatusColor={getStatusColor}
                 />
               ))}
             </SimpleGrid>
