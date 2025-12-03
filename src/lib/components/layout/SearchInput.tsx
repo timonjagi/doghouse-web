@@ -1,6 +1,6 @@
-import { Icon, Input, InputGroup, InputLeftElement } from '@chakra-ui/react'
+import { Icon, Input, InputGroup, InputLeftElement, InputRightElement } from '@chakra-ui/react'
 import * as React from 'react'
-import { FiSearch } from 'react-icons/fi'
+import { FiSearch, FiX } from 'react-icons/fi'
 
 export const SearchInput = (props) => {
   return (
@@ -18,6 +18,9 @@ export const SearchInput = (props) => {
         autoComplete="off"
         {...props}
       />
+      <InputRightElement onClick={props.onClear} >
+        <Icon as={FiX} color="gray.500" fontSize="lg" cursor="pointer" />
+      </InputRightElement>
     </InputGroup>
   )
 }
