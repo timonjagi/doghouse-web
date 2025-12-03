@@ -211,11 +211,15 @@ export const UnifiedSearchPage = () => {
   return (
     <Container maxW="7xl" mx="auto" >
 
-      <CustomTabBar tab={filters.tab as string} />
+      {/* <CustomTabBar tab={filters.tab as string} /> */}
 
       <Box overflowX="hidden">
-        <Tabs index={activeTab} onChange={handleTabChange} variant="soft-rounded" colorScheme="brand">
-
+        <Tabs
+          index={activeTab}
+          onChange={handleTabChange}
+          variant="soft-rounded"
+          colorScheme="brand"
+        >
 
           <TabList>
             <Tab>All ({totalResults})</Tab>
