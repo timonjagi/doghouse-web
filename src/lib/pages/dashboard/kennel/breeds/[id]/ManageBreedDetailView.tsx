@@ -170,7 +170,7 @@ export const ManageBreedDetailView = () => {
                 </TabPanel>
 
                 <TabPanel px={0}>
-                  <BreedersList breed={userBreed?.breeds} userRole="breeder" />
+                  <BreedersList breed={userBreed?.breeds} />
                 </TabPanel>
               </TabPanels>
             </Tabs>

@@ -73,15 +73,14 @@ export const BreedersList: React.FC<BreedersListProps> = ({
           data={{ user: breeder } as any}
           action={
             <Link
-              href={`/dashboard/breeds/${encodeURIComponent(breed?.name?.toLowerCase().replaceAll(" ", "-") || '')}`}
-            // as={`/breeds/${breed?.name.replaceAll(" ", "-")}`}
+              href={`/dashboard/breeders/${breeder?.id}`}
             >
               <Button
                 leftIcon={<ArrowRightIcon />}
                 colorScheme="brand"
                 variant="outline"
               >
-                View Breed
+                View Profile
               </Button>
             </Link>
           }
