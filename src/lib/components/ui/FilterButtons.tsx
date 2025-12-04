@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Flex,
   HStack,
   Icon,
@@ -9,13 +8,31 @@ import {
 import * as React from 'react'
 import { MdFilterList } from 'react-icons/md'
 import { SortbySelect } from './SortBySelect'
+import { Filter } from './Filter'
 
 interface MobileFilterProps {
   onToggle: () => void
+  onFilterChange: (filters: any) => void
 }
-export const MobileFilter: React.FC<MobileFilterProps> = ({ onToggle }) => {
+
+export const DesktopFilterButtons: React.FC<MobileFilterProps> = ({ onToggle, onFilterChange }) => {
   return (
-    <Flex width="full" justify="space-between" display={{ base: 'flex', md: 'none' }} py="4">
+    <Box w="full">
+      <Filter
+        onFilterChange={onFilterChange}
+      />
+    </Box>
+
+  )
+}
+export const MobileFilterButtons: React.FC<MobileFilterProps> = ({ onToggle }) => {
+  return (
+    <Flex
+      width="full"
+      justify="space-between"
+      display={{ base: 'flex', md: 'none' }}
+      py="4"
+    >
       <HStack
         as="button"
         fontSize="sm"
@@ -32,7 +49,6 @@ export const MobileFilter: React.FC<MobileFilterProps> = ({ onToggle }) => {
       </HStack>
 
       <SortbySelect maxW="140px" />
-
     </Flex>
   )
 }

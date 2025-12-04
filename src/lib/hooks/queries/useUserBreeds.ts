@@ -172,12 +172,36 @@ export const useAllAvailableUserBreeds = (
       // Apply search filter on unique breeds
       if (options?.search) {
         const searchLower = options.search.toLowerCase();
-        uniqueBreeds = uniqueBreeds.filter(breed =>
-          breed.breeds?.name?.toLowerCase().includes(searchLower) ||
-          breed.breeds?.description?.toLowerCase().includes(searchLower) ||
-          breed.breeds?.group?.toLowerCase().includes(searchLower)
-        );
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.search);
+
+        uniqueBreeds = uniqueBreeds.filter(breed => {
+          // 1. Direct Breed ID match (if search is UUID)
+          if (isUuid && breed.breed_id === options.search) return true;
+
+          // 2. Breed Details (Name, Description, Group)
+          if (breed.breeds?.name?.toLowerCase().includes(searchLower) ||
+            breed.breeds?.description?.toLowerCase().includes(searchLower) ||
+            breed.breeds?.group?.toLowerCase().includes(searchLower)) {
+            return true;
+          }
+
+          // 3. Breeder/User Details
+          // Check User Display Name
+          if (breed.users?.display_name?.toLowerCase().includes(searchLower)) return true;
+
+          // Check Kennel Name (in breeder_profiles)
+          // breeder_profiles is an array in the query response structure
+          if (breed.users?.breeder_profiles?.some((bp: any) =>
+            bp.kennel_name?.toLowerCase().includes(searchLower)
+          )) {
+            return true;
+          }
+
+          return false;
+        });
       }
+
+
 
       // Apply breed_ids filter
       if (options?.breed_ids && options.breed_ids.length > 0) {

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Popover, Box, Flex, HStack, SimpleGrid, Text, useColorMode as mode, Stack, FormLabel } from '@chakra-ui/react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Popover, Box, Flex, HStack, SimpleGrid, Text, useColorMode as mode, Stack, FormLabel, Button } from '@chakra-ui/react'
 import { CheckboxFilter } from './CheckboxFilter'
 // import { ColorPicker } from './ColorPicker'
 import { PriceRangePicker } from './PriceRangePicker'
@@ -7,10 +7,10 @@ import { formatPrice } from './PriceTag'
 import { SizePicker } from './SizePicker'
 import { FilterPopoverButton, FilterPopoverContent } from './FilterPopover'
 import { useFilterState } from './useFilterState'
-import { MobileFilter } from './MobileFilter'
 import { SortbySelect } from './SortBySelect'
 import PetTypePicker from './PetTypePicker'
 import { useRouter } from 'next/router'
+import * as searchService from 'lib/services/searchService'
 
 const breedFilters = {
   defaultValue: [],
@@ -268,26 +268,26 @@ export const LocationFilterPopover = ({ onFilterChange }: { onFilterChange?: (fi
 export const CheckboxFilterPopover = BreedGroupFilterPopover;
 
 export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ onFilterChange }) => {
+
+
+  const handleReset = () => {
+    const defaultFilters = searchService.getDefaultFilters()
+    // retain search query and tab
+    defaultFilters.q = searchService.parseSearchParams(router.query).q
+    defaultFilters.tab = searchService.parseSearchParams(router.query).tab
+
+    const queryParams = searchService.buildQueryParams(defaultFilters)
+
+    router.push({
+      pathname: '/dashboard/search',
+      query: queryParams
+    }, undefined, { shallow: true })
+  }
   const router = useRouter();
   const [currentPath, setCurrentPath] = useState(router.pathname);
 
-  useEffect(() => {
-    // console.log('Current path:', router.pathname);
 
-    const {
-      q: searchQuery,
-      tab,
-      sort,
-      breed,
-      featured,
-      rescue,
-      training,
-      care,
-      ...otherQueries
-    } = router.query;
-
-    setCurrentPath(tab as string || '');
-  }, [router.query]);
+  const filters = useMemo(() => searchService.parseSearchParams(router.query), [router.query])
 
   const breedFilterState = useFilterState({
     defaultValue: [],
@@ -328,6 +328,7 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
 
   return (
     <Box py="4">
+      {/* Desktop filters */}
       <Flex
         justify={{ base: 'center', md: 'space-between' }}
         align="center"
@@ -371,10 +372,19 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
           </SimpleGrid>
         </Stack>
 
-
+        {searchService.hasActiveFilters(filters) && (
+          <Button
+            variant="ghost"
+            color="subtle"
+            size="sm"
+            onClick={handleReset}
+          >
+            Reset Filters
+          </Button>
+        )}
       </Flex>
 
-
+      {/* Mobile filters */}
       <Stack
         display={{ base: 'flex', md: 'none' }}
         spacing="2"
@@ -430,4 +440,25 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
 
   )
 
-} 
+}
+
+
+export type FilterActionButtonsProps = {
+  onClickCancel?: VoidFunction
+  isCancelDisabled?: boolean
+  onClickApply?: VoidFunction
+}
+
+export const FilterActionButtons = (props: FilterActionButtonsProps) => {
+  const { onClickApply, onClickCancel, isCancelDisabled } = props
+  return (
+    <HStack spacing="2" justify="space-between">
+      <Button size="sm" variant="ghost" onClick={onClickCancel} isDisabled={isCancelDisabled}>
+        Cancel
+      </Button>
+      <Button size="sm" colorScheme="brand" onClick={onClickApply}>
+        Apply
+      </Button>
+    </HStack>
+  )
+}

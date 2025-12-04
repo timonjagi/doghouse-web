@@ -1,25 +1,50 @@
-import { Card, CardHeader, Heading, CardBody, Center, Alert, AlertIcon, SimpleGrid, HStack, Avatar, VStack, Icon, Button, Text, Stack } from "@chakra-ui/react";
+import { Alert, AlertIcon, SimpleGrid, Text, Center, Button, Link } from "@chakra-ui/react";
 import { Loader } from "lib/components/ui/Loader";
 import { useBreedersForBreed } from "lib/hooks/queries/useUserBreeds";
-import { FaStar } from "react-icons/fa";
-import Link from "next/link";
 import { BreederCard } from "../../../components/ui/BreederCard";
-import { use, useEffect, useState } from "react";
-import { useCurrentUser } from "lib/hooks/queries/useAuth";
+import { ArrowRightIcon } from "@chakra-ui/icons";
+import { UserCardWithBackground } from "lib/components/ui/UserCardWithBackground";
 
 interface BreedersListProps {
-  breed: any;
-  userRole?: string;
+  // Optional: fetch data internally for a specific breed
+  breed?: any;
+
+  // Optional: provide data directly
+  breeders?: any[];
+  isLoading?: boolean;
+  error?: any;
+
+  // Display options
+  columns?: { base?: number; md?: number; lg?: number; xl?: number };
+  spacing?: number | { base?: number; md?: number; lg?: number };
+  emptyMessage?: string;
+  showLoader?: boolean;
 }
-export const BreedersList: React.FC<BreedersListProps> = ({ breed, userRole }) => {
-  const { data: breedersForBreed, isLoading: isLoadingBreeders, error } = useBreedersForBreed(breed?.id);
 
-  if (isLoadingBreeders) {
-    return (
-      <Loader />
-    );
+export const BreedersList: React.FC<BreedersListProps> = ({
+  breed,
+  breeders: externalBreeders,
+  isLoading: externalIsLoading,
+  error: externalError,
+  columns = { base: 1, md: 2 },
+  spacing = 4,
+  emptyMessage = "No breeders found.",
+  showLoader = true
+}) => {
+  // Use internal data fetching if breed is provided, otherwise use external data
+  const {
+    data: internalBreeders,
+    isLoading: internalIsLoading,
+    error: internalError
+  } = useBreedersForBreed(breed?.id && !externalBreeders ? breed.id : undefined);
+
+  const breeders = externalBreeders ?? internalBreeders;
+  const isLoading = externalIsLoading ?? internalIsLoading;
+  const error = externalError ?? internalError;
+
+  if (isLoading && showLoader) {
+    return <Loader />;
   }
-
 
   if (error) {
     return (
@@ -31,22 +56,37 @@ export const BreedersList: React.FC<BreedersListProps> = ({ breed, userRole }) =
     );
   }
 
-
-  if (breedersForBreed?.length === 0) {
+  if (!breeders || breeders.length === 0) {
     return (
-      <Alert status="warning">
-        <AlertIcon />
-        No breeders found for this breed.
-      </Alert>
+      <Center py={8}>
+        <Text color="gray.500">{emptyMessage}</Text>
+      </Center>
     );
   }
 
-
   return (
-    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-      {breedersForBreed?.map((breeder) => (
-        <BreederCard key={breeder?.id} breeder={breeder} />
+    <SimpleGrid columns={columns} spacing={spacing}>
+      {breeders.map((breeder) => (
+        // <BreederCard key={breeder?.id} breeder={breeder} />
+        <UserCardWithBackground
+          key={breeder?.id}
+          data={{ user: breeder } as any}
+          action={
+            <Link
+              href={`/dashboard/breeds/${encodeURIComponent(breed?.name?.toLowerCase().replaceAll(" ", "-") || '')}`}
+            // as={`/breeds/${breed?.name.replaceAll(" ", "-")}`}
+            >
+              <Button
+                leftIcon={<ArrowRightIcon />}
+                colorScheme="brand"
+                variant="outline"
+              >
+                View Breed
+              </Button>
+            </Link>
+          }
+        />
       ))}
     </SimpleGrid>
-  )
-}
+  );
+};

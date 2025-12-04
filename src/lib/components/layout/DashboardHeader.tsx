@@ -20,7 +20,7 @@ import { NotificationsDrawer } from "./NotificationsDrawer";
 import { SearchInput } from "./SearchInput";
 import { Sidebar } from "./Sidebar";
 import { MdMenu } from "react-icons/md";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CurrencySelect } from "../ui/CurrencySelect";
 import * as searchService from "lib/services/searchService";
 
@@ -44,6 +44,7 @@ const DashboardHeader = () => {
   }, [pathname, router]);
 
   const [searchQuery, setSearchQuery] = useState(router.query?.q as string || '');
+  const currentFilters = useMemo(() => searchService.parseSearchParams(router.query), [router.query])
 
   const handleSearch = () => {
     // Parse existing filters from URL if on search page
@@ -118,7 +119,7 @@ const DashboardHeader = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
                 searchQuery={searchQuery}
-                onClear={() => setSearchQuery('')}
+                onClear={() => searchService.clearSearchParams(router, currentFilters)}
               />
             </HStack>
           )}

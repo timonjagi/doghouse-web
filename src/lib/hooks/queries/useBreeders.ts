@@ -20,7 +20,9 @@ export const useAllBreeders = (
         .select(`
           id,
           display_name,
+          emamil,
           profile_photo_url,
+          role,
           created_at,
           breeder_profiles (
             kennel_name,

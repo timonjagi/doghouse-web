@@ -58,19 +58,18 @@ export const useBreedCategories = (limit: number = 8) => {
       // },
       () => {
         const defaultCategories = [
-          { label: 'Popular Breeds', url: '/dashboard/search?tab=listings' },
+          { label: 'Featured Pets', url: '/dashboard/search?tab=listings&featured=true' },
           { label: 'New Arrivals', url: '/dashboard/search?tab=listings&sort=newest' },
-          { label: 'Apartment Dogs', url: '/dashboard/search?tab=listings&apartment=true' },
-          { label: 'Family Dogs', url: '/dashboard/search?tab=listings&family=true' },
-          { label: 'Guard Dogs', url: '/dashboard/search?tab=listings&guard=true' },
-          { label: 'Hypoallergenic Breeds', url: '/dashboard/search?tab=listings&hypoallergenic=true' },
-          { label: 'Featured Breeders', url: '/dashboard/search?tab=breeders&featured=true' },
-          { label: 'Verified Breeders', url: '/dashboard/search?tab=breeders&verified=true' }
-
+          { label: 'Apartment Dogs', url: '/dashboard/search?tab=breeds&apartment=true' },
+          { label: 'Family Dogs', url: '/dashboard/search?tab=breeds&family=true' },
+          { label: 'Guard Dogs', url: '/dashboard/search?tab=breeds&guard=true' },
+          { label: 'Hypoallergenic Breeds', url: '/dashboard/search?tab=breeds&hypoallergenic=true' },
+          { label: 'Verified Breeders', url: '/dashboard/search?tab=breeders&verified=true' },
+          { label: 'Rescue Organizations', url: '/dashboard/search?tab=breeders&organization=true' }
         ]
 
         return Promise.resolve(defaultCategories);
       },
-    //staleTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: 1000 * 60 * 10, // 10 minutes
   });
 }

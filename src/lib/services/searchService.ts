@@ -1,4 +1,6 @@
+import router, { NextRouter, useRouter } from 'next/router'
 import { ParsedUrlQuery } from 'querystring'
+import { useMemo } from 'react'
 
 /**
  * Search filter state interface
@@ -268,3 +270,13 @@ export const getRelevantFiltersForTab = (
       return baseFilters
   }
 }
+
+export const clearSearchParams = (router: NextRouter, currentFilters?: SearchFilters) => {
+  const queryParams = buildQueryParams({ ...(currentFilters || {}), q: '' })
+
+  router.push({
+    pathname: '/dashboard/search',
+    query: queryParams
+  }, undefined, { shallow: true })
+}
+
