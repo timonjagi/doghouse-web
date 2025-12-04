@@ -45,6 +45,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/listings", layout: 'dashboard' },
     { path: "/dashboard/listings/[id]", layout: 'dashboard' },
     { path: "/dashboard/wishlist", layout: 'dashboard' },
+    { path: "/dashboard/matches", layout: 'dashboard' },
     { path: "/dashboard/adoptions", layout: 'dashboard' },
     { path: "/dashboard/adoptions/[id]", layout: 'dashboard' },
     { path: "/dashboard/account", layout: 'dashboard' },
