@@ -173,8 +173,13 @@ const DashboardHeader = () => {
         {/* Mobile Search Bar */}
         {!isDesktop && (
           <HStack flex="1" >
-
-            <SearchInput />
+            <SearchInput
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+              searchQuery={searchQuery}
+              onClear={() => searchService.clearSearchParams(router, currentFilters)}
+            />
           </HStack>
         )}
       </Container>
