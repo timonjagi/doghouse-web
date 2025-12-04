@@ -5,18 +5,28 @@ import React from 'react'
 interface ManageListingCardProps {
   listing: any;
   handleViewListing: (id: string) => void;
-  getStatusColor: (status: string) => string;
-  bgColor?: string;
-  formatPrice: (price: number) => string;
 }
 function ManageListingCard({
   listing,
   handleViewListing,
-  getStatusColor,
-  bgColor,
-  formatPrice
 }: ManageListingCardProps) {
   const borderColor = useColorModeValue("gray.200", "gray.600");
+  const bgColor = useColorModeValue('white', 'gray.800');
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'available': return 'green'
+      case 'reserved': return 'yellow'
+      case 'sold': return 'red'
+      default: return 'gray'
+    }
+  }
+
+  const formatPrice = (price?: number) => {
+    if (!price) return 'Price not set'
+    return `KSH ${price.toLocaleString()}`
+  }
+
   const getTitle = () => {
     if (listing.title) return listing.title;
     if (listing.type === 'litter') {

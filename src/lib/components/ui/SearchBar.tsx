@@ -34,8 +34,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = "Search for dogs, breeds, or locations..."
 }) => {
   const router = useRouter();
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
+
 
   const { data: breeds } = useBreeds();
   const [searchQuery, setSearchQuery] = useState('');
@@ -74,74 +73,73 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <Box bg={bgColor} p={6} borderRadius="lg" border="1px" borderColor={borderColor}>
-      <VStack spacing={4} align="stretch">
-        {/* Main Search Input */}
-        <HStack spacing={3}>
-          <InputGroup size="lg" flex={1}>
-            <InputLeftElement pointerEvents="none">
-              <SearchIcon color="gray.400" />
-            </InputLeftElement>
+    <VStack spacing={4} align="stretch">
+      {/* Main Search Input */}
+      <HStack spacing={3}>
+        <InputGroup size="lg" flex={1}>
+          <InputLeftElement pointerEvents="none">
+            <SearchIcon color="gray.400" />
+          </InputLeftElement>
+          <Input
+            placeholder={placeholder}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            borderRadius="md"
+          />
+        </InputGroup>
+
+        {showFilters && (
+          <>
             <Input
-              placeholder={placeholder}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
               onKeyPress={handleKeyPress}
-              borderRadius="md"
+              size="lg"
+              w="200px"
             />
-          </InputGroup>
-
-          {showFilters && (
-            <>
-              <Input
-                placeholder="Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                onKeyPress={handleKeyPress}
-                size="lg"
-                w="200px"
-              />
-              <Button
-                colorScheme="brand"
-                size="lg"
-                onClick={handleSearch}
-                px={8}
-              >
-                Search
-              </Button>
-            </>
-          )}
-        </HStack>
-
-        {/* Popular Breeds Quick Search */}
-        {showFilters && popularBreeds.length > 0 && (
-          <Box>
-            <Text fontSize="sm" color="gray.600" mb={2}>
-              Popular breeds:
-            </Text>
-            <Wrap spacing={2}>
-              {popularBreeds.map((breed) => (
-                <WrapItem key={breed.id}>
-                  <Badge
-                    as="button"
-                    onClick={() => quickSearchBreeds(breed.id, breed.name)}
-                    cursor="pointer"
-                    colorScheme="blue"
-                    variant="subtle"
-                    px={3}
-                    py={1}
-                    borderRadius="full"
-                    _hover={{ bg: 'blue.100' }}
-                    transition="all 0.2s"
-                  >
-                    {breed.name}
-                  </Badge>
-                </WrapItem>
-              ))}
-            </Wrap>
-          </Box>
+            <Button
+              colorScheme="brand"
+              size="lg"
+              onClick={handleSearch}
+              px={8}
+            >
+              Search
+            </Button>
+          </>
         )}
-      </VStack>
-    </Box>
+      </HStack>
+
+      {/* Popular Breeds Quick Search */}
+      {showFilters && popularBreeds.length > 0 && (
+        <Box>
+          <Text fontSize="sm" color="gray.600" mb={2}>
+            Popular breeds:
+          </Text>
+          <Wrap spacing={2}>
+            {popularBreeds.map((breed) => (
+              <WrapItem key={breed.id}>
+                <Badge
+                  as="button"
+                  onClick={() => quickSearchBreeds(breed.id, breed.name)}
+                  cursor="pointer"
+                  colorScheme="blue"
+                  variant="subtle"
+                  px={3}
+                  py={1}
+                  borderRadius="full"
+                  _hover={{ bg: 'blue.100' }}
+                  transition="all 0.2s"
+                >
+                  {breed.name}
+                </Badge>
+              </WrapItem>
+            ))}
+          </Wrap>
+        </Box>
+      )}
+    </VStack>
+
   );
 };

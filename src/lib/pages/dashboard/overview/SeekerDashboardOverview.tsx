@@ -1,327 +1,451 @@
-import React from 'react';
-import {
-  Box,
-  Grid,
-  VStack,
-  HStack,
-  Text,
-  Button,
-  useColorModeValue,
-  Heading,
-  SimpleGrid,
-  Container,
-} from '@chakra-ui/react';
-import { FiSearch, FiHeart, FiMapPin, FiFilter } from 'react-icons/fi';
-import { useRouter } from 'next/router';
-
-import { useSeekerDashboardStats } from '../../../hooks/queries/useSeekerDashboardStats';
-import { usePopularListings } from '../../../hooks/queries/usePopularListings';
-import { useNewListings } from '../../../hooks/queries/useNewListings';
-import { useFeaturedBreeders } from '../../../hooks/queries/useFeaturedBreeders';
-import { useBreedCategories } from '../../../hooks/queries/useBreedCategories';
-import { useUserProfile } from 'lib/hooks/queries/useUserProfile';
+import { Box, Flex, HStack, Stack, useBreakpointValue, useColorModeValue as mode, Tab, TabList, TabPanel, TabPanels, Tabs, VisuallyHidden, SimpleGrid, Heading, Icon, Link, useColorModeValue } from '@chakra-ui/react'
+import { NavCategorySubmenu } from 'lib/components/layout/NavCategorySubmenu'
+import { NavCategorySubmenu as BreedCategorySubmenu } from 'lib/components/ui/NavCategorySubmenu'
+import { NavCategoryMenu as BreedCategoryMenu } from 'lib/components/ui/NavCategoryMenu'
 import { Loader } from 'lib/components/ui/Loader';
-import { SearchBar } from '../../../components/ui/SearchBar';
-import ListingCard from '../../../components/ui/ListingCard';
-import { BreederCard } from '../../../components/ui/BreederCard';
-import { BreedCard } from '../../../components/ui/BreedCard';
+import { useSeekerDashboard } from 'lib/hooks/queries/useSeekerDashboard'
+import React, { useEffect } from 'react';
+import * as searchService from 'lib/services/searchService'
+import router from 'next/router';
+import { useIncrementListingViews } from 'lib/hooks/queries/useListings';
+import { ShowcaseOnSpanningColumns } from 'lib/components/ui/ShowcaseOnSpanningColumns';
+import { CategoryCard } from 'lib/components/ui/CatetgoryCard';
+import { DesktopNavItem } from 'lib/components/layout/NavCategoryMenu';
+import { FaArrowRight } from 'react-icons/fa';
 
 const SeekerDashboardOverview: React.FC = () => {
-  const router = useRouter();
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
-  const bgColor = useColorModeValue('gray.50', 'gray.900');
+  const isMobile = useBreakpointValue({ base: true, md: false })
+  const isDesktop = useBreakpointValue({ base: false, md: true })
 
-  // Discovery data hooks
-  const { data: popularListings, isLoading: popularLoading } = usePopularListings(6);
-  const { data: newListings, isLoading: newLoading } = useNewListings(6);
-  const { data: featuredBreeders, isLoading: breedersLoading } = useFeaturedBreeders(4);
-  const { data: breedCategories, isLoading: categoriesLoading } = useBreedCategories(8);
+  // Use the unified dashboard hook to fetch data for dynamic navigation
+  const { data: dashboardData, isLoading, error } = useSeekerDashboard();
 
-  // Legacy stats for application cards
-  const { data: stats, isLoading: statsLoading } = useSeekerDashboardStats();
+  // refactor to usePopularBreeds hook
+  const incrementViewsMutation = useIncrementListingViews()
 
-  const handleListingClick = (listingId: string) => {
-    router.push(`/dashboard/listings/${listingId}`);
-  };
+  // So
+  const popularListings = dashboardData?.popularListings || [];
+  const featuredBreeders = dashboardData?.featuredBreeders || [];
+  const breedCategories = dashboardData?.breedCategories || [];
+  const popularBreeds = dashboardData?.popularBreeds || [];
 
-  const handleBreederClick = (breederId: string) => {
-    router.push(`/dashboard/breeders/${breederId}`);
-  };
-
-  const handleBreedClick = (breedId: string) => {
-    router.push(`/dashboard/listings?breed=${breedId}`);
-  };
-
-  const formatPrice = (price?: number) => {
-    if (!price) return 'Price not set';
-    return `KSH ${price.toLocaleString()}`;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'available': return 'green';
-      case 'reserved': return 'yellow';
-      case 'sold': return 'red';
-      default: return 'gray';
+  const getTabIndex = (tabParam: string | string[] | undefined): number => {
+    switch (tabParam?.toString()) {
+      case 'all': return 0
+      case 'listings': return 1
+      case 'breeds': return 2
+      case 'breeders': return 3
+      default: return 0
     }
-  };
+  }
+  const [currentRoute, setCurrentRoute] = React.useState('');
 
-  if (profileLoading || statsLoading) {
-    return <Loader />;
+  React.useEffect(() => {
+    setCurrentRoute(router.query.category?.toString() || '');
+  }, [router.query.category])
+
+
+  useEffect(() => {
+    handleTabChange(getTabIndex(router.query.tab))
+  }, [router.query.tab])
+
+  const handleTabChange = (tabIndex: number) => {
+    setActiveTab(tabIndex)
+  }
+
+  const filters = React.useMemo(() => searchService.parseSearchParams(router.query), [router.query])
+
+  const [activeTab, setActiveTab] = React.useState(getTabIndex(filters.tab))
+
+  console.log('SeekerDashboardOverview render:', { popularListings, featuredBreeders, breedCategories, popularBreeds });
+  if (isLoading) {
+    return <Loader />
+  }
+
+  if (error) {
+    return <Box>Error loading dashboard data. {error.message}</Box>
+  }
+
+  const handleListingClick = async (listingId: string) => {
+    try {
+      await incrementViewsMutation.mutateAsync(listingId)
+    } catch (error) {
+      console.error('Failed to increment views:', error)
+    }
+    router.push(`/dashboard/listings/${listingId}`)
+  }
+
+  const handleBreedClick = (breedName: string) => {
+    router.push(`/dashboard/breeds/${encodeURIComponent(breedName)}`)
   }
 
   return (
-    <Container maxW="7xl" py={6}>
-      <VStack spacing={8} align="stretch">
-        {/* Welcome Header */}
-        <Box textAlign="center">
-          <Heading size="lg" mb={2}>
-            Welcome back, {profile?.display_name}!
-          </Heading>
-          <Text color="gray.600" fontSize="lg">
-            Discover your perfect furry companion
-          </Text>
-        </Box>
+    <Box>
 
-        {/* Search Bar */}
-        <SearchBar placeholder="Find your dream dog..." />
+      <CustomTabBar activeTab={activeTab} />
 
-        {/* Popular Listings Section */}
-        <Box>
-          <HStack justify="space-between" align="center" mb={4}>
-            <Heading size="md">Popular Listings</Heading>
-            <Button
-              variant="ghost"
-              colorScheme="blue"
-              onClick={() => router.push('/dashboard/listings')}
-            >
-              View All
-            </Button>
-          </HStack>
-          {popularLoading ? (
-            <Loader />
-          ) : (
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-              {popularListings?.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                  handleListingClick={handleListingClick}
-                  formatPrice={formatPrice}
-                  getStatusColor={getStatusColor}
-                />
-              ))}
-            </SimpleGrid>
-          )}
-        </Box>
+      <Tabs
+        index={activeTab}
+        onChange={handleTabChange}
+        variant="soft-rounded"
+        colorScheme="brand"
+      >
 
-        {/* New Arrivals Section */}
-        <Box>
-          <HStack justify="space-between" align="center" mb={4}>
-            <Heading size="md">New Arrivals</Heading>
-            <Button
-              variant="ghost"
-              colorScheme="blue"
-              onClick={() => router.push('/dashboard/listings?sort=newest')}
-            >
-              View All
-            </Button>
-          </HStack>
-          {newLoading ? (
-            <Loader />
-          ) : (
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-              {newListings?.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                  handleListingClick={handleListingClick}
-                  formatPrice={formatPrice}
-                  getStatusColor={getStatusColor}
-                />
-              ))}
-            </SimpleGrid>
-          )}
-        </Box>
+        <VisuallyHidden>
+          <TabList>
+            <Tab>All </Tab>
+            <Tab>Listings </Tab>
+            <Tab>Breeds </Tab>
+            <Tab>Breeders </Tab>
+          </TabList>
+        </VisuallyHidden>
 
-        {/* Featured Breeders Section */}
-        <Box>
-          <HStack justify="space-between" align="center" mb={4}>
-            <Heading size="md">Featured Breeders</Heading>
-            <Button
-              variant="ghost"
-              colorScheme="blue"
-              onClick={() => router.push('/dashboard/breeders')}
-            >
-              View All
-            </Button>
-          </HStack>
-          {breedersLoading ? (
-            <Loader />
-          ) : (
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
-              {featuredBreeders?.map((breeder) => (
-                <BreederCard
-                  key={breeder.id}
-                  breeder={breeder}
-                />
-              ))}
-            </SimpleGrid>
-          )}
-        </Box>
+        <Stack
+          bg={{ base: '', md: mode('white', 'gray.800') }}
+        >
+          <TabPanels>
 
-        {/* Breed Categories Section */}
-        <Box>
-          <HStack justify="space-between" align="center" mb={4}>
-            <Heading size="md">Browse by Breed</Heading>
-            <Button
-              variant="ghost"
-              colorScheme="blue"
-              onClick={() => router.push('/dashboard/breeds')}
-            >
-              View All Breeds
-            </Button>
-          </HStack>
-          {categoriesLoading ? (
-            <Loader />
-          ) : (
-            <SimpleGrid columns={{ base: 2, md: 4, lg: 8 }} spacing={4}>
-              {breedCategories?.map((category) => (
-                <BreedCard
-                  key={category.id}
-                  userBreed={{
-                    id: category.id,
-                    breeds: {
-                      name: category.name,
-                      featured_image_url: category.featuredImage,
-                    },
-                    breeder_count: category.listingCount,
-                  }}
-                  userRole="seeker"
-                  onClick={() => handleBreedClick(category.id)}
-                />
-              ))}
-            </SimpleGrid>
-          )}
-        </Box>
+            <TabPanel p={0}>
+              <Stack>
 
-        {/* Application Status Cards */}
-        {stats && (stats.activeApplications > 0 || stats.completedApplications > 0) && (
-          <Box>
-            <Heading size="md" mb={4}>Your Applications</Heading>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              {stats.activeApplications > 0 && (
-                <Box
-                  p={6}
-                  bg="white"
-                  borderRadius="lg"
-                  shadow="md"
-                  border="1px"
-                  borderColor="gray.200"
-                  cursor="pointer"
-                  onClick={() => router.push('/dashboard/applications')}
-                  _hover={{ transform: 'translateY(-2px)', shadow: 'lg' }}
-                  transition="all 0.2s"
-                >
-                  <VStack spacing={2} align="center">
-                    <Text fontSize="3xl">📋</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="blue.600">
-                      {stats.activeApplications}
-                    </Text>
-                    <Text fontWeight="medium">Active Applications</Text>
-                    <Text fontSize="sm" color="gray.600">
-                      Track your ongoing adoption processes
-                    </Text>
-                  </VStack>
-                </Box>
-              )}
 
-              {stats.completedApplications > 0 && (
-                <Box
-                  p={6}
-                  bg="white"
-                  borderRadius="lg"
-                  shadow="md"
-                  border="1px"
-                  borderColor="gray.200"
-                  cursor="pointer"
-                  onClick={() => router.push('/dashboard/applications')}
-                  _hover={{ transform: 'translateY(-2px)', shadow: 'lg' }}
-                  transition="all 0.2s"
-                >
-                  <VStack spacing={2} align="center">
-                    <Text fontSize="3xl">🏆</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="green.600">
-                      {stats.completedApplications}
-                    </Text>
-                    <Text fontWeight="medium">Successful Adoptions</Text>
-                    <Text fontSize="sm" color="gray.600">
-                      Congratulations on finding your companions!
-                    </Text>
-                  </VStack>
-                </Box>
-              )}
-            </SimpleGrid>
-          </Box>
-        )}
+                <Flex flex="1" fontSize="sm" overflow="auto">
 
-        {/* Quick Actions */}
-        <Box>
-          <Heading size="md" mb={4}>Quick Actions</Heading>
-          <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4}>
-            <Button
-              leftIcon={<FiSearch />}
-              colorScheme="blue"
-              variant="outline"
-              size="lg"
-              height="60px"
-              onClick={() => router.push('/dashboard/listings')}
-              _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
-              transition="all 0.2s"
-            >
-              Browse All
-            </Button>
-            <Button
-              leftIcon={<FiHeart />}
-              colorScheme="pink"
-              variant="outline"
-              size="lg"
-              height="60px"
-              onClick={() => router.push('/dashboard/matches')}
-              _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
-              transition="all 0.2s"
-            >
-              My Matches
-            </Button>
-            <Button
-              leftIcon={<FiMapPin />}
-              colorScheme="green"
-              variant="outline"
-              size="lg"
-              height="60px"
-              onClick={() => router.push('/dashboard/listings?nearby=true')}
-              _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
-              transition="all 0.2s"
-            >
-              Nearby
-            </Button>
-            <Button
-              leftIcon={<FiFilter />}
-              colorScheme="purple"
-              variant="outline"
-              size="lg"
-              height="60px"
-              onClick={() => router.push('/dashboard/account/preferences')}
-              _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
-              transition="all 0.2s"
-            >
-              Preferences
-            </Button>
-          </SimpleGrid>
-        </Box>
-      </VStack>
-    </Container>
-  );
+                  <BreedCategoryMenu.Mobile
+                    menus={[
+                      {
+                        label: 'Dogs',
+                        href: '/dashboard?tab=all&category=dogs',
+                        isActive: currentRoute.includes('dogs')
+                      },
+                      {
+                        label: 'Cats',
+                        href: '/dashboard?tab=all&category=cats',
+                        isActive: currentRoute.includes('cats')
+                      },
+                      {
+                        label: 'Rodents',
+                        href: '/dashboard?tab=all&category=rodents',
+                        isActive: currentRoute.includes('rodents')
+                      },
+                      {
+                        label: 'Fish',
+                        href: '/dashboard?tab=all&category=fish',
+                        isActive: currentRoute.includes('fish')
+                      },
+                      {
+                        label: 'Birds',
+                        href: '/dashboard?tab=all&category=birds',
+                        isActive: currentRoute.includes('birds')
+                      },
+                      {
+                        label: 'Reptiles',
+                        href: '/dashboard?tab=all&category=reptiles',
+                        isActive: currentRoute.includes('reptiles')
+                      },
+                      {
+                        label: 'Amphibians',
+                        href: '/dashboard?tab=all&category=amphibians',
+                        isActive: currentRoute.includes('amphibians')
+                      },
+                    ]}
+                  />
+
+                  {isDesktop ?
+                    <BreedCategorySubmenu.Desktop data={{
+                      category: {
+                        label: 'Breed Categories',
+                        links: breedCategories,
+                      },
+                      featured: {
+                        label: 'Popular Breeds',
+                        links: popularBreeds?.map(breed => ({
+                          label: breed.name,
+                          url: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                        }))
+                      },
+                      products: popularBreeds.map(breed => ({
+                        name: breed.name,
+                        price: breed.price,
+                        currency: 'USD',
+                        href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                        imageUrl: breed.featured_image_url,
+                      }))
+                    }}
+                    />
+                    :
+                    <BreedCategorySubmenu.Mobile data={{
+                      category: {
+                        label: 'Breed Categories',
+                        links: breedCategories,
+                      },
+                      featured: {
+                        label: 'Popular Breeds',
+                        links: popularBreeds?.map(breed => ({
+                          label: breed.name,
+                          url: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                        }))
+                      },
+                      products: popularBreeds.map(breed => ({
+                        name: breed.name,
+                        price: breed.price,
+                        currency: 'USD',
+                        href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                        imageUrl: breed.featured_image_url,
+                      }))
+                    }}
+                    />
+                  }
+                </Flex>
+              </Stack>
+            </TabPanel>
+
+            {/* Listings Tab */}
+            <TabPanel p={0}>
+              <Stack>
+
+                <Flex flex="1" fontSize="sm" overflow="auto">
+
+                  <BreedCategoryMenu.Mobile
+                    menus={[
+                      {
+                        label: 'Dogs',
+                        href: '/dashboard?category=dogs',
+                        isActive: currentRoute.includes('dogs')
+                      },
+                      {
+                        label: 'Cats',
+                        href: '/dashboard?category=cats',
+                        isActive: currentRoute.includes('cats')
+                      },
+                      {
+                        label: 'Rodents',
+                        href: '/dashboard?category=rodents',
+                        isActive: currentRoute.includes('rodents')
+                      },
+                      {
+                        label: 'Fish',
+                        href: '/dashboard?category=fish',
+                        isActive: currentRoute.includes('fish')
+                      },
+                      {
+                        label: 'Birds',
+                        href: '/dashboard?category=birds',
+                        isActive: currentRoute.includes('birds')
+                      },
+                      {
+                        label: 'Reptiles',
+                        href: '/dashboard?category=reptiles',
+                        isActive: currentRoute.includes('reptiles')
+                      },
+                      {
+                        label: 'Amphibians',
+                        href: '/dashboard?category=amphibians',
+                        isActive: currentRoute.includes('amphibians')
+                      },
+                    ]}
+                  />
+
+                  {/* Desktop Layout - Categories and Navigation */}
+                  <Box display={{ base: 'none', md: 'block' }}>
+                    <NavCategorySubmenu.Desktop
+                      breedCategories={breedCategories}
+                      popularBreeds={popularBreeds.map(breed => ({
+                        name: breed.name,
+                        price: breed.price,
+                        currency: 'USD',
+                        href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                        imageUrl: breed.featured_image_url,
+                      }))}
+                      popularListings={popularListings}
+                    />
+                  </Box>
+
+                  {/* Mobile Layout - Categories and Navigation */}
+                  <Box display={{ base: 'block', md: 'none' }}>
+                    <Flex flex="1" fontSize="sm" overflow="auto">
+                      <NavCategorySubmenu.Mobile
+                        breedCategories={breedCategories}
+                        popularBreeds={popularBreeds.map(breed => ({
+                          name: breed.name,
+                          price: breed.price,
+                          currency: 'USD',
+                          href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                          imageUrl: breed.featured_image_url,
+                        }))}
+                        popularListings={popularListings}
+                      />
+                    </Flex>
+                  </Box>
+                </Flex>
+
+              </Stack>
+            </TabPanel>
+
+            {/* Breeds Tab */}
+            <TabPanel p={0}>
+              <Stack spacing={6}>
+
+                <Flex flex="1" fontSize="sm" overflow="auto">
+                  <BreedCategoryMenu.Mobile
+                    menus={[
+                      {
+                        label: 'Dogs',
+                        href: '/dashboard?tab=breeds&category=dogs',
+                        isActive: currentRoute.includes('dogs')
+                      },
+                      {
+                        label: 'Cats',
+                        href: '/dashboard?tab=breeds&category=cats',
+                        isActive: currentRoute.includes('cats')
+                      },
+                      {
+                        label: 'Rodents',
+                        href: '/dashboard?tab=breeds&category=rodents',
+                        isActive: currentRoute.includes('rodents')
+                      },
+                      {
+                        label: 'Fish',
+                        href: '/dashboard?tab=breeds&category=fish',
+                        isActive: currentRoute.includes('fish')
+                      },
+                      {
+                        label: 'Birds',
+                        href: '/dashboard?tab=breeds&category=birds',
+                        isActive: currentRoute.includes('birds')
+                      },
+                      {
+                        label: 'Reptiles',
+                        href: '/dashboard?tab=breeds&category=reptiles',
+                        isActive: currentRoute.includes('reptiles')
+                      },
+                      {
+                        label: 'Amphibians',
+                        href: '/dashboard?tab=breeds&category=amphibians',
+                        isActive: currentRoute.includes('amphibians')
+                      },
+                    ]}
+                  />
+
+                  <Box
+                    maxW="7xl"
+                    mx="auto"
+                    px={{ base: '4', md: '8' }}
+                    py="4"
+                    width="full"
+                  >
+                    <Stack spacing="4" width="full">
+                      <Flex
+                        justify="space-between"
+                        align={{ base: 'start', md: 'center' }}
+                        direction={{ base: 'column', md: 'row' }}
+                      >
+                        <Heading size={{ base: 'sm', lg: 'md' }} mb={{ base: '3', md: '0' }}>
+                          Popular Breeds
+                        </Heading>
+                        <HStack spacing={{ base: '2', md: '3' }}>
+                          <Link fontWeight="semibold" color={useColorModeValue('brand.500', 'brand.300')}>
+                            See all breeds
+                          </Link>
+                          <Icon
+                            as={FaArrowRight}
+                            color={useColorModeValue('brand.500', 'brand.300')}
+                            fontSize={{ base: 'sm', md: 'md' }}
+                          />
+                        </HStack>
+                      </Flex>
+
+
+                      <SimpleGrid
+                        spacing="6"
+                        columns={{
+                          base: 1,
+                          md: 2,
+                          lg: 4,
+                        }}
+                        alignContent="flex-start"
+                        width="full"
+
+                      >
+                        {popularBreeds.slice(3, isMobile ? 7 : 12).map((breed) => (
+                          <CategoryCard
+                            key={breed.id}
+                            category={{
+                              name: breed.name,
+                              description: breed.group,
+                              imageUrl: breed.featured_image_url,
+                              id: breed.id,
+                            }}
+                            rootProps={{ onClick: () => handleBreedClick(breed) }}
+                          />
+                        ))}
+                      </SimpleGrid>
+                    </Stack>
+                  </Box>
+                </Flex>
+              </Stack>
+            </TabPanel>
+
+
+            {/* Breeders Tab */}
+            <TabPanel p={0}>
+
+            </TabPanel>
+
+          </TabPanels>
+        </Stack>
+      </Tabs>
+    </Box>
+  )
+
+
 };
 
 export default SeekerDashboardOverview;
+
+interface CustomTabBarProps {
+  activeTab: number
+}
+
+const CustomTabBar = ({ activeTab }: CustomTabBarProps) => {
+  // Build URLs that preserve current query parameters
+  const isMobile = useBreakpointValue({ base: true, md: false })
+
+  const menuItems = isMobile ? [
+    { label: 'All Categories', href: '/dashboard?tab=all&category=dogs', tab: 0 },
+    { label: 'Pet Listings', href: '/dashboard?tab=listings&category=dogs', tab: 1 },
+    { label: 'Breeds', href: '/dashboard?tab=breeds&category=dogs', tab: 2 },
+    { label: 'Breeders', href: '/dashboard?tab=breeders&category=dogs', tab: 3 },
+
+  ] :
+
+    [
+      { label: 'All Categories', href: '/dashboard?tab=all&category=dogs', tab: 0 },
+      { label: 'Available Pets', href: '/dashboard?tab=listings&category=dogs', tab: 1 },
+      { label: 'Popular Breeds', href: '/dashboard?tab=breeds&category=dogs', tab: 2 },
+      { label: 'Breeders Near You', href: '/dashboard?tab=breeders&category=dogs', tab: 3 },
+    ]
+
+  return (
+    <Box
+      borderTopWidth="1px"
+      borderBottomWidth="1px"
+      borderColor={mode('gray.200', 'gray.700')}
+      bg={mode('white', 'gray.800')}
+      px={{ base: 2, md: 4 }}
+    >
+      <Box maxW="8xl" mx="auto">
+        <HStack spacing="8">
+          {menuItems.map((link) => (
+            <DesktopNavItem
+              key={link.label}
+              label={link.label}
+              href={link.href}
+              isActive={activeTab === link.tab}
+            />
+          ))}
+        </HStack>
+      </Box>
+    </Box>
+  )
+}

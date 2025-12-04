@@ -30,7 +30,6 @@ import { Notification, User } from '../../../../db/schema';
 interface NotificationsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  userProfile: User;
   notifications: Notification[];
   isLoading: boolean;
   error: any;
@@ -40,7 +39,6 @@ interface NotificationsDrawerProps {
 export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
   isOpen,
   onClose,
-  userProfile,
   notifications,
   isLoading,
   error,

@@ -3,8 +3,8 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 
 import { useBreedByName } from "lib/hooks/queries";
-import { BreedersList } from "lib/pages/dashboard/breeds/BreederList";
-import { BreedListings } from "lib/pages/dashboard/breeds/BreedListings";
+import { BreedersList } from "lib/pages/dashboard/kennel/breeds/BreederList";
+import { BreedListings } from "lib/pages/dashboard/kennel/breeds/BreedListings";
 import { Loader } from "lib/components/ui/Loader";
 import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import { Rating } from "./BreedInfo";

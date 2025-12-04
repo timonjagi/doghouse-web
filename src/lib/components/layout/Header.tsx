@@ -14,18 +14,19 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-// import * as React from "react";
-import { FiHelpCircle } from "react-icons/fi";
+import { FiHelpCircle, FiBell, FiMenu } from "react-icons/fi";
 
 import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
 
 import UserProfileMenu from "lib/components/layout/UserProfileMenu";
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+import { NotificationsDrawer } from "./NotificationsDrawer";
+import { SearchInput } from "./SearchInput";
 
 import { ToggleButton } from "./ToggleButton";
 
-const Header = ({ profile }) => {
+const Header = () => {
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
@@ -53,7 +54,7 @@ const Header = ({ profile }) => {
       >
         <Flex justify="space-between">
           <HStack spacing="4">
-            <Logo />
+            <Logo color="on-accent" />
             {isDesktop && <ButtonGroup variant="ghost-on-accent" spacing="1" />}
           </HStack>
           {isDesktop ? (
@@ -158,19 +159,12 @@ const Header = ({ profile }) => {
                 mr={3}
               /> */}
 
-              {user ? (
-                <UserProfileMenu
-                  name={user?.user_metadata?.name || user?.email || ""}
-                  image={user?.user_metadata?.avatar_url || ""}
-                  email={user?.email || ""}
-                />
-              ) : (
-                <ToggleButton
-                  isOpen={isOpen}
-                  aria-label="Open Menu"
-                  onClick={onToggle}
-                />
-              )}
+              <ToggleButton
+                isOpen={isOpen}
+                aria-label="Open Menu"
+                onClick={onToggle}
+              />
+
 
               <Drawer
                 isOpen={isOpen}

@@ -97,11 +97,21 @@ export const useUserBreed = (breedId: string) => {
   });
 };
 
-export const useAllAvailableUserBreeds = () => {
+export const useAllAvailableUserBreeds = (
+  limit?: number,
+  options?: {
+    search?: string;
+    breed_ids?: string[];
+    breed_groups?: string[];
+    size?: string;
+    page?: number;
+    pageSize?: number;
+  }
+) => {
   return useQuery({
-    queryKey: queryKeys.breeds.available(),
+    queryKey: queryKeys.breeds.available(options),
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('user_breeds')
         .select(`
           id,
@@ -135,13 +145,17 @@ export const useAllAvailableUserBreeds = () => {
               rating
             )
           )
-        `)
-        .order('created_at', { ascending: false });
+        `);
+
+      // Apply sorting
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
       // Deduplicate by breed_id and return unique breeds
-      const uniqueBreeds = data?.reduce((acc, userBreed) => {
+      let uniqueBreeds = data?.reduce((acc, userBreed) => {
         if (userBreed.breeds && !acc.some(item => item.breed_id === userBreed.breed_id)) {
           acc.push({
             ...userBreed,
@@ -156,9 +170,95 @@ export const useAllAvailableUserBreeds = () => {
         return acc;
       }, [] as any[]) || [];
 
+      // Apply search filter on unique breeds
+      if (options?.search) {
+        const searchLower = options.search.toLowerCase();
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.search);
+
+        uniqueBreeds = uniqueBreeds.filter(breed => {
+          // 1. Direct Breed ID match (if search is UUID)
+          if (isUuid && breed.breed_id === options.search) return true;
+
+          // 2. Breed Details (Name, Description, Group)
+          if (breed.breeds?.name?.toLowerCase().includes(searchLower) ||
+            breed.breeds?.description?.toLowerCase().includes(searchLower) ||
+            breed.breeds?.group?.toLowerCase().includes(searchLower)) {
+            return true;
+          }
+
+          // 3. Breeder/User Details
+          // Check User Display Name
+          if (breed.users?.display_name?.toLowerCase().includes(searchLower)) return true;
+
+          // Check Kennel Name (in breeder_profiles)
+          // breeder_profiles is an array in the query response structure
+          if (breed.users?.breeder_profiles?.some((bp: any) =>
+            bp.kennel_name?.toLowerCase().includes(searchLower)
+          )) {
+            return true;
+          }
+
+          return false;
+        });
+      }
+
+
+
+      // Apply breed_ids filter
+      if (options?.breed_ids && options.breed_ids.length > 0) {
+        uniqueBreeds = uniqueBreeds.filter(breed =>
+          options.breed_ids!.includes(breed.breed_id)
+        );
+      }
+
+      // Apply breed_groups filter with case-insensitive matching
+      if (options?.breed_groups && options.breed_groups.length > 0) {
+        uniqueBreeds = uniqueBreeds.filter(breed => {
+          const breedGroup = breed.breeds?.group?.toLowerCase().replace(/\s+/g, '-');
+          const breedGroupRaw = breed.breeds?.group?.toLowerCase();
+          return options.breed_groups!.some(g =>
+            g.toLowerCase() === breedGroup ||
+            g.toLowerCase() === breedGroupRaw ||
+            g.toLowerCase().replace(/-/g, ' ') === breedGroupRaw
+          );
+        });
+      }
+
+      // Apply size filter based on weight ranges
+      if (options?.size) {
+        uniqueBreeds = uniqueBreeds.filter(breed => {
+          const weight = breed.breeds?.weight;
+          if (!weight) return false;
+          // Parse weight range (format: "10-15 lbs" or "10-15" or "10 lbs")
+          const match = weight.match(/(\d+)/);
+          if (!match) return false;
+          const weightValue = parseInt(match[1], 10);
+
+          switch (options.size) {
+            case 'small': return weightValue <= 20;
+            case 'medium': return weightValue > 20 && weightValue <= 50;
+            case 'large': return weightValue > 50 && weightValue <= 90;
+            case 'extra-large': return weightValue > 90;
+            default: return true;
+          }
+        });
+      }
+
+      // Apply pagination
+      if (options?.page !== undefined && options?.pageSize !== undefined) {
+        const startIdx = options.page * options.pageSize;
+        const endIdx = (options.page + 1) * options.pageSize;
+        return uniqueBreeds.slice(startIdx, endIdx);
+      }
+
+      // Apply limit if provided and no pagination
+      if (limit !== undefined) {
+        return uniqueBreeds.slice(0, limit);
+      }
+
       return uniqueBreeds;
     },
-    staleTime: 1000 * 60 * 15, // 15 minutes - available breeds don't change often
+    staleTime: 1000 * 60 * 5, // 5 minutes - reduced for better reactivity to filter changes
   });
 };
 

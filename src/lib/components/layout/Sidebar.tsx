@@ -32,6 +32,7 @@ import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
 import { useCurrentUser } from "lib/hooks/queries";
 import { LuDog } from "react-icons/lu";
 import { GiDogHouse } from "react-icons/gi";
+import { UserProfile } from "./UserProfile";
 
 interface SidebarProps {
   onClose: () => void;
@@ -45,19 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   // Show loading state while checking auth
   if (profileLoading) {
     return (
-      <Flex
-        flex="1"
-        bg="bg-accent"
-        color="on-accent"
-        maxW={{ base: "full", sm: "xs" }}
-        justify="center"
-        align="center"
-        width="full"
-        h="full"
-        as="nav"
-        direction="column"
-      >
-      </Flex>
+      <></>
     );
   }
 
@@ -105,7 +94,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
   }, [profile]);
   const onClickMenuLink = (link: string) => {
     router.push(link);
-    if (isMobile) onClose();
+    if (isMobile && profile?.role === "seeker") onClose();
   };
 
   return (
@@ -117,7 +106,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
     >
       <Stack spacing="2">
 
-        <Logo />
+        <Logo color="on-accent" />
 
         <Stack pt={2}>
           {/* Render dynamic navigation sections */}
@@ -170,6 +159,14 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
             }
           />
         </Stack>
+
+        <Divider borderColor="bg-accent-subtle" />
+
+        <UserProfile
+          profile={profile}
+          onClose={onClose}
+        />
+
       </Stack>
     </Stack>
   );
@@ -203,7 +200,7 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
         py={{ base: "6", sm: "8" }}
         px={{ base: "4", sm: "6" }}
       >
-        <Logo />
+        <Logo color="on-accent" />
 
         <Stack spacing="3" pt={2}>
           <NavButton

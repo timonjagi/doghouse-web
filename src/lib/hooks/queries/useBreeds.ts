@@ -19,6 +19,61 @@ export const useBreeds = () => {
   });
 };
 
+// Query to get popular breeds ranked by breeder count (user_breeds join)
+export const usePopularBreeds = (limit?: number) => {
+  return useQuery({
+    queryKey: queryKeys.breeds.popular(limit),
+    queryFn: async (): Promise<any[]> => {
+      const { data, error } = await supabase
+        .from('user_breeds')
+        .select(`
+          breed_id,
+          breeds (
+            id,
+            name,
+            description,
+            group,
+            featured_image_url,
+            height,
+            weight,
+            life_span,
+            traits
+          )
+        `);
+
+      if (error) throw error;
+
+      // Group by breed_id and count occurrences
+      const breedCounts = (data || []).reduce((acc, userBreed) => {
+        if (userBreed.breeds) {
+          const breedId = userBreed.breed_id;
+          if (!acc[breedId]) {
+            acc[breedId] = {
+              ...(userBreed.breeds as unknown as Breed),
+              breeder_count: 0,
+            };
+          }
+          acc[breedId].breeder_count++;
+        }
+        return acc;
+      }, {} as Record<string, Breed & { breeder_count: number }>);
+
+      // Convert to array and sort by count descending
+      let popularBreeds = Object.values(breedCounts).sort(
+        (a, b) => b.breeder_count - a.breeder_count
+      );
+
+      // Apply limit if specified
+      if (limit) {
+        popularBreeds = popularBreeds.slice(0, limit);
+      }
+
+      return popularBreeds;
+    },
+    staleTime: 1000 * 60 * 30, // 30 minutes - breeds don't change often
+  });
+};
+
 // Query to get breed by ID
 export const useBreed = (id: string) => {
   return useQuery({

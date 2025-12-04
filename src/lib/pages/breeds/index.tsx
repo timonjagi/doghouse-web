@@ -20,7 +20,7 @@ import { GetStaticProps } from 'next';
 import { useAllAvailableUserBreeds } from "lib/hooks/queries/useUserBreeds";
 import { Loader } from "lib/components/ui/Loader";
 import { NextSeo } from 'next-seo';
-import { BreedList } from "lib/pages/dashboard/breeds/BreedList";
+import { BreedList } from "lib/pages/dashboard/kennel/breeds/BreedList";
 import { supabase } from "lib/supabase/client";
 import { SearchIcon } from "@chakra-ui/icons";
 import { useMemo, useState } from "react";

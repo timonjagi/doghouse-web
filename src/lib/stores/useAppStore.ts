@@ -138,6 +138,7 @@ export const useUserProfile = () => useAppStore((state) => ({
   displayName: state.userSession?.displayName,
   avatarUrl: state.userSession?.avatarUrl,
   email: state.userSession?.email,
+  role: state.userSession?.role,
 }));
 
 export const useUIState = () => useAppStore((state) => ({
