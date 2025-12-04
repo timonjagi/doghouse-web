@@ -25,6 +25,7 @@ import { Loader } from 'lib/components/ui/Loader';
 import { useUserProfile } from 'lib/hooks/queries/useUserProfile';
 import { useBreederProfile, useUpsertBreederProfile } from 'lib/hooks/queries/useBreederProfile';
 import { NextSeo } from 'next-seo';
+import { BreederProfile, User } from '../../../../db/schema';
 
 interface KennelFormData {
   kennel_name: string;
@@ -32,10 +33,15 @@ interface KennelFormData {
   facility_type: string;
 }
 
-export const KennelPage: React.FC = () => {
+interface KennelFormProps {
+  breederProfile: BreederProfile;
+  userProfile: User;
+  onClose: () => void;
+}
+
+export const KennelForm: React.FC<KennelFormProps> = ({ onClose, breederProfile, userProfile }) => {
   const toast = useToast();
-  const { data: userProfile, isLoading: userLoading, error: userError } = useUserProfile();
-  const { data: breederProfile, isLoading: profileLoading } = useBreederProfile(userProfile?.id);
+
   const upsertBreederProfile = useUpsertBreederProfile();
 
   const [formData, setFormData] = useState<KennelFormData>({
@@ -55,44 +61,6 @@ export const KennelPage: React.FC = () => {
     }
   }, [breederProfile]);
 
-  // Show loading state
-  if (userLoading || profileLoading) {
-    return <Loader />;
-  }
-
-  // Show error state
-  if (userError || !userProfile) {
-    return (
-      <Container maxW="4xl" py={8}>
-        <Alert status="error">
-          <AlertIcon />
-          <Box>
-            <Text fontWeight="bold">Error loading kennel details</Text>
-            <Text fontSize="sm">
-              {userError?.message || 'Unable to load user profile'}
-            </Text>
-          </Box>
-        </Alert>
-      </Container>
-    );
-  }
-
-  // Check if user is a breeder
-  if (userProfile.role !== 'breeder') {
-    return (
-      <Container maxW="4xl" py={8}>
-        <Alert status="warning">
-          <AlertIcon />
-          <Box>
-            <Text fontWeight="bold">Access Denied</Text>
-            <Text fontSize="sm">
-              This page is only available for breeders. Please contact support if you believe this is an error.
-            </Text>
-          </Box>
-        </Alert>
-      </Container>
-    );
-  }
 
   const handleInputChange = (field: keyof KennelFormData, value: string) => {
     setFormData((prev) => ({
@@ -113,6 +81,8 @@ export const KennelPage: React.FC = () => {
         status: 'success',
         duration: 3000,
       });
+
+      onClose();
     } catch (error) {
       toast({
         title: 'Error updating kennel details',
@@ -130,116 +100,98 @@ export const KennelPage: React.FC = () => {
   ];
 
   return (
-    <>
-      <NextSeo title="Kennel Details - DogHouse Kenya" />
+    <VStack spacing={8} align="stretch">
 
-      <Container maxW="7xl" py={{ base: 4, md: 0 }}>
-        <VStack spacing={8} align="stretch">
-          {/* Page Header */}
-          <Box>
-            <Heading size={{ base: 'xs', lg: 'md' }}>
-              Kennel Details
-            </Heading>
-            <Text color="gray.600" mt={2}>
-              Update your kennel information and facility details
-            </Text>
-          </Box>
 
-          {/* Kennel Form */}
-          <Card>
-            <CardBody>
-              <form onSubmit={handleSubmit}>
-                <VStack spacing={6} align="stretch">
-                  {/* Kennel Name */}
-                  <FormControl isRequired>
-                    <Stack
-                      direction={{ base: 'column', md: 'row' }}
-                      spacing={{ base: '1.5', md: '8' }}
-                      justify="space-between"
-                    >
-                      <FormLabel variant="inline">Kennel Name</FormLabel>
-                      <Stack w="full">
-                        <InputGroup size="lg">
-                          <InputLeftElement pointerEvents="none">
-                            <Icon as={MdBusiness} color="gray.300" boxSize={5} />
-                          </InputLeftElement>
-                          <Input
-                            placeholder="Your kennel's name"
-                            value={formData.kennel_name}
-                            onChange={(e) => handleInputChange('kennel_name', e.target.value)}
-                            maxW={{ md: '3xl' }}
-                          />
-                        </InputGroup>
-                      </Stack>
-                    </Stack>
-                  </FormControl>
+      {/* Kennel Form */}
+      <form onSubmit={handleSubmit}>
+        <VStack spacing={6} align="stretch">
+          {/* Kennel Name */}
+          <FormControl isRequired>
+            <Stack
+              direction={{ base: 'column', md: 'row' }}
+              spacing={{ base: '1.5', md: '8' }}
+              justify="space-between"
+            >
+              <FormLabel variant="inline">Kennel Name</FormLabel>
+              <Stack w="full">
+                <InputGroup size="lg">
+                  <InputLeftElement pointerEvents="none">
+                    <Icon as={MdBusiness} color="gray.300" boxSize={5} />
+                  </InputLeftElement>
+                  <Input
+                    placeholder="Your kennel's name"
+                    value={formData.kennel_name}
+                    onChange={(e) => handleInputChange('kennel_name', e.target.value)}
+                    maxW={{ md: '3xl' }}
+                  />
+                </InputGroup>
+              </Stack>
+            </Stack>
+          </FormControl>
 
-                  {/* Kennel Location */}
-                  <FormControl isRequired>
-                    <Stack
-                      direction={{ base: 'column', md: 'row' }}
-                      spacing={{ base: '1.5', md: '8' }}
-                      justify="space-between"
-                    >
-                      <FormLabel variant="inline">Kennel Location</FormLabel>
-                      <Stack w="full">
-                        <InputGroup size="lg">
-                          <InputLeftElement pointerEvents="none">
-                            <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
-                          </InputLeftElement>
-                          <Input
-                            placeholder="City, Country"
-                            value={formData.kennel_location}
-                            onChange={(e) => handleInputChange('kennel_location', e.target.value)}
-                            maxW={{ md: '3xl' }}
-                          />
-                        </InputGroup>
-                      </Stack>
-                    </Stack>
-                  </FormControl>
+          {/* Kennel Location */}
+          <FormControl isRequired>
+            <Stack
+              direction={{ base: 'column', md: 'row' }}
+              spacing={{ base: '1.5', md: '8' }}
+              justify="space-between"
+            >
+              <FormLabel variant="inline">Kennel Location</FormLabel>
+              <Stack w="full">
+                <InputGroup size="lg">
+                  <InputLeftElement pointerEvents="none">
+                    <Icon as={MdOutlineLocationOn} color="gray.300" boxSize={5} />
+                  </InputLeftElement>
+                  <Input
+                    placeholder="City, Country"
+                    value={formData.kennel_location}
+                    onChange={(e) => handleInputChange('kennel_location', e.target.value)}
+                    maxW={{ md: '3xl' }}
+                  />
+                </InputGroup>
+              </Stack>
+            </Stack>
+          </FormControl>
 
-                  {/* Facility Type */}
-                  <FormControl isRequired>
-                    <Stack
-                      direction={{ base: 'column', md: 'row' }}
-                      spacing={{ base: '1.5', md: '8' }}
-                      justify="space-between"
-                    >
-                      <FormLabel variant="inline">Facility Type</FormLabel>
-                      <Stack w="full">
-                        <Select
-                          placeholder="Select your facility type"
-                          value={formData.facility_type}
-                          onChange={(e) => handleInputChange('facility_type', e.target.value)}
-                          maxW={{ md: '3xl' }}
-                        >
-                          {facilityOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Select>
-                      </Stack>
-                    </Stack>
-                  </FormControl>
+          {/* Facility Type */}
+          <FormControl isRequired>
+            <Stack
+              direction={{ base: 'column', md: 'row' }}
+              spacing={{ base: '1.5', md: '8' }}
+              justify="space-between"
+            >
+              <FormLabel variant="inline">Facility Type</FormLabel>
+              <Stack w="full">
+                <Select
+                  placeholder="Select your facility type"
+                  value={formData.facility_type}
+                  onChange={(e) => handleInputChange('facility_type', e.target.value)}
+                  maxW={{ md: '3xl' }}
+                >
+                  {facilityOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+              </Stack>
+            </Stack>
+          </FormControl>
 
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    colorScheme="brand"
-                    size="lg"
-                    isLoading={upsertBreederProfile.isPending}
-                    alignSelf="flex-end"
-                    isDisabled={!formData.kennel_name || !formData.kennel_location || !formData.facility_type}
-                  >
-                    Save Kennel Details
-                  </Button>
-                </VStack>
-              </form>
-            </CardBody>
-          </Card>
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            colorScheme="brand"
+            size="lg"
+            isLoading={upsertBreederProfile.isPending}
+            alignSelf="flex-end"
+            isDisabled={!formData.kennel_name || !formData.kennel_location || !formData.facility_type}
+          >
+            Save Kennel Details
+          </Button>
         </VStack>
-      </Container>
-    </>
+      </form>
+    </VStack>
   );
 };

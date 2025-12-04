@@ -23,6 +23,13 @@ import {
   Icon,
   Stack,
   useColorModeValue,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  useDisclosure,
+  ModalCloseButton,
+  ModalOverlay,
 } from '@chakra-ui/react';
 import { MdLocationOn, MdStar, MdEmail, MdPhone } from 'react-icons/md';
 import { Loader } from 'lib/components/ui/Loader';
@@ -41,6 +48,7 @@ import { UserInfo } from 'lib/components/ui/UserInfo';
 import { FiEdit, FiEdit2, FiEdit3, FiLogOut } from 'react-icons/fi';
 import { LuDog } from 'react-icons/lu';
 import { useCurrentUser } from 'lib/hooks/queries/useAuth';
+import { KennelForm } from './KennelForm';
 
 interface BreederProfileProps {
   breederId: string;
@@ -52,6 +60,7 @@ export const BreederProfile: React.FC<BreederProfileProps> = ({ breederId, showB
   const router = useRouter();
   const { data: user } = useCurrentUser();
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
   // Fetch breeder data
   const { data: breederProfile, isLoading: breederLoading, error: breederError } = useBreederProfile(breederId);
   const { data: breederUser, isLoading: breederUserLoading, error: breederUserError } = useUserProfileById(breederId);
@@ -70,6 +79,7 @@ export const BreederProfile: React.FC<BreederProfileProps> = ({ breederId, showB
 
   const isError = breederError || breederUserError;
   const isManaging = user?.id === breederId;
+
 
   // Show error state
   if (isError) {
@@ -162,7 +172,7 @@ export const BreederProfile: React.FC<BreederProfileProps> = ({ breederId, showB
                   variant="primary"
                   size="sm"
                   rightIcon={<FiEdit />}
-                  onClick={() => { }}
+                  onClick={() => onOpen()}
                 >
                   Edit
                 </Button> : null
@@ -269,6 +279,29 @@ export const BreederProfile: React.FC<BreederProfileProps> = ({ breederId, showB
             </TabPanels>
           </Tabs>
         </VStack>
+
+        <Modal
+          isOpen={isOpen}
+          onClose={onClose}
+          size="md"
+
+          isCentered
+        >
+          <ModalCloseButton />
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              Update Kennel Details
+            </ModalHeader>
+            <ModalBody>
+              <KennelForm
+                breederProfile={breederProfile}
+                userProfile={breederUser}
+                onClose={onClose}
+              />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </Container>
     </>
   );

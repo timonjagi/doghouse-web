@@ -1,20 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-
-// Types
-interface BreederProfile {
-  id: string;
-  user_id: string;
-  kennel_name?: string;
-  kennel_location?: string;
-  facility_type?: string;
-  verification_docs?: any;
-  verified_at?: string;
-  rating: number;
-  created_at: string;
-  updated_at: string;
-}
+import { BreederProfile } from '../../../../db/schema';
 
 interface Kennel {
   id: string;
