@@ -157,6 +157,7 @@ export const mapFiltersToBreedParams = (
   if (filters.breed_groups && filters.breed_groups.length > 0) {
     params.breed_groups = filters.breed_groups
   }
+  if (filters.size) params.size = filters.size
 
   return params
 }

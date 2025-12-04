@@ -25,7 +25,7 @@ export const queryKeys = {
     details: (): readonly string[] => ['breeds', 'detail'] as const,
     detail: (id: string): readonly string[] => ['breeds', 'detail', id] as const,
     userBreeds: (userId?: string): readonly string[] => ['breeds', 'user-breeds', userId].filter(Boolean) as any,
-    available: (): readonly string[] => ['breeds', 'available'] as const,
+    available: (options?: Record<string, unknown>): readonly string[] => ['breeds', 'available', options].filter(Boolean) as any,
     breedBreeders: (breedId: string): readonly string[] => ['breeds', 'breed-breeders', breedId] as const,
     categories: (limit?: number): readonly string[] => ['breeds', 'categories', limit].filter(Boolean) as any,
   },

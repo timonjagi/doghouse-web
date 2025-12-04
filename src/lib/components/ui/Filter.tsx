@@ -303,7 +303,7 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
     defaultValue: [],
     onSubmit: (value) => {
       if (onFilterChange) {
-        onFilterChange({ group: value });
+        onFilterChange({ breed_groups: value });
       }
     },
   });

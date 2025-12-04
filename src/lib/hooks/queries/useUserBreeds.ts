@@ -103,12 +103,13 @@ export const useAllAvailableUserBreeds = (
     search?: string;
     breed_ids?: string[];
     breed_groups?: string[];
+    size?: string;
     page?: number;
     pageSize?: number;
   }
 ) => {
   return useQuery({
-    queryKey: queryKeys.breeds.available(),
+    queryKey: queryKeys.breeds.available(options),
     queryFn: async () => {
       let query = supabase
         .from('user_breeds')
@@ -210,11 +211,37 @@ export const useAllAvailableUserBreeds = (
         );
       }
 
-      // Apply breed_groups filter
+      // Apply breed_groups filter with case-insensitive matching
       if (options?.breed_groups && options.breed_groups.length > 0) {
-        uniqueBreeds = uniqueBreeds.filter(breed =>
-          options.breed_groups!.includes(breed.breeds?.group?.toLowerCase())
-        );
+        uniqueBreeds = uniqueBreeds.filter(breed => {
+          const breedGroup = breed.breeds?.group?.toLowerCase().replace(/\s+/g, '-');
+          const breedGroupRaw = breed.breeds?.group?.toLowerCase();
+          return options.breed_groups!.some(g =>
+            g.toLowerCase() === breedGroup ||
+            g.toLowerCase() === breedGroupRaw ||
+            g.toLowerCase().replace(/-/g, ' ') === breedGroupRaw
+          );
+        });
+      }
+
+      // Apply size filter based on weight ranges
+      if (options?.size) {
+        uniqueBreeds = uniqueBreeds.filter(breed => {
+          const weight = breed.breeds?.weight;
+          if (!weight) return false;
+          // Parse weight range (format: "10-15 lbs" or "10-15" or "10 lbs")
+          const match = weight.match(/(\d+)/);
+          if (!match) return false;
+          const weightValue = parseInt(match[1], 10);
+
+          switch (options.size) {
+            case 'small': return weightValue <= 20;
+            case 'medium': return weightValue > 20 && weightValue <= 50;
+            case 'large': return weightValue > 50 && weightValue <= 90;
+            case 'extra-large': return weightValue > 90;
+            default: return true;
+          }
+        });
       }
 
       // Apply pagination
@@ -231,7 +258,7 @@ export const useAllAvailableUserBreeds = (
 
       return uniqueBreeds;
     },
-    staleTime: 1000 * 60 * 15, // 15 minutes - available breeds don't change often
+    staleTime: 1000 * 60 * 5, // 5 minutes - reduced for better reactivity to filter changes
   });
 };
 

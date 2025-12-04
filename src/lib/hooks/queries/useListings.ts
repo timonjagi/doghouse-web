@@ -77,6 +77,9 @@ export const useListings = (filters?: {
   return useQuery({
     queryKey: queryKeys.listings.list(filters),
     queryFn: async (): Promise<any> => {
+      // Store search term for client-side breed name filtering
+      const searchTerm = filters?.search?.toLowerCase();
+
       let query = supabase.from('listings').select(`
         id,
         title,

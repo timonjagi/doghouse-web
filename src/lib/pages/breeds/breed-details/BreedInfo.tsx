@@ -105,7 +105,7 @@ export const BreedInfo = ({ breed }: { breed: Breed }) => {
         }}
         fontWeight="semibold"
       >
-        Characteristics
+        Breed Traits
       </Text>
 
       <Stack spacing="2" px="6" bg={useColorModeValue("gray.50", "gray.700")}>
