@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { useUserProfile } from './useUserProfile';
+import { useUserProfileById } from './useUserProfile';
 import { useListings } from './useListings';
 import { useApplicationsReceived } from './useApplications';
 import { useTransactions } from './useTransactions';
 import { supabase } from '../../supabase/client';
+import { useCurrentUser } from './useAuth';
 
 export interface BreederDashboardStats {
   activeLitters: number;
@@ -30,7 +31,8 @@ export interface BreederDashboardStats {
 }
 
 export const useBreederDashboardStats = () => {
-  const { data: profile } = useUserProfile();
+  const { data: user } = useCurrentUser();
+  const { data: profile } = useUserProfileById(user?.id);
 
   // Get breeder's listings
   const { data: listings = [] } = useListings({

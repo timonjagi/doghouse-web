@@ -1,29 +1,45 @@
-import { FiHeart, FiHome, FiSearch, FiUser, FiMessageSquare } from 'react-icons/fi'
+import { FiHeart, FiHome, FiSearch, FiUser, FiMessageSquare, FiTarget, FiUserCheck } from 'react-icons/fi'
+import { GiDogHouse } from 'react-icons/gi'
+import { LuDog } from 'react-icons/lu'
 
-export const items = {
-  home: {
+export const items = [
+  {
     label: 'Home',
     icon: FiHome,
     href: '/dashboard',
   },
-  search: {
+  {
     label: 'Search',
     icon: FiSearch,
     href: '/dashboard/search',
+    role: 'seeker'
   },
-  wishlist: {
+  {
     label: 'Wishlist',
     icon: FiHeart,
     href: '/dashboard/wishlist',
+    role: 'seeker'
   },
-  inbox: {
+  {
+    label: 'Kennel',
+    icon: GiDogHouse,
+    href: '/dashboard/kennel',
+    role: 'breeder'
+  },
+  {
+    label: 'Matches',
+    icon: FiUserCheck,
+    href: '/dashboard/matches',
+    role: 'breeder'
+  },
+  {
     label: 'Inbox',
     icon: FiMessageSquare,
     href: '/dashboard/inbox',
   },
-  account: {
+  {
     label: 'Account',
     icon: FiUser,
     href: '/dashboard/account',
   },
-}
+]

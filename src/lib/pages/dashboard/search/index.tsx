@@ -33,7 +33,7 @@ import {
 import { useRouter } from 'next/router'
 import ListingCard from 'lib/components/ui/ListingCard'
 import { BreedCard } from 'lib/components/ui/BreedCard2'
-import { useListings, useIncrementListingViews } from 'lib/hooks/queries/useListings'
+import { useListings, useIncrementListingViews, usePopularListings } from 'lib/hooks/queries/useListings'
 import { useAllAvailableUserBreeds } from 'lib/hooks/queries/useUserBreeds'
 import { Loader } from 'lib/components/ui/Loader'
 import { Filter } from 'lib/components/ui/Filter'
@@ -41,13 +41,12 @@ import { DesktopNavItem, NavCategoryMenu } from 'lib/components/layout/NavCatego
 import { MobileFilterButtons, DesktopFilterButtons } from 'lib/components/ui/FilterButtons'
 import { NavCategorySubmenu } from 'lib/components/layout/NavCategorySubmenu'
 import { useBreedCategories } from 'lib/hooks/queries/useBreedCategories'
-import { useFeaturedBreeders, useAllBreeders } from 'lib/hooks/queries/useBreeders'
-import { usePopularListings } from 'lib/hooks/queries/usePopularListings'
+import { useAllBreeders } from 'lib/hooks/queries/useBreeders'
 import { BreederCard } from 'lib/components/ui/BreederCard'
 import * as searchService from 'lib/services/searchService'
-import { ListingList } from '../listings/ListingList'
-import { BreedList } from '../breeds/BreedList'
-import { BreedersList } from '../breeds/BreederList'
+import { ListingList } from '../kennel/listings/ListingList'
+import { BreedList } from '../kennel/breeds/BreedList'
+import { BreedersList } from '../kennel/breeds/BreederList'
 import { SortbySelect, } from 'lib/components/ui/SortBySelect'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 
@@ -71,7 +70,7 @@ export const UnifiedSearchPage = () => {
   const { isOpen, onOpen, onToggle, onClose } = useDisclosure()
 
   const [activeTab, setActiveTab] = useState(getTabIndex(filters.tab))
-
+  console.log('active tab', activeTab)
   // Pagination state for each tab
   const [listingsPage, setListingsPage] = useState(0)
   const [breedsPage, setBreedsPage] = useState(0)
@@ -221,12 +220,12 @@ export const UnifiedSearchPage = () => {
         >
 
           <HStack
-            display={filters.q || searchService.hasActiveFilters(filters) ? 'flex' : 'none'}
+
           >
             <Button
               leftIcon={<ArrowBackIcon boxSize={6} />}
               variant="ghost"
-              onClick={() => searchService.clearSearchParams(router)}
+              onClick={() => router.back()}
               p={0}
             />
             <TabList>
@@ -240,7 +239,7 @@ export const UnifiedSearchPage = () => {
 
           {searchService.hasActiveFilters(filters) && (
             <Box
-              display={filters.q || searchService.hasActiveFilters(filters) ? 'flex' : 'none'}
+              display={filters.q || searchService.hasActiveFilters(filters) || activeTab > 0 ? 'flex' : 'none'}
               ps={{ base: 2, md: 4 }}
             >
               {
@@ -280,17 +279,7 @@ export const UnifiedSearchPage = () => {
                 </HStack>
               </HStack>
             ) : (
-              <CustomTabBar
-                tab={filters.tab as string}
-                currentFilters={filters}
-                onTabClick={(tabName) => {
-                  const tabNames = ['all', 'listings', 'breeds', 'breeders']
-                  const tabIndex = tabNames.indexOf(tabName)
-                  if (tabIndex !== -1) {
-                    handleTabChange(tabIndex)
-                  }
-                }}
-              />
+              null
             )
             }
 
@@ -561,6 +550,7 @@ export const UnifiedSearchPage = () => {
             )} */}
 
           </DrawerHeader>
+
           <Filter
             onFilterChange={(newFilters) => {
               handleSearch(filters.q || '', { ...newFilters })
@@ -573,62 +563,6 @@ export const UnifiedSearchPage = () => {
   )
 }
 
-interface CustomTabBarProps {
-  tab: string
-  currentFilters: searchService.SearchFilters
-  onTabClick: (tabName: string) => void
-}
 
-const CustomTabBar = ({ tab, currentFilters, onTabClick }: CustomTabBarProps) => {
-  // Build URLs that preserve current query parameters
-  const buildTabUrl = (tabName: string) => {
-    const updatedFilters = searchService.getRelevantFiltersForTab(
-      currentFilters,
-      tabName as searchService.SearchType
-    )
-    const params = searchService.buildQueryParams(updatedFilters)
 
-    // Convert to URL string for href
-    const queryString = new URLSearchParams(params as any).toString()
-    return `/dashboard/search${queryString ? `?${queryString}` : ''}`
-  }
-
-  const handleTabClick = (tabName: string) => (e: React.MouseEvent) => {
-    e.preventDefault()
-    onTabClick(tabName)
-  }
-
-  const menuItems = [
-    { label: 'All Categories', href: buildTabUrl('all'), onClick: handleTabClick('all'), tab: 'all' },
-    { label: 'Available Pets', href: buildTabUrl('listings'), onClick: handleTabClick('listings'), tab: 'listings' },
-    { label: 'Popular Breeds', href: buildTabUrl('breeds'), onClick: handleTabClick('breeds'), tab: 'breeds' },
-    { label: 'Breeders Near You', href: buildTabUrl('breeders'), onClick: handleTabClick('breeders'), tab: 'breeders' },
-  ]
-
-  return (
-    <Box
-      borderTopWidth="1px"
-      borderBottomWidth="1px"
-      borderColor={mode('gray.200', 'gray.700')}
-      bg={mode('white', 'gray.800')}
-      display={(currentFilters.q || searchService.hasActiveFilters(currentFilters)) ? 'none' : 'block'}
-      px={{ base: 2, md: 4 }}
-
-    >
-      <Box maxW="8xl" mx="auto">
-        <HStack spacing="8">
-          {menuItems.map((link) => (
-            <DesktopNavItem
-              key={link.label}
-              label={link.label}
-              href={link.href}
-              onClick={link.onClick}
-              isActive={tab === link.tab || (tab === 'all' && link.tab === 'all')}
-            />
-          ))}
-        </HStack>
-      </Box>
-    </Box>
-  )
-}
 export default UnifiedSearchPage

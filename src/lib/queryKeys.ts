@@ -28,6 +28,7 @@ export const queryKeys = {
     available: (options?: Record<string, unknown>): readonly string[] => ['breeds', 'available', options].filter(Boolean) as any,
     breedBreeders: (breedId: string): readonly string[] => ['breeds', 'breed-breeders', breedId] as const,
     categories: (limit?: number): readonly string[] => ['breeds', 'categories', limit].filter(Boolean) as any,
+    popular: (limit?: number): readonly string[] => ['breeds', 'popular', limit].filter(Boolean) as any,
   },
 
   // Listing related queries (unified litters + wanted listings)

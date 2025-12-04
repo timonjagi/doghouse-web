@@ -8,6 +8,7 @@ import { Navbar } from "./Navbar";
 import { Sidebar } from "./Sidebar";
 import { ReactNode } from "react";
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
 
 type LayoutProps = {
   children: ReactNode;
@@ -18,10 +19,11 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const { onClose } = useDisclosure();
   const { user } = useSupabaseAuth();
+  const { data: profile } = useUserProfileById(user?.id)
 
   return (
     <>
-      {isMobile && <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." />}
+      {isMobile && profile?.role === 'seeker' && <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." />}
 
       {isMobile && <DashboardHeader />}
       <Flex
@@ -29,7 +31,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         direction={{ base: "column", md: "row" }}
         bg="bg-canvas"
         overflow="auto"
-        h={{ base: "calc(100dvh - 128px)", md: "100vh" }}
+        h={{ base: profile?.role === 'seeker' ? "calc(100dvh - 230px)" : "calc(100dvh - 128px)", md: "100vh" }}
         w="100vw"
         maxW="100vw"
       >

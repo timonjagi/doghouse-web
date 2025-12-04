@@ -23,12 +23,12 @@ import {
 import { useRouter } from "next/router";
 // import * as React from "react";
 
-import { CardContent } from "./CardContent";
-import { CardWithAvatar } from "./CardWithAvatar";
+import { CardContent } from "../../../components/ui/CardContent";
+import { CardWithAvatar } from "../../../components/ui/CardWithAvatar";
 
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { Loader } from "lib/components/ui/Loader";
-import { UserInfo } from "./UserInfo";
+import { UserInfo } from "../../../components/ui/UserInfo";
 import { useUserProfile } from "lib/hooks/queries/useUserProfile";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { useSignOut } from "lib/hooks/queries/useAuth";
@@ -99,14 +99,6 @@ const AccountPage = () => {
           name: "Preferences",
           description: "Update your adoption preferences",
           href: "/dashboard/account/preferences",
-        }
-      ];
-    } else if (userProfile?.role === 'breeder') {
-      return [
-        {
-          name: "Kennel",
-          description: "Manage your kennel details",
-          href: "/dashboard/account/kennel",
         }
       ];
     }

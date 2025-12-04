@@ -32,6 +32,7 @@ import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
 import { useCurrentUser } from "lib/hooks/queries";
 import { LuDog } from "react-icons/lu";
 import { GiDogHouse } from "react-icons/gi";
+import { UserProfile } from "./UserProfile";
 
 interface SidebarProps {
   onClose: () => void;
@@ -158,6 +159,14 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
             }
           />
         </Stack>
+
+        <Divider borderColor="bg-accent-subtle" />
+
+        <UserProfile
+          profile={profile}
+          onClose={onClose}
+        />
+
       </Stack>
     </Stack>
   );

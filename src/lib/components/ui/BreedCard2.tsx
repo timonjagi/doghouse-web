@@ -17,7 +17,7 @@ import { GiDogHouse } from "react-icons/gi";
 // eslint-disable-next-line
 export const BreedCard = ({ userBreed, }: any) => {
 
-  const breed = userBreed.breeds;
+  const breed = userBreed.breeds || userBreed;
 
   return (
     <Box

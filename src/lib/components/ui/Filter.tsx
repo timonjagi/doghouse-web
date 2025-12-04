@@ -435,6 +435,27 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
 
 
 
+        <FilterActionButtons
+          onClickCancel={handleReset}
+          onClickApply={() => {
+            const mobileFilters: any = {};
+            if (breedGroupFilterState.value?.length > 0) {
+              mobileFilters.breed_groups = breedGroupFilterState.value;
+            }
+            if (breedFilterState.value?.length > 0) {
+              mobileFilters.breeds = breedFilterState.value;
+            }
+            if (sizeFilterState.value) {
+              mobileFilters.size = sizeFilterState.value;
+            }
+            if (priceFilterState.value && priceFilterState.value.length === 2) {
+              mobileFilters.price_min = priceFilterState.value[0];
+              mobileFilters.price_max = priceFilterState.value[1];
+            }
+            onFilterChange(mobileFilters);
+          }}
+        />
+
       </Stack>
     </Box>
 

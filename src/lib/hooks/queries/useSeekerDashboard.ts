@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { usePopularListings } from './usePopularListings';
-import { useNewListings } from './useNewListings';
 import { useFeaturedBreeders } from './useBreeders';
 import { useBreedCategories } from './useBreedCategories';
 import { useSeekerDashboardStats } from './useSeekerDashboardStats';
 import { useAllAvailableUserBreeds } from './useUserBreeds';
 import { UserBreed, Listing, BreederProfile } from '../../../../db/schema';
+import { useNewListings, usePopularListings } from './useListings';
+import { usePopularBreeds } from './useBreeds';
 
 export interface SeekerDashboardData {
-  popularBreeds: UserBreed[];
+  popularBreeds: any[];
   popularListings: Listing[];
   newListings: Listing[];
   featuredBreeders: BreederProfile[];
@@ -19,7 +19,7 @@ export interface SeekerDashboardData {
 export const useSeekerDashboard = () => {
   // Use individual hooks that manage their own caching and loading states
 
-  const { data: popularBreeds = [], isLoading: breedsLoading, error: breedsError } = useAllAvailableUserBreeds(8);
+  const { data: popularBreeds = [], isLoading: breedsLoading, error: breedsError } = usePopularBreeds(12);
   const { data: popularListings = [], isLoading: popularLoading, error: popularError } = usePopularListings(4);
   const { data: newListings = [], isLoading: newLoading, error: newError } = useNewListings(6);
   const { data: featuredBreeders = [], isLoading: breedersLoading, error: breedersError } = useFeaturedBreeders(4);

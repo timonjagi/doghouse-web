@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { BreederProfile } from 'lib/pages/dashboard/breeders/BreederProfile';
+import { BreederProfile } from 'lib/components/ui/BreederProfile';
 
 export default function BreederProfilePage() {
   const router = useRouter();

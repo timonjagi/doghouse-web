@@ -46,7 +46,7 @@ export const DesktopNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({
   const navData = getNavData(breedCategories, popularBreeds)
 
   return (
-    <Box bg={mode('white', 'gray.800')} >
+    <Box bg={mode('white', 'gray.800')} px="8" pt="8" pb="10" >
       <Flex justify="space-between" width="full" fontSize="sm" maxW="8xl" mx="auto">
         <Flex width="480px" justify="space-between">
           <Box width="full">
@@ -107,9 +107,8 @@ export const DesktopNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({
 const MobileNavCategorySubmenu: React.FC<NavCategorySubmenuProps> = ({ breedCategories, popularBreeds, popularListings }) => {
   // Get dynamic nav data with breed categories
   const navData = getNavData(breedCategories, popularBreeds)
-  console.log(navData)
   return (
-    <Box width="full" height="100%" overflowY="auto">
+    <Box width="full" height="100%" overflowY="auto" p={5}>
       <Stack spacing="2">
         <Text fontWeight="bold" mb="4">
           Discover

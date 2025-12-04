@@ -145,7 +145,7 @@ export const useListings = (filters?: {
 
       // Apply search filter
       if (filters?.search) {
-        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+        // Search applied client-side after fetch to include breed name matching
       }
 
       // Apply size filter
@@ -197,8 +197,99 @@ export const useListings = (filters?: {
 
       const { data, error } = await query;
       if (error) throw error;
+      let results = data || [];
+
+      // Apply client-side search filter that includes breed name
+      if (searchTerm) {
+        results = results.filter((listing: any) => {
+          const titleMatch = listing.title?.toLowerCase().includes(searchTerm);
+          const descMatch = listing.description?.toLowerCase().includes(searchTerm);
+          const breedMatch = listing.breeds?.name?.toLowerCase().includes(searchTerm);
+          return titleMatch || descMatch || breedMatch;
+        });
+      }
+
+      return results;
+    },
+  });
+};
+
+
+export const usePopularListings = (limit: number = 6) => {
+  return useQuery({
+    queryKey: queryKeys.listings.popular(limit),
+    queryFn: async (): Promise<any[]> => {
+      // Get listings ordered by view_count (popularity) and recent activity
+      const { data, error } = await supabase
+        .from('listings')
+        .select(`
+          id,
+          title,
+          description,
+          type,
+          price,
+          reservation_fee,
+          photos,
+          location_text,
+          status,
+          view_count,
+          created_at,
+          updated_at,
+          breeds (
+            name
+          ),
+          users (
+            display_name,
+            profile_photo_url
+          )
+        `)
+        // .eq('status', 'available')
+        .order('view_count', { ascending: false })
+        .order('updated_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
       return data || [];
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+
+export const useNewListings = (limit: number = 6) => {
+  return useQuery({
+    queryKey: queryKeys.listings.new(limit),
+    queryFn: async (): Promise<any[]> => {
+      // Get recently added listings
+      const { data, error } = await supabase
+        .from('listings')
+        .select(`
+          id,
+          title,
+          description,
+          type,
+          price,
+          reservation_fee,
+          photos,
+          location_text,
+          status,
+          created_at,
+          breeds (
+            name
+          ),
+          users (
+            display_name,
+            profile_photo_url
+          )
+        `)
+        .eq('status', 'available')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 

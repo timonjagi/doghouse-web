@@ -1,22 +1,9 @@
 import { useRouter } from "next/router";
-import RouteGuard from "lib/components/auth/RouteGuard";
-import { Navbar } from "lib/components/layout/Navbar";
-import Header from "./Header";
 
-import { Sidebar } from "./Sidebar";
 import {
-  useBreakpointValue,
-  Flex,
-  Container,
   Box,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import { useUserProfile } from "lib/hooks/queries";
-import { BottomNavbar } from "./BottomNavbar";
-import { MobileBottomNav } from "./MobileBottomNav";
-import DashboardHeader from "./DashboardHeader";
-import { TopBanner } from "../ui/TopBanner";
 import { DashboardLayout } from "./DashboardLayout";
 import { HeaderFooterLayout } from "./HeaderFooterLayout";
 
@@ -48,6 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
     // Dashboard routes
     { path: "/dashboard", layout: 'dashboard' },
     { path: "/dashboard/search", layout: 'dashboard' },
+    { path: "/dashboard/kennel", layout: 'dashboard' },
     { path: "/dashboard/inbox", layout: 'dashboard' },
     { path: "/dashboard/inbox/[chatId]", layout: 'dashboard' },
     { path: "/dashboard/breeds", layout: 'dashboard' },
@@ -57,15 +45,14 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/listings", layout: 'dashboard' },
     { path: "/dashboard/listings/[id]", layout: 'dashboard' },
     { path: "/dashboard/wishlist", layout: 'dashboard' },
-    { path: "/dashboard/applications", layout: 'dashboard' },
-    { path: "/dashboard/applications/[id]", layout: 'dashboard' },
+    { path: "/dashboard/adoptions", layout: 'dashboard' },
+    { path: "/dashboard/adoptions/[id]", layout: 'dashboard' },
     { path: "/dashboard/account", layout: 'dashboard' },
     { path: "/dashboard/account/notifications", layout: 'dashboard' },
     { path: "/dashboard/account/profile", layout: 'dashboard' },
     { path: "/dashboard/account/settings", layout: 'dashboard' },
     { path: "/dashboard/account/billing", layout: 'dashboard' },
     { path: "/dashboard/account/preferences", layout: 'dashboard' },
-    { path: "/dashboard/account/kennel", layout: 'dashboard' },
 
 
     // Admin dashboard routes

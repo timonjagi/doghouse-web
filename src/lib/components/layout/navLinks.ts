@@ -14,6 +14,7 @@ import {
   FiGrid,
   FiShoppingBag,
   FiHeart,
+  FiUserCheck,
 } from "react-icons/fi";
 import { GiDogHouse } from "react-icons/gi";
 import { LuDog, LuSettings2 } from "react-icons/lu";
@@ -61,35 +62,22 @@ export const navigationConfig: NavigationConfig = {
       items: [
         {
           label: "Kennel",
-          href: "/dashboard/account/kennel",
+          href: "/dashboard/kennel",
           icon: GiDogHouse,
           ariaLabel: "View kennel"
         },
         {
-          label: "Breeds",
-          href: "/dashboard/breeds",
+          label: "Adoptions",
+          href: "/dashboard/adoptions",
           icon: LuDog,
-          ariaLabel: "Manage breeds and listings"
-        },
-
-        {
-          label: "Listings",
-          href: "/dashboard/listings",
-          icon: FiShoppingBag,
-          ariaLabel: "Manage listings"
+          ariaLabel: "View adoptions"
         },
         {
-          label: "Applications",
-          href: "/dashboard/applications",
-          icon: FiClipboard,
-          ariaLabel: "View applications"
+          label: "Matches",
+          href: "/dashboard/matches",
+          icon: FiUserCheck,
+          ariaLabel: "View matches"
         },
-        // {
-        //   label: "Matches",
-        //   href: "/dashboard/matches",
-        //   icon: FiTarget,
-        //   ariaLabel: "View matches"
-        // },
       ]
     },
     {
@@ -142,9 +130,9 @@ export const navigationConfig: NavigationConfig = {
         },
         {
           label: "Adoptions",
-          href: "/dashboard/applications",
+          href: "/dashboard/adoptions",
           icon: LuDog,
-          ariaLabel: "My applications"
+          ariaLabel: "My adoptions"
         },
         {
           label: "Wishlist",

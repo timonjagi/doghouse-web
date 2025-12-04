@@ -3,42 +3,21 @@ import * as React from 'react'
 import { useRouter } from 'next/router'
 import { NavAction } from './NavAction'
 import { items } from './NavItemIcons'
+import { useCurrentUser, useUserProfile } from 'lib/hooks/queries'
 
 export const MobileBottomNav = () => {
   const router = useRouter()
+  const { data: user } = useUserProfile();
 
-  const navItems = [
-    {
-      label: items.home.label,
-      icon: items.home.icon,
-      href: items.home.href,
-      isActive: router.pathname === '/dashboard'
-    },
-    {
-      label: items.search.label,
-      icon: items.search.icon,
-      href: items.search.href,
-      isActive: router.pathname.includes('/dashboard/search')
-    },
-    {
-      label: items.wishlist.label,
-      icon: items.wishlist.icon,
-      href: items.wishlist.href,
-      isActive: router.pathname.includes('/dashboard/wishlist')
-    },
-    {
-      label: items.inbox.label,
-      icon: items.inbox.icon,
-      href: items.inbox.href,
-      isActive: router.pathname.includes('/dashboard/inbox')
-    },
-    {
-      label: items.account.label,
-      icon: items.account.icon,
-      href: items.account.href,
-      isActive: router.pathname.includes('/dashboard/account')
-    }
-  ]
+  const navItems = user?.role === 'seeker' ?
+    items.filter(item => !item.role || item.role === 'seeker') :
+    items.filter(item => !item.role || item.role === 'breeder');
+  const [currentRoute, setCurrentRoute] = React.useState('');
+
+  React.useEffect(() => {
+    setCurrentRoute(router.pathname);
+  }, [router.pathname])
+
 
   return (
     <Box
@@ -57,7 +36,7 @@ export const MobileBottomNav = () => {
             label={item.label}
             icon={item.icon}
             href={item.href}
-            isActive={item.isActive}
+            isActive={currentRoute === item.href}
           />
         ))}
       </SimpleGrid>

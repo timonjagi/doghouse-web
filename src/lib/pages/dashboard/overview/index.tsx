@@ -78,15 +78,6 @@ const DashboardHome = () => {
     <Container maxW="7xl">
       <NextSeo title="Dashboard" />
 
-      {!profile?.profile_photo_url && showBanner && (
-        <Banner
-          title="Complete your profile"
-          description="Complete your profile to start finding matches"
-          button={{ label: "Complete Profile", link: "/dashboard/account/profile" }}
-          onClose={() => setShowBanner(false)}
-        />
-      )}
-
       {renderRoleSpecificDashboardOverview()}
       <Modal
         onClose={onClose}

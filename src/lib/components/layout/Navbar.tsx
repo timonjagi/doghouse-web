@@ -71,22 +71,22 @@ export const Navbar = () => {
   return (
     <>
       {isMobile ? (
-        <Box width="full" px={{ base: "4", md: "8" }} py="3" bg="bg-accent">
+        <Box width="full" px={{ base: "4", md: "8" }} py="3" bg="bg-subtle">
           <Flex justify="space-between">
-            <Logo color="on-accent" />
+            <Logo color="on-brand" />
 
             <HStack >
               <ButtonGroup variant="ghost-on-accent" spacing="4">
 
                 <Button
-                  variant="ghost-on-accent"
+                  variant="ghost"
                   onClick={onToggle}
                   m={0}
                   p={0}
                   aria-label="Open Notifications Drawer"
                 >
-                  <Icon as={FiBell} boxSize="6" color="on-accent-subtle" />
-                  {unreadCount > 0 && <Circle size="2" bg="brand.100" position="absolute" top={0} right={1} zIndex={1} />}
+                  <Icon as={FiBell} boxSize="6" color="on-brand" />
+                  {unreadCount > 0 && <Circle size="2" bg="brand.500" position="absolute" top={0} right={1} zIndex={1} />}
 
                 </Button>
 
