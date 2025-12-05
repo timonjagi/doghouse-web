@@ -61,7 +61,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
       router.push('/dashboard/account/billing');
     } else if ((notification.meta as any)?.applicationId) {
       // For application status changes, navigate to applications page
-      router.push(`/dashboard/applications/${(notification.meta as any).applicationId}`);
+      router.push(`/dashboard/adoptions/${(notification.meta as any).applicationId}`);
     } else if ((notification.meta as any)?.listingId) {
       router.push(`/dashboard/listings/${(notification.meta as any).listingId}`);
     }

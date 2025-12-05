@@ -289,7 +289,7 @@
             "title": "Create Role-Aware Applications Page Component",
             "description": "Build main applications page that adapts based on user role.",
             "dependencies": [],
-            "details": "Create src/lib/pages/dashboard/applications.tsx with role-based content.",
+            "details": "Create src/lib/pages/dashboard/adoptions.tsx with role-based content.",
             "status": "completed",
             "testStrategy": "Verify page loads correctly for both roles."
           },

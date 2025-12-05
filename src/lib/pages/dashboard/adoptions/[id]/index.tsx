@@ -154,7 +154,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
 
       // Redirect for withdrawal
       if (pendingAction.type === 'withdraw') {
-        router.push('/dashboard/applications');
+        router.push('/dashboard/adoptions');
       }
     } catch (error) {
       toast({
@@ -324,7 +324,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         <Center h="400px">
           <VStack spacing={4}>
             <Text fontSize="lg" color="gray.500">Application not found</Text>
-            <Button onClick={() => router.push('/dashboard/applications')}>
+            <Button onClick={() => router.push('/dashboard/adoptions')}>
               Back to Applications
             </Button>
           </VStack>
@@ -364,7 +364,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         <Button
           leftIcon={<ArrowBackIcon />}
           variant="ghost"
-          onClick={() => router.push('/dashboard/applications')}
+          onClick={() => router.push('/dashboard/adoptions')}
           mb={4}
           p={0}
         >

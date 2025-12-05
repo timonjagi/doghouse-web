@@ -46,7 +46,7 @@ export default function NotificationsPage() {
 
     // Navigate based on notification type and meta data
     if ((notification.meta as any)?.applicationId) {
-      router.push(`/dashboard/applications/${(notification.meta as any).applicationId}`);
+      router.push(`/dashboard/adoptions/${(notification.meta as any).applicationId}`);
     } else if ((notification.meta as any)?.listingId) {
       router.push(`/dashboard/listings/${(notification.meta as any).listingId}`);
     }

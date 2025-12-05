@@ -116,7 +116,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
       });
 
       if (result) {
-        router.push('/dashboard/applications/' + result.id)
+        router.push('/dashboard/adoptions/' + result.id)
       }
       // Reset form and close modal
       setFormData({

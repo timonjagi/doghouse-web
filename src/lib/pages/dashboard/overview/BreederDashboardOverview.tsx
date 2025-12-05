@@ -29,7 +29,7 @@ const BreederDashboardOverview: React.FC = () => {
         router.push('/dashboard/listings');
         break;
       case 'view-applications':
-        router.push('/dashboard/applications');
+        router.push('/dashboard/adoptions');
         break;
       case 'manage-breeds':
         router.push('/dashboard/breeds');

@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         amount: Math.round(amount * 100), // Convert to cents
         email: seekerEmail,
         reference,
-        callback_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/applications/${applicationId}?payment=success`,
+        callback_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/adoptions/${applicationId}?payment=success`,
         metadata: {
           application_id: applicationId,
           listing_id: listingId,

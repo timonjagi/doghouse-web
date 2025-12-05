@@ -313,7 +313,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           {/* <Button
             leftIcon={<ArrowForwardIcon />}
             variant="ghost"
-            onClick={() => router.push('/dashboard/applications')}
+            onClick={() => router.push('/dashboard/adoptions')}
             mb={4}
             p={0}
           >

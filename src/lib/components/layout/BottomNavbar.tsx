@@ -53,7 +53,7 @@ export const BottomNavbar = () => {
       <NavButton
         label="Applications"
         icon={FiClipboard}
-        href="/dashboard/applications"
+        href="/dashboard/adoptions"
         aria-current={
           router.pathname.includes("applications") ? "page" : "false"
         }
