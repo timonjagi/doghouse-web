@@ -1,3 +1,3 @@
-import ListingsPage from "lib/pages/dashboard/kennel/listings";
+import ManageListingsPage from "lib/components/pages/listings/ManageListingsPage";
 
-export default ListingsPage;
+export default ManageListingsPage;

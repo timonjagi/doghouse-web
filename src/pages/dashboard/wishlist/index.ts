@@ -1,3 +1,3 @@
-import Wishlist from "lib/pages/dashboard/wishlist";
+import Wishlist from "lib/components/pages/dashboard/wishlist";
 
 export default Wishlist;

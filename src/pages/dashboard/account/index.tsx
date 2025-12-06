@@ -1,3 +1,3 @@
-import AccountPage from "lib/pages/dashboard/account";
+import AccountPage from "lib/components/pages/dashboard/account";
 
 export default AccountPage;

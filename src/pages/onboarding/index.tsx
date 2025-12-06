@@ -1,3 +1,3 @@
-import Onboarding from "lib/pages/onboarding";
+import Onboarding from "lib/components/pages/onboarding";
 
 export default Onboarding;

@@ -1,4 +1,4 @@
-import Home from "lib/pages/landing/adopter";
+import Home from "lib/components/pages/landing/adopter";
 
 declare global {
   interface Window {

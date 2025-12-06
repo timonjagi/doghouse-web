@@ -92,65 +92,7 @@ export const BreedCard = ({ userBreed, }: any) => {
           </Stack>
         </Box>
 
-        {userBreed.breeder_count && (
 
-          <Badge
-            position="absolute"
-            top="2"
-            right="2"
-            textAlign="start"
-            px={2}
-            blur="2px"
-            zIndex={1}
-            variant="ghost"
-            colorScheme="white"
-
-          >
-
-            <HStack spacing={1}>
-              <Icon as={GiDogHouse} color="white" boxSize={3} />
-              <Text fontSize="xs" color="white" fontWeight="medium">
-                {userBreed.breeder_count} breeder{userBreed.breeder_count !== 1 ? 's' : ''}
-              </Text>
-            </HStack>
-
-            {/* <HStack spacing="1">
-
-
-              <Icon as={GiDogHouse} color="brand.100" boxSize={6} />
-              
-              <Text
-                fontSize="md"
-                color="brand.100"
-                fontWeight="medium"
-              >
-                {userBreed.breeder_count}
-              </Text> 
-
-            <Box
-              borderRadius="100%"
-              bg="brand.100"
-              mx="auto"
-              position="absolute"
-              top="4"
-              right="-5"
-            >
-              <Text
-                fontSize="xs"
-                color="brand.600"
-                fontWeight="medium"
-              >
-                {userBreed.breeder_count}
-              </Text>
-
-            </Box>
-
-
-          </HStack>
-
-          */}
-          </Badge>
-        )}
       </Link >
     </Box >
   );

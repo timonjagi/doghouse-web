@@ -1,3 +1,3 @@
-import BreederContactForm from "lib/pages/contact/breeder";
+import BreederContactForm from "lib/components/pages/contact/breeder";
 
 export default BreederContactForm;

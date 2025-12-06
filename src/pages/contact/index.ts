@@ -1,3 +1,3 @@
-import Contact from "lib/pages/contact";
+import Contact from "lib/components/pages/contact";
 
 export default Contact;

@@ -1,3 +1,3 @@
-import UnifiedSearchPage from "lib/pages/dashboard/search";
+import UnifiedSearchPage from "lib/components/pages/dashboard/search";
 
 export default UnifiedSearchPage;

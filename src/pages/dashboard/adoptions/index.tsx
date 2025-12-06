@@ -1,3 +1,3 @@
-import MyApplicationsPage from "lib/pages/dashboard/adoptions";
+import SeekerApplicationsView from "lib/components/pages/adoptions/SeekerApplicationsView";
 
-export default MyApplicationsPage;
+export default SeekerApplicationsView;

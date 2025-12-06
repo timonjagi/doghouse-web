@@ -1,3 +1,3 @@
-import BreedsPage from "lib/pages/dashboard/kennel/breeds";
+import BreedsPage from "lib/components/pages/dashboard/breeds";
 
 export default BreedsPage;

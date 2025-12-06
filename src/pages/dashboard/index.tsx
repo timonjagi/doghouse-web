@@ -1,3 +1,3 @@
-import Dashboard from "lib/pages/dashboard/overview";
+import Dashboard from "lib/components/pages/dashboard";
 
 export default Dashboard;

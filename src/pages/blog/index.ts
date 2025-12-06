@@ -1,3 +1,3 @@
-import Blog from "lib/pages/blog";
+import Blog from "lib/components/pages/blog";
 
 export default Blog;

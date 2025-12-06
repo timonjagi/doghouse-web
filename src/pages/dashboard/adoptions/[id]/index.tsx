@@ -1,3 +1,3 @@
-import ApplicationDetailPage from "lib/pages/dashboard/adoptions/[id]";
+import ApplicationDetailPage from "lib/components/pages/dashboard/adoptions/[id]";
 
 export default ApplicationDetailPage;
