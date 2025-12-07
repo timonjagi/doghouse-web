@@ -19,7 +19,6 @@ import {
   Button,
   Container,
   useColorModeValue,
-  VisuallyHidden,
   useBreakpointValue,
   useDisclosure,
   Drawer,
@@ -28,27 +27,23 @@ import {
   DrawerHeader,
   DrawerCloseButton,
   Stack,
-  Spinner,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import ListingCard from 'lib/components/ui/ListingCard'
-import { BreedCard } from 'lib/components/ui/BreedCard2'
-import { useListings, useIncrementListingViews, usePopularListings } from 'lib/hooks/queries/useListings'
+import { BreedCard } from 'lib/components/ui/BreedCard'
+import { useListings, useIncrementListingViews } from 'lib/hooks/queries/useListings'
 import { useAllAvailableUserBreeds } from 'lib/hooks/queries/useUserBreeds'
 import { Loader } from 'lib/components/ui/Loader'
 import { Filter } from 'lib/components/ui/Filter'
-import { DesktopNavItem, NavCategoryMenu } from 'lib/components/layout/NavCategoryMenu'
 import { MobileFilterButtons, DesktopFilterButtons } from 'lib/components/ui/FilterButtons'
-import { NavCategorySubmenu } from 'lib/components/layout/NavCategorySubmenu'
-import { useBreedCategories } from 'lib/hooks/queries/useBreedCategories'
 import { useAllBreeders } from 'lib/hooks/queries/useBreeders'
-import { BreederCard } from 'lib/components/ui/BreederCard'
 import * as searchService from 'lib/services/searchService'
 import { ListingList } from '../../ui/ListingList'
 import { BreedList } from '../../ui/BreedList'
 import { BreedersList } from '../../ui/BreederList'
 import { SortbySelect, } from 'lib/components/ui/SortBySelect'
 import { ArrowBackIcon } from '@chakra-ui/icons'
+import { ActiveFilters } from 'lib/components/ui/ActiveFilters'
 
 const UnifiedSearchPage = () => {
   const router = useRouter()
@@ -173,15 +168,10 @@ const UnifiedSearchPage = () => {
   } = useAllAvailableUserBreeds(undefined, breedsParams)
 
   const {
-    data: allBreeders = [],
-    isLoading: allBreedersLoading,
-    error: allBreedersError
+    data: breeders = [],
+    isLoading: breedersLoading,
+    error: breedersError
   } = useAllBreeders(undefined, breedersParams)
-
-
-  const { data: popularBreeds = [], isLoading: popularBreedsLoading, error: popularBreedsError } = useAllAvailableUserBreeds(8);
-  const { data: popularListings = [], isLoading: popularListingsLoading, error: popularListingsError } = usePopularListings(4);
-  const { data: breedCategories = [], isLoading: categoriesLoading, error: categoriesError } = useBreedCategories(8)
 
   const handleListingClick = async (listingId: string) => {
     try {
@@ -200,14 +190,13 @@ const UnifiedSearchPage = () => {
   const borderColor = useColorModeValue('gray.200', 'gray.600');
 
   const isDesktop = useBreakpointValue({ base: false, md: true })
-  const totalResults = listings.length + availableBreeds.length + allBreeders.length
-  const isLoading = listingsLoading || breedsLoading || popularBreedsLoading || popularListingsLoading || allBreedersLoading || categoriesLoading
+  const totalResults = listings.length + availableBreeds.length + breeders.length
+  const isLoading = listingsLoading || breedsLoading || breedersLoading
 
   const error = listingsError || breedsError
 
   return (
     <Container maxW="7xl" mx="auto" >
-
 
       <Box overflowX="hidden" >
         <Tabs
@@ -216,115 +205,121 @@ const UnifiedSearchPage = () => {
           variant="soft-rounded"
           colorScheme="brand"
         >
-
-          <HStack
-
-          >
-            <Button
-              leftIcon={<ArrowBackIcon boxSize={6} />}
-              variant="ghost"
-              onClick={() => router.back()}
-              p={0}
-            />
-            <TabList>
-              <Tab>All ({totalResults})</Tab>
-              <Tab>Listings ({listings.length})</Tab>
-              <Tab>Breeds ({availableBreeds.length})</Tab>
-              <Tab>Breeders ({allBreeders.length})</Tab>
-            </TabList>
-          </HStack>
-
-
-          {searchService.hasActiveFilters(filters) && (
-            <Box
-              display={filters.q || searchService.hasActiveFilters(filters) || activeTab > 0 ? 'flex' : 'none'}
-              ps={{ base: 2, md: 4 }}
-            >
-              {
-                isDesktop ? (
-                  <DesktopFilterButtons
-                    onToggle={onToggle}
-                    onFilterChange={handleFilterChange}
-                  />
-                ) : (
-                  <MobileFilterButtons
-                    onToggle={onToggle}
-                    onFilterChange={handleFilterChange}
-                  />
-                )}
-
-            </Box>
-          )}
-
           <Stack
-            bg={{ base: '', md: mode('white', 'gray.800') }}
-
+            spacing={{ base: 2, md: 4 }}
           >
-            {isDesktop && activeTab > 0 && (filters.q || searchService.hasActiveFilters(filters)) ? (
-              <HStack spacing={4} justifyContent="space-between">
-                <Text fontSize="sm">
-                  {activeTab === 0 && totalResults + ' result' + (totalResults === 1 ? '' : 's')}
-                  {activeTab === 1 && listings.length + ' result' + (listings.length === 1 ? '' : 's')}
-                  {activeTab === 2 && availableBreeds.length + ' result' + (availableBreeds.length === 1 ? '' : 's')}
-                  {activeTab === 3 && allBreeders.length + ' result' + (allBreeders.length === 1 ? '' : 's')}
-                </Text>
 
-                <HStack spacing="4" alignItems="center">
-                  <Text fontSize="sm">Sort by:</Text>
-                  <SortbySelect
-                    maxW="140px"
-                  />
-                </HStack>
-              </HStack>
-            ) : (
-              null
-            )
-            }
+            <HStack>
+              <Button
+                leftIcon={<ArrowBackIcon boxSize={6} />}
+                variant="ghost"
+                onClick={() => router.back()}
+                p={0}
+              />
+              <TabList>
+                <Tab>All ({totalResults})</Tab>
+                <Tab>Listings ({listings.length})</Tab>
+                <Tab>Breeds ({availableBreeds.length})</Tab>
+                <Tab>Breeders ({breeders.length})</Tab>
+              </TabList>
+            </HStack>
 
 
+            <Stack
+              bg={{ base: '', md: mode('white', 'gray.800') }}
+              px={{ base: 2, md: 4 }}
 
-            {isLoading ? (
-              <Loader />
-            ) : error ? (
-              <Alert status="error">
-                <AlertIcon />
-                Error searching. Please try again.
-              </Alert>
-            ) : totalResults === 0 ? (
-              <Center py={12}>
-                <VStack spacing={4}>
-                  <Text fontSize="lg" color="gray.500">No results found</Text>
-                  <Text color="gray.400" textAlign="center">
-                    Try adjusting your search terms or filters.
-                  </Text>
-                  <HStack spacing={4}>
-                    <Button colorScheme="blue" onClick={() => router.push('/dashboard')}>
-                      Browse Home
-                    </Button>
-                    {!filters.q && (
-                      <Button variant="outline" onClick={() => handleSearch('golden retriever', {})}>
-                        Popular: Golden Retriever
-                      </Button>
+            >
+              {activeTab > 0 && (
+                <Box ps={{ base: 2, md: 4 }}>
+                  {
+                    isDesktop ? (
+                      <DesktopFilterButtons
+                        onToggle={onToggle}
+                        onFilterChange={handleFilterChange}
+                      />
+                    ) : (
+
+                      <>
+                        <MobileFilterButtons
+                          onToggle={onToggle}
+                          hasActiveFilters={searchService.hasActiveFilters(filters)}
+                        />
+
+                        {searchService.hasActiveFilters(filters) && <ActiveFilters
+                          filters={filters}
+                          clearFilters={() => searchService.clearSearchParams()}
+                        />}
+                      </>
+
                     )}
-                  </HStack>
-                </VStack>
-              </Center>
-            ) : (
-              <TabPanels>
 
-                <TabPanel px={0}>
-                  {filters.q ? (
+                </Box>
+              )}
+
+              {isDesktop && activeTab > 0 && (filters.q || searchService.hasActiveFilters(filters)) ? (
+                <HStack spacing={4} justifyContent="space-between">
+                  <Text fontSize="sm">
+                    {activeTab === 0 && totalResults + ' result' + (totalResults === 1 ? '' : 's')}
+                    {activeTab === 1 && listings.length + ' result' + (listings.length === 1 ? '' : 's')}
+                    {activeTab === 2 && availableBreeds.length + ' result' + (availableBreeds.length === 1 ? '' : 's')}
+                    {activeTab === 3 && breeders.length + ' result' + (breeders.length === 1 ? '' : 's')}
+                  </Text>
+
+                  <HStack spacing="4" alignItems="center">
+                    <Text fontSize="sm">Sort by:</Text>
+                    <SortbySelect
+                      maxW="140px"
+                    />
+                  </HStack>
+                </HStack>
+              ) : (
+                null
+              )
+              }
+
+              {isLoading ? (
+                <Loader />
+              ) : error ? (
+                <Alert status="error">
+                  <AlertIcon />
+                  Error searching. Please try again.
+                </Alert>
+              ) : totalResults === 0 ? (
+                <Center py={12}>
+                  <VStack spacing={4}>
+                    <Text fontSize="lg" color="gray.500">No results found</Text>
+                    <Text color="gray.400" textAlign="center">
+                      Try adjusting your search terms or filters.
+                    </Text>
+                    <HStack spacing={4}>
+                      <Button colorScheme="blue" onClick={() => router.push('/dashboard')}>
+                        Browse Home
+                      </Button>
+                      {!filters.q && (
+                        <Button variant="outline" onClick={() => handleSearch('golden retriever', {})}>
+                          Popular: Golden Retriever
+                        </Button>
+                      )}
+                    </HStack>
+                  </VStack>
+                </Center>
+              ) : (
+                <TabPanels>
+
+                  <TabPanel px={0}>
                     <VStack spacing={8} align="stretch">
                       {/* Search Results Summary */}
-                      <Box>
-                        <Heading size={{ base: 'xs', md: 'sm' }} >Search Results for "{filters.q}"</Heading>
-                      </Box>
+
+                      {filters.q && <Box>
+                        <Heading size={{ base: 'xs', lg: 'sm' }}  >Search Results for "{filters.q}"</Heading>
+                      </Box>}
 
                       {/* Listings Section */}
                       {listings.length > 0 && (
                         <Box>
                           <Flex justify="space-between" align="center" mb={4}>
-                            <Heading size="sm">Listings ({listings.length})</Heading>
+                            <Heading size={{ base: 'xs', lg: 'sm' }}>Listings ({listings.length})</Heading>
                             <Button
                               size="sm"
                               variant="link"
@@ -335,7 +330,7 @@ const UnifiedSearchPage = () => {
                             </Button>
                           </Flex>
                           <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={6}>
-                            {listings.slice(0, 4).map((listing) => (
+                            {listings.slice(0, isDesktop ? 4 : 2).map((listing) => (
                               <ListingCard
                                 key={listing.id}
                                 listing={listing}
@@ -350,7 +345,7 @@ const UnifiedSearchPage = () => {
                       {availableBreeds.length > 0 && (
                         <Box>
                           <Flex justify="space-between" align="center" mb={4}>
-                            <Heading size="sm">Breeds ({availableBreeds.length})</Heading>
+                            <Heading size={{ base: 'xs', lg: 'sm' }}>Breeds ({availableBreeds.length})</Heading>
                             <Button
                               size="sm"
                               variant="link"
@@ -361,7 +356,7 @@ const UnifiedSearchPage = () => {
                             </Button>
                           </Flex>
                           <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
-                            {availableBreeds.slice(0, 4).map((breed) => (
+                            {availableBreeds.slice(0, isDesktop ? 4 : 2).map((breed) => (
                               <BreedCard
                                 key={breed.id}
                                 userBreed={breed}
@@ -374,10 +369,10 @@ const UnifiedSearchPage = () => {
                       )}
 
                       {/* Breeders Section */}
-                      {allBreeders.length > 0 && (
+                      {breeders.length > 0 && (
                         <Box>
                           <Flex justify="space-between" align="center" mb={4}>
-                            <Heading size="sm">Breeders ({allBreeders.length})</Heading>
+                            <Heading size={{ base: 'xs', lg: 'sm' }}>Breeders ({breeders.length})</Heading>
                             <Button
                               size="sm"
                               variant="link"
@@ -387,19 +382,17 @@ const UnifiedSearchPage = () => {
                               View All Breeders →
                             </Button>
                           </Flex>
+
                           <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={6}>
-                            {allBreeders.slice(0, 4).map((breeder) => (
-                              <BreederCard
-                                key={breeder.id}
-                                breeder={breeder}
-                              />
-                            ))}
+                            <BreedersList
+                              breeders={breeders}
+                            />
                           </SimpleGrid>
                         </Box>
                       )}
 
                       {/* No Results Message */}
-                      {listings.length === 0 && availableBreeds.length === 0 && allBreeders.length === 0 && (
+                      {listings.length === 0 && availableBreeds.length === 0 && breeders.length === 0 && (
                         <Center py={12}>
                           <VStack spacing={4}>
                             <Text fontSize="lg" color="gray.500">No results found for "{filters.q}"</Text>
@@ -410,106 +403,96 @@ const UnifiedSearchPage = () => {
                         </Center>
                       )}
                     </VStack>
-                  ) : (
-                    <Stack>
-                      {/* Desktop Layout - Categories and Navigation */}
-                      <Box display={{ base: 'none', md: 'block' }}>
-                        <NavCategorySubmenu.Desktop breedCategories={breedCategories} popularBreeds={popularBreeds} popularListings={popularListings} />
-                      </Box>
+                  </TabPanel>
 
-                      {/* Mobile Layout - Categories and Navigation */}
-                      <Box display={{ base: 'block', md: 'none' }}>
-                        <Flex flex="1" fontSize="sm" overflow="auto">
-                          <NavCategorySubmenu.Mobile breedCategories={breedCategories} popularBreeds={popularBreeds} popularListings={popularListings} />
-                        </Flex>
-                      </Box>
-                    </Stack>
-                  )}
-                </TabPanel>
+                  {/* Listings Tab */}
+                  <TabPanel px={0}>
+                    <VStack spacing={6} align="stretch">
+                      <ListingList
+                        listings={listings}
+                        isLoading={listingsLoading}
+                        showSearch={false}
+                        showFilters={false}
+                        showResultsCount={false}
+                        onListingClick={handleListingClick}
+                        emptyMessage="No listings found"
+                      />
+                      {listings.length === 12 && (
+                        <Center py={4}>
+                          <Button
+                            onClick={() => setListingsPage(prev => prev + 1)}
+                            isLoading={listingsLoading}
+                            colorScheme="brand"
+                          >
+                            Load More
+                          </Button>
+                        </Center>
+                      )}
+                    </VStack>
+                  </TabPanel>
 
-                {/* Listings Tab */}
-                <TabPanel px={0}>
-                  <VStack spacing={6} align="stretch">
-                    <ListingList
-                      listings={listings}
-                      isLoading={listingsLoading}
-                      showSearch={false}
-                      showFilters={false}
-                      showResultsCount={false}
-                      onListingClick={handleListingClick}
-                      emptyMessage="No listings found"
-                    />
-                    {listings.length === 12 && (
-                      <Center py={4}>
-                        <Button
-                          onClick={() => setListingsPage(prev => prev + 1)}
-                          isLoading={listingsLoading}
-                          colorScheme="brand"
-                        >
-                          Load More
-                        </Button>
-                      </Center>
-                    )}
-                  </VStack>
-                </TabPanel>
-
-                {/* Breeds Tab */}
-                <TabPanel px={0}>
-                  <VStack spacing={6} align="stretch">
-                    <BreedList
-                      breeds={availableBreeds}
-                      userRole="seeker"
-                      showSearch={false}
-                      showFilters={false}
-                      showResultsCount={false}
-                      showSort={false}
-                      columns={{ base: 2, md: 3, lg: 4 }}
-                      spacing={4}
-                      onBreedClick={(breed) => handleBreedClick(breed.breeds?.name)}
-                      emptyMessage="No breeds found"
-                    />
-                    {availableBreeds.length === 12 && (
-                      <Center py={4}>
-                        <Button
-                          onClick={() => setBreedsPage(prev => prev + 1)}
-                          isLoading={breedsLoading}
-                          colorScheme="brand"
-                        >
-                          Load More
-                        </Button>
-                      </Center>
-                    )}
-                  </VStack>
-                </TabPanel>
+                  {/* Breeds Tab */}
+                  <TabPanel px={0}>
+                    <VStack spacing={6} align="stretch">
+                      <BreedList
+                        breeds={availableBreeds}
+                        userRole="seeker"
+                        showSearch={false}
+                        showFilters={false}
+                        showResultsCount={false}
+                        showSort={false}
+                        columns={{ base: 2, md: 3, lg: 4 }}
+                        spacing={4}
+                        onBreedClick={(breed) => handleBreedClick(breed.breeds?.name)}
+                        emptyMessage="No breeds found"
+                      />
+                      {availableBreeds.length === 12 && (
+                        <Center py={4}>
+                          <Button
+                            onClick={() => setBreedsPage(prev => prev + 1)}
+                            isLoading={breedsLoading}
+                            colorScheme="brand"
+                          >
+                            Load More
+                          </Button>
+                        </Center>
+                      )}
+                    </VStack>
+                  </TabPanel>
 
 
-                {/* Breeders Tab */}
-                <TabPanel px={0}>
-                  <VStack spacing={6} align="stretch">
-                    <BreedersList
-                      breeders={allBreeders}
-                      isLoading={allBreedersLoading}
-                      showLoader={false}
-                      columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
-                      spacing={6}
-                      emptyMessage="No breeders found"
-                    />
-                    {allBreeders.length === 12 && (
-                      <Center py={4}>
-                        <Button
-                          onClick={() => setBreedersPage(prev => prev + 1)}
-                          isLoading={allBreedersLoading}
-                          colorScheme="brand"
-                        >
-                          Load More
-                        </Button>
-                      </Center>
-                    )}
-                  </VStack>
-                </TabPanel>
+                  {/* Breeders Tab */}
+                  <TabPanel px={0}>
+                    <VStack spacing={6} align="stretch">
+                      <BreedersList
+                        breeders={breeders}
+                        isLoading={breedersLoading}
+                        showLoader={false}
+                        columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
+                        spacing={6}
+                        emptyMessage="No breeders found"
+                      />
+                      {breeders.length === 12 && (
+                        <Center py={4}>
+                          <Button
+                            onClick={() => setBreedersPage(prev => prev + 1)}
+                            isLoading={breedersLoading}
+                            colorScheme="brand"
+                          >
+                            Load More
+                          </Button>
+                        </Center>
+                      )}
+                    </VStack>
+                  </TabPanel>
 
-              </TabPanels>
-            )}
+                </TabPanels>
+              )}
+
+            </Stack>
+
+
+
           </Stack>
         </Tabs>
       </Box >

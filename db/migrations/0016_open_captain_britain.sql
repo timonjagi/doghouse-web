@@ -1,0 +1,2 @@
+ALTER TABLE "wishlists" ADD COLUMN "breed_id" uuid;--> statement-breakpoint
+ALTER TABLE "wishlists" ADD CONSTRAINT "wishlists_breed_id_breeds_id_fk" FOREIGN KEY ("breed_id") REFERENCES "public"."breeds"("id") ON DELETE no action ON UPDATE no action;

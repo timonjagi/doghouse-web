@@ -194,37 +194,35 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
       } />
 
       <Container maxW="7xl" py={{ base: 4, md: 0 }}>
-        <Button
-          leftIcon={<ArrowBackIcon />}
-          variant="ghost"
-          onClick={() => router.push('/dashboard/listings')}
-          p={0}
-        >
-          Back to Listings
-        </Button>
+
 
         <Stack spacing={6} >
           <HStack justify="space-between" align="start" wrap="wrap" spacing={4}>
-            <Box flex={1}>
+            <Button
+              leftIcon={<ArrowBackIcon />}
+              variant="ghost"
+              onClick={() => router.back()}
+              p={0}
+            >
+            </Button>
+
+            <HStack flex={1}>
               <Heading size={{ base: 'sm', lg: 'md' }} mb={2}>{
                 getTitle()
               }</Heading>
-              <HStack flex={1}>
-
-                <Badge colorScheme={getStatusColor(listing.status)}>
-                  {formatStatus(listing.status)}
-                </Badge>
-                {/* <Text fontSize="sm" color="gray.500">
+              <Badge colorScheme={getStatusColor(listing.status)}>
+                {formatStatus(listing.status)}
+              </Badge>
+              {/* <Text fontSize="sm" color="gray.500">
                   Listed: {formatDate(listing.created_at.toString())}
                 </Text> */}
-              </HStack>
+            </HStack>
 
-            </Box>
 
 
             {!isMobile && canApply && (
               <Button
-                leftIcon={<ChatIcon />}
+                leftIcon={<ChatIcon boxSize={6} />}
                 colorScheme="brand"
                 size="lg"
                 onClick={onApplicationOpen}

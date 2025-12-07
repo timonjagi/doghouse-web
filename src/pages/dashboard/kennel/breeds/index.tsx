@@ -1,3 +1,3 @@
-import BreedsPage from "lib/components/pages/dashboard/breeds";
+import BreederBreedsView from "lib/components/pages/breeds/BreederBreedsView";
 
-export default BreedsPage;
+export default BreederBreedsView;

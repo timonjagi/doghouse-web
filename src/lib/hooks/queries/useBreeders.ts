@@ -31,7 +31,10 @@ export const useAllBreeders = (
             kennel_name,
             kennel_location,
             verified_at,
-            rating
+            rating,
+            review_count,
+            kennel_avatar_url,
+            pet_type
           ),
           user_breeds!inner (
             id,
@@ -124,12 +127,19 @@ export const useFeaturedBreeders = (limit: number = 4) => {
             kennel_name,
             kennel_location,
             verified_at,
-            rating
+            rating,
+            review_count,
+            kennel_avatar_url,
+            pet_type
           ),
-          listings!inner (
+          user_breeds!inner (
             id,
-            status,
-            created_at
+            breed_id,
+            created_at,
+            breeds (
+              id,
+              name
+            )
           )
         `)
         .eq('role', 'breeder')
@@ -149,10 +159,19 @@ export const useFeaturedBreeders = (limit: number = 4) => {
         if (!breederMap.has(breederId)) {
           breederMap.set(breederId, {
             ...breeder,
+            breedNames: [] as string[],
+            userBreedsCount: 0,
             activeListingsCount: 0,
+            soldListingsCount: 0,
           });
         }
+
         breederMap.get(breederId).activeListingsCount += 1;
+        breederMap.get(breederId).userBreedsCount += 1;
+        // Collect breed names for search
+        if (breeder.user_breeds?.breeds?.name) {
+          breederMap.get(breederId).breedNames.push(breeder.user_breeds.breeds.name.toLowerCase());
+        }
       });
 
       return Array.from(breederMap.values()).slice(0, limit);

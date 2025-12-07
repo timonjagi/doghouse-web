@@ -4,6 +4,8 @@ import { useBreedersForBreed } from "lib/hooks/queries/useUserBreeds";
 import { BreederCard } from "./BreederCard";
 import { ArrowRightIcon } from "@chakra-ui/icons";
 import { UserCardWithBackground } from "lib/components/ui/UserCardWithBackground";
+import { UserCardWithRating } from "./UserCardWithRating/UserCardWithRating";
+import { useRouter } from "next/router";
 
 interface BreedersListProps {
   // Optional: fetch data internally for a specific breed
@@ -31,16 +33,10 @@ export const BreedersList: React.FC<BreedersListProps> = ({
   emptyMessage = "No breeders found.",
   showLoader = true
 }) => {
-  // Use internal data fetching if breed is provided, otherwise use external data
-  const {
-    data: internalBreeders,
-    isLoading: internalIsLoading,
-    error: internalError
-  } = useBreedersForBreed(breed?.id && !externalBreeders ? breed.id : undefined);
-
-  const breeders = externalBreeders ?? internalBreeders;
-  const isLoading = externalIsLoading ?? internalIsLoading;
-  const error = externalError ?? internalError;
+  const breeders = externalBreeders;
+  const isLoading = externalIsLoading;
+  const error = externalError;
+  const router = useRouter();
 
   if (isLoading && showLoader) {
     return <Loader />;
@@ -68,22 +64,22 @@ export const BreedersList: React.FC<BreedersListProps> = ({
     <SimpleGrid columns={columns} spacing={spacing}>
       {breeders.map((breeder) => (
         // <BreederCard key={breeder?.id} breeder={breeder} />
-        <UserCardWithBackground
+        <UserCardWithRating
           key={breeder?.id}
-          data={{ user: breeder } as any}
-          action={
-            <Link
-              href={`/dashboard/breeders/${breeder?.id}`}
-            >
-              <Button
-                leftIcon={<ArrowRightIcon />}
-                colorScheme="brand"
-                variant="outline"
-              >
-                View Profile
-              </Button>
-            </Link>
-          }
+          data={{
+            id: breeder.id,
+            display_name: breeder.breeder_profiles?.kennel_name || breeder.display_name,
+            username: breeder.username || breeder.breeder_profiles?.kennel_name,
+            bio: breeder.bio,
+            location_text: breeder?.breeder_profiles?.kennel_location,
+            adoption_count: breeder.adoption_count,
+            rating: breeder.rating,
+            review_count: breeder.review_count,
+            profile_photo_url: breeder.breeder_profiles?.kennel_avatar_url || breeder.profile_photo_url,
+            tags: breeder.breedNames || [],
+            role: `${breeder?.breeder_profiles?.pet_type || 'dog'} breeder`
+          }}
+          action={() => router.push(`/dashboard/breeders/${breeder.id}`)}
         />
       ))}
     </SimpleGrid>

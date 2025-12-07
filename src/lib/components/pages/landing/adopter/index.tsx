@@ -27,7 +27,7 @@ const Home = () => {
 
         <Hero />
 
-        {/* <BreedTraits /> */}
+        <BreedTraits />
         {/* 
         <OurBreeds /> */}
 

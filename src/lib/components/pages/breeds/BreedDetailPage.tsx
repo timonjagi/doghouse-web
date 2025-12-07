@@ -59,25 +59,29 @@ const PublicBreedDetailPage = () => {
         <meta name="robots" content="index, follow" />
       </Head>
 
-      <Container maxW="7xl" py={{ base: '4', md: '8' }}>
-        <Button
-          leftIcon={<ArrowBackIcon />}
-          variant="ghost"
-          onClick={() => router.push('/breeds')}
-          mb={4}
-          p={0}
-        >
-          Back to Breeds
-        </Button>
+      <Container maxW="7xl">
+
         <Stack
           spacing="8"
         >
-          <Heading
-            size={{ base: "sm", md: "md" }}
-            textTransform="capitalize"
-          >
-            {breed?.name}
-          </Heading>
+          <HStack align="center">
+            <Button
+              leftIcon={<ArrowBackIcon boxSize={5} />}
+              variant="ghost"
+              onClick={() => router.back()}
+              p={0}
+            >
+            </Button>
+
+            <Heading
+              size={{ base: "xs", md: "sm" }}
+              textTransform="capitalize"
+            >
+              {breed?.name}
+            </Heading>
+
+          </HStack>
+
 
           <Stack flex="1" spacing="6" direction={{ base: "column", md: "row-reverse" }}>
             <Gallery

@@ -31,7 +31,7 @@ import {
   ListIcon,
 } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
-import { useCreateApplication } from '../../../../hooks/queries/useApplications';
+import { useCreateApplication } from '../../../hooks/queries/useApplications';
 import { useRouter } from 'next/router';
 
 interface ApplicationFormProps {

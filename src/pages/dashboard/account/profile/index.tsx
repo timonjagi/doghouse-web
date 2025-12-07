@@ -1,3 +1,3 @@
-import { ProfilePage } from 'lib/components/pages/dashboard/account/profile';
+import { ProfilePage } from 'lib/components/pages/account/profile';
 
 export default ProfilePage;

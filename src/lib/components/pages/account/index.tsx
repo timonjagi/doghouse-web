@@ -23,12 +23,12 @@ import {
 import { useRouter } from "next/router";
 // import * as React from "react";
 
-import { CardContent } from "../../../ui/CardContent";
-import { CardWithAvatar } from "../../../ui/CardWithAvatar";
+import { CardContent } from "../../ui/CardContent";
+import { CardWithAvatar } from "../../ui/CardWithAvatar";
 
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
 import { Loader } from "lib/components/ui/Loader";
-import { UserInfo } from "../../../ui/UserInfo";
+import { UserInfo } from "../../ui/UserInfo";
 import { useUserProfile } from "lib/hooks/queries/useUserProfile";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { useSignOut } from "lib/hooks/queries/useAuth";

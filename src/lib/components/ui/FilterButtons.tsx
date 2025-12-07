@@ -12,10 +12,15 @@ import { Filter } from './Filter'
 
 interface MobileFilterProps {
   onToggle: () => void
+  hasActiveFilters: boolean
+}
+
+interface DesktopFilterProps {
+  onToggle: () => void
   onFilterChange: (filters: any) => void
 }
 
-export const DesktopFilterButtons: React.FC<MobileFilterProps> = ({ onToggle, onFilterChange }) => {
+export const DesktopFilterButtons: React.FC<DesktopFilterProps> = ({ onToggle, onFilterChange }) => {
   return (
     <Box w="full">
       <Filter
@@ -25,7 +30,7 @@ export const DesktopFilterButtons: React.FC<MobileFilterProps> = ({ onToggle, on
 
   )
 }
-export const MobileFilterButtons: React.FC<MobileFilterProps> = ({ onToggle }) => {
+export const MobileFilterButtons: React.FC<MobileFilterProps> = ({ onToggle, hasActiveFilters }) => {
   return (
     <Flex
       width="full"

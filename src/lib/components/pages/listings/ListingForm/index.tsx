@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Container,
-  Heading,
   Text,
   VStack,
   HStack,
@@ -14,12 +12,9 @@ import {
   StepStatus,
   StepIcon,
   StepSeparator,
-  Card,
-  CardBody,
   useColorModeValue,
   Alert,
   AlertIcon,
-  Center,
   Link,
   useToast,
   Spinner,
@@ -33,7 +28,6 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { ArrowBackIcon, ArrowForwardIcon, CheckIcon } from '@chakra-ui/icons';
-import { NextSeo } from 'next-seo';
 
 // Import step components (we'll create these next)
 import { BasicInfoStep } from './basic-info';
@@ -42,13 +36,11 @@ import { MediaStep } from './media';
 import { PricingStep } from './pricing';
 import { ReviewStep } from './review';
 
-import { useCreateListing, useUpdateListing, useUploadListingPhotos } from '../../../../../hooks/queries/useListings';
-import { Loader } from 'lib/components/ui/Loader';
-import { useCurrentUser, useUserBreedsFromUser } from 'lib/hooks/queries';
+import { useCreateListing, useUpdateListing, useUploadListingPhotos } from '../../../../hooks/queries/useListings';
 import ParentInfoStep from './parent-info';
 import HealthInfoStep from './health-info';
 import RequirementsStep from './requirements';
-import { Listing, User, UserBreed } from '../../../../../../../db/schema';
+import { Listing, User, UserBreed } from '../../../../../../db/schema';
 import { supabase } from 'lib/supabase/client';
 
 export interface ListingFormData {

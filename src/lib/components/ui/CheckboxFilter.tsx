@@ -29,7 +29,7 @@ export const CheckboxFilter = (props: CheckboxFilterProps) => {
   return (
     <Stack as="fieldset" spacing={spacing}>
       {!hideLabel && (
-        <FormLabel fontWeight="semibold" as="legend" mb="0">
+        <FormLabel fontWeight="semibold" as="legend" mb="4">
           {label}
         </FormLabel>
       )}
@@ -45,6 +45,7 @@ export const CheckboxFilter = (props: CheckboxFilterProps) => {
           </InputRightElement>
         </InputGroup>
       )}
+
       <CheckboxGroup {...rest}>
         {options.map((option) => (
           <Checkbox key={option.value} value={option.value} colorScheme="brand">

@@ -12,10 +12,10 @@ import {
 import { FiTrendingUp, FiTrendingDown, FiPlus, FiEye, FiUsers, FiDollarSign } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 
-import { useBreederDashboardStats } from '../../../../hooks/queries/useBreederDashboardStats';
-import { MetricCard } from '../../../ui/charts/MetricCard';
-import { LineChart } from '../../../ui/charts/LineChart';
-import { BarChart } from '../../../ui/charts/BarChart';
+import { useBreederDashboardStats } from '../../../hooks/queries/useBreederDashboardStats';
+import { MetricCard } from '../../ui/charts/MetricCard';
+import { LineChart } from '../../ui/charts/LineChart';
+import { BarChart } from '../../ui/charts/BarChart';
 
 const BreederDashboardOverview: React.FC = () => {
   const router = useRouter();

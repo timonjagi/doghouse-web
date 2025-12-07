@@ -8,6 +8,7 @@ import {
   useColorModeValue as mode,
 } from '@chakra-ui/react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import * as React from 'react'
 
 type NavItemProps = {
@@ -72,6 +73,8 @@ const NavItem = {
 
 
 const DesktopNavCategoryMenu = ({ menus }: { menus: any }) => {
+  const router = useRouter();
+
   return (
     <Box
       borderTopWidth="1px"
@@ -83,7 +86,7 @@ const DesktopNavCategoryMenu = ({ menus }: { menus: any }) => {
       <Box maxW="8xl" mx="auto">
         <HStack spacing="8">
           {menus.map((link) => (
-            <NavItem.Desktop key={link.label} {...link} isActive={link.label === 'Men'} />
+            <NavItem.Desktop key={link.label} {...link} isActive={router?.query.tab.includes(link.label.toLowerCase())} />
           ))}
         </HStack>
       </Box>
@@ -92,6 +95,8 @@ const DesktopNavCategoryMenu = ({ menus }: { menus: any }) => {
 }
 
 const MobileNavCategoryMenu = ({ menus }: { menus: any }) => {
+
+  const router = useRouter();
   return (
     <Box
       width="32%"
@@ -103,7 +108,7 @@ const MobileNavCategoryMenu = ({ menus }: { menus: any }) => {
     >
       <Stack spacing="1">
         {menus.map((link) => (
-          <NavItem.Mobile key={link.label} {...link} isActive={link.isActive} />
+          <NavItem.Mobile key={link.label} {...link} isActive={router?.query.category?.includes(link.label.toLowerCase())} />
         ))}
       </Stack>
     </Box>

@@ -16,10 +16,13 @@ import { FaArrowRight } from "react-icons/fa";
 
 import BlogPostCard from "../../blog/BlogPostCard";
 import { posts } from "../../blog/data";
+import { useRouter } from "next/router";
 
 export const Blog = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const brandColor = useColorModeValue("brand.600", "brand.900");
+
+  const router = useRouter();
   return (
     <Box bg="bg-surface" maxW="6xl">
       <Container py={{ base: "16", md: "24" }}>
@@ -77,7 +80,7 @@ export const Blog = () => {
                 .map((post) => <BlogPostCard key={post.id} post={post} />)}
           </SimpleGrid>
           {isMobile && (
-            <Button variant="primary" size="lg">
+            <Button variant="primary" size="lg" onClick={() => router.push('/blog')}>
               Show all
             </Button>
           )}

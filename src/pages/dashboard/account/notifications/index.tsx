@@ -1,3 +1,3 @@
-import NotificationsPage from "lib/components/pages/dashboard/account/notifications";
+import NotificationsPage from "lib/components/pages/account/notifications";
 
 export default NotificationsPage;

@@ -44,6 +44,7 @@ import { MdFilterList } from 'react-icons/md';
 import ListingCard from '../../ui/ListingCard';
 import { Select } from 'chakra-react-select';
 import { User } from '../../../../../db/schema';
+import { ActiveFilters } from 'lib/components/ui/ActiveFilters';
 
 interface FilterState {
   search: string;
@@ -215,7 +216,7 @@ const BrowseListingsPage: React.FC = () => {
               listingsLoading={listingsLoading} />
           )}
 
-          <ActiveFilters filters={filters} clearFilters={clearFilters!} breeds={breeds!} />
+          <ActiveFilters filters={filters} clearFilters={clearFilters!} />
         </VStack>
         {/* Results Count */}
         <HStack justify="space-between">
@@ -310,7 +311,7 @@ const Filters = ({ bgColor, filters, updateFilter, breedsLoading, listingsLoadin
       <CardBody>
 
         <Stack spacing={4} direction={{ base: 'column', md: 'row' }}>
-          {isMobile && <ActiveFilters filters={filters} clearFilters={clearFilters!} breeds={breeds!} isMobile={isMobile} />}
+          {isMobile && <ActiveFilters filters={filters} clearFilters={clearFilters!} isMobile={isMobile} />}
 
           <FormControl>
             <FormLabel>Breed</FormLabel>
@@ -371,67 +372,3 @@ const Filters = ({ bgColor, filters, updateFilter, breedsLoading, listingsLoadin
   )
 };
 
-interface ActiveFiltersProps {
-  filters: FilterState;
-  clearFilters: () => void;
-  breeds: Array<{ id: string; name: string }> | undefined;
-  isMobile?: boolean;
-}
-
-const ActiveFilters = ({ filters, clearFilters, breeds, isMobile }: ActiveFiltersProps) => {
-  return <HStack justify="space-between" >
-    {/* Active Filters Display */}
-    {
-      (filters.breed || filters.location || filters.minPrice || filters.maxPrice || filters.type) && (
-        <Wrap spacing={2}>
-          <WrapItem>
-            <Text fontSize="sm" color="gray.600">Active filters:</Text>
-          </WrapItem>
-          {filters.breed && (
-            <WrapItem>
-              <Badge colorScheme="blue" variant="subtle">
-                Breed: {breeds?.find(b => b.id === filters.breed.value)?.name}
-              </Badge>
-            </WrapItem>
-          )}
-          {filters.location && (
-            <WrapItem>
-              <Badge colorScheme="green" variant="subtle">
-                Location: {filters.location}
-              </Badge>
-            </WrapItem>
-          )}
-          {filters.minPrice && (
-            <WrapItem>
-              <Badge colorScheme="purple" variant="subtle">
-                Min: KSH {filters.minPrice}
-              </Badge>
-            </WrapItem>
-          )}
-          {filters.maxPrice && (
-            <WrapItem>
-              <Badge colorScheme="purple" variant="subtle">
-                Max: KSH {filters.maxPrice}
-              </Badge>
-            </WrapItem>
-          )}
-          {filters.type && (
-            <WrapItem>
-              <Badge colorScheme="orange" variant="subtle">
-                Type: {filters.type === 'litter' ? 'Litter' : 'Single Pet'}
-              </Badge>
-            </WrapItem>
-          )}
-        </Wrap>
-      )
-    }
-
-    {!isMobile &&
-      (filters.breed || filters.location || filters.minPrice || filters.maxPrice || filters.type) && (
-        <Button variant="ghost" size="sm" onClick={clearFilters}>
-          Clear All Filters
-        </Button>
-      )
-    }
-  </HStack >;
-}

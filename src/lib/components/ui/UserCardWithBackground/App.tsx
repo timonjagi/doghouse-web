@@ -9,7 +9,7 @@ export const UserCardWithBackground: React.FC<UserCardWithBackgroundProps> = ({
   data,
   action,
   maxW = 'xl',
-  backgroundColorScheme = 'blue.600',
+  backgroundColorScheme = 'brand.600',
 }) => {
   const { user } = data;
 

@@ -11,10 +11,10 @@ import {
 import { FiUsers, FiList, FiDollarSign, FiShield, FiTrendingUp, FiBarChart } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 
-import { useAdminDashboardStats } from '../../../../hooks/queries/useAdminDashboardStats';
-import { MetricCard } from '../../../ui/charts/MetricCard';
-import { LineChart } from '../../../ui/charts/LineChart';
-import { BarChart } from '../../../ui/charts/BarChart';
+import { useAdminDashboardStats } from '../../../hooks/queries/useAdminDashboardStats';
+import { MetricCard } from '../../ui/charts/MetricCard';
+import { LineChart } from '../../ui/charts/LineChart';
+import { BarChart } from '../../ui/charts/BarChart';
 
 const AdminDashboardOverview: React.FC = () => {
   const router = useRouter();

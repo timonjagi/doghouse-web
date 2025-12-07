@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 
 interface BreedCardProps {
   userBreed: any;
-  userRole: 'breeder' | 'seeker' | 'admin' | 'public';
+  userRole: 'seeker' | 'breeder' | 'admin';
   onClick?: () => void;
 }
 
@@ -60,18 +60,39 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
       {/* Breed Info */}
       <VStack p={4} align="stretch" spacing={2}>
         <VStack align="stretch" spacing={1}>
+
+          <Text fontSize="lg" fontWeight="semibold" noOfLines={2}>
+            {breed.name}
+          </Text>
           <HStack justify="space-between" align="center">
-            <Text fontSize="lg" fontWeight="semibold" noOfLines={1}>
-              {breed.name}
-            </Text>
+
             {breed.group && (
               <Badge colorScheme="purple" variant="subtle" fontSize="xs">
                 {breed.group}
               </Badge>
             )}
+
+            {userRole === 'seeker' && userBreed.breeder_count && (
+              <HStack spacing={1}>
+                <StarIcon color="yellow.400" boxSize={3} />
+                <Text fontSize="xs" color="brand.600" fontWeight="medium">
+                  {userBreed.breeder_count} breeder{userBreed.breeder_count !== 1 ? 's' : ''}
+                </Text>
+              </HStack>
+            )}
+
+            {/* Image count indicator */}
+            {userRole === 'breeder' && userBreed.images && userBreed.images.length > 0 && (
+              <HStack spacing={1}>
+                <StarIcon color="yellow.400" boxSize={3} />
+                <Text fontSize="xs" color="gray.500">
+                  {userBreed.images.length} photo{userBreed.images.length !== 1 ? 's' : ''}
+                </Text>
+              </HStack>
+            )}
           </HStack>
 
-          {breed.description && (
+          {breed.description && userRole === 'breeder' && (
             <Text fontSize="sm" color="gray.600" noOfLines={2}>
               {breed.description}
             </Text>
@@ -85,24 +106,9 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
           </Text>
         )}
 
-        {userRole === 'seeker' && userBreed.breeder_count && (
-          <HStack spacing={1}>
-            <StarIcon color="yellow.400" boxSize={3} />
-            <Text fontSize="xs" color="brand.600" fontWeight="medium">
-              Available from {userBreed.breeder_count} breeder{userBreed.breeder_count !== 1 ? 's' : ''}
-            </Text>
-          </HStack>
-        )}
 
-        {/* Image count indicator */}
-        {userRole === 'breeder' && userBreed.images && userBreed.images.length > 0 && (
-          <HStack spacing={1}>
-            <StarIcon color="yellow.400" boxSize={3} />
-            <Text fontSize="xs" color="gray.500">
-              {userBreed.images.length} photo{userBreed.images.length !== 1 ? 's' : ''}
-            </Text>
-          </HStack>
-        )}
+
+
       </VStack>
     </Box>
   );

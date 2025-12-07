@@ -15,7 +15,7 @@ import {
   useToast,
   Select,
 } from '@chakra-ui/react';
-import { User } from '../../../../../../../db/schema';
+import { User } from '../../../../../../db/schema';
 import { useUpdateUserProfile, useUploadProfilePhoto } from 'lib/hooks/queries/useUserProfile';
 import { useSeekerProfile, useUpsertSeekerProfile } from 'lib/hooks/queries/useSeekerProfile';
 import { Dropzone } from 'lib/components/ui/Dropzone';

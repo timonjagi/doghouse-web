@@ -1,6 +1,7 @@
 import {
   Box,
   Flex,
+  Link,
   SimpleGrid,
   Stack,
   Text,
@@ -8,7 +9,6 @@ import {
 } from '@chakra-ui/react'
 import * as React from 'react'
 import { NavFeaturedImage } from './NavFeaturedImage'
-import Link from 'next/link'
 
 const DesktopNavCategorySubmenu = ({ data }: { data: any }) => {
   return (
@@ -21,7 +21,7 @@ const DesktopNavCategorySubmenu = ({ data }: { data: any }) => {
             </Text>
             <Stack spacing="4" align="flex-start">
               {data.category.links.map((link, i) => (
-                <Link key={i} href={link.url}>{link.label}</Link>
+                <Link key={i}>{link.label}</Link>
               ))}
             </Stack>
           </Box>
@@ -31,20 +31,20 @@ const DesktopNavCategorySubmenu = ({ data }: { data: any }) => {
             </Text>
             <Stack spacing="4" align="flex-start">
               {data.featured.links.map((link, i) => (
-                <Link key={i} href={link.url}>{link.label}</Link>
+                <Link key={i}>{link.label}</Link>
               ))}
             </Stack>
           </Box>
         </Flex>
         <Stack direction="row" spacing="8" width="full" maxW="856px">
           <NavFeaturedImage
-            label={data.products[0].label}
-            imageUrl={data.products[0].imageUrl}
+            label="Men’s jewelry"
+            imageUrl="https://images.unsplash.com/photo-1490367532201-b9bc1dc483f6?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1740&q=80"
           />
           <NavFeaturedImage
-            width=""
-            label={data.products[1].label}
-            imageUrl={data.products[1].imageUrl}
+            width="500px"
+            label="Men’s suits"
+            imageUrl="https://images.unsplash.com/photo-1623880840102-7df0a9f3545b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=928&q=80"
           />
         </Stack>
       </Flex>
@@ -55,13 +55,13 @@ const DesktopNavCategorySubmenu = ({ data }: { data: any }) => {
 const MobileNavCategorySubmenu = ({ data }: { data: any }) => (
   <Box p="5" width="full" height="100%" overflowY="auto">
     <Text fontWeight="bold" mb="4">
-      {data.category.label}
+      Men
     </Text>
     <NavFeaturedImage
       height="32"
       bottomOffset="3"
-      label={data.products[0].label}
-      imageUrl={data.products[0].imageUrl}
+      label="Men's Suit"
+      imageUrl="https://images.unsplash.com/photo-1623880840102-7df0a9f3545b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=928&q=80"
     />
     <Stack spacing="10" mt="10">
       <Box>

@@ -22,8 +22,8 @@ import {
   ListItem,
 } from '@chakra-ui/react';
 import { FaCreditCard, FaMobileAlt } from 'react-icons/fa';
-import { useInitiatePayment } from '../../hooks/queries/usePayments';
-import { ApplicationWithListing } from '../../hooks/queries/useApplications';
+import { useInitiatePayment } from '../../../hooks/queries/usePayments';
+import { ApplicationWithListing } from '../../../hooks/queries/useApplications';
 import { CheckCircleIcon, ChevronRightIcon } from '@chakra-ui/icons';
 
 interface PaymentModalProps {

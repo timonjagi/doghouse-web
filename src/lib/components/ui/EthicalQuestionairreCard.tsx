@@ -14,7 +14,7 @@ type CompleteProfileCTAProps = {};
 
 const EthicalQuestionairreCard: React.FC<CompleteProfileCTAProps> = () => {
   return (
-    <Box as="section" bg="bg-surface" maxW="2xl">
+    <Box as="section" bg="bg-surface" maxW="5xl" mx="auto">
       <Container
         py={{
           base: "8",

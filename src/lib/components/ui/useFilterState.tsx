@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+
 export type UseFilterStateProps<T> = {
   defaultValue: T | undefined
   onSubmit?: (value: T) => void

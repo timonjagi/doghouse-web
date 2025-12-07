@@ -1,3 +1,3 @@
-import AnalyticsPage from "lib/components/pages/dashboard/admin/analytics";
+import AnalyticsPage from "lib/components/pages/admin/analytics";
 
 export default AnalyticsPage;

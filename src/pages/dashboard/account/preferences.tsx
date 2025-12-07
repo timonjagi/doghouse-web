@@ -1,3 +1,3 @@
-import { PreferencesPage } from 'lib/components/pages/dashboard/account/preferences';
+import { PreferencesPage } from 'lib/components/pages/account/preferences';
 
 export default PreferencesPage;

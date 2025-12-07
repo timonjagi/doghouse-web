@@ -1,33 +1,34 @@
-import { Box, Flex, HStack, Stack, useBreakpointValue, useColorModeValue as mode, Tab, TabList, TabPanel, TabPanels, Tabs, VisuallyHidden, SimpleGrid, Heading, Icon, Link, useColorModeValue, Alert, AlertIcon } from '@chakra-ui/react'
+import { Box, Flex, Stack, useBreakpointValue, useColorModeValue as mode, Tab, TabList, TabPanel, TabPanels, Tabs, VisuallyHidden, SimpleGrid, Alert, AlertIcon, HStack } from '@chakra-ui/react'
 import { NavCategorySubmenu } from 'lib/components/ui/NavCategorySubmenu'
 import { NavCategoryMenu } from 'lib/components/ui/NavCategoryMenu'
+import { NavMenu } from 'lib/components/ui/NavMenu';
+
 import { Loader } from 'lib/components/ui/Loader';
 import { useSeekerDashboard } from 'lib/hooks/queries/useSeekerDashboard'
 import React, { useEffect } from 'react';
 import * as searchService from 'lib/services/searchService'
 import { useRouter } from 'next/router';
 import { useIncrementListingViews } from 'lib/hooks/queries/useListings';
-import { ShowcaseOnSpanningColumns } from 'lib/components/ui/ShowcaseOnSpanningColumns';
 import { CategoryCard } from 'lib/components/ui/CatetgoryCard';
-import { DesktopNavItem } from 'lib/components/ui/NavCategory/NavCategoryMenu';
-import { FaArrowRight } from 'react-icons/fa';
+import { TabBar } from 'lib/components/ui/TabBar';
 import { useCategories } from 'lib/hooks/queries/useCategories';
-import { NavMenu } from 'lib/components/ui/NavMenu';
 import { BreedersList } from 'lib/components/ui/BreederList';
 
-const SeekerDashboardOverview: React.FC = () => {
+const SeekerExploreOverview: React.FC = () => {
   const router = useRouter();
   const isDesktop = useBreakpointValue({ base: false, md: true })
 
   // Use the unified dashboard hook to fetch data for dynamic navigation
   const { data: dashboardData, isLoading, error } = useSeekerDashboard();
+
   // refactor to usePopularBreeds hook
   const incrementViewsMutation = useIncrementListingViews()
 
   const popularListings = dashboardData?.popularListings || [];
   const newListings = dashboardData?.newListings || [];
-  const featuredBreeders = dashboardData?.featuredBreeders || [];
+  // const saleListings = dashboardData?.saleListings || [];
   const popularBreeds = dashboardData?.popularBreeds || [];
+  const featuredBreeders = dashboardData?.featuredBreeders || [];
 
   const getTabIndex = (tabParam: string | string[] | undefined): number => {
     switch (tabParam?.toString()) {
@@ -51,7 +52,7 @@ const SeekerDashboardOverview: React.FC = () => {
 
   const [activeTab, setActiveTab] = React.useState(getTabIndex(filters.tab))
 
-  const { data: categories } = useCategories('dashboard', filters.tab);
+  const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories('explore', activeTab.toString(), isDesktop);
 
   if (isLoading) {
     return <Loader />
@@ -66,9 +67,9 @@ const SeekerDashboardOverview: React.FC = () => {
 
 
   return (
-    <Box>
+    <Box w="full" bg="bg-surface">
 
-      <CustomTabBar activeTab={activeTab} />
+      <TabBar menuItems={categories.menuItems} activeTab={activeTab} />
 
       <Tabs
         index={activeTab}
@@ -103,8 +104,7 @@ const SeekerDashboardOverview: React.FC = () => {
                   spacing="6"
                   columns={{
                     base: 2,
-                    sm: 3,
-                    lg: 4
+                    md: 4,
                   }}
                   alignContent="flex-start"
                   width="full"
@@ -282,51 +282,5 @@ const SeekerDashboardOverview: React.FC = () => {
 
 };
 
-export default SeekerDashboardOverview;
+export default SeekerExploreOverview;
 
-interface CustomTabBarProps {
-  activeTab: number
-}
-
-const CustomTabBar = ({ activeTab }: CustomTabBarProps) => {
-  // Build URLs that preserve current query parameters
-  const isMobile = useBreakpointValue({ base: true, md: false })
-
-  const menuItems = isMobile ? [
-    { label: 'All Categories', href: '/dashboard?tab=all&category=dogs', tab: 0 },
-    { label: 'Pet Listings', href: '/dashboard?tab=listings&category=dogs', tab: 1 },
-    { label: 'Breeds', href: '/dashboard?tab=breeds&category=dogs', tab: 2 },
-    { label: 'Breeders', href: '/dashboard?tab=breeders&category=dogs', tab: 3 },
-
-  ] :
-
-    [
-      { label: 'All Categories', href: '/dashboard?tab=all&category=dogs', tab: 0 },
-      { label: 'Available Pets', href: '/dashboard?tab=listings&category=dogs', tab: 1 },
-      { label: 'Popular Breeds', href: '/dashboard?tab=breeds&category=dogs', tab: 2 },
-      { label: 'Breeders Near You', href: '/dashboard?tab=breeders&category=dogs', tab: 3 },
-    ]
-
-  return (
-    <Box
-      borderTopWidth="1px"
-      borderBottomWidth="1px"
-      borderColor={mode('gray.200', 'gray.700')}
-      bg={mode('white', 'gray.800')}
-      px={{ base: 2, md: 4 }}
-    >
-      <Box maxW="8xl" mx="auto">
-        <HStack spacing="8">
-          {menuItems.map((link) => (
-            <DesktopNavItem
-              key={link.label}
-              label={link.label}
-              href={link.href}
-              isActive={activeTab === link.tab}
-            />
-          ))}
-        </HStack>
-      </Box>
-    </Box>
-  )
-}

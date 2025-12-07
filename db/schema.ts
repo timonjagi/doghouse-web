@@ -75,6 +75,9 @@ export const breeder_profiles = pgTable("breeder_profiles", {
   verification_docs: jsonb("verification_docs"), // references to storage keys
   verified_at: timestamp("verified_at"),
   rating: numeric("rating", { precision: 3, scale: 2 }).default('0'),
+  review_count: integer("review_count").default(0),
+  kennel_avatar_url: text("kennel_avatar_url"),
+  pet_type: varchar("pet_type", { length: 50 }),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -214,6 +217,7 @@ export const activity_logs = pgTable("activity_logs", {
 export const wishlists = pgTable("wishlists", {
   id: uuid("id").primaryKey().defaultRandom(),
   user_id: uuid("user_id").notNull().references(() => users.id),
+  breed_id: uuid("breed_id").references(() => breeds.id),
   listing_id: uuid("listing_id").references(() => listings.id), // optional - for saved listings
   user_breed_id: uuid("user_breed_id").references(() => user_breeds.id), // optional - for saved breeds without listings
   notify_when_available: boolean("notify_when_available").notNull().default(false),

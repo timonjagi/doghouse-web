@@ -49,7 +49,7 @@ interface Breed {
   featured_image_url?: string;
 }
 
-export const ManageBreedDetailView = () => {
+const ManageBreedDetailView = () => {
   const router = useRouter();
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const toast = useToast();
@@ -222,3 +222,4 @@ export const ManageBreedDetailView = () => {
   );
 };
 
+export default ManageBreedDetailView;

@@ -17,6 +17,8 @@ export interface SearchFilters {
   price_max?: string
   location?: string
   featured?: string
+  pet_type?: string
+  listing_type?: string
   rescue?: string
   training?: string
   care?: string
@@ -49,6 +51,8 @@ export const parseSearchParams = (query: ParsedUrlQuery): SearchFilters => {
     tab: query.tab?.toString() || SearchType.ALL,
     sort: query.sort?.toString() || '',
     breed: query.breed?.toString() || '',
+    breeds: query.breeds as string[],
+    breed_groups: query.breed_groups as string[],
     size: query.size?.toString() || '',
     price_min: query.price_min?.toString() || '',
     price_max: query.price_max?.toString() || '',
@@ -57,6 +61,8 @@ export const parseSearchParams = (query: ParsedUrlQuery): SearchFilters => {
     rescue: query.rescue?.toString() || '',
     training: query.training?.toString() || '',
     care: query.care?.toString() || '',
+    pet_type: query.pet_type?.toString() || '',
+    listing_type: query.listing_type?.toString() || '',
   }
 
   // Parse array parameters
@@ -98,6 +104,8 @@ export const buildQueryParams = (filters: SearchFilters): Record<string, string>
   if (filters.rescue) params.rescue = filters.rescue
   if (filters.training) params.training = filters.training
   if (filters.care) params.care = filters.care
+  if (filters.pet_type) params.pet_type = filters.pet_type
+  if (filters.listing_type) params.listing_type = filters.listing_type
 
   // Add array parameters
   if (filters.breeds && filters.breeds.length > 0) {
@@ -190,6 +198,8 @@ export const getDefaultFilters = (): SearchFilters => ({
   breed: '',
   breeds: [],
   breed_groups: [],
+  pet_type: '',
+  listing_type: '',
   size: '',
   price_min: '',
   price_max: '',
@@ -272,8 +282,9 @@ export const getRelevantFiltersForTab = (
   }
 }
 
-export const clearSearchParams = (router: NextRouter, currentFilters?: SearchFilters) => {
-  const queryParams = buildQueryParams({ ...(currentFilters || {}), q: '' })
+export const clearSearchParams = () => {
+  const router = useRouter()
+  const queryParams = buildQueryParams({ ...getDefaultFilters(), q: '' })
 
   router.push({
     pathname: '/dashboard/search',

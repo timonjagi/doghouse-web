@@ -1,3 +1,3 @@
-import Inbox from '../../../lib/components/pages/dashboard/inbox';
+import Inbox from '../../../lib/components/pages/inbox';
 
 export default Inbox;

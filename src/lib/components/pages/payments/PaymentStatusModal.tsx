@@ -21,12 +21,9 @@ import {
 import {
   FaCheckCircle,
   FaTimesCircle,
-  FaClock,
-  FaCreditCard,
-  FaMobileAlt,
-  FaUniversity
+  FaClock
 } from 'react-icons/fa';
-import { useVerifyPayment } from '../../hooks/queries/usePayments';
+import { useVerifyPayment } from '../../../hooks/queries/usePayments';
 
 interface PaymentStatusModalProps {
   isOpen: boolean;

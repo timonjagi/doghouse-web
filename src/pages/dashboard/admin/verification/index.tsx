@@ -1,3 +1,3 @@
-import VerificationPage from "lib/components/pages/dashboard/admin/verification";
+import VerificationPage from "lib/components/pages/admin/verification";
 
 export default VerificationPage;

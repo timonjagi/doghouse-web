@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Container,
@@ -49,6 +49,8 @@ import { FiBell, FiEdit, FiEdit2, FiEdit3, FiLogOut } from 'react-icons/fi';
 import { LuDog } from 'react-icons/lu';
 import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 import { KennelForm } from '../../ui/KennelForm';
+import { BreedList } from 'lib/components/ui/BreedList';
+import ListingList from 'lib/components/ui/ListingList';
 
 interface BreederDetailPageProps {
 }
@@ -56,24 +58,33 @@ interface BreederDetailPageProps {
 const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
   const toast = useToast();
   const router = useRouter();
-  const { breederId } = router.query;
+  const [breederId, setBreederId] = useState<string | null>(null);
 
-  if (!breederId || typeof breederId !== 'string') {
-
-    router.push('/dashboard/breeders');
-    return null;
-  }
 
   const { data: user } = useCurrentUser();
 
+
+  useEffect(() => {
+
+    const id = router.query.id as string;
+    if (id) {
+      setBreederId(id);
+    }
+
+    if (!id && user?.id) {
+      setBreederId(user.id);
+    }
+  }, [user, router.query]);
+
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   // Fetch breeder data
-  const { data: breederProfile, isLoading: breederLoading, error: breederError } = useBreederProfile(breederId);
-  const { data: breederUser, isLoading: breederUserLoading, error: breederUserError } = useUserProfileById(breederId);
+  const { data: breederProfile, isLoading: breederLoading, error: breederError } = useBreederProfile(breederId as string);
+  const { data: breederUser, isLoading: breederUserLoading, error: breederUserError } = useUserProfileById(breederId as string);
 
   // Fetch breeder's breeds and listings
-  const { data: breederBreeds, isLoading: breedsLoading } = useUserBreedsFromUser(breederId);
-  const { data: breederListings, isLoading: listingsLoading } = useListingsByOwner(breederId);
+  const { data: breederBreeds, isLoading: breedsLoading } = useUserBreedsFromUser(breederId as string);
+  const { data: breederListings, isLoading: listingsLoading } = useListingsByOwner(breederId as string);
 
   const incrementViewsMutation = useIncrementListingViews();
 
@@ -230,7 +241,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                 <HStack spacing={2}>
                   {/* <Icon as={LuDog} /> */}
 
-                  <Text>Pets ({breederListings?.length || 0})</Text>
+                  <Text>Listings ({breederListings?.length || 0})</Text>
                 </HStack>
 
               </Tab>
@@ -256,40 +267,18 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
             <TabPanels>
               {/* Breeds Tab */}
               <TabPanel px={0}>
-                {breederBreeds?.length > 0 ? (
-                  <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={4}>
-                    {breederBreeds.map((breed, index) => (
-                      <BreedCard key={index} userBreed={breed} userRole="seeker" />
-                    ))}
-                  </SimpleGrid>
-                ) : (
-                  <Box textAlign="center" py={8}>
-                    <Text color="gray.500">
-                      This breeder hasn't added any breeds yet.
-                    </Text>
-                  </Box>
-                )}
+                <BreedList
+                  breeds={breederBreeds}
+                  userRole={user?.role as 'seeker' | 'breeder' | 'admin'}
+                />
               </TabPanel>
 
               {/* Listings Tab */}
               <TabPanel px={0}>
-                {breederListings && breederListings.length > 0 ? (
-                  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-                    {breederListings.map((listing) => (
-                      <ListingCard
-                        key={listing.id}
-                        listing={listing}
-                        handleListingClick={handleListingClick}
-                      />
-                    ))}
-                  </SimpleGrid>
-                ) : (
-                  <Box textAlign="center" py={8}>
-                    <Text color="gray.500">
-                      This breeder doesn't have any listings at the moment.
-                    </Text>
-                  </Box>
-                )}
+                <ListingList
+                  listings={breederListings}
+                  onListingClick={handleListingClick}
+                />
               </TabPanel>
 
               {/* Breeder's Adoptions Tab */}
