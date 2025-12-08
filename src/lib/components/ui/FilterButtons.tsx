@@ -25,6 +25,7 @@ export const DesktopFilterButtons: React.FC<DesktopFilterProps> = ({ onToggle, o
     <Box w="full">
       <Filter
         onFilterChange={onFilterChange}
+
       />
     </Box>
 

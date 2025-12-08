@@ -217,7 +217,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
           </HStack>
         </ColumnHeader>
 
-        <Stack px="3" spacing="6">
+        <Stack px="6" spacing="6">
           {navigationSections.map((section) => (
             <Stack key={section.title} spacing="3">
               {section.title && <NavHeading>{section.title}</NavHeading>}

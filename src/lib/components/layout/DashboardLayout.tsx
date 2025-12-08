@@ -58,7 +58,8 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
             router.pathname.includes('breeders') ? 'Breeder Details' :
               router.pathname.includes('listings') ? 'Listing Details' :
                 router.pathname.includes('adoptions') ? 'Adoption Details' :
-                  'Details'
+                  router.pathname.includes('inbox') ? 'Inbox Chat' :
+                    'Details'
           }
           isScrolled={mainIsScrolled} />
       )}
@@ -103,7 +104,8 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
                 router.pathname.includes('breeders') ? 'Breeder Details' :
                   router.pathname.includes('listings') ? 'Listing Details' :
                     router.pathname.includes('adoptions') ? 'Adoption Details' :
-                      'Details'
+                      router.pathname.includes('inbox') ? 'Inbox Chat' :
+                        'Details'
               }
 
               isScrolled={mainIsScrolled}

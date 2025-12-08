@@ -242,7 +242,12 @@ const UnifiedSearchPage = () => {
               >
                 {categories?.searchTabMenuItems.map((category) => (
                   <Tab key={category.tab} >
-                    {category.label}
+                    {category.label.includes('All') ? 'All' : category.label}
+                    ({category.tab === 'all' && totalResults})
+                    ({category.tab === 'breeds' && availableBreeds.length})
+                    ({category.tab === 'breeders' && breeders.length})
+                    ({category.tab === 'listings' && listings.length})
+
                   </Tab>
                 ))}
               </TabList>
@@ -310,12 +315,15 @@ const UnifiedSearchPage = () => {
                 </Alert>
               ) : totalResults === 0 ? (
 
-                <EmptyView
-                  title="No results found"
-                  description="Try adjusting your search terms or filters."
-                  ctaText="Clear Search"
-                  ctaAction={() => searchService.resetSearchAndFilters()}
-                />
+                <Center h="80vh">
+                  <EmptyView
+                    title="No results found"
+                    description="Try adjusting your search terms or filters."
+                    ctaText="Clear Search"
+                    ctaAction={() => searchService.resetSearchAndFilters()}
+                  />
+
+                </Center>
 
               ) : (
                 <TabPanels>

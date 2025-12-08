@@ -281,7 +281,7 @@ export const CheckboxFilterPopover = BreedGroupFilterPopover;
 
 interface FilterProps {
   onFilterChange: (filters: any) => void
-  onClose: () => void
+  onClose?: () => void
 }
 
 export const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {

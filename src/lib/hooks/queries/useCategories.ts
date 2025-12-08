@@ -242,49 +242,49 @@ export const useCategories = ({ page, tab, isDesktop }: UseCategoriesParams) => 
         categories.breedGroups = [
           {
             label: 'Toy Group',
-            href: '/dashboard/search?tab=breeds&category=toy',
+            href: '/dashboard/search?tab=breeds&breed_groups=toy',
             featuredImage: '/images/breed_groups_3/toy.png',
             description: 'Explore our most popular breeds'
           },
           {
             label: 'Pastoral Group',
-            href: '/dashboard/search?tab=breeds&category=pastoral',
+            href: '/dashboard/search?tab=breeds&breed_groups=pastoral',
             featuredImage: '/images/breed_groups_3/pastoral.png',
             description: 'Explore our most popular breeds'
           },
           {
             label: 'Working Group',
-            href: '/dashboard/search?tab=breeds&category=working',
+            href: '/dashboard/search?tab=breeds&breed_groups=working',
             featuredImage: '/images/breed_groups_3/working.png',
             description: 'Explore our most popular breeds'
           },
           {
             label: 'Terrier Group',
-            href: '/dashboard/search?tab=breeds&category=terrier',
+            href: '/dashboard/search?tab=breeds&breed_groups=terrier',
             featuredImage: '/images/breed_groups_3/terrier.png',
             description: 'Explore our most popular breeds'
           },
           {
             label: 'Gun Dog Group',
-            href: '/dashboard/search?tab=breeds&category=gun-dog',
+            href: '/dashboard/search?tab=breeds&breed_groups=gun-dog',
             featuredImage: '/images/breed_groups_3/gun-dog.png',
             description: 'Explore our most popular breeds'
           },
           {
             label: 'Hound Group',
-            href: '/dashboard/search?tab=breeds&category=hound',
+            href: '/dashboard/search?tab=breeds&breed_groups=hound',
             featuredImage: '/images/breed_groups_3/hound.png',
             description: 'Explore our most popular breeds'
           },
           {
             label: 'Hybrid Group',
-            href: page === 'explore' ? '/explore?tab=breeds&category=hybrid' : '/dashboard/search?tab=breeds&category=hybrid',
+            href: '/dashboard/search?tab=breeds&breed_groups=hybrid',
             featuredImage: '/images/breed_groups_3/hybrid.png',
             description: 'Explore our most popular breeds'
           },
           {
             label: 'Utility Group',
-            href: page === 'explore' ? '/explore?tab=breeds&category=utility' : '/dashboard/search?tab=breeds&category=utility',
+            href: '/dashboard/search?tab=breeds&breed_groups=utility',
             featuredImage: '/images/breed_groups_3/utility.png',
             description: 'Explore our most popular breeds'
           },
