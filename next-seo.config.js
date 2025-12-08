@@ -1,24 +1,24 @@
 /** @type {import('next-seo').DefaultSeoProps} */
 const defaultSEOConfig = {
-  title: "Doghouse",
-  titleTemplate: "%s | Doghouse",
-  defaultTitle: "Doghouse",
+  title: "Pethouse",
+  titleTemplate: "%s | Pethouse",
+  defaultTitle: "Pethouse",
   description: "",
-  canonical: "https://doghouse.co.ke",
+  canonical: "https://pethouse.co.ke",
   openGraph: {
-    url: "https://doghouse.co.ke",
-    title: "Doghouse",
+    url: "https://pethouse.co.ke",
+    title: "Pethouse",
     description: "",
     images: [
       {
         url: "images/logo.png",
-        alt: "Doghouse og-image",
+        alt: "Pethouse og-image",
       },
     ],
-    site_name: "Doghouse",
+    site_name: "Pethouse",
   },
   twitter: {
-    handle: "@doghousekenya",
+    handle: "@pethouse_ea",
     cardType: "summary_large_image",
   },
 };

@@ -25,7 +25,7 @@ import { Loader } from 'lib/components/ui/Loader';
 import { useUserProfile } from 'lib/hooks/queries/useUserProfile';
 import { useBreederProfile, useUpsertBreederProfile } from 'lib/hooks/queries/useBreederProfile';
 import { NextSeo } from 'next-seo';
-import { BreederProfile, User } from '../../../../db/schema';
+import { BreederProfile, User } from '../../db/schema';
 
 interface KennelFormData {
   kennel_name: string;

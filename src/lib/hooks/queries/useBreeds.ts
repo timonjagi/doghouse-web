@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-import { Breed } from '../../../../db/schema';
+import { Breed } from '../../db/schema';
 // Query to get all breeds
 export const useBreeds = () => {
   return useQuery({

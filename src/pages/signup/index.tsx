@@ -1,3 +1,3 @@
-import Signup from "lib/pages/signup";
+import Signup from "lib/components/pages/signup";
 
 export default Signup;

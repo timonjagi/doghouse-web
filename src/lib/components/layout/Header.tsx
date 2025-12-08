@@ -87,19 +87,12 @@ const Header = () => {
                 <Button
                   rounded="full"
                   as={Link}
-                  aria-current={pathname.includes("breeds") ? "page" : false}
-                  href="/breeds"
+                  aria-current={pathname.includes("explore") ? "page" : false}
+                  href="/explore"
                 >
-                  Breeds
+                  Explore
                 </Button>
-                <Button
-                  rounded="full"
-                  as={Link}
-                  aria-current={pathname.includes("breeder") ? "page" : false}
-                  href="/breeders"
-                >
-                  Breeders
-                </Button>
+
                 <Button
                   rounded="full"
                   as={Link}

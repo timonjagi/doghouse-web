@@ -1,9 +1,9 @@
-import { Box, SimpleGrid, useColorModeValue as mode } from '@chakra-ui/react'
+import { Badge, Box, SimpleGrid, useColorModeValue as mode } from '@chakra-ui/react'
 import * as React from 'react'
 import { useRouter } from 'next/router'
 import { NavAction } from './NavAction'
 import { items } from './NavItemIcons'
-import { useCurrentUser, useUserProfile } from 'lib/hooks/queries'
+import { useCurrentUser, useUnreadNotificationsCount, useUserProfile } from 'lib/hooks/queries'
 
 export const MobileBottomNav = () => {
   const router = useRouter()
@@ -17,6 +17,7 @@ export const MobileBottomNav = () => {
   React.useEffect(() => {
     setCurrentRoute(router.pathname);
   }, [router.pathname])
+  const { data: unreadCount } = useUnreadNotificationsCount(user?.id);
 
 
   return (
@@ -37,7 +38,21 @@ export const MobileBottomNav = () => {
             icon={item.icon}
             href={item.href}
             isActive={currentRoute === item.href}
-          />
+          >
+            {unreadCount > 0 && item.href.includes('inbox') && (
+              <Badge
+                rounded="full"
+                variant="subtle"
+                colorScheme="brand"
+                size="sm"
+                position="absolute"
+                top="-3"
+                right="-3"
+              >
+                {unreadCount}
+              </Badge>
+            )}
+          </NavAction.Mobile>
         ))}
       </SimpleGrid>
     </Box>

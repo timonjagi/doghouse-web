@@ -1,7 +1,6 @@
 import {
   Box,
   Flex,
-  Link,
   SimpleGrid,
   Stack,
   Text,
@@ -9,6 +8,7 @@ import {
 } from '@chakra-ui/react'
 import * as React from 'react'
 import { NavFeaturedImage } from './NavFeaturedImage'
+import Link from 'next/link'
 
 const DesktopNavCategorySubmenu = ({ data }: { data: any }) => {
   return (
@@ -21,7 +21,7 @@ const DesktopNavCategorySubmenu = ({ data }: { data: any }) => {
             </Text>
             <Stack spacing="4" align="flex-start">
               {data.category.links.map((link, i) => (
-                <Link key={i}>{link.label}</Link>
+                <Link key={i} href={link.href}>{link.label}</Link>
               ))}
             </Stack>
           </Box>
@@ -31,7 +31,7 @@ const DesktopNavCategorySubmenu = ({ data }: { data: any }) => {
             </Text>
             <Stack spacing="4" align="flex-start">
               {data.featured.links.map((link, i) => (
-                <Link key={i}>{link.label}</Link>
+                <Link key={i} href={link.href}>{link.label}</Link>
               ))}
             </Stack>
           </Box>
@@ -40,11 +40,13 @@ const DesktopNavCategorySubmenu = ({ data }: { data: any }) => {
           <NavFeaturedImage
             label={data.products[0].label}
             imageUrl={data.products[0].imageUrl}
+            href={data.products[0].href}
           />
           <NavFeaturedImage
             width=""
             label={data.products[1].label}
             imageUrl={data.products[1].imageUrl}
+            href={data.products[1].href}
           />
         </Stack>
       </Flex>
@@ -62,6 +64,7 @@ const MobileNavCategorySubmenu = ({ data }: { data: any }) => (
       bottomOffset="3"
       label={data.products[0].label}
       imageUrl={data.products[0].imageUrl}
+      href={data.products[0].href || '#'}
     />
     <Stack spacing="10" mt="10">
       <Box>
@@ -70,7 +73,7 @@ const MobileNavCategorySubmenu = ({ data }: { data: any }) => (
         </Text>
         <SimpleGrid columns={2} spacing="4">
           {data.category.links.map((link) => (
-            <Link key={link.label} href={link.url}>
+            <Link key={link.label} href={link.href || '#'}>
               {link.label}
             </Link>
           ))}
@@ -82,7 +85,7 @@ const MobileNavCategorySubmenu = ({ data }: { data: any }) => (
         </Text>
         <SimpleGrid columns={2} spacing="4">
           {data.featured.links.map((link) => (
-            <Link key={link.label} href={link.url}>
+            <Link key={link.label} href={link.href}>
               {link.label}
             </Link>
           ))}

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-import { Application } from '../../../../db/schema';
+import { Application } from '../../db/schema';
 
 // Extended Application type with related data
 export interface ApplicationWithListing extends Application {

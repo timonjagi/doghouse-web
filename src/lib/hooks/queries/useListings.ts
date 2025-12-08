@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-import { Listing } from '../../../../db/schema';
+import { Listing } from '../../db/schema';
 
 interface CreateListingData {
   title: string;
@@ -111,7 +111,6 @@ export const useListings = (filters?: {
           name
         )
         `);
-      console.log('Fetching listings with filters:', filters);
 
       // Apply type filter
       if (filters?.type) {
@@ -240,15 +239,20 @@ export const usePopularListings = (limit: number = 6) => {
           ),
           users (
             display_name,
-            profile_photo_url
+            profile_photo_url,
+            breeder_profiles (
+              kennel_name,
+              kennel_location
+            )
           )
         `)
-        // .eq('status', 'available')
         .order('view_count', { ascending: false })
         .order('updated_at', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
+
+      console.log('Popular listings:', data);
       return data || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -279,10 +283,14 @@ export const useNewListings = (limit: number = 6) => {
           ),
           users (
             display_name,
-            profile_photo_url
+            profile_photo_url,
+            breeder_profiles (
+              kennel_name,
+              kennel_location
+            )
           )
         `)
-        .eq('status', 'available')
+        // .eq('status', 'available')
         .order('created_at', { ascending: false })
         .limit(limit);
 

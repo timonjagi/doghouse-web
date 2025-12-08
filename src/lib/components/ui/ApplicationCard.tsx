@@ -60,7 +60,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
 
   const handleViewDetails = () => {
-    router.push(`/dashboard/applications/${application.id}`);
+    router.push(`/dashboard/adoptions/${application.id}`);
   };
 
   const breedName = application.listings.breeds?.name || 'Unknown Breed';

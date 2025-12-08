@@ -1,3 +1,3 @@
-import Settings from "lib/pages/dashboard/account/settings";
+import Settings from "lib/components/pages/account/settings";
 
 export default Settings;

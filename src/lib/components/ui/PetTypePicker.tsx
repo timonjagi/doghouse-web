@@ -1,23 +1,30 @@
-import { useColorModeValue, Select, Radio, RadioGroup, Stack } from "@chakra-ui/react";
-import { RadioButton } from "./RadioButton";
-import { RadioButtonGroup } from "./RadioButtonGroup";
+import { Select, Stack, FormLabel } from "@chakra-ui/react";
 
-const PetTypePicker = (state) => {
+interface PetTypePickerProps {
+  value: any;
+  onChange: any;
+  options?: any;
+}
+
+const PetTypePicker = (value: any, onChange: any, options?: any) => {
   return (
-    <RadioGroup
-      value={state.value}
-      onChange={state.onChange}
-      size="md"
-      colorScheme="brand"
-    >
-      <Stack>
-        <Radio value="dog">
-          Dogs</Radio>
-        <Radio value="cat">Cats</Radio>
-      </Stack>
 
-
-    </RadioGroup>
+    <Stack>
+      <FormLabel fontWeight="semibold" as="legend" mb="0">
+        Pet Type
+      </FormLabel>
+      <Select
+        placeholder="Select Pet Type"
+        value={value}
+        onChange={(v) => onChange([v.target.value])}
+      >
+        {options?.map((option) => (
+          <option key={option.label} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </Select>
+    </Stack>
   )
 };
 export default PetTypePicker;

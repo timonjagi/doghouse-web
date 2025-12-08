@@ -1,3 +1,3 @@
-import MatchesPage from "lib/pages/dashboard/matches/matches";
+import MatchesPage from "lib/components/pages/matches/matches";
 
 export default MatchesPage;

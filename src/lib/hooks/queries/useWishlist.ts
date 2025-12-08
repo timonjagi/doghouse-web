@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from 'lib/supabase/client';
-import { Wishlist } from '../../../../db/schema';
+import { Wishlist } from '../../db/schema';
 
 // Get user's wishlist
 export const useWishlist = () => {

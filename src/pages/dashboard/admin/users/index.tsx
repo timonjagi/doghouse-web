@@ -1,3 +1,3 @@
-import UsersPage from "lib/pages/dashboard/admin/users";
+import UsersPage from "lib/components/pages/admin/users";
 
 export default UsersPage;

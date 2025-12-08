@@ -1,4 +1,5 @@
-import { AspectRatio, Box, BoxProps, Image, Link, Skeleton, Text } from '@chakra-ui/react'
+import { AspectRatio, Box, BoxProps, Image, Skeleton, Text } from '@chakra-ui/react'
+import Link from 'next/link'
 import * as React from 'react'
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
     description: string
     imageUrl: string
     id: string
+    href: string
   }
   rootProps?: BoxProps
 }
@@ -15,9 +17,14 @@ export const CategoryCard = (props: Props) => {
   const { category, rootProps } = props
   return (
     <Box position="relative" key={category.name} borderRadius="xl" overflow="hidden" {...rootProps}>
-      <Link>
+      <Link href={category.href}>
         <AspectRatio ratio={1 / 1}>
-          <Image src={category.imageUrl} alt={category.name} fallback={<Skeleton />} />
+          <Image
+            src={category.imageUrl}
+            alt={category.name}
+            fallback={<Skeleton />}
+            objectFit="cover"
+          />
         </AspectRatio>
         <Box
           position="absolute"

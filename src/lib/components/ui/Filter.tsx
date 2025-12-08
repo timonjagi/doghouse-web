@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Popover, Box, Flex, HStack, SimpleGrid, Text, useColorMode as mode, Stack, FormLabel, Button } from '@chakra-ui/react'
+import { Popover, Box, Flex, HStack, SimpleGrid, Text, Stack, FormLabel, Button, Select } from '@chakra-ui/react'
 import { CheckboxFilter } from './CheckboxFilter'
 // import { ColorPicker } from './ColorPicker'
 import { PriceRangePicker } from './PriceRangePicker'
@@ -7,15 +7,28 @@ import { formatPrice } from './PriceTag'
 import { SizePicker } from './SizePicker'
 import { FilterPopoverButton, FilterPopoverContent } from './FilterPopover'
 import { useFilterState } from './useFilterState'
-import { SortbySelect } from './SortBySelect'
 import PetTypePicker from './PetTypePicker'
 import { useRouter } from 'next/router'
 import * as searchService from 'lib/services/searchService'
 
+const petTypeFilters = {
+  defaultValue: 'dog',
+  options: [
+    { label: 'Dog', value: 'dog' },
+    { label: 'Cat', value: 'cat' },
+    { label: 'Rodent', value: 'rodent' },
+    { label: 'Fish', value: 'fish' },
+    { label: 'Reptile', value: 'reptile' },
+    { label: 'Amphibian', value: 'amphibian' },
+    { label: 'Bird', value: 'bird' },
+    { label: 'Other', value: 'other' },
+  ],
+}
+
 const breedFilters = {
   defaultValue: [],
   options: [
-    { label: '', value: 'golden-retriever', count: 25 },
+    { label: 'Golden Retriever', value: 'golden-retriever', count: 25 },
     { label: 'Labrador Retriever', value: 'labrador-retriever', count: 30 },
     { label: 'German Shepherd', value: 'german-shepherd', count: 15 },
     { label: 'Bulldog', value: 'bulldog', count: 12 },
@@ -29,7 +42,6 @@ const breedGroupFilters = {
   defaultValue: [],
   options: [
     { label: 'Toy Group', value: 'toy' },
-    // pastoral, working, terrier, gun dog, hound,  hybrid
     { label: 'Pastoral Group', value: 'pastoral' },
     { label: 'Working Group', value: 'working' },
     { label: 'Terrier Group', value: 'terrier' },
@@ -58,7 +70,7 @@ const priceFilter = {
     currency: 'KES',
     maximumFractionDigits: 0,
   },
-  defaultValue: [5000, 50000],
+  defaultValue: [0, 0],
   min: 1000,
   max: 200000,
 }
@@ -133,7 +145,7 @@ export const PriceFilterPopover = ({ onFilterChange }: { onFilterChange?: (filte
 export const PetTypeFilterPopover = ({ onFilterChange }: { onFilterChange?: (filters: any) => void }) => {
 
   const state = useFilterState({
-    defaultValue: '',
+    defaultValue: petTypeFilters.defaultValue,
     onSubmit: (value) => {
       if (onFilterChange) {
         onFilterChange({ pet_type: value });
@@ -161,7 +173,7 @@ export const PetTypeFilterPopover = ({ onFilterChange }: { onFilterChange?: (fil
 
 export const BreedGroupFilterPopover = ({ onFilterChange }: { onFilterChange?: (filters: any) => void }) => {
   const state = useFilterState({
-    defaultValue: [],
+    defaultValue: breedGroupFilters.defaultValue,
     onSubmit: (value) => {
       if (onFilterChange) {
         onFilterChange({ breed_groups: value });
@@ -267,30 +279,32 @@ export const LocationFilterPopover = ({ onFilterChange }: { onFilterChange?: (fi
 // Alias for backward compatibility and clarity
 export const CheckboxFilterPopover = BreedGroupFilterPopover;
 
-export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ onFilterChange }) => {
+interface FilterProps {
+  onFilterChange: (filters: any) => void
+  onClose?: () => void
+}
 
-
-  const handleReset = () => {
-    const defaultFilters = searchService.getDefaultFilters()
-    // retain search query and tab
-    defaultFilters.q = searchService.parseSearchParams(router.query).q
-    defaultFilters.tab = searchService.parseSearchParams(router.query).tab
-
-    const queryParams = searchService.buildQueryParams(defaultFilters)
-
-    router.push({
-      pathname: '/dashboard/search',
-      query: queryParams
-    }, undefined, { shallow: true })
-  }
+export const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
   const router = useRouter();
-  const [currentPath, setCurrentPath] = useState(router.pathname);
+  const [currentPath, setCurrentPath] = useState(router.query.tab);
 
+  useEffect(() => {
+    setCurrentPath(router.query.tab);
+  }, [router.query.tab]);
 
   const filters = useMemo(() => searchService.parseSearchParams(router.query), [router.query])
 
+  const petTypeFilterState = useFilterState({
+    defaultValue: filters.pet_type,
+    onSubmit: (value) => {
+      if (onFilterChange) {
+        onFilterChange({ pet_type: value });
+      }
+    },
+  });
+
   const breedFilterState = useFilterState({
-    defaultValue: [],
+    defaultValue: filters.breeds,
     onSubmit: (value) => {
       if (onFilterChange) {
         onFilterChange({ breeds: value });
@@ -300,7 +314,7 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
 
 
   const breedGroupFilterState = useFilterState({
-    defaultValue: [],
+    defaultValue: filters.breed_groups,
     onSubmit: (value) => {
       if (onFilterChange) {
         onFilterChange({ breed_groups: value });
@@ -352,13 +366,13 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
             <PetTypeFilterPopover
               onFilterChange={(f) => onFilterChange && onFilterChange(f)}
             />
-            {currentPath.includes('breeds') && (
+            {currentPath?.includes('breeds') && (
               <BreedGroupFilterPopover
                 onFilterChange={(f) => onFilterChange(f)}
               />
             )}
 
-            {currentPath.includes('listings') && (
+            {currentPath?.includes('listings') && (
               <BreedFilterPopover
                 onFilterChange={(f) => onFilterChange(f)}
               />
@@ -366,9 +380,9 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
             <LocationFilterPopover onFilterChange={(f) => onFilterChange(f)} />
 
 
-            {currentPath.includes('listings') && <PriceFilterPopover onFilterChange={(f) => onFilterChange(f)} />}
+            {currentPath?.includes('listings') && <PriceFilterPopover onFilterChange={(f) => onFilterChange(f)} />}
 
-            {currentPath.includes('breeds') && <SizeFilterPopover onFilterChange={(f) => onFilterChange(f)} />}
+            {currentPath?.includes('breeds') && <SizeFilterPopover onFilterChange={(f) => onFilterChange(f)} />}
           </SimpleGrid>
         </Stack>
 
@@ -377,9 +391,9 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
             variant="ghost"
             color="subtle"
             size="sm"
-            onClick={handleReset}
+            onClick={() => searchService.resetFilters(filters)}
           >
-            Reset Filters
+            Reset
           </Button>
         )}
       </Flex>
@@ -387,28 +401,41 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
       {/* Mobile filters */}
       <Stack
         display={{ base: 'flex', md: 'none' }}
-        spacing="2"
+        spacing="4"
         px="8"
       >
-        <PetTypePicker onFilterChange={(f) => onFilterChange(f)} />
 
-        {currentPath.includes('breeds') && <CheckboxFilter
-          hideLabel={false}
-          label="Breed Group"
-          value={breedGroupFilterState.value}
-          onChange={(v: string[]) => breedGroupFilterState.onChange(v)}
-          options={breedGroupFilters.options}
-        />}
+        <PetTypePicker
+          value={petTypeFilterState.value}
+          onChange={petTypeFilterState.onChange}
+          options={petTypeFilters.options}
+        />
 
-        {currentPath.includes('listings') && <CheckboxFilter
+        <Stack>
+          <Text fontWeight="semibold" fontSize="md">Breed Group</Text>
+          <Select
+            placeholder="All Groups"
+            value={breedGroupFilterState.value}
+            onChange={(v) => breedGroupFilterState.onChange([v.target.value])}
+          >
+            {breedGroupFilters.options.map((group) => (
+              <option key={group.label} value={group.value}>
+                {group.label}
+              </option>
+            ))}
+          </Select>
+        </Stack>
+
+        {currentPath?.includes('listings') && <CheckboxFilter
           hideLabel={false}
           label="Breed"
           value={breedFilterState.value}
           onChange={(v: string[]) => breedFilterState.onChange(v)}
           options={breedFilters.options}
+          spacing="4"
         />}
 
-        {currentPath.includes('listings') &&
+        {currentPath?.includes('listings') &&
           <>
             <FormLabel fontWeight="semibold" as="legend" mb="0">
               Price Range
@@ -426,17 +453,23 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
           </>}
 
 
-        {currentPath.includes('breeds') && <SizePicker
-          hideLabel
-          value={sizeFilterState.value}
-          onChange={sizeFilterState.onChange}
-          options={sizeFilter.options}
-        />}
+        {currentPath?.includes('breeds') && <>
+          <FormLabel fontWeight="semibold" as="legend" mb="0">
+            Size
+          </FormLabel>
+
+          <SizePicker
+            hideLabel
+            value={sizeFilterState.value}
+            onChange={sizeFilterState.onChange}
+            options={sizeFilter.options}
+          />
+        </>}
 
 
 
         <FilterActionButtons
-          onClickCancel={handleReset}
+          onClickCancel={onClose}
           onClickApply={() => {
             const mobileFilters: any = {};
             if (breedGroupFilterState.value?.length > 0) {
@@ -453,6 +486,7 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
               mobileFilters.price_max = priceFilterState.value[1];
             }
             onFilterChange(mobileFilters);
+            onClose();
           }}
         />
 

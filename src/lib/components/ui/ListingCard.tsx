@@ -53,7 +53,7 @@ function ListingCard({
 
   return (
 
-    <Box key={listing.id} >
+    <Box key={listing.id} onClick={() => handleListingClick(listing.id)} cursor="pointer">
       {/* Main Photo */}
       {listing.photos && listing.photos.length > 0 && (
         <Box position="relative" height="200px" overflow="hidden" borderRadius="lg">
@@ -63,24 +63,18 @@ function ListingCard({
             objectFit="cover"
             w="full"
             mb={4}
-            height={{
-              base: '7.5rem',
-              lg: '12.5rem',
-            }}
-            fallback={<Skeleton width="full" height={{
-              base: '7.5rem',
-              lg: '12.5rem',
-            }} />}
+            aspectRatio="1/1"
+            fallback={<Skeleton width="full" aspectRatio="1/1" />}
             loading="lazy"
           />
 
           <HStack position="absolute" top={2} right={2} spacing={2}>
             <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
-              {listing.type.charAt(0).toUpperCase() + listing.type.replace('_', ' ').slice(1)}
+              {listing.type.replace('_', ' ')}
             </Badge>
-            {/* <Badge colorScheme={getStatusColor(listing.status)}>
+            <Badge colorScheme={getStatusColor(listing.status)}>
               {listing.status}
-            </Badge> */}
+            </Badge>
           </HStack>
         </Box>
       )}
