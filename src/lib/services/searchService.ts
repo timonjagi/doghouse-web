@@ -224,7 +224,7 @@ export const getDefaultPagination = (): PaginationParams => ({
  */
 export const hasActiveFilters = (filters: SearchFilters): boolean => {
   return !!(
-    filters.q ||
+    // filters.q ||
     filters.sort ||
     filters.breed ||
     filters.size ||

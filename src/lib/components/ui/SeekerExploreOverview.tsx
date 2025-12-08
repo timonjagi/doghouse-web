@@ -122,7 +122,7 @@ const SeekerExploreOverview: React.FC = () => {
                         },
                         products: popularBreeds.map(breed => ({
                           label: breed.name,
-                          href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                          href: `/dashboard/search?q={encodeURIComponent(breed.name)}`,
                           imageUrl: breed.featured_image_url,
                         }))
                       }}
@@ -138,12 +138,12 @@ const SeekerExploreOverview: React.FC = () => {
                           label: 'Popular Breeds',
                           links: popularBreeds?.map(breed => ({
                             label: breed.name,
-                            href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                            href: `/dashboard/search?q=${encodeURIComponent(breed.name)}`,
                           }))
                         },
                         products: popularBreeds.map(breed => ({
                           label: breed.name,
-                          href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                          href: `/dashboard/search?q=${encodeURIComponent(breed.name)}`,
                           imageUrl: breed.featured_image_url,
                         }))
                       }}

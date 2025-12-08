@@ -216,7 +216,12 @@ const UnifiedSearchPage = () => {
           colorScheme="brand"
         >
           <Stack>
-            <HStack>
+            <HStack
+              spacing={0}
+              px={{ base: 2, md: 0 }}
+
+
+            >
               <Button
                 leftIcon={<ChevronLeftIcon boxSize={5} />}
                 variant="ghost"
@@ -224,7 +229,17 @@ const UnifiedSearchPage = () => {
                 p={0}
                 m={0}
               />
-              <TabList>
+              <TabList
+                overflowX="auto"
+                overflowY="hidden"
+                whiteSpace="nowrap"
+                css={{
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                  scrollbarWidth: 'none',
+                }}
+              >
                 {categories?.searchTabMenuItems.map((category) => (
                   <Tab key={category.tab} >
                     {category.label}
@@ -282,8 +297,8 @@ const UnifiedSearchPage = () => {
 
 
             <Stack
-            // bg={{ base: '', md: mode('white', 'gray.800') }}
-            // px={{ base: 2, md: 4 }}
+              // bg={{ base: '', md: mode('white', 'gray.800') }}
+              px={{ base: 2, md: 0 }}
             // my={{ base: 2, md: 4 }}
             >
               {isLoading ? (
@@ -327,15 +342,14 @@ const UnifiedSearchPage = () => {
                               View All Listings →
                             </Button>
                           </Flex>
-                          <SimpleGrid columns={{ base: 2, md: 2, lg: 3, xl: 4 }} spacing={6}>
-                            {listings.slice(0, isDesktop ? 4 : 2).map((listing) => (
-                              <ListingCard
-                                key={listing.id}
-                                listing={listing}
-                                handleListingClick={handleListingClick}
-                              />
-                            ))}
-                          </SimpleGrid>
+                          <ListingList
+                            listings={listings.slice(0, isDesktop ? 4 : 2)}
+                            columns={{ base: 2, lg: 4 }}
+                            showSearch={false}
+                            showFilters={false}
+                            showResultsCount={false}
+                            onListingClick={handleListingClick}
+                          />
                         </Box>
                       )}
 
@@ -353,16 +367,15 @@ const UnifiedSearchPage = () => {
                               View All Breeds →
                             </Button>
                           </Flex>
-                          <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
-                            {availableBreeds.slice(0, isDesktop ? 4 : 2).map((breed) => (
-                              <BreedCard
-                                key={breed.id}
-                                userBreed={breed}
-                                userRole="seeker"
-                                onClick={() => { console.log(breed); handleBreedClick(breed.breeds?.name) }}
-                              />
-                            ))}
-                          </SimpleGrid>
+                          <BreedList
+                            breeds={availableBreeds.slice(0, isDesktop ? 4 : 2)}
+                            columns={{ base: 2, lg: 4 }}
+                            showSearch={false}
+                            showFilters={false}
+                            showResultsCount={false}
+                            showSort={false}
+                            onBreedClick={(breed) => handleBreedClick(breed?.breeds?.name)}
+                          />
                         </Box>
                       )}
 
@@ -381,24 +394,21 @@ const UnifiedSearchPage = () => {
                             </Button>
                           </Flex>
 
-                          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={6}>
-                            <BreedersList
-                              breeders={breeders}
-                            />
-                          </SimpleGrid>
+                          <BreedersList
+                            breeders={breeders.slice(0, isDesktop ? 4 : 2)}
+                            columns={{ base: 2, lg: 4 }}
+                          />
                         </Box>
                       )}
 
                       {/* No Results Message */}
                       {listings.length === 0 && availableBreeds.length === 0 && breeders.length === 0 && (
-                        <Center py={12}>
-                          <VStack spacing={4}>
-                            <Text fontSize="lg" color="gray.500">No results found for "{filters.q}"</Text>
-                            <Text color="gray.400" textAlign="center">
-                              Try adjusting your search terms or browse our categories below.
-                            </Text>
-                          </VStack>
-                        </Center>
+                        <EmptyView
+                          title="No results found"
+                          description="Try adjusting your search terms or filters."
+                          ctaText="Clear Search"
+                          ctaAction={() => searchService.resetSearchAndFilters()}
+                        />
                       )}
                     </VStack>
                   </TabPanel>

@@ -12,7 +12,7 @@ interface CtaCentredOnAccentProps {
 }
 export const CtaCentredOnAccent = ({ title, description, ctaText1, ctaLink1, ctaText2, ctaLink2 }: CtaCentredOnAccentProps) => (
   <Box as="section" bg="bg-accent" color="on-accent">
-    <Container py={{ base: '16', md: '24' }}>
+    <Container py={{ base: '16', md: '24' }} px="4">
       <Stack spacing={{ base: '8', md: '10' }}>
         <Stack spacing={{ base: '4', md: '5' }} align="center">
           <Heading size={useBreakpointValue({ base: 'sm', md: 'md' })}>{title}</Heading>

@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, SimpleGrid } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, SimpleGrid, useBreakpointValue } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -24,6 +24,8 @@ const PublicBreedDetailPage = () => {
   const handleListingClick = (listing) => {
     router.push(`/listings/${listing.id}`);
   };
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const onAddToWishlist = () => {
 
@@ -192,10 +194,13 @@ const PublicBreedDetailPage = () => {
             </Tabs>
           </SimpleGrid>
 
+          {!isMobile && <EthicalQuestionairreCard />}
 
-          <EthicalQuestionairreCard />
         </Stack>
       </Container>
+
+      {isMobile && <EthicalQuestionairreCard />}
+
     </>
   );
 };
