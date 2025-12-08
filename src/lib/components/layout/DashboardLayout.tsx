@@ -22,7 +22,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   const { data: profile } = useUserProfileById(user?.id)
 
   return (
-    <>
+    <RouteGuard>
       {isMobile && profile?.role === 'seeker' && <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." />}
 
       {isMobile && <DashboardHeader />}
@@ -45,11 +45,11 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           <Box height="full">
             {/* {isDesktop && <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." mb="4" />} */}
             {isDesktop && <DashboardHeader />}
-            <RouteGuard>{children}</RouteGuard>
+            {children}
           </Box>
         </Box>
       </Flex>
       {isMobile && <MobileBottomNav />}
-    </>
+    </RouteGuard>
   );
 };

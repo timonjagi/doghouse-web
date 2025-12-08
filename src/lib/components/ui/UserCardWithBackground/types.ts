@@ -1,4 +1,4 @@
-import { User, BreederProfile, SeekerProfile } from '../../../../../db/schema';
+import { User, BreederProfile, SeekerProfile } from '../../../db/schema';
 
 // Base user card data that all roles share
 export interface BaseUserCardData {

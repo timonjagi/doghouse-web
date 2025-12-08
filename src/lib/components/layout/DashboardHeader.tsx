@@ -159,7 +159,7 @@ const DashboardHeader = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
                 searchQuery={searchQuery}
-                onClear={() => searchService.clearSearchParams(router, currentFilters)}
+                onClear={() => searchService.clearSearchParams(currentFilters)}
               />
             </HStack>
           )}
@@ -201,7 +201,7 @@ const DashboardHeader = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
               searchQuery={searchQuery}
-              onClear={() => searchService.clearSearchParams(router, currentFilters)}
+              onClear={() => searchService.clearSearchParams(currentFilters)}
             />
           </HStack>
         )}

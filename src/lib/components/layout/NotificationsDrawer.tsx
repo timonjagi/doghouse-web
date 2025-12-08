@@ -26,7 +26,7 @@ import {
   useMarkAllNotificationsAsRead,
   useUnreadNotificationsCount,
 } from '../../../lib/hooks/queries/useNotifications';
-import { Notification, User } from '../../../../db/schema';
+import { Notification, User } from '../../db/schema';
 interface NotificationsDrawerProps {
   isOpen: boolean;
   onClose: () => void;

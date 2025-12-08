@@ -25,7 +25,7 @@ import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
 
 import { NavSection, getNavigationForRole } from "lib/components/layout/navLinks";
-import { User } from "../../../../db/schema";
+import { User } from "../../db/schema";
 import { BsTiktok } from "react-icons/bs";
 import { useEffect } from "react";
 import { useUserProfileById } from "lib/hooks/queries/useUserProfile";

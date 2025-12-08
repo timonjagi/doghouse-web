@@ -1,4 +1,5 @@
 import { Box, BoxProps, Image, useColorModeValue as mode } from '@chakra-ui/react'
+import Link from 'next/link'
 import * as React from 'react'
 
 type NavFeaturedImageProps = BoxProps & {
@@ -9,12 +10,12 @@ type NavFeaturedImageProps = BoxProps & {
 }
 
 export const NavFeaturedImage = (props: NavFeaturedImageProps) => {
-  const { label, href = '#', imageUrl, bottomOffset = '5', ...rest } = props
+  const { label, href, imageUrl, bottomOffset = '5', ...rest } = props
   return (
     <Box
-      as="a"
+      as={Link}
       display="block"
-      href={href}
+      href={href || '#'}
       height="280px"
       width="full"
       position="relative"

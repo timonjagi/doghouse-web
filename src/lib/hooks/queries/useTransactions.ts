@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-import { Transaction } from '../../../../db/schema';
+import { Transaction } from '../../db/schema';
 
 
 export interface TransactionFilters extends Record<string, unknown> {

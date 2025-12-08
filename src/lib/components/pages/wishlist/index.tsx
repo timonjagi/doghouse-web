@@ -25,7 +25,7 @@ import { FiHeart, FiTrash2, FiMapPin, FiDollarSign } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import { useWishlist, useRemoveFromWishlist, useToggleWishlistNotification } from 'lib/hooks/queries/useWishlist';
 import { formatPrice } from 'lib/components/ui/PriceTag';
-import { Wishlist } from '../../../../../db/schema';
+import { Wishlist } from '../../../db/schema';
 
 const WishlistPage = () => {
   const router = useRouter();

@@ -43,7 +43,7 @@ import { Loader } from 'lib/components/ui/Loader';
 import { MdFilterList } from 'react-icons/md';
 import ListingCard from '../../ui/ListingCard';
 import { Select } from 'chakra-react-select';
-import { User } from '../../../../../db/schema';
+import { User } from '../../../db/schema';
 import { ActiveFilters } from 'lib/components/ui/ActiveFilters';
 
 interface FilterState {
@@ -311,7 +311,10 @@ const Filters = ({ bgColor, filters, updateFilter, breedsLoading, listingsLoadin
       <CardBody>
 
         <Stack spacing={4} direction={{ base: 'column', md: 'row' }}>
-          {isMobile && <ActiveFilters filters={filters} clearFilters={clearFilters!} isMobile={isMobile} />}
+          {isMobile && <ActiveFilters
+            filters={filters}
+            clearFilters={clearFilters!}
+          />}
 
           <FormControl>
             <FormLabel>Breed</FormLabel>

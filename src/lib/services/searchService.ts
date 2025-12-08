@@ -282,9 +282,9 @@ export const getRelevantFiltersForTab = (
   }
 }
 
-export const clearSearchParams = () => {
+export const clearSearchParams = (currentFilters: SearchFilters) => {
   const router = useRouter()
-  const queryParams = buildQueryParams({ ...getDefaultFilters(), q: '' })
+  const queryParams = buildQueryParams({ ...currentFilters, q: '' })
 
   router.push({
     pathname: '/dashboard/search',
@@ -292,3 +292,18 @@ export const clearSearchParams = () => {
   }, undefined, { shallow: true })
 }
 
+export const resetFilters = (currentFilters: SearchFilters) => {
+  const router = useRouter()
+
+  const defaultFilters = getDefaultFilters()
+  // retain search query and tab
+  defaultFilters.q = parseSearchParams(router.query).q
+  defaultFilters.tab = parseSearchParams(router.query).tab
+
+  const queryParams = buildQueryParams(defaultFilters)
+
+  router.push({
+    pathname: '/dashboard/search',
+    query: queryParams
+  }, undefined, { shallow: true })
+}

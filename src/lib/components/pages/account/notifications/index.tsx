@@ -25,7 +25,7 @@ import {
   useMarkAllNotificationsAsRead,
   useUnreadNotificationsCount,
 } from '../../../../hooks/queries/useNotifications';
-import { Notification } from '../../../../../../db/schema';
+import { Notification } from '../../../../db/schema';
 
 export default function NotificationsPage() {
   const router = useRouter();

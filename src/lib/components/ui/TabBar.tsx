@@ -3,13 +3,16 @@ import { DesktopNavItem } from "./NavCategory/NavCategoryMenu"
 import { useColorModeValue as mode } from "@chakra-ui/react"
 
 interface TabBarProps {
-  activeTab: number,
+  activeTab: string,
   menuItems: any
 }
 
 export const TabBar = ({ menuItems, activeTab }: TabBarProps) => {
   return (
     <Box
+      position="sticky"
+      top={0}
+      zIndex="sticky"
       borderTopWidth="1px"
       borderBottomWidth="1px"
       borderColor={mode('gray.200', 'gray.700')}
@@ -17,7 +20,18 @@ export const TabBar = ({ menuItems, activeTab }: TabBarProps) => {
       px={{ base: 2, md: 4 }}
     >
       <Box maxW="8xl" mx="auto">
-        <HStack spacing="8">
+        <HStack
+          spacing="8"
+          overflowX="auto"
+          overflowY="hidden"
+          whiteSpace="nowrap"
+          css={{
+            '&::-webkit-scrollbar': {
+              display: 'none',
+            },
+            scrollbarWidth: 'none',
+          }}
+        >
           {menuItems.map((link) => (
             <DesktopNavItem
               key={link.label}

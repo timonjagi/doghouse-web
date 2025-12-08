@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-import { Notification } from '../../../../db/schema';
+import { Notification } from '../../db/schema';
 // Query to get user notifications
 export const useNotifications = (userId?: string) => {
   return useQuery({

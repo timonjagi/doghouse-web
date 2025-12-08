@@ -6,7 +6,52 @@ import { SubNavLinkGroup } from './SubNavLinkGroup'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import Link from 'next/link'
 
-const DesktopNavMenu = ({ data }: { data: any }) => {
+interface MobileNavMenuProps {
+  data: {
+    category: {
+      label: string;
+      links: any[];
+    };
+    featured: {
+      label: string;
+      links: any[];
+    };
+    products: {
+      label: string;
+      products: {
+        id: string;
+        name: string;
+        price: number | string;
+        currency: string;
+        href: string;
+        imageUrl: string;
+      }[]
+    }[]
+  }
+}
+
+interface DesktopNavMenuProps {
+  data: {
+    category: {
+      label: string;
+      links: any[];
+    };
+    featured: {
+      label: string;
+      links: any[];
+    };
+    products: {
+      id: string;
+      name: string;
+      price: number | string;
+      currency: string;
+      href: string;
+      imageUrl: string;
+    }[]
+  }
+}
+
+const DesktopNavMenu = ({ data }: DesktopNavMenuProps) => {
   return (
     <Box
       px="10"
@@ -42,7 +87,8 @@ const DesktopNavMenu = ({ data }: { data: any }) => {
     </Box>
   )
 }
-const MobileNavMenu = ({ data }: { data: any }) => (
+const MobileNavMenu = ({ data }: MobileNavMenuProps) => (
+
   <Accordion
     allowToggle
     defaultIndex={0}
@@ -86,10 +132,22 @@ const MobileNavMenu = ({ data }: { data: any }) => (
                 <NavProductItem key={product.id} href={product.href} {...product} />
               ))}
             </SimpleGrid>
+
           </Stack>
-          <Box mt="8">
+
+
+          <SimpleGrid
+            spacing="6"
+            columns={2}
+            alignContent="flex-start"
+            width="full"
+
+            overflowY="auto"
+          >
             <SubNavLinkGroup {...data.category} />
-          </Box>
+            <SubNavLinkGroup {...data.featured} />
+          </SimpleGrid>
+
         </NavAccordionItem>
       ))}
     </Stack>

@@ -118,8 +118,9 @@ const SeekerDashboardOverview: React.FC = () => {
                         description: group.description,
                         imageUrl: group.featuredImage,
                         id: index.toString(),
+                        href: group.href
                       }}
-                      rootProps={{ onClick: () => router.push(group.url) }}
+                      rootProps={{ onClick: () => router.push(group.href) }}
                     />
                   ))}
                 </SimpleGrid>
@@ -243,7 +244,7 @@ const SeekerDashboardOverview: React.FC = () => {
                           label: 'Popular',
                           links: popularBreeds?.map(breed => ({
                             label: breed.name,
-                            url: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                            href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
                           }))
                         },
                         products: popularBreeds.map(breed => ({
@@ -254,8 +255,6 @@ const SeekerDashboardOverview: React.FC = () => {
                       }}
                     />
                   }
-
-
                 </Flex>
               </Stack>
             </TabPanel>

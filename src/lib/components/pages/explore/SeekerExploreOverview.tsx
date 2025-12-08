@@ -5,13 +5,13 @@ import { NavMenu } from 'lib/components/ui/NavMenu';
 
 import { Loader } from 'lib/components/ui/Loader';
 import { useSeekerDashboard } from 'lib/hooks/queries/useSeekerDashboard'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as searchService from 'lib/services/searchService'
 import { useRouter } from 'next/router';
 import { useIncrementListingViews } from 'lib/hooks/queries/useListings';
 import { CategoryCard } from 'lib/components/ui/CatetgoryCard';
 import { TabBar } from 'lib/components/ui/TabBar';
-import { useCategories } from 'lib/hooks/queries/useCategories';
+import { Category, useCategories } from 'lib/hooks/queries/useCategories';
 import { BreedersList } from 'lib/components/ui/BreederList';
 
 const SeekerExploreOverview: React.FC = () => {
@@ -19,10 +19,7 @@ const SeekerExploreOverview: React.FC = () => {
   const isDesktop = useBreakpointValue({ base: false, md: true })
 
   // Use the unified dashboard hook to fetch data for dynamic navigation
-  const { data: dashboardData, isLoading, error } = useSeekerDashboard();
-
-  // refactor to usePopularBreeds hook
-  const incrementViewsMutation = useIncrementListingViews()
+  const { data: dashboardData, isLoading: dashboardLoading, error: dashboardError } = useSeekerDashboard();
 
   const popularListings = dashboardData?.popularListings || [];
   const newListings = dashboardData?.newListings || [];
@@ -30,29 +27,46 @@ const SeekerExploreOverview: React.FC = () => {
   const popularBreeds = dashboardData?.popularBreeds || [];
   const featuredBreeders = dashboardData?.featuredBreeders || [];
 
-  const getTabIndex = (tabParam: string | string[] | undefined): number => {
-    switch (tabParam?.toString()) {
-      case 'all': return 0
-      case 'listings': return 1
-      case 'breeds': return 2
-      case 'breeders': return 3
-      default: return 0
-    }
-  }
+  console.log('popularListings', popularListings)
+  console.log('newListings', newListings)
+  console.log('popularBreeds', popularBreeds)
+  console.log('featuredBreeders', featuredBreeders)
 
-  useEffect(() => {
-    handleTabChange(getTabIndex(router.query.tab))
-  }, [router.query.tab])
 
-  const handleTabChange = (tabIndex: number) => {
-    setActiveTab(tabIndex)
-  }
 
   const filters = React.useMemo(() => searchService.parseSearchParams(router.query), [router.query])
 
-  const [activeTab, setActiveTab] = React.useState(getTabIndex(filters.tab))
+  const [activeTab, setActiveTab] = useState(filters.tab)
 
-  const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories('explore', activeTab.toString(), isDesktop);
+  const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories(
+    { page: 'explore', tab: activeTab, isDesktop });
+
+
+  const getTabIndex = (tabParam: string | string[] | undefined): number => {
+    const index = categories?.tabMenuItems.findIndex((item: Category) => item.tab === tabParam);
+
+    console.log('index', index)
+    if (index === -1) {
+      return 0;
+    }
+    return index;
+  }
+  const [activeTabIndex, setActiveTabIndex] = useState(getTabIndex(filters.tab))
+
+
+  useEffect(() => {
+    setActiveTab(router.query.tab as string)
+    setActiveTabIndex(getTabIndex(router.query.tab as string))
+    handleTabChange(getTabIndex(router.query.tab as string))
+  }, [router.query.tab])
+
+  const handleTabChange = (tabIndex: number) => {
+    setActiveTabIndex(tabIndex)
+    window.scrollTo(0, 0)
+  }
+
+  const isLoading = dashboardLoading || categoriesLoading
+  const error = dashboardError || categoriesError
 
   if (isLoading) {
     return <Loader />
@@ -67,12 +81,12 @@ const SeekerExploreOverview: React.FC = () => {
 
 
   return (
-    <Box w="full" bg="bg-surface">
+    <Box w="full" h="full" bg="bg-surface">
 
-      <TabBar menuItems={categories.menuItems} activeTab={activeTab} />
+      <TabBar menuItems={categories.tabMenuItems} activeTab={activeTab} />
 
       <Tabs
-        index={activeTab}
+        index={activeTabIndex}
         onChange={handleTabChange}
         variant="soft-rounded"
         colorScheme="brand"
@@ -80,10 +94,9 @@ const SeekerExploreOverview: React.FC = () => {
 
         <VisuallyHidden>
           <TabList>
-            <Tab>All </Tab>
-            <Tab>Listings </Tab>
-            <Tab>Breeds </Tab>
-            <Tab>Breeders </Tab>
+            {categories.tabMenuItems.map((item, index) => (
+              <Tab key={index}>{item.label}</Tab>
+            ))}
           </TabList>
         </VisuallyHidden>
 
@@ -92,120 +105,6 @@ const SeekerExploreOverview: React.FC = () => {
         >
           <TabPanels>
 
-            <TabPanel p={0}>
-              <Flex flex="1" fontSize="sm" overflow="auto" gap="4" align="top">
-
-
-                <NavCategoryMenu.Mobile
-                  menus={categories.petTypes}
-                />
-
-                <SimpleGrid
-                  spacing="6"
-                  columns={{
-                    base: 2,
-                    md: 4,
-                  }}
-                  alignContent="flex-start"
-                  width="full"
-
-                >
-                  {categories.breedGroups.map((group, index) => (
-                    <CategoryCard
-                      key={index}
-                      category={{
-                        name: group.label,
-                        description: group.description,
-                        imageUrl: group.featuredImage,
-                        id: index.toString(),
-                      }}
-                      rootProps={{ onClick: () => router.push(group.url) }}
-                    />
-                  ))}
-                </SimpleGrid>
-              </Flex>
-            </TabPanel>
-
-            {/* Listings Tab */}
-            <TabPanel p={0}>
-              <Stack>
-
-                <Flex flex="1" fontSize="sm" overflow="auto">
-
-                  {isDesktop && <NavCategoryMenu.Mobile
-                    menus={categories.petTypes}
-                  />}
-
-                  {isDesktop && (
-                    <NavMenu.Desktop
-                      data={{
-                        category: {
-                          label: 'Categories',
-                          links: categories.listings,
-                        },
-                        featured: {
-                          label: 'Popular Breeds',
-                          links: popularBreeds?.map(breed => ({
-                            label: breed.name,
-                            url: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
-                          }))
-                        },
-                        products: popularListings.map(listing => ({
-                          name: listing.title,
-                          price: listing.price,
-                          currency: 'KES',
-                          href: `/dashboard/listings/${listing.id}`,
-                          imageUrl: listing.photos[0],
-                        }))
-                      }}
-                    />
-                  )}
-
-                  {/* Mobile Layout - Categories and Navigation */}
-                  {!isDesktop && <NavMenu.Mobile
-                    data={{
-                      category: {
-                        label: '',
-                        links: [],
-                      },
-                      featured: {
-                        label: 'Popular Breeds',
-                        links: popularBreeds?.map(breed => ({
-                          label: breed.name,
-                          url: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
-                        }))
-                      },
-                      products: [
-                        {
-                          label: 'Dogs',
-                          products: popularListings.map(listing => ({
-                            name: listing.title,
-                            price: listing.price,
-                            currency: 'KES',
-                            href: `/dashboard/listings/${listing.id}`,
-                            imageUrl: listing.photos[0],
-                          }))
-                        },
-                        {
-                          label: 'Cats',
-                          products: newListings.map(listing => ({
-                            name: listing.title,
-                            price: listing.price,
-                            currency: 'KES',
-                            href: `/dashboard/listings/${listing.id}`,
-                            imageUrl: listing.photos[0],
-                          }))
-                        },
-                      ]
-                    }}
-                  />
-                  }
-                </Flex>
-
-              </Stack>
-            </TabPanel>
-
-            {/* Breeds Tab */}
             <TabPanel p={0}>
               <Stack spacing={6}>
 
@@ -236,14 +135,14 @@ const SeekerExploreOverview: React.FC = () => {
                     <NavCategorySubmenu.Mobile
                       data={{
                         category: {
-                          label: 'Categories',
+                          label: 'Popular Breeds',
                           links: categories.breeds,
                         },
                         featured: {
-                          label: 'Popular',
+                          label: 'Popular Breeds',
                           links: popularBreeds?.map(breed => ({
                             label: breed.name,
-                            url: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                            href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
                           }))
                         },
                         products: popularBreeds.map(breed => ({
@@ -260,6 +159,88 @@ const SeekerExploreOverview: React.FC = () => {
               </Stack>
             </TabPanel>
 
+            {/* Listings Tab */}
+            <TabPanel p={0}>
+              <Stack>
+
+                <Flex flex="1" fontSize="sm" overflow="auto">
+
+                  {isDesktop && <NavCategoryMenu.Mobile
+                    menus={categories.petTypes}
+                  />}
+
+                  {isDesktop && (
+                    <NavMenu.Desktop
+                      data={{
+                        category: {
+                          label: 'Categories',
+                          links: categories.listings,
+                        },
+                        featured: {
+                          label: 'Popular Breeds',
+                          links: popularBreeds?.map(breed => ({
+                            label: breed.name,
+                            href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                          }))
+                        },
+                        products: popularListings.map(listing => ({
+                          id: listing.id,
+                          name: listing.title,
+                          price: listing.price,
+                          currency: 'KES',
+                          href: `/dashboard/listings/${listing.id}`,
+                          imageUrl: listing.photos[0],
+                        }))
+                      }}
+                    />
+                  )}
+
+                  {/* Mobile Layout - Categories and Navigation */}
+                  {!isDesktop && <NavMenu.Mobile
+                    data={{
+                      category: {
+                        label: 'Categories',
+                        links: categories.listings,
+                      },
+                      featured: {
+                        label: 'Popular Breeds',
+                        links: popularBreeds?.map(breed => ({
+                          label: breed.name,
+                          url: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                        }))
+                      },
+                      products: [
+                        {
+                          label: 'Dogs',
+                          products: popularListings.map(listing => ({
+                            id: listing.id,
+                            name: listing.title,
+                            price: listing.price,
+                            currency: 'KES',
+                            href: `/dashboard/listings/${listing.id}`,
+                            imageUrl: listing.photos[0],
+                          }))
+                        },
+                        {
+                          label: 'Cats',
+                          products: newListings.map(listing => ({
+                            id: listing.id,
+                            name: listing.title,
+                            price: listing.price,
+                            currency: 'KES',
+                            href: `/dashboard/listings/${listing.id}`,
+                            imageUrl: listing.photos[0],
+                          }))
+                        },
+                      ]
+                    }}
+                  />
+                  }
+                </Flex>
+
+              </Stack>
+            </TabPanel>
+
 
             {/* Breeders Tab */}
             <TabPanel p={0}>
@@ -273,10 +254,65 @@ const SeekerExploreOverview: React.FC = () => {
               />
             </TabPanel>
 
+            <TabPanel p={0}>
+              <Stack spacing={6}>
+
+                <Flex flex="1" fontSize="sm" overflow="auto">
+                  <NavCategoryMenu.Mobile
+                    menus={categories.petTypes}
+                  />
+
+                  {isDesktop ?
+                    <NavCategorySubmenu.Desktop
+                      data={{
+                        category: {
+                          label: 'Categories',
+                          links: categories.breeds,
+                        },
+                        featured: {
+                          label: 'Breed Groups',
+                          links: categories.breedGroups
+                        },
+                        products: popularBreeds.map(breed => ({
+                          label: breed.name,
+                          href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                          imageUrl: breed.featured_image_url,
+                        }))
+                      }}
+                    />
+                    :
+                    // <NavCategorySubmenu.Mobile
+                    //   data={{
+                    //     category: {
+                    //       label: 'Popular Breeds',
+                    //       links: categories.breeds,
+                    //     },
+                    //     featured: {
+                    //       label: 'Popular Breeds',
+                    //       links: popularBreeds?.map(breed => ({
+                    //         label: breed.name,
+                    //         href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                    //       }))
+                    //     },
+                    //     products: popularBreeds.map(breed => ({
+                    //       label: breed.name,
+                    //       href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                    //       imageUrl: breed.featured_image_url,
+                    //     }))
+                    //   }}
+                    // />
+                    null
+                  }
+
+
+                </Flex>
+              </Stack>
+            </TabPanel>
+
           </TabPanels>
         </Stack>
       </Tabs>
-    </Box>
+    </Box >
   )
 
 

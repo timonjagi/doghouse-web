@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-import { UserBreed } from '../../../../db/schema';
+import { UserBreed } from '../../db/schema';
 import { useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 

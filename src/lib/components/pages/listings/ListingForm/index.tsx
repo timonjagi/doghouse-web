@@ -40,7 +40,7 @@ import { useCreateListing, useUpdateListing, useUploadListingPhotos } from '../.
 import ParentInfoStep from './parent-info';
 import HealthInfoStep from './health-info';
 import RequirementsStep from './requirements';
-import { Listing, User, UserBreed } from '../../../../../../db/schema';
+import { Listing, User, UserBreed } from '../../../../db/schema';
 import { supabase } from 'lib/supabase/client';
 
 export interface ListingFormData {

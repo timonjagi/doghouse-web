@@ -11,24 +11,24 @@ const ExplorePage = () => {
   return (
     <>
       <Head >
-        <title>Explore | DogHouse Kenya</title>
+        <title>Explore | Pethouse Kenya</title>
         <meta name="description" content="Browse pets available from verified breeders in Kenya. Connect with professional breeders and find your perfect companion." />
         <meta name="keywords" content="dog breeds Kenya, puppies for sale, cats for sale, dog breeders Kenya, Golden Retriever, Boerboel, Great Dane, verified breeders, pets Kenya, pets for sale, pets breeders Kenya " />
         <meta name="robots" content="index, follow" />
       </Head>
 
       <NextSeo
-        title="Explore | DogHouse Kenya"
+        title="Explore | Pethouse Kenya"
         description="Explore pets available from verified breeders in Kenya. Find Golden Retrievers, Boerboels, Great Danes, and more from reputable breeders across the country."
         openGraph={{
-          title: "Explore | DogHouse Kenya",
+          title: "Explore | Pethouse Kenya",
           description: "Explore pets available from verified breeders in Kenya. Find Golden Retrievers, Boerboels, Great Danes, and more from reputable breeders across the country.",
           images: [
             {
               url: "/images/logo.png",
               width: 1200,
               height: 630,
-              alt: "DogHouse Kenya - Dog Breeds",
+              alt: "Pethouse Kenya - Pet Breeds",
             },
           ],
         }}
@@ -45,19 +45,20 @@ const ExplorePage = () => {
       />
 
 
-      <Container maxW="5xl" bg="bg-surface">
+      <Container maxW="5xl" bg="bg-surface" h="full">
 
         <Stack spacing="8" >
 
           <SeekerExploreOverview />
 
-          <EthicalQuestionairreCard />
+
         </Stack>
 
 
 
-
       </Container>
+      <EthicalQuestionairreCard />
+
     </>
 
   )

@@ -279,22 +279,12 @@ export const LocationFilterPopover = ({ onFilterChange }: { onFilterChange?: (fi
 // Alias for backward compatibility and clarity
 export const CheckboxFilterPopover = BreedGroupFilterPopover;
 
-export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ onFilterChange }) => {
+interface FilterProps {
+  onFilterChange: (filters: any) => void
+  onClose: () => void
+}
 
-
-  const handleReset = () => {
-    const defaultFilters = searchService.getDefaultFilters()
-    // retain search query and tab
-    defaultFilters.q = searchService.parseSearchParams(router.query).q
-    defaultFilters.tab = searchService.parseSearchParams(router.query).tab
-
-    const queryParams = searchService.buildQueryParams(defaultFilters)
-
-    router.push({
-      pathname: '/dashboard/search',
-      query: queryParams
-    }, undefined, { shallow: true })
-  }
+export const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
   const router = useRouter();
   const [currentPath, setCurrentPath] = useState(router.query.tab);
 
@@ -401,7 +391,7 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
             variant="ghost"
             color="subtle"
             size="sm"
-            onClick={handleReset}
+            onClick={() => searchService.resetFilters(filters)}
           >
             Reset Filters
           </Button>
@@ -479,7 +469,7 @@ export const Filter: React.FC<{ onFilterChange: (filters: any) => void }> = ({ o
 
 
         <FilterActionButtons
-          onClickCancel={handleReset}
+          onClickCancel={onClose}
           onClickApply={() => {
             const mobileFilters: any = {};
             if (breedGroupFilterState.value?.length > 0) {

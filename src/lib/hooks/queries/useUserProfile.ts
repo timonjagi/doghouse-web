@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { useAppStore } from '../../stores/useAppStore';
-import { User } from '../../../../db/schema';
+import { User } from '../../db/schema';
 
 interface UpdateProfileData {
   display_name?: string;

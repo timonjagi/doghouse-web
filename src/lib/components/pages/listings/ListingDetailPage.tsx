@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Container,
   Heading,
@@ -39,7 +39,7 @@ import {
 import { ArrowBackIcon, EditIcon, ChatIcon, DeleteIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserBreedsFromUser, useUserProfile } from 'lib/hooks/queries';
-import { useDeleteListing, useListing } from 'lib/hooks/queries/useListings';
+import { useDeleteListing, useIncrementListingViews, useListing } from 'lib/hooks/queries/useListings';
 import { NextSeo } from 'next-seo';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { Loader } from 'lib/components/ui/Loader';
@@ -72,6 +72,13 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id as string);
 
   const deleteListingMutation = useDeleteListing();
+  const incrementViewsMutation = useIncrementListingViews();
+
+  useEffect(() => {
+    if (listing) {
+      incrementViewsMutation.mutateAsync(listing.id);
+    }
+  }, [listing]);
 
   const formatPrice = (price?: number) => {
     if (!price) return 'Price not set';

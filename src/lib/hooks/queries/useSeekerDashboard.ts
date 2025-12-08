@@ -1,7 +1,7 @@
 import { useFeaturedBreeders } from './useBreeders';
 import { useCategories } from './useCategories';
 import { useSeekerDashboardStats } from './useSeekerDashboardStats';
-import { Listing, BreederProfile } from '../../../../db/schema';
+import { Listing, BreederProfile } from '../../db/schema';
 import { useNewListings, usePopularListings } from './useListings';
 import { usePopularBreeds } from './useBreeds';
 import { useRouter } from 'next/router';
@@ -16,10 +16,10 @@ export interface SeekerDashboardData {
 
 export const useSeekerDashboard = () => {
   // Use individual hooks that manage their own caching and loading states
-  const { data: popularBreeds = [], isLoading: breedsLoading, error: breedsError } = usePopularBreeds(12);
-  const { data: popularListings = [], isLoading: popularLoading, error: popularError } = usePopularListings(4);
-  const { data: newListings = [], isLoading: newLoading, error: newError } = useNewListings(6);
-  const { data: featuredBreeders = [], isLoading: breedersLoading, error: breedersError } = useFeaturedBreeders(4);
+  const { data: popularBreeds, isLoading: breedsLoading, error: breedsError } = usePopularBreeds(12);
+  const { data: popularListings, isLoading: popularLoading, error: popularError } = usePopularListings(4);
+  const { data: newListings, isLoading: newLoading, error: newError } = useNewListings(4);
+  const { data: featuredBreeders, isLoading: breedersLoading, error: breedersError } = useFeaturedBreeders(4);
   const { data: stats, isLoading: statsLoading, error: statsError } = useSeekerDashboardStats();
 
   // Combine loading states

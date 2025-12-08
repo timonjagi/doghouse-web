@@ -248,7 +248,7 @@ const UnifiedSearchPage = () => {
 
                         {searchService.hasActiveFilters(filters) && <ActiveFilters
                           filters={filters}
-                          clearFilters={() => searchService.clearSearchParams()}
+                          clearFilters={() => searchService.resetFilters(filters)}
                         />}
                       </>
 
@@ -535,8 +535,8 @@ const UnifiedSearchPage = () => {
           <Filter
             onFilterChange={(newFilters) => {
               handleSearch(filters.q || '', { ...newFilters })
-              onClose()
             }}
+            onClose={onClose}
           />
         </DrawerContent>
       </Drawer>

@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { FiUpload, FiTrash2 } from 'react-icons/fi';
 import { useUploadProfilePhoto, useUpdateUserProfile } from 'lib/hooks/queries';
-import { User } from '../../../../db/schema';
+import { User } from '../../db/schema';
 
 interface ProfilePhotoUploadProps {
   userProfile: User;

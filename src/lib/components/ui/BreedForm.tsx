@@ -23,7 +23,7 @@ import { Dropzone } from "./Dropzone";
 import { supabase } from "lib/supabase/client";
 import breedsData from "../../data/breeds_with_group_and_traits.json";
 import { Select } from "chakra-react-select";
-import { UserBreed } from "../../../../db/schema";
+import { UserBreed } from "../../db/schema";
 
 interface BreedFormProps {
   isOpen: boolean;
