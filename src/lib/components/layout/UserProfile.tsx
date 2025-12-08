@@ -59,10 +59,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ profile, onClose }) =>
     <HStack spacing="3" px="2">
       <Avatar name={profile?.display_name} src={profile?.avatar_url} boxSize="10" />
       <Box>
-        <Text color="on-accent" fontWeight="medium" fontSize="sm">
+        <Text fontWeight="medium" fontSize="sm">
           {profile?.display_name}
         </Text>
-        <Text color="on-accent-muted" fontSize="sm">
+        <Text color="muted" fontSize="sm">
           {profile?.email}
         </Text>
       </Box>
@@ -76,7 +76,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ profile, onClose }) =>
           variant="link"
           cursor="pointer"
           minW={0}
-          color="on-accent"
+          color="brand"
         >
 
           <MenuList>

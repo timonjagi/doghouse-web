@@ -1,11 +1,9 @@
-import { Alert, AlertIcon, SimpleGrid, Text, Center, Button, Link } from "@chakra-ui/react";
+import { Alert, AlertIcon, SimpleGrid } from "@chakra-ui/react";
 import { Loader } from "lib/components/ui/Loader";
-import { useBreedersForBreed } from "lib/hooks/queries/useUserBreeds";
-import { BreederCard } from "./BreederCard";
-import { ArrowRightIcon } from "@chakra-ui/icons";
-import { UserCardWithBackground } from "lib/components/ui/UserCardWithBackground";
 import { UserCardWithRating } from "./UserCardWithRating/UserCardWithRating";
 import { useRouter } from "next/router";
+import { EmptyView } from "./EmptyView";
+import * as searchService from "lib/services/searchService";
 
 interface BreedersListProps {
   // Optional: fetch data internally for a specific breed
@@ -20,7 +18,11 @@ interface BreedersListProps {
   columns?: { base?: number; md?: number; lg?: number; xl?: number };
   spacing?: number | { base?: number; md?: number; lg?: number };
   emptyMessage?: string;
+  emptyDescription?: string;
   showLoader?: boolean;
+  emptyActionLabel?: string;
+  emptyActionIcon?: any;
+  emptyAction?: () => void;
 }
 
 export const BreedersList: React.FC<BreedersListProps> = ({
@@ -30,8 +32,12 @@ export const BreedersList: React.FC<BreedersListProps> = ({
   error: externalError,
   columns = { base: 1, md: 2 },
   spacing = 4,
-  emptyMessage = "No breeders found.",
-  showLoader = true
+  emptyMessage,
+  emptyDescription,
+  showLoader = true,
+  emptyAction,
+  emptyActionLabel = "Clear Search",
+  emptyActionIcon = null
 }) => {
   const breeders = externalBreeders;
   const isLoading = externalIsLoading;
@@ -54,9 +60,13 @@ export const BreedersList: React.FC<BreedersListProps> = ({
 
   if (!breeders || breeders.length === 0) {
     return (
-      <Center py={8}>
-        <Text color="gray.500">{emptyMessage}</Text>
-      </Center>
+      <EmptyView
+        title={emptyMessage}
+        description={emptyDescription}
+        ctaText={emptyActionLabel}
+        ctaAction={emptyAction}
+        ctaIcon={emptyActionIcon}
+      />
     );
   }
 

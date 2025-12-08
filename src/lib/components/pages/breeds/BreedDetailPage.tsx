@@ -1,17 +1,17 @@
-import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, Button, SimpleGrid } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, SimpleGrid } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
 import { useBreedByName } from "lib/hooks/queries";
 import { BreedersList } from "lib/components/ui/BreederList";
-import { BreedListings } from "lib/components/ui/BreedListings";
 import { Loader } from "lib/components/ui/Loader";
 import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import { Rating } from "../../ui/BreedInfo";
 import { useListingsForBreed } from "lib/hooks/queries/useListings";
-import { ArrowBackIcon } from "@chakra-ui/icons";
 import { NextSeo } from 'next-seo';
-import WhatsIncluded from "../../ui/WhatsIncluded";
+import ListingList from "lib/components/ui/ListingList";
+import EthicalQuestionairreCard from "lib/components/ui/EthicalQuestionairreCard";
+import { FiHeart } from "react-icons/fi";
 
 const PublicBreedDetailPage = () => {
   const router = useRouter();
@@ -20,6 +20,14 @@ const PublicBreedDetailPage = () => {
   const { data: breed, isLoading: isLoadingBreed, error: errorLoadingBreed } = useBreedByName(breedName?.replace(/-/g, " "));
 
   const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForBreed(breed?.id);
+
+  const handleListingClick = (listing) => {
+    router.push(`/listings/${listing.id}`);
+  };
+
+  const onAddToWishlist = () => {
+
+  }
 
   if (isLoadingBreed) {
     return (
@@ -64,33 +72,23 @@ const PublicBreedDetailPage = () => {
         <Stack
           spacing="8"
         >
-          <HStack align="center">
-            <Button
-              leftIcon={<ArrowBackIcon boxSize={5} />}
-              variant="ghost"
-              onClick={() => router.back()}
-              p={0}
-            >
-            </Button>
 
-            <Heading
-              size={{ base: "xs", md: "sm" }}
-              textTransform="capitalize"
-            >
-              {breed?.name}
-            </Heading>
-
-          </HStack>
+          <Heading
+            size={{ base: "xs", md: "sm" }}
+            textTransform="capitalize"
+          >
+            {breed?.name}
+          </Heading>
 
 
-          <Stack flex="1" spacing="6" direction={{ base: "column", md: "row-reverse" }}>
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
             <Gallery
               rootProps={{ flex: "1", flexGrow: 1, minHeight: "100%", }}
               images={[{ src: breed?.featured_image_url, alt: breed?.name }]}
 
             />
 
-            <Tabs variant='soft-rounded' colorScheme='brand' w={{ base: "full", md: "50vw" }}>
+            <Tabs variant='soft-rounded' colorScheme='brand'>
               <TabList>
                 <Tab>Details</Tab>
                 <Tab>Traits</Tab>
@@ -168,23 +166,34 @@ const PublicBreedDetailPage = () => {
                 </TabPanel>
 
                 <TabPanel>
-                  <BreedListings
+                  <ListingList
                     listings={listingsForBreed}
-                    loading={isLoadingListings}
-                    error={error}
-                    isManaging={false}
+                    onListingClick={handleListingClick}
+                    emptyMessage={`No ${breed?.name} listings found`}
+                    emptyDescription="Add to wishlist to get notified when new listings are added."
+                    showEmptyAction={true}
+                    onEmptyAction={onAddToWishlist}
+                    emptyActionLabel="Add to Wishlist"
+                    emptyActionIcon={<FiHeart />}
                   />
                 </TabPanel>
 
                 <TabPanel>
-                  <BreedersList breed={breed} />
+                  <BreedersList
+                    breed={breed}
+                    emptyMessage={`No ${breed?.name} breeders found`}
+                    emptyDescription="Add to wishlist to get notified when new breeders are added."
+                    emptyActionLabel="Add to Wishlist"
+                    emptyActionIcon={<FiHeart />}
+                    emptyAction={onAddToWishlist}
+                  />
                 </TabPanel>
               </TabPanels>
             </Tabs>
-          </Stack>
+          </SimpleGrid>
 
 
-          <WhatsIncluded />
+          <EthicalQuestionairreCard />
         </Stack>
       </Container>
     </>

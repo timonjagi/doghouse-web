@@ -165,16 +165,6 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
       <Container maxW="7xl" py={{ base: 4, md: 0 }}>
 
-        {!isManaging && <Button
-          leftIcon={<ArrowBackIcon />}
-          variant="ghost"
-          onClick={() => router.back()}
-          mb={4}
-          p={0}
-        >
-          Back to Breeders
-        </Button>}
-
         <VStack spacing={2} align="stretch">
           <Box as="section" pt="20" pb="2" position="relative">
             <Box position="absolute" inset="0" height="32" bg="brand.600" />
@@ -278,6 +268,11 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                 <ListingList
                   listings={breederListings}
                   onListingClick={handleListingClick}
+                  emptyMessage={isManaging ? "No listings added" : "No listings found"}
+                  emptyDescription={isManaging ? "Add listings to your kennel to display them here." : ""}
+                  showEmptyAction={true}
+                  onEmptyAction={() => router.push(`/dashboard/kennel/listings`)}
+                  emptyActionLabel="Add Listing"
                 />
               </TabPanel>
 

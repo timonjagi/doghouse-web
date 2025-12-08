@@ -36,6 +36,7 @@ export const App = () => {
       >
         <Navbar />
       </Box>
+
       <Box
         borderRightWidth="1px"
         width={{
@@ -72,8 +73,10 @@ export const App = () => {
             <ColumnButton leftIcon={<FiRss />}>Subscribe</ColumnButton>
           </HStack>
         </ColumnHeader>
+
         <Sidebar />
       </Box>
+
       <Box
         bg={useColorModeValue('white', 'gray.900')}
         flex="1"

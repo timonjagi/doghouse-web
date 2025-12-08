@@ -33,6 +33,8 @@ import { SearchIcon } from '@chakra-ui/icons';
 import { MdFilterList } from 'react-icons/md';
 import ListingCard from 'lib/components/ui/ListingCard';
 import { Select } from 'chakra-react-select';
+import { EmptyView } from './EmptyView';
+import * as searchService from 'lib/services/searchService';
 
 interface FilterState {
   search: string;
@@ -69,9 +71,11 @@ interface ListingListProps {
 
   // Empty state
   emptyMessage?: string;
+  emptyDescription?: string;
   showEmptyAction?: boolean;
   onEmptyAction?: () => void;
   emptyActionLabel?: string;
+  emptyActionIcon?: any;
 }
 
 export const ListingList: React.FC<ListingListProps> = ({
@@ -87,9 +91,11 @@ export const ListingList: React.FC<ListingListProps> = ({
   breedsLoading = false,
   onListingClick,
   emptyMessage = "No listings found.",
+  emptyDescription = "Clear your search criteria to find listings.",
   showEmptyAction = false,
   onEmptyAction,
-  emptyActionLabel = "Clear Filters"
+  emptyActionLabel = "Clear Filters",
+  emptyActionIcon = null
 }) => {
   const bgColor = useColorModeValue('white', 'gray.800');
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -177,16 +183,13 @@ export const ListingList: React.FC<ListingListProps> = ({
 
   if (!listings || listings.length === 0) {
     return (
-      <Center py={12}>
-        <VStack spacing={4}>
-          <Text fontSize="lg" color="gray.500">{emptyMessage}</Text>
-          {showEmptyAction && onEmptyAction && (
-            <Button variant="outline" onClick={onEmptyAction}>
-              {emptyActionLabel}
-            </Button>
-          )}
-        </VStack>
-      </Center>
+      <EmptyView
+        title={emptyMessage}
+        description={emptyDescription}
+        ctaText={emptyActionLabel}
+        ctaAction={onEmptyAction}
+        ctaIcon={emptyActionIcon}
+      />
     );
   }
 

@@ -1,80 +1,180 @@
 import {
-  Divider,
+  Box,
+  Button,
   Flex,
+  HStack,
+  Icon,
   Stack,
+  Link,
   Text,
   useBreakpointValue,
   useColorModeValue as mode,
-  Box,
-  Button,
+  Progress,
 } from "@chakra-ui/react";
-import * as React from "react";
-import {
-  FiBook,
-  FiFacebook,
-  FiHelpCircle,
-  FiHome,
-  FiInfo,
-  FiInstagram,
-  FiMessageSquare,
-  FiSettings,
-  FiTwitter,
-} from "react-icons/fi";
-import { Logo } from "./Logo";
-import { NavButton } from "./NavButton";
 import { useRouter } from "next/router";
-
-import { NavSection, getNavigationForRole } from "lib/components/layout/navLinks";
+import { useEffect, useState } from "react";
+import { FiArrowUpRight, FiHelpCircle, FiSettings, FiX } from "react-icons/fi";
+import { ColumnHeader, ColumnIconButton } from "./Column";
+import { Logo } from "./Logo";
+import { NavSection, getNavigationForRole } from "./navLinks";
 import { User } from "../../db/schema";
-import { BsTiktok } from "react-icons/bs";
-import { useEffect } from "react";
 import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
 import { useCurrentUser } from "lib/hooks/queries";
-import { LuDog } from "react-icons/lu";
-import { GiDogHouse } from "react-icons/gi";
 import { UserProfile } from "./UserProfile";
+import NextLink from "next/link";
+
+// Logged out navigation links
+const LOGGED_OUT_NAV = {
+  main: [
+    { label: "Home", href: "/", icon: null },
+    { label: "Breeds", href: "/breeds", icon: null },
+    { label: "Breeders", href: "/breeders", icon: null },
+    { label: "Blog", href: "/blog", icon: null },
+  ],
+  sections: [
+    {
+      title: "Company",
+      items: [
+        { label: "About", href: "/about", isExternal: false },
+        { label: "Contact", href: "/contact", isExternal: false },
+      ],
+    },
+    {
+      title: "Socials",
+      items: [
+        { label: "Facebook", href: "https://www.facebook.com/doghousekenya", isExternal: true },
+        { label: "Twitter", href: "https://twitter.com/doghousekenya", isExternal: true },
+        { label: "Instagram", href: "https://instagram.com/doghousekenya", isExternal: true },
+        { label: "TikTok", href: "https://tiktok.com/@doghousekenya", isExternal: true },
+      ],
+    },
+  ],
+};
 
 interface SidebarProps {
   onClose: () => void;
-  navigationSections?: NavSection[];
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
-  const { data: user } = useCurrentUser();
+  const { data: user, isLoading: userLoading } = useCurrentUser();
   const { data: profile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
 
-  // Show loading state while checking auth
-  if (profileLoading) {
+  // Wait for auth check to complete before deciding which sidebar to show
+  // This prevents the flash between logged-out and logged-in views
+  const isAuthLoading = userLoading || (user && profileLoading);
+
+  if (isAuthLoading) {
     return (
-      <></>
+      <Flex as="nav" height="full" direction="column" justify="space-between">
+        {/* Empty shell while loading - maintains layout stability */}
+      </Flex>
     );
   }
 
   return (
-    <Flex
-      flex="1"
-      bg="bg-accent"
-      color="on-accent"
-      maxW={{ base: "full", sm: "xs" }}
-      justify="space-between"
-      width="full"
-      h="full"
-      as="nav"
-      direction="column"
-      overflowY="auto"
-    >
-      {profile?.id && (
+    <Flex as="nav" height="full" direction="column" justify="space-between">
+      {profile?.id ? (
         <LoggedInSidebar profile={profile} onClose={onClose} />
-      )}
-
-      {!profile?.id && (
+      ) : (
         <LoggedOutSidebar onClose={onClose} />
       )}
     </Flex>
   );
 };
 
-// Logged In Sidebar Component
+
+// ============================================
+// NavLink Component (based on Navigation.jsx)
+// ============================================
+interface NavLinkProps {
+  children: React.ReactNode;
+  href: string;
+  icon?: any;
+  isExternal?: boolean;
+  isActive?: boolean;
+  onClick?: () => void;
+}
+
+const NavLink = ({ children, href, icon, isExternal, isActive, onClick }: NavLinkProps) => (
+  <Link
+    as={NextLink}
+    href={href}
+    onClick={onClick}
+    px="2"
+    py="1.5"
+    borderRadius="md"
+    _hover={{
+      bg: mode("gray.100", "gray.700"),
+    }}
+    aria-current={isActive ? "page" : undefined}
+    _activeLink={{
+      bg: "brand.100",
+      color: "brand.700",
+    }}
+  >
+    <HStack justify="space-between">
+      <HStack spacing="3">
+        {icon && <Icon as={icon} />}
+        <Text as="span" fontSize="sm" fontWeight="medium" lineHeight="1.25rem">
+          {children}
+        </Text>
+      </HStack>
+      {isExternal && (
+        <Icon as={FiArrowUpRight} boxSize="4" color={mode("brand.600", "brand.400")} />
+      )}
+    </HStack>
+  </Link>
+);
+
+// ============================================
+// NavHeading Component
+// ============================================
+interface NavHeadingProps {
+  children: React.ReactNode;
+}
+
+const NavHeading = ({ children }: NavHeadingProps) => (
+  <Text
+    as="h4"
+    fontSize="xs"
+    fontWeight="semibold"
+    px="2"
+    lineHeight="1.25"
+    color={mode("gray.600", "gray.400")}
+  >
+    {children}
+  </Text>
+);
+
+// ============================================
+// NavButton Component (for Sign In button)
+// ============================================
+const NavButton = (props: any) => (
+  <Button
+    width="full"
+    borderRadius="0"
+    variant="ghost"
+    size="lg"
+    fontSize="sm"
+    _hover={{
+      bg: mode("brand.100", "brand.700"),
+    }}
+    _active={{
+      bg: mode("brand.200", "brand.600"),
+    }}
+    _focus={{
+      boxShadow: "none",
+    }}
+    _focusVisible={{
+      boxShadow: "outline",
+    }}
+    {...props}
+  />
+);
+
+// ============================================
+// Logged In Sidebar
+// ============================================
 interface LoggedInSidebarProps {
   profile: User;
   onClose: () => void;
@@ -82,235 +182,183 @@ interface LoggedInSidebarProps {
 
 const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) => {
   const router = useRouter();
-  const isMobile = useBreakpointValue({ base: true, md: false });
-  const [navigationSections, setNavigationSections] = React.useState<NavSection[]>([]);
+  const isMobile = useBreakpointValue({ base: true, lg: false });
+  const [navigationSections, setNavigationSections] = useState<NavSection[]>([]);
 
   useEffect(() => {
     if (profile?.role) {
-      const navigationSections = getNavigationForRole(profile.role as any);
-      setNavigationSections(navigationSections);
+      const sections = getNavigationForRole(profile.role as any);
+      setNavigationSections(sections);
     }
-
   }, [profile]);
-  const onClickMenuLink = (link: string) => {
-    router.push(link);
-    if (isMobile && profile?.role === "seeker") onClose();
+
+  const handleNavClick = (href: string) => {
+    router.push(href);
+    if (isMobile) onClose();
   };
 
   return (
-    <Stack
-      py={{ base: "6", sm: "4" }}
-      px={{ base: "4", sm: "6" }}
-      justify="space-between"
-      h="full"
-    >
-      <Stack spacing="2">
+    <>
+      <Stack spacing="3">
+        <ColumnHeader>
+          <HStack spacing="3" justify="space-between" w="full">
 
-        <Logo color="on-accent" />
+            <Logo color="on-brand" />
 
-        <Stack pt={2}>
-          {/* Render dynamic navigation sections */}
+            <ColumnIconButton
+              onClick={onClose}
+              aria-label="Close navigation"
+              icon={<FiX />}
+              display={{
+                base: "inline-flex",
+                lg: "none",
+              }}
+            />
+          </HStack>
+        </ColumnHeader>
+
+        <Stack px="3" spacing="6">
           {navigationSections.map((section) => (
-            <Stack key={section.title} spacing="2">
-              <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-                {section.title}
-              </Text>
+            <Stack key={section.title} spacing="3">
+              {section.title && <NavHeading>{section.title}</NavHeading>}
               <Stack spacing="1">
-                {section.items.map((item) => (
-                  <NavButton
-                    key={item.href}
-                    label={item.label}
-                    icon={item.icon}
-                    onClick={() => onClickMenuLink(item.href)}
-                    aria-current={
-                      router.pathname === item.href ? "page" : "false"
-                    }
-                  //endElement={<Circle size="2" bg="blue.400" />}
 
-                  />
+                {section.items.map((item) => (
+                  <NavLink
+                    key={item.href}
+                    href={item.href}
+                    icon={item.icon}
+                    isActive={router.pathname === item.href}
+                    onClick={() => handleNavClick(item.href)}
+                  >
+                    {item.label}
+                  </NavLink>
                 ))}
               </Stack>
             </Stack>
           ))}
+
+          {/* Extra links */}
+          <Stack spacing="3">
+            <NavHeading>Support</NavHeading>
+            <Stack spacing="1">
+              <NavLink
+                href="/help-center"
+                icon={FiHelpCircle}
+                isActive={router.pathname.includes("/help-center")}
+                onClick={() => handleNavClick("/help-center")}
+              >
+                Help Center
+              </NavLink>
+              <NavLink
+                href="/dashboard/account/settings"
+                icon={FiSettings}
+                isActive={router.pathname.includes("/settings")}
+                onClick={() => handleNavClick("/dashboard/account/settings")}
+              >
+                Settings
+              </NavLink>
+            </Stack>
+          </Stack>
         </Stack>
 
-      </Stack>
-      {/* Account Section */}
-      <Stack
-        spacing="2"
-      >
-        <Divider borderColor="bg-accent-subtle" />
-
-        <Stack>
-          <NavButton
-            label="Help Center"
-            icon={FiHelpCircle}
-            aria-current={
-              router.pathname.includes("/help-center") ? "page" : "false"
-            }
-            onClick={() => onClickMenuLink("/help-center")}
-          />
-          <NavButton
-            label="Settings"
-            icon={FiSettings}
-            onClick={() => onClickMenuLink("/dashboard/account/settings")}
-            aria-current={
-              router.pathname.includes("/settings") ? "page" : "false"
-            }
-          />
-        </Stack>
-
-        <Divider borderColor="bg-accent-subtle" />
-
-        <UserProfile
-          profile={profile}
-          onClose={onClose}
-        />
 
       </Stack>
-    </Stack>
+
+      {/* User Profile at bottom */}
+      <Box borderTopWidth="1px" p="3">
+        <UserProfile profile={profile} onClose={onClose} />
+      </Box>
+    </>
   );
 };
 
-// Logged Out Sidebar Component
+// ============================================
+// Logged Out Sidebar
+// ============================================
 interface LoggedOutSidebarProps {
   onClose: () => void;
 }
 
 const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
   const router = useRouter();
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const isMobile = useBreakpointValue({ base: true, lg: false });
 
-  const onClickMenuLink = (link: string) => {
-    router.push(link);
+  const handleNavClick = (href: string) => {
+    router.push(href);
     if (isMobile) onClose();
   };
 
-  const onClickExternalLink = (link: string) => {
-    window.open(link, '_blank');
+  const handleExternalClick = (href: string) => {
+    window.open(href, "_blank");
     if (isMobile) onClose();
   };
 
   return (
-    <Stack
-      justify="space-between"
-      h="full"
-    >
-      <Stack
-        py={{ base: "6", sm: "8" }}
-        px={{ base: "4", sm: "6" }}
-      >
-        <Logo color="on-accent" />
-
-        <Stack spacing="3" pt={2}>
-          <NavButton
-            label="Home"
-            icon={FiHome}
-            onClick={() => onClickMenuLink("/")}
-          />
-          <NavButton
-            label="About"
-            icon={FiInfo}
-            onClick={() => onClickMenuLink("/about")}
-            aria-current={
-              router.pathname.includes("about") ? "page" : "false"
-            }
-          />
-
-          <NavButton
-            label="Breeds"
-            icon={LuDog}
-            onClick={() => onClickMenuLink("/breeds")}
-            aria-current={
-              router.pathname.includes("breeds") ? "page" : "false"
-            }
-          />
-
-          <NavButton
-            label="Breeders"
-            icon={GiDogHouse}
-            onClick={() => onClickMenuLink("/breeders")}
-            aria-current={
-              router.pathname.includes("breeders") ? "page" : "false"
-            }
-          />
-          <NavButton
-            label="Blog"
-            icon={FiBook}
-            onClick={() => onClickMenuLink("/blog")}
-            aria-current={router.pathname.includes("blog") ? "page" : "false"}
-          />
-          <NavButton
-            label="Contact"
-            icon={FiMessageSquare}
-            onClick={() => onClickMenuLink("/contact")}
-            aria-current={
-              router.pathname.includes("contact") ? "page" : "false"
-            }
-          />
-        </Stack>
-
-        <Stack spacing="3" >
-          <Text fontSize="sm" color="on-accent-muted" fontWeight="medium">
-            Socials
-          </Text>
-          <Stack spacing="3">
-            <NavButton
-              label="Facebook"
-              icon={FiFacebook}
-              isExternal
-              href="https://www.facebook.com/profile.php?id=100012765483528"
-              onClick={() => onClickExternalLink("https://www.facebook.com/profile.php?id=100012765483528")}
+    <>
+      <Stack spacing="3">
+        <ColumnHeader>
+          <HStack spacing="3">
+            <ColumnIconButton
+              onClick={onClose}
+              aria-label="Close navigation"
+              icon={<FiX />}
+              display={{
+                base: "inline-flex",
+                lg: "none",
+              }}
             />
-            <NavButton
-              label="Twitter"
-              icon={FiTwitter}
-              isExternal
-              href="https://twitter.com/doghousekenya"
-              onClick={() => onClickExternalLink("https://twitter.com/doghousekenya")}
-            />
-            <NavButton
-              label="Instagram"
-              icon={FiInstagram}
-              isExternal
-              href="https://instagram.com/doghousekenya"
-              onClick={() => onClickExternalLink("https://instagram.com/doghousekenya")}
-            />
-            <NavButton
-              label="Tiktok"
-              icon={BsTiktok}
-              isExternal
-              href="https://tiktok.com/@doghousekenya"
-              onClick={() => onClickExternalLink("https://tiktok.com/@doghousekenya")}
-            />
+            <Logo color="on-brand" />
+          </HStack>
+        </ColumnHeader>
+
+        <Stack px="3" spacing="6">
+          {/* Main navigation */}
+          <Stack spacing="1">
+            {LOGGED_OUT_NAV.main.map((item) => (
+              <NavLink
+                key={item.href}
+                href={item.href}
+                isActive={router.pathname === item.href}
+                onClick={() => handleNavClick(item.href)}
+              >
+                {item.label}
+              </NavLink>
+            ))}
           </Stack>
+
+          {/* Sections */}
+          {LOGGED_OUT_NAV.sections.map((section) => (
+            <Stack key={section.title} spacing="3">
+              <NavHeading>{section.title}</NavHeading>
+              <Stack spacing="1">
+                {section.items.map((item) => (
+                  <NavLink
+                    key={item.href}
+                    href={item.href}
+                    isExternal={item.isExternal}
+                    isActive={router.pathname === item.href}
+                    onClick={() =>
+                      item.isExternal
+                        ? handleExternalClick(item.href)
+                        : handleNavClick(item.href)
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                ))}
+              </Stack>
+            </Stack>
+          ))}
         </Stack>
       </Stack>
 
+      {/* Sign In button at bottom */}
       <Box borderTopWidth="1px">
-        <Button
-          as="a"
-          width="full"
-          borderRadius="0"
-          variant="ghost-on-accent"
-          size="lg"
-          fontSize="sm"
-          _hover={{
-            bg: mode('brand.100', 'brand.700'),
-          }}
-          _active={{
-            bg: mode('brand.200', 'brand.600'),
-          }}
-          _focus={{
-            boxShadow: 'none',
-          }}
-          _focusVisible={{
-            boxShadow: 'outline',
-          }}
-          href="/login" colorScheme="on-accent"
-        >Log in</Button>
+        <NavButton as="a" href="/login">
+          Sign In
+        </NavButton>
       </Box>
-    </Stack>
+    </>
   );
 };
-

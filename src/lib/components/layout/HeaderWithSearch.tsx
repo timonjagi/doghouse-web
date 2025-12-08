@@ -34,7 +34,7 @@ import { CurrencySelect } from "../ui/CurrencySelect";
 import * as searchService from "lib/services/searchService";
 import { useCurrentUser, useUserProfileById, useUnreadNotificationsCount, useNotifications, useMarkAllNotificationsAsRead } from "lib/hooks/queries";
 
-const DashboardHeader = () => {
+const HeaderWithSearch = () => {
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
@@ -276,4 +276,4 @@ const DashboardHeader = () => {
   );
 };
 
-export default DashboardHeader;
+export default HeaderWithSearch;

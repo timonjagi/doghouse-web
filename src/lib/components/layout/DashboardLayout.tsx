@@ -1,10 +1,15 @@
-import { useBreakpointValue, useDisclosure, Flex, Box } from "@chakra-ui/react";
-import { useUserProfile } from "lib/stores/useAppStore";
+import {
+  useBreakpointValue,
+  Flex,
+  Box,
+} from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import RouteGuard from "../auth/RouteGuard";
 import { TopBanner } from "../ui/TopBanner";
-import DashboardHeader from "./DashboardHeader";
+import HeaderWithSearch from "./HeaderWithSearch";
+import { HeaderWithTitle } from "./HeaderWithTitle";
 import { MobileBottomNav } from "./MobileBottomNav";
-import { Navbar } from "./Navbar";
 import { Sidebar } from "./Sidebar";
 import { ReactNode } from "react";
 import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
@@ -14,41 +19,100 @@ type LayoutProps = {
   children: ReactNode;
 };
 
+// Detail page routes contain dynamic segments like [id], [chatId], [slug]
+const DETAIL_PAGE_PATTERNS = [
+  "/dashboard/inbox/[chatId]",
+  "/dashboard/breeds/[breedName]",
+  "/dashboard/breeds/[id]",
+  "/dashboard/breeders/[id]",
+  "/dashboard/listings/[id]",
+  "/dashboard/adoptions/[id]",
+];
+
 export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
-  const isDesktop = useBreakpointValue({ base: false, md: true });
-  const isMobile = useBreakpointValue({ base: true, md: false });
-  const { onClose } = useDisclosure();
+  const router = useRouter();
+  const isDesktop = useBreakpointValue({ base: false, lg: true });
+  const isMobile = useBreakpointValue({ base: true, lg: false });
   const { user } = useSupabaseAuth();
-  const { data: profile } = useUserProfileById(user?.id)
+  const { data: profile } = useUserProfileById(user?.id);
+  const [mainIsScrolled, setMainIsScrolled] = useState(false);
+
+  const breedName = router.query.breedName;
+
+  // Check if current route is a detail page
+  const isDetailPage = DETAIL_PAGE_PATTERNS.some(
+    (pattern) => router.pathname === pattern
+  );
 
   return (
     <RouteGuard>
-      {isMobile && profile?.role === 'seeker' && <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." />}
+      {isMobile && profile?.role === "seeker" && (
+        <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." />
+      )}
 
-      {isMobile && <DashboardHeader />}
-      <Flex
-        as="section"
-        direction={{ base: "column", md: "row" }}
-        bg="bg-canvas"
-        overflow="auto"
-        h={{ base: profile?.role === 'seeker' ? "calc(100dvh - 230px)" : "calc(100dvh - 128px)", md: "100vh" }}
-        w="100vw"
-        maxW="100vw"
-      >
-        {isDesktop &&
-          // user &&
-          // ['breeder, admin'].includes(user.user_metadata?.role) &&
-          <Sidebar onClose={onClose} />
-        }
+      {isMobile && !isDetailPage && <HeaderWithSearch />}
+      {isMobile && isDetailPage && (
+        <HeaderWithTitle
+          title={breedName as string ||
+            router.pathname.includes('breeds') ? 'Breed Details' :
+            router.pathname.includes('breeders') ? 'Breeder Details' :
+              router.pathname.includes('listings') ? 'Listing Details' :
+                router.pathname.includes('adoptions') ? 'Adoption Details' :
+                  'Details'
+          }
+          isScrolled={mainIsScrolled} />
+      )}
+      <Flex height={{ base: "auto", lg: "100vh" }}>
+        {/* Primary Navigation Sidebar - Desktop only */}
+        <Box
+          height="full"
+          width={{
+            lg: "14rem",
+            xl: "18rem",
+          }}
+          display={{
+            base: "none",
+            lg: "initial",
+          }}
+          overflowY="auto"
+          borderRightWidth="1px"
+        >
+          <Sidebar onClose={() => { }} />
+        </Box>
 
-        <Box bg="bg-canvas" flex="1" overflow="auto" w="full">
-          <Box height="full">
-            {/* {isDesktop && <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." mb="4" />} */}
-            {isDesktop && <DashboardHeader />}
-            {children}
-          </Box>
+        {/* Main Content Area - Children control inner sidebar + main */}
+        <Box
+          flex="1"
+          h={{
+            base: profile?.role === "seeker" && !isDetailPage
+              ? "calc(100dvh - 230px)"
+              : "calc(100dvh - 128px)",
+            lg: "full"
+          }}
+          overflowY="auto"
+          display="flex"
+          flexDirection="column"
+          onScroll={(e) => setMainIsScrolled(e.currentTarget.scrollTop > 32)}
+        >
+          {/* Conditionally render header based on page type */}
+          {isDesktop && !isDetailPage && <HeaderWithSearch />}
+          {isDesktop && isDetailPage && (
+            <HeaderWithTitle
+              title={breedName as string ||
+                router.pathname.includes('breeds') ? 'Breed Details' :
+                router.pathname.includes('breeders') ? 'Breeder Details' :
+                  router.pathname.includes('listings') ? 'Listing Details' :
+                    router.pathname.includes('adoptions') ? 'Adoption Details' :
+                      'Details'
+              }
+
+              isScrolled={mainIsScrolled}
+            />
+          )}
+          {children}
         </Box>
       </Flex>
+
       {isMobile && <MobileBottomNav />}
     </RouteGuard>
   );

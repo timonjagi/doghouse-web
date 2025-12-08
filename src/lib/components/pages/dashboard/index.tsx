@@ -27,6 +27,7 @@ import { NextSeo } from "next-seo";
 import BreederDashboardOverview from "./BreederDashboardOverview";
 import SeekerDashboardOverview from "./SeekerDashboardOverview";
 import AdminDashboardOverview from "./AdminDashboardOverview";
+import SeekerExploreOverview from "../../ui/SeekerExploreOverview";
 
 const DashboardHome = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -62,7 +63,7 @@ const DashboardHome = () => {
       case 'breeder':
         return <BreederDashboardOverview />;
       case 'seeker':
-        return <SeekerDashboardOverview />;
+        return <SeekerExploreOverview />;
       case 'admin':
         return <AdminDashboardOverview />;
       default:

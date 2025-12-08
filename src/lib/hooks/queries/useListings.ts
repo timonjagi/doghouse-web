@@ -111,7 +111,6 @@ export const useListings = (filters?: {
           name
         )
         `);
-      console.log('Fetching listings with filters:', filters);
 
       // Apply type filter
       if (filters?.type) {

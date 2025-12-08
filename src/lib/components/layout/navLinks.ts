@@ -67,12 +67,6 @@ export const navigationConfig: NavigationConfig = {
           ariaLabel: "View kennel"
         },
         {
-          label: "Adoptions",
-          href: "/dashboard/adoptions",
-          icon: LuDog,
-          ariaLabel: "View adoptions"
-        },
-        {
           label: "Matches",
           href: "/dashboard/matches",
           icon: FiUserCheck,
@@ -102,7 +96,7 @@ export const navigationConfig: NavigationConfig = {
 
   seeker: [
     {
-      title: "DASHBOARD",
+      title: "",
       items: [
         {
           label: "Home",
@@ -119,7 +113,7 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "EXPLORE",
+      title: "Explore",
       items: [
 
         {
@@ -127,12 +121,6 @@ export const navigationConfig: NavigationConfig = {
           href: "/dashboard/search",
           icon: FiSearch,
           ariaLabel: "Browse breeds and listings"
-        },
-        {
-          label: "Adoptions",
-          href: "/dashboard/adoptions",
-          icon: LuDog,
-          ariaLabel: "My adoptions"
         },
         {
           label: "Wishlist",
@@ -144,7 +132,7 @@ export const navigationConfig: NavigationConfig = {
       ]
     },
     {
-      title: "ACCOUNT",
+      title: "Account",
       items: [
         {
           label: "Profile",

@@ -64,6 +64,7 @@ export const useCategories = ({ page, tab, isDesktop }: UseCategoriesParams) => 
 
         const categories: { [key: string]: Category[] } = {
           tabMenuItems: [],
+          searchTabMenuItems: [],
           all: [],
           breeds: [],
           breeders: [],
@@ -79,33 +80,64 @@ export const useCategories = ({ page, tab, isDesktop }: UseCategoriesParams) => 
             tab: 'all'
           },
           {
-            label: 'Available Pets',
+            label: 'Pet Listings',
             href: page === 'explore' ? '/explore?tab=listings&category=dogs' : '/dashboard?tab=listings&category=dogs',
             tab: 'listings'
           },
           {
-            label: 'Breeders & Shelters',
+            label: 'Breeders',
             href: page === 'explore' ? '/explore?tab=breeders&category=dogs' : '/dashboard?tab=breeders&category=dogs',
             tab: 'breeders'
           },
           {
-            label: 'Vets & Trainers',
-            href: page === 'explore' ? '/explore?tab=vets&category=dogs' : '/dashboard?tab=vets&category=dogs',
-            tab: 'vets'
+            label: 'Shelters',
+            href: page === 'explore' ? '/explore?tab=shelters&category=dogs' : '/dashboard?tab=shelters&category=dogs',
+            tab: 'shelters'
           },
           {
-            label: 'Lost & Found',
-            href: page === 'explore' ? '/explore?tab=lost&category=dogs' : '/dashboard?tab=lost&category=dogs',
-            tab: 'lost'
+            label: 'Vets',
+            href: page === 'explore' ? '/explore?tab=vets&category=dogs' : '/dashboard?tab=vets&category=dogs',
+            tab: 'vets'
           },
           {
             label: 'Adoption Events',
             href: page === 'explore' ? '/explore?tab=events&category=dogs' : '/dashboard?tab=events&category=dogs',
             tab: 'events'
           },
-
         )
 
+        categories.searchTabMenuItems.push(
+          {
+            label: 'All Categories',
+            href: page === 'explore' ? '/explore?tab=all&category=dogs' : '/dashboard?tab=all&category=dogs',
+            tab: 'all'
+          },
+          {
+            label: 'Pet Listings',
+            href: page === 'explore' ? '/explore?tab=listings&category=dogs' : '/dashboard?tab=listings&category=dogs',
+            tab: 'listings'
+          },
+          {
+            label: 'Breeds',
+            href: page === 'explore' ? '/explore?tab=breeds&category=dogs' : '/dashboard?tab=breeds&category=dogs',
+            tab: 'breeds'
+          },
+          {
+            label: 'Breeders',
+            href: page === 'explore' ? '/explore?tab=breeders&category=dogs' : '/dashboard?tab=breeders&category=dogs',
+            tab: 'breeders'
+          },
+          {
+            label: 'Shelters',
+            href: page === 'explore' ? '/explore?tab=shelters&category=dogs' : '/dashboard?tab=shelters&category=dogs',
+            tab: 'shelters'
+          },
+          {
+            label: 'Vets',
+            href: page === 'explore' ? '/explore?tab=vets&category=dogs' : '/dashboard?tab=vets&category=dogs',
+            tab: 'vets'
+          },
+        )
         categories.listings.push(
           {
             label: 'Featured Pets',
@@ -193,14 +225,9 @@ export const useCategories = ({ page, tab, isDesktop }: UseCategoriesParams) => 
             href: page === 'explore' ? '/explore?category=parrots' : '/dashboard?category=parrots',
           },
           {
-            label: 'Fish',
-            href: page === 'explore' ? '/explore?category=fish' : '/dashboard?category=fish',
-          },
-          {
             label: 'Squirrels',
             href: page === 'explore' ? '/explore?category=squirrels' : '/dashboard?category=squirrels',
           },
-
         ]
 
         if (tab) {

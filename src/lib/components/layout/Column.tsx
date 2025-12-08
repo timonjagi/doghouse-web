@@ -20,7 +20,7 @@ export const ColumnHeader = (props: FlexProps) => (
     top="0"
     px="3"
     align="center"
-    bg={useColorModeValue("white", "gray.800")}
+    bg={useColorModeValue("bg-subtle", "gray.800")}
     color={useColorModeValue("gray.700", "white")}
     {...props}
   />

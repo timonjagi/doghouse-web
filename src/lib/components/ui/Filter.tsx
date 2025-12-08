@@ -393,7 +393,7 @@ export const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
             size="sm"
             onClick={() => searchService.resetFilters(filters)}
           >
-            Reset Filters
+            Reset
           </Button>
         )}
       </Flex>
@@ -486,6 +486,7 @@ export const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
               mobileFilters.price_max = priceFilterState.value[1];
             }
             onFilterChange(mobileFilters);
+            onClose();
           }}
         />
 

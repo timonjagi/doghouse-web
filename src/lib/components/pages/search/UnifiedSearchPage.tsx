@@ -42,8 +42,10 @@ import { ListingList } from '../../ui/ListingList'
 import { BreedList } from '../../ui/BreedList'
 import { BreedersList } from '../../ui/BreederList'
 import { SortbySelect, } from 'lib/components/ui/SortBySelect'
-import { ArrowBackIcon } from '@chakra-ui/icons'
+import { ArrowBackIcon, ChevronLeftIcon } from '@chakra-ui/icons'
 import { ActiveFilters } from 'lib/components/ui/ActiveFilters'
+import { EmptyView } from 'lib/components/ui/EmptyView'
+import { useCategories } from 'lib/hooks/queries/useCategories'
 
 const UnifiedSearchPage = () => {
   const router = useRouter()
@@ -58,6 +60,8 @@ const UnifiedSearchPage = () => {
       case 'listings': return 1
       case 'breeds': return 2
       case 'breeders': return 3
+      case 'shelters': return 4
+      case 'vets': return 5
       default: return 0
     }
   }
@@ -65,7 +69,7 @@ const UnifiedSearchPage = () => {
   const { isOpen, onOpen, onToggle, onClose } = useDisclosure()
 
   const [activeTab, setActiveTab] = useState(getTabIndex(filters.tab))
-  console.log('active tab', activeTab)
+
   // Pagination state for each tab
   const [listingsPage, setListingsPage] = useState(0)
   const [breedsPage, setBreedsPage] = useState(0)
@@ -73,6 +77,10 @@ const UnifiedSearchPage = () => {
 
   const incrementViewsMutation = useIncrementListingViews()
 
+  const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories({
+    page: 'dashboard',
+    tab: 'all'
+  })
   // Sync tab and reset pagination when tab changes
   useEffect(() => {
     const newTabIndex = getTabIndex(filters.tab)
@@ -93,7 +101,7 @@ const UnifiedSearchPage = () => {
   }, [filters.q, filters.sort, filters.breed, filters.size, filters.price_min, filters.price_max, filters.location, filters.breeds, filters.breed_groups])
 
   const handleTabChange = (tabIndex: number) => {
-    const tabNames = ['all', 'listings', 'breeds', 'breeders']
+    const tabNames = ['all', 'listings', 'breeds', 'breeders', 'shelters', 'vets']
     setActiveTab(tabIndex)
 
     // Get relevant filters for the new tab
@@ -114,12 +122,15 @@ const UnifiedSearchPage = () => {
     const updatedFilters: searchService.SearchFilters = {
       ...filters,
       q: query,
-      ...newFilters
+      ...newFilters,
     }
 
     const queryParams = searchService.buildQueryParams(updatedFilters)
 
-    router.push({
+    // preserve tab
+    queryParams.tab = router.query.tab as string;
+
+    router.replace({
       pathname: '/dashboard/search',
       query: queryParams
     }, undefined, { shallow: true })
@@ -129,14 +140,13 @@ const UnifiedSearchPage = () => {
     handleSearch(filters.q || '', newFilters)
 
     const queryParams = searchService.buildQueryParams(newFilters)
+    queryParams.tab = router.query.tab as string;
 
-    router.push({
+    router.replace({
       pathname: '/dashboard/search',
       query: queryParams
     }, undefined, { shallow: true })
   }
-
-
 
   // Use search service to map filters to hook parameters
   const listingsParams = useMemo(
@@ -191,9 +201,9 @@ const UnifiedSearchPage = () => {
 
   const isDesktop = useBreakpointValue({ base: false, md: true })
   const totalResults = listings.length + availableBreeds.length + breeders.length
-  const isLoading = listingsLoading || breedsLoading || breedersLoading
+  const isLoading = listingsLoading || breedsLoading || breedersLoading || categoriesLoading
 
-  const error = listingsError || breedsError
+  const error = listingsError || breedsError || breedersError || categoriesError
 
   return (
     <Container maxW="7xl" mx="auto" >
@@ -205,79 +215,77 @@ const UnifiedSearchPage = () => {
           variant="soft-rounded"
           colorScheme="brand"
         >
-          <Stack
-            spacing={{ base: 2, md: 4 }}
-          >
-
+          <Stack>
             <HStack>
               <Button
-                leftIcon={<ArrowBackIcon boxSize={6} />}
+                leftIcon={<ChevronLeftIcon boxSize={5} />}
                 variant="ghost"
                 onClick={() => router.back()}
                 p={0}
+                m={0}
               />
               <TabList>
-                <Tab>All ({totalResults})</Tab>
-                <Tab>Listings ({listings.length})</Tab>
-                <Tab>Breeds ({availableBreeds.length})</Tab>
-                <Tab>Breeders ({breeders.length})</Tab>
+                {categories?.searchTabMenuItems.map((category) => (
+                  <Tab key={category.tab} >
+                    {category.label}
+                  </Tab>
+                ))}
               </TabList>
             </HStack>
 
+            {activeTab > 0 && (
+              <Box >
+                {
+                  isDesktop ? (
+                    <DesktopFilterButtons
+                      onToggle={onToggle}
+                      onFilterChange={handleFilterChange}
+                    />
+                  ) : (
+
+                    <>
+                      <MobileFilterButtons
+                        onToggle={onToggle}
+                        hasActiveFilters={searchService.hasActiveFilters(filters)}
+                      />
+
+                      {searchService.hasActiveFilters(filters) && <ActiveFilters
+                        filters={filters}
+                        clearFilters={() => searchService.resetFilters(filters)}
+                      />}
+                    </>
+
+                  )}
+
+              </Box>
+            )}
+
+            {isDesktop && activeTab > 0 && (filters.q || searchService.hasActiveFilters(filters)) ? (
+              <HStack spacing={4} justifyContent="space-between">
+                <Text fontSize="sm">
+                  {activeTab === 0 && totalResults + ' result' + (totalResults === 1 ? '' : 's')}
+                  {activeTab === 1 && listings.length + ' result' + (listings.length === 1 ? '' : 's')}
+                  {activeTab === 2 && availableBreeds.length + ' result' + (availableBreeds.length === 1 ? '' : 's')}
+                  {activeTab === 3 && breeders.length + ' result' + (breeders.length === 1 ? '' : 's')}
+                </Text>
+
+                <HStack spacing="4" alignItems="center">
+                  <Text fontSize="sm">Sort by:</Text>
+                  <SortbySelect
+                    maxW="140px"
+                  />
+                </HStack>
+              </HStack>
+            ) : (
+              null
+            )}
+
 
             <Stack
-              bg={{ base: '', md: mode('white', 'gray.800') }}
-              px={{ base: 2, md: 4 }}
-
+            // bg={{ base: '', md: mode('white', 'gray.800') }}
+            // px={{ base: 2, md: 4 }}
+            // my={{ base: 2, md: 4 }}
             >
-              {activeTab > 0 && (
-                <Box ps={{ base: 2, md: 4 }}>
-                  {
-                    isDesktop ? (
-                      <DesktopFilterButtons
-                        onToggle={onToggle}
-                        onFilterChange={handleFilterChange}
-                      />
-                    ) : (
-
-                      <>
-                        <MobileFilterButtons
-                          onToggle={onToggle}
-                          hasActiveFilters={searchService.hasActiveFilters(filters)}
-                        />
-
-                        {searchService.hasActiveFilters(filters) && <ActiveFilters
-                          filters={filters}
-                          clearFilters={() => searchService.resetFilters(filters)}
-                        />}
-                      </>
-
-                    )}
-
-                </Box>
-              )}
-
-              {isDesktop && activeTab > 0 && (filters.q || searchService.hasActiveFilters(filters)) ? (
-                <HStack spacing={4} justifyContent="space-between">
-                  <Text fontSize="sm">
-                    {activeTab === 0 && totalResults + ' result' + (totalResults === 1 ? '' : 's')}
-                    {activeTab === 1 && listings.length + ' result' + (listings.length === 1 ? '' : 's')}
-                    {activeTab === 2 && availableBreeds.length + ' result' + (availableBreeds.length === 1 ? '' : 's')}
-                    {activeTab === 3 && breeders.length + ' result' + (breeders.length === 1 ? '' : 's')}
-                  </Text>
-
-                  <HStack spacing="4" alignItems="center">
-                    <Text fontSize="sm">Sort by:</Text>
-                    <SortbySelect
-                      maxW="140px"
-                    />
-                  </HStack>
-                </HStack>
-              ) : (
-                null
-              )
-              }
-
               {isLoading ? (
                 <Loader />
               ) : error ? (
@@ -286,24 +294,14 @@ const UnifiedSearchPage = () => {
                   Error searching. Please try again.
                 </Alert>
               ) : totalResults === 0 ? (
-                <Center py={12}>
-                  <VStack spacing={4}>
-                    <Text fontSize="lg" color="gray.500">No results found</Text>
-                    <Text color="gray.400" textAlign="center">
-                      Try adjusting your search terms or filters.
-                    </Text>
-                    <HStack spacing={4}>
-                      <Button colorScheme="blue" onClick={() => router.push('/dashboard')}>
-                        Browse Home
-                      </Button>
-                      {!filters.q && (
-                        <Button variant="outline" onClick={() => handleSearch('golden retriever', {})}>
-                          Popular: Golden Retriever
-                        </Button>
-                      )}
-                    </HStack>
-                  </VStack>
-                </Center>
+
+                <EmptyView
+                  title="No results found"
+                  description="Try adjusting your search terms or filters."
+                  ctaText="Clear Search"
+                  ctaAction={() => searchService.resetSearchAndFilters()}
+                />
+
               ) : (
                 <TabPanels>
 
@@ -312,14 +310,14 @@ const UnifiedSearchPage = () => {
                       {/* Search Results Summary */}
 
                       {filters.q && <Box>
-                        <Heading size={{ base: 'xs', lg: 'sm' }}  >Search Results for "{filters.q}"</Heading>
+                        <Heading size={{ base: 'xs', lg: 'xs' }}  >Search Results for "{filters.q}"</Heading>
                       </Box>}
 
                       {/* Listings Section */}
                       {listings.length > 0 && (
                         <Box>
                           <Flex justify="space-between" align="center" mb={4}>
-                            <Heading size={{ base: 'xs', lg: 'sm' }}>Listings ({listings.length})</Heading>
+                            <Heading size="xs">Listings ({listings.length})</Heading>
                             <Button
                               size="sm"
                               variant="link"
@@ -329,7 +327,7 @@ const UnifiedSearchPage = () => {
                               View All Listings →
                             </Button>
                           </Flex>
-                          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={6}>
+                          <SimpleGrid columns={{ base: 2, md: 2, lg: 3, xl: 4 }} spacing={6}>
                             {listings.slice(0, isDesktop ? 4 : 2).map((listing) => (
                               <ListingCard
                                 key={listing.id}
@@ -345,7 +343,7 @@ const UnifiedSearchPage = () => {
                       {availableBreeds.length > 0 && (
                         <Box>
                           <Flex justify="space-between" align="center" mb={4}>
-                            <Heading size={{ base: 'xs', lg: 'sm' }}>Breeds ({availableBreeds.length})</Heading>
+                            <Heading size="xs">Breeds ({availableBreeds.length})</Heading>
                             <Button
                               size="sm"
                               variant="link"
@@ -372,7 +370,7 @@ const UnifiedSearchPage = () => {
                       {breeders.length > 0 && (
                         <Box>
                           <Flex justify="space-between" align="center" mb={4}>
-                            <Heading size={{ base: 'xs', lg: 'sm' }}>Breeders ({breeders.length})</Heading>
+                            <Heading size="xs">Breeders ({breeders.length})</Heading>
                             <Button
                               size="sm"
                               variant="link"
@@ -416,6 +414,12 @@ const UnifiedSearchPage = () => {
                         showResultsCount={false}
                         onListingClick={handleListingClick}
                         emptyMessage="No listings found"
+                        emptyDescription="Clear your search criteria to find listings."
+                        showEmptyAction={true}
+                        onEmptyAction={() => searchService.resetSearchAndFilters()}
+                        emptyActionLabel="Clear Filters"
+                        columns={{ base: 2, md: 2, lg: 3, xl: 4 }}
+                        spacing={4}
                       />
                       {listings.length === 12 && (
                         <Center py={4}>
@@ -490,8 +494,6 @@ const UnifiedSearchPage = () => {
               )}
 
             </Stack>
-
-
 
           </Stack>
         </Tabs>

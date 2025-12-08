@@ -4,11 +4,7 @@ import {
   HStack,
   Heading,
   Text,
-  Image,
   Button,
-  Card,
-  CardBody,
-  CardHeader,
   SimpleGrid,
   useDisclosure,
   useToast,
@@ -28,18 +24,17 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Box,
-  Skeleton,
 } from "@chakra-ui/react";
-import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 import { BreedForm } from "../../ui/BreedForm";
 import { useDeleteUserBreed, useUserBreed } from "lib/hooks/queries/useUserBreeds";
-import { BreedListings } from "../../ui/BreedListings";
 import { useListingsForUserBreed } from "lib/hooks/queries/useListings";
 import { Loader } from "lib/components/ui/Loader";
 import { BreedersList } from "../../ui/BreederList";
 import { FiEdit } from "react-icons/fi";
 import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
+import ListingList from "lib/components/ui/ListingList";
 
 interface Breed {
   id: string;
@@ -69,6 +64,10 @@ const ManageBreedDetailView = () => {
   const deleteUserBreed = useDeleteUserBreed();
 
   const activeListings = listingsForBreed?.filter((listing) => listing.status !== "sold");
+
+  const handleListingClick = (listingId: string) => {
+    router.push(`/dashboard/listings/${listingId}`);
+  };
 
   const handleDeleteBreed = async () => {
     try {
@@ -104,16 +103,6 @@ const ManageBreedDetailView = () => {
 
   return (
     <Container maxW="7xl" py={{ base: 4, md: 0 }} >
-      {isMobile && <Button
-        leftIcon={<ArrowBackIcon />}
-        variant="ghost"
-        onClick={() => router.back()}
-        px={0}
-      >
-        Back to Manage Breeds
-      </Button>}
-
-
       <VStack spacing={6} align="stretch">
 
         <VStack align="stretch" spacing={{ base: 4, md: 6 }}>
@@ -157,8 +146,9 @@ const ManageBreedDetailView = () => {
 
             <Tabs variant='soft-rounded' colorScheme='brand'>
               <TabList>
-
+                <Tab>Overview</Tab>
                 <Tab>Listings</Tab>
+                <Tab>Adoptions</Tab>
                 <Tab>Other Breeders</Tab>
 
               </TabList>
@@ -166,7 +156,15 @@ const ManageBreedDetailView = () => {
               <TabPanels>
 
                 <TabPanel px={0}>
-                  <BreedListings listings={listingsForBreed} loading={isLoadingListings} error={error} isManaging={true} />
+                  <ListingList
+                    listings={listingsForBreed}
+                    onListingClick={handleListingClick}
+                    emptyMessage="No Listings Added"
+                    emptyDescription="Add a listing to your breed."
+                    showEmptyAction={true}
+                    onEmptyAction={onFormOpen}
+                    emptyActionLabel="Add Listing"
+                  />
                 </TabPanel>
 
                 <TabPanel px={0}>

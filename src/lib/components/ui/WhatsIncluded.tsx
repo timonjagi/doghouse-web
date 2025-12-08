@@ -15,26 +15,27 @@ import {
 } from "@chakra-ui/react";
 import { FaHeartbeat } from "react-icons/fa";
 import { FiCheck } from "react-icons/fi";
+import { GiDogHouse } from "react-icons/gi";
 import { MdBlock, MdHighQuality } from "react-icons/md";
 
 export const steps = [
   {
     name: "Health Guarantee",
     description:
-      "Our health guarantee ensures that every puppy is thoroughly vetted and comes with a clean bill of health. We're committed to providing you with a happy and healthy companion.",
+      "Our health guarantee ensures that every pet is thoroughly vetted and comes with a clean bill of health. ",
     icon: FaHeartbeat,
   },
   {
     name: "No Puppy Mills",
     description:
-      "We're dedicated to animal welfare and only work with reputable breeders who prioritize the health and well-being of their puppies. No puppy mills or irresponsible breeding practices here!",
+      "We're dedicated to animal welfare and only work with reputable breeders and shelters who prioritize the health and well-being of their pets.",
     icon: MdBlock,
   },
   {
-    name: "Quality Pedigree",
+    name: "Quality Breeders",
     description:
-      "We have a strong pedigree and are committed to providing quality puppies with a clean bill of health. We're dedicated to providing you with a happy and healthy companion.",
-    icon: MdHighQuality,
+      "We have a strong network of breeders and are committed to providing quality puppies with a clean bill of health. ",
+    icon: GiDogHouse,
   },
 ];
 
@@ -78,10 +79,10 @@ const FeatureCard = (props: any) => {
         }}
         px={{
           base: "6",
-          md: "8",
+          md: "4",
         }}
       >
-        <Stack spacing="8" divider={<StackDivider />}>
+        <Stack spacing="6" divider={<StackDivider />}>
           <Stack spacing="6">
             <Stack spacing="1">
               <Text
@@ -123,7 +124,7 @@ const FeatureCard = (props: any) => {
           <Box
             px={{
               base: "6",
-              md: "8",
+              md: "0",
             }}
             pb="2"
           >
@@ -132,13 +133,18 @@ const FeatureCard = (props: any) => {
               size="lg"
               width="full"
               rounded="full"
-              as={Link}
-              href="/signup"
+              onClick={props.onButtonClick}
+              disabled={props.buttonText !== 'Apply Now'}
             >
-              Start Your Journey
+              {props.buttonText}
             </Button>
           </Box>
         </Stack>
+        {props.buttonSubtext && (
+          <Text color="muted" fontSize="xs" >
+            {props.buttonSubtext}
+          </Text>
+        )}
       </Stack>
     </Box>
   );
@@ -193,7 +199,13 @@ const WhatsIncludedStep = (props: any) => {
   );
 };
 
-const WhatsIncluded = () => {
+interface WhatsIncludedProps {
+  buttonText: string;
+  buttonSubtext: string;
+  onButtonClick: () => void;
+}
+
+const WhatsIncluded = (props: WhatsIncludedProps) => {
   return (
     <Box as="section" py={{ base: "6", md: "8", lg: "16" }}>
       <Container>
@@ -229,7 +241,11 @@ const WhatsIncluded = () => {
               ))}
             </Stack>
 
-            <FeatureCard />
+            <FeatureCard
+              buttonText={props.buttonText}
+              onButtonClick={props.onButtonClick}
+              buttonSubtext={props.buttonSubtext}
+            />
           </Stack>
         </Stack>
       </Container>

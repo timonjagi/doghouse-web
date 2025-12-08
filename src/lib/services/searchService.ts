@@ -1,6 +1,5 @@
-import router, { NextRouter, useRouter } from 'next/router'
+import router from 'next/router'
 import { ParsedUrlQuery } from 'querystring'
-import { useMemo } from 'react'
 
 /**
  * Search filter state interface
@@ -40,6 +39,8 @@ export enum SearchType {
   LISTINGS = 'listings',
   BREEDS = 'breeds',
   BREEDERS = 'breeders',
+  SHELTERS = 'shelters',
+  VETS = 'vets',
 }
 
 /**
@@ -126,8 +127,8 @@ export const mapFiltersToListingsParams = (
   pagination: PaginationParams
 ) => {
   const params: any = {
-    status: 'available',
-    owner_type: 'breeder',
+    // status: 'available',
+    // owner_type: 'breeder',
     page: pagination.page,
     pageSize: pagination.pageSize,
   }
@@ -283,7 +284,6 @@ export const getRelevantFiltersForTab = (
 }
 
 export const clearSearchParams = (currentFilters: SearchFilters) => {
-  const router = useRouter()
   const queryParams = buildQueryParams({ ...currentFilters, q: '' })
 
   router.push({
@@ -293,13 +293,22 @@ export const clearSearchParams = (currentFilters: SearchFilters) => {
 }
 
 export const resetFilters = (currentFilters: SearchFilters) => {
-  const router = useRouter()
 
   const defaultFilters = getDefaultFilters()
   // retain search query and tab
   defaultFilters.q = parseSearchParams(router.query).q
   defaultFilters.tab = parseSearchParams(router.query).tab
 
+  const queryParams = buildQueryParams(defaultFilters)
+
+  router.push({
+    pathname: '/dashboard/search',
+    query: queryParams
+  }, undefined, { shallow: true })
+}
+
+export const resetSearchAndFilters = () => {
+  const defaultFilters = getDefaultFilters()
   const queryParams = buildQueryParams(defaultFilters)
 
   router.push({

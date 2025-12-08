@@ -46,6 +46,7 @@ import { Loader } from 'lib/components/ui/Loader';
 import { supabase } from 'lib/supabase/client';
 import { ApplicationForm } from '../adoptions/ApplicationForm';
 import ListingForm from './ListingForm';
+import WhatsIncluded from 'lib/components/ui/WhatsIncluded';
 
 interface ListingDetailPageProps {
   id: string;
@@ -78,7 +79,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
     if (listing) {
       incrementViewsMutation.mutateAsync(listing.id);
     }
-  }, [listing]);
+  }, []);
 
   const formatPrice = (price?: number) => {
     if (!price) return 'Price not set';
@@ -176,7 +177,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
 
   const isOwner = userProfile?.id === listing.owner_id;
-  const canApply = userProfile?.role === 'seeker' && listing.status === 'available' && !isOwner;
+  const canApply = !isOwner && listing.status === 'available';
 
   const getTitle = () => {
     if (listing.title) return listing.title;
@@ -205,38 +206,16 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
         <Stack spacing={6} >
           <HStack justify="space-between" align="start" wrap="wrap" spacing={4}>
-            <Button
-              leftIcon={<ArrowBackIcon />}
-              variant="ghost"
-              onClick={() => router.back()}
-              p={0}
-            >
-            </Button>
 
             <HStack flex={1}>
-              <Heading size={{ base: 'sm', lg: 'md' }} mb={2}>{
+              <Heading size={{ base: 'xs', lg: 'sm' }} mb={2}>{
                 getTitle()
               }</Heading>
               <Badge colorScheme={getStatusColor(listing.status)}>
                 {formatStatus(listing.status)}
               </Badge>
-              {/* <Text fontSize="sm" color="gray.500">
-                  Listed: {formatDate(listing.created_at.toString())}
-                </Text> */}
+
             </HStack>
-
-
-
-            {!isMobile && canApply && (
-              <Button
-                leftIcon={<ChatIcon boxSize={6} />}
-                colorScheme="brand"
-                size="lg"
-                onClick={onApplicationOpen}
-              >
-                Reserve This Pet
-              </Button>
-            )}
 
             {isOwner && <ButtonGroup>
               <Button
@@ -350,11 +329,11 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
         </AlertDialog>
 
         {/* Application Form Modal */}
-        {canApply && (
-          <ApplicationForm
-            isOpen={isApplicationOpen}
-            onClose={onApplicationClose}
-            listing={listing}
+        {!isOwner && (
+          <WhatsIncluded
+            buttonText={listing.status === 'available' ? 'Apply Now' : 'Not Available'}
+            buttonSubtext={listing.status === 'available' ? 'Apply now to express your interest in this listing' : `This listing has been ${listing.status} and is no longer available. `}
+            onButtonClick={() => onApplicationOpen()}
           />
         )}
 

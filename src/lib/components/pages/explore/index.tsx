@@ -5,7 +5,7 @@ import Head from "next/head";
 import UnifiedSearchPage from "lib/components/pages/search/UnifiedSearchPage";
 import { SearchInput } from "lib/components/layout/SearchInput";
 import SeekerDashboardOverview from "lib/components/pages/dashboard/SeekerDashboardOverview";
-import SeekerExploreOverview from "lib/components/pages/explore/SeekerExploreOverview";
+import SeekerExploreOverview from "lib/components/ui/SeekerExploreOverview";
 
 const ExplorePage = () => {
   return (
@@ -46,14 +46,7 @@ const ExplorePage = () => {
 
 
       <Container maxW="5xl" bg="bg-surface" h="full">
-
-        <Stack spacing="8" >
-
-          <SeekerExploreOverview />
-
-
-        </Stack>
-
+        <SeekerExploreOverview />
 
 
       </Container>

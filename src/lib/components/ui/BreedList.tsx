@@ -30,6 +30,8 @@ import { SortbySelect } from "lib/components/ui/SortBySelect";
 import { MdFilterList } from "react-icons/md";
 import { useRouter } from "next/router";
 import { BreedCard } from "lib/components/ui/BreedCard";
+import { EmptyView } from "./EmptyView";
+import * as searchService from "lib/services/searchService";
 
 // Local types for now - will fix imports later
 interface Breed {
@@ -138,20 +140,14 @@ export const BreedList = ({
     if (isMobile) onClose();
   };
 
-  const getEmptyMessage = () => {
-    if (emptyMessage) return emptyMessage;
-
-    if (userRole === 'breeder') {
-      return "No breeds added yet. Click 'Add Breed' to start offering breeds.";
-    }
-    return "No breeds available at the moment. Check back later for new listings.";
-  };
-
   if (breeds.length === 0) {
     return (
-      <Center py={8}>
-        <Text color="gray.500">{getEmptyMessage()}</Text>
-      </Center>
+      <EmptyView
+        title={userRole === 'seeker' ? 'No breeds found' : 'No breeds available'}
+        description={userRole === 'seeker' ? 'Clear your search criteria to find breeds.' : 'Check back later for new listings.'}
+        ctaText={userRole === 'seeker' ? 'Clear Search' : 'Add Breed'}
+        ctaAction={userRole === 'seeker' ? () => searchService.resetSearchAndFilters() : () => router.push('/dashboard/breeds/add')}
+      />
     );
   }
 
