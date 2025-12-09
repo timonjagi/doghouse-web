@@ -62,8 +62,8 @@ const FeatureCard = (props: any) => {
         lg: "8",
       }}
       px={{
-        base: "6",
-        lg: "8",
+        base: "2",
+        lg: "4",
       }}
       {...props}
     >
@@ -207,7 +207,7 @@ interface WhatsIncludedProps {
 
 const WhatsIncluded = (props: WhatsIncludedProps) => {
   return (
-    <Box as="section" py={{ base: "6", md: "8", lg: "16" }}>
+    <Box as="section" >
       <Container>
         <Stack
           spacing={{
@@ -222,8 +222,8 @@ const WhatsIncluded = (props: WhatsIncludedProps) => {
               md: "row",
             }}
             spacing={{
-              base: "0",
-              lg: "24",
+              base: "6",
+              lg: "12",
             }}
             justify="center"
           >

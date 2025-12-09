@@ -38,24 +38,26 @@ interface CreateKennelData {
   photos?: string[];
 }
 
-// Query to get breeder's profile with kennels
+// Query to get breeder's profile with user breeds
 export const useBreederProfile = (userId?: string) => {
   return useQuery({
     queryKey: ['users', 'breeder-profile', userId] as const,
-    queryFn: async (): Promise<BreederProfile | null> => {
+    queryFn: async (): Promise<(BreederProfile & { userBreedsCount: number; breedNames: string[]; user_breeds: any[] }) | null> => {
       if (!userId) return null;
 
       const { data, error } = await supabase
         .from('breeder_profiles')
         .select(`*, 
-          user_breeds!inner (
-            id,
-            breed_id,
-            created_at,
-            images,
-            breeds (
+          users (
+            user_breeds (
               id,
-              name
+              breed_id,
+              created_at,
+              images,
+              breeds (
+                id,
+                name
+              )
             )
           )
         `)
@@ -63,36 +65,26 @@ export const useBreederProfile = (userId?: string) => {
         .single();
 
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
-      const breederMap = new Map();
+      if (!data) return null;
 
-      data?.forEach((breeder: any) => {
-        const breederId = breeder.id;
-        if (!breederMap.has(breederId)) {
-          breederMap.set(breederId, {
-            ...breeder,
-            userBreedsCount: 0,
-            breedNames: [] as string[],
-          });
+      // Extract user_breeds from the nested users object (single object, not array)
+      const userBreeds = data.users?.user_breeds || [];
+
+      // Collect breed names and count
+      const breedNames: string[] = [];
+      userBreeds.forEach((userBreed: any) => {
+        if (userBreed.breeds?.name) {
+          breedNames.push(userBreed.breeds.name.toLowerCase());
         }
-        const breederData = breederMap.get(breederId);
-
-        // user_breeds is an array - iterate over it
-        if (Array.isArray(breeder.user_breeds)) {
-          breeder.user_breeds.forEach((userBreed: any) => {
-            breederData.userBreedsCount += 1;
-            // Collect breed names for search
-            if (userBreed.breeds?.name) {
-              breederData.breedNames.push(userBreed.breeds.name.toLowerCase());
-            }
-          });
-        }
-
-        breederMap.set(breederId, breederData);
       });
 
-      let results: any = Array.from(breederMap.values());
-
-      return results;
+      // Return the breeder profile with aggregated breed data
+      return {
+        ...data,
+        user_breeds: userBreeds,
+        userBreedsCount: userBreeds.length,
+        breedNames,
+      };
     },
     enabled: !!userId,
   });

@@ -263,49 +263,6 @@ export const useAllAvailableUserBreeds = (
 };
 
 
-// Query to get breeders offering a specific breed
-export const useBreedersForBreed = (breedId: string) => {
-  return useQuery({
-    queryKey: queryKeys.breeds.breedBreeders(breedId),
-    queryFn: async (): Promise<any[]> => {
-
-      const { data: { user } } = await supabase.auth.getUser();
-
-      const { data, error } = await supabase
-        .from('user_breeds')
-        .select(`
-          id,
-          user_id,
-          notes,
-          images,
-          created_at,
-          users(
-            id,
-            profile_photo_url,
-            display_name,
-            breeder_profiles(
-              id,
-              user_id,
-              kennel_name,
-              kennel_location,
-              rating
-            )
-          )
-        `)
-        .eq('breed_id', breedId)
-        .eq('is_owner', true);
-
-      if (error) throw error;
-
-      if (user && user?.user_metadata?.role === 'breeder') {
-        return data?.filter(item => item.user_id !== user.id) || [];
-      }
-      return data || [];
-    },
-    enabled: !!breedId,
-  });
-};
-
 // Mutation to create a new user breed association
 export const useCreateUserBreed = () => {
   const queryClient = useQueryClient();

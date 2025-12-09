@@ -39,6 +39,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   const [mainIsScrolled, setMainIsScrolled] = useState(false);
 
   const breedName = router.query.breedName;
+  const showTopBanner = profile?.role === "seeker";
 
   // Check if current route is a detail page
   const isDetailPage = DETAIL_PAGE_PATTERNS.some(
@@ -47,7 +48,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <RouteGuard>
-      {isMobile && profile?.role === "seeker" && (
+      {isMobile && showTopBanner && (
         <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." />
       )}
 
@@ -67,7 +68,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
       <Flex height={{ base: "auto", lg: "100vh" }}>
         {/* Primary Navigation Sidebar - Desktop only */}
         <Box
-          h={{ base: "calc(100dvh - 64px)", lg: "full" }}
+          h={{ base: showTopBanner ? "calc(100dvh -85px)" : "calc(100dvh - 64px)", lg: "full" }}
           width={{
             lg: "14rem",
             xl: "18rem",
@@ -88,7 +89,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           h={{
             base: profile?.role === "seeker" && !isDetailPage
               ? "calc(100dvh - 230px)"
-              : "calc(100dvh - 128px)",
+              : "calc(100dvh - 160px)",
             lg: "full"
           }}
           overflowY="auto"

@@ -51,7 +51,9 @@ import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 import { KennelForm } from '../../ui/KennelForm';
 import { BreedList, UserBreedWithBreed } from 'lib/components/ui/BreedList';
 import ListingList from 'lib/components/ui/ListingList';
-import { UserBreed } from 'lib/db/schema';
+import { Listing, UserBreed } from 'lib/db/schema';
+import { EmptyView } from 'lib/components/ui/EmptyView';
+import ListingForm from '../listings/ListingForm';
 
 interface BreederDetailPageProps {
 }
@@ -86,6 +88,8 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
   // Fetch breeder's breeds and listings
   const { data: breederBreeds, isLoading: breedsLoading } = useUserBreedsFromUser(breederId as string);
   const { data: breederListings, isLoading: listingsLoading } = useListingsByOwner(breederId as string);
+
+  const { isOpen: isListingFormOpen, onOpen: onListingFormOpen, onClose: onListingFormClose } = useDisclosure();
 
   const incrementViewsMutation = useIncrementListingViews();
 
@@ -147,6 +151,8 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
     router.push(`/dashboard/breeders/${breederId}/breeds/${b?.id}`);
   };
 
+
+
   const handleListingClick = async (listingId: string) => {
     // Increment view count
     try {
@@ -164,6 +170,10 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
   const formatFacilityType = (facilityType: string) => {
     return breederProfile.facility_type.charAt(0).toUpperCase() + breederProfile.facility_type.slice(1).replace('_', ' ').replace('facility', '')
   }
+
+  const activeListings = breederListings?.filter((listing) => listing.status !== "sold");
+  const pastListings = breederListings?.filter((listing) => listing.status === "sold");
+
   return (
     <>
 
@@ -238,16 +248,8 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   <Text>Breeds ({breederBreeds?.length || 0})</Text>
                 </HStack>
               </Tab>
-              <Tab>
-
-
-                <HStack spacing={2}>
-                  <Icon as={FiShoppingBag} />
-
-                  <Text>Listings ({breederListings?.length || 0})</Text>
-                </HStack>
-
-              </Tab>
+              <Tab><HStack><Icon as={FiShoppingBag} /><Text>Active Listings</Text></HStack></Tab>
+              <Tab><HStack><Icon as={FiShoppingBag} /><Text>Past Listings</Text></HStack></Tab>
               {isManaging && <Tab>
                 <HStack spacing={2}>
                   <Icon as={FiUserPlus} />
@@ -282,25 +284,57 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
               {/* Listings Tab */}
               <TabPanel px={0}>
                 <ListingList
-                  listings={breederListings}
+                  listings={activeListings}
                   onListingClick={handleListingClick}
-                  emptyMessage={isManaging ? "No listings added" : "No listings found"}
+                  emptyMessage={isManaging ? "No active listings added" : "No active listings found"}
                   emptyDescription={isManaging ? "Add listings to your kennel to display them here." : `Subscribe to ${breederProfile?.kennel_name} to get notified when they add new listings.`}
                   showEmptyAction={true}
-                  onEmptyAction={isManaging ? () => router.push(`/dashboard/kennel`) : handleSubscribeClick}
+                  onEmptyAction={isManaging ? onListingFormOpen : handleSubscribeClick}
                   emptyActionLabel={isManaging ? "Add Listing" : "Subscribe"}
                   emptyActionIcon={isManaging ? <FiPlus /> : <FiBell />}
                   columns={{ base: 2, md: 3, lg: 4 }}
+                  showFilters={false}
+                  showResultsCount={false}
+                  showSearch={false}
+                />
+              </TabPanel>
+
+              <TabPanel px={0}>
+                <ListingList
+                  listings={pastListings}
+                  onListingClick={handleListingClick}
+                  emptyMessage={isManaging ? "No past listings added" : "No past listings found"}
+                  emptyDescription={isManaging ? "Add listings to your kennel to display them here." : `Subscribe to ${breederProfile?.kennel_name} to get notified when they add new listings.`}
+                  showEmptyAction={true}
+                  onEmptyAction={isManaging ? onListingFormOpen : handleSubscribeClick}
+                  emptyActionLabel={isManaging ? "Add Listing" : "Subscribe"}
+                  emptyActionIcon={isManaging ? <FiPlus /> : <FiBell />}
+                  columns={{ base: 2, md: 3, lg: 4 }}
+                  showFilters={false}
+                  showResultsCount={false}
+                  showSearch={false}
                 />
               </TabPanel>
 
               {/* Breeder's Adoptions Tab */}
-              <TabPanel px={0}>
-
-              </TabPanel>
+              {isManaging && <TabPanel px={0}>
+                <EmptyView
+                  title="No adoptions found"
+                  description="Add a listing to your kennel to display them here."
+                  ctaText="Add Listing"
+                  ctaIcon={<FiPlus />}
+                  ctaAction={onListingFormOpen}
+                />
+              </TabPanel>}
 
               {/* Reviews Tab */}
               <TabPanel px={0}>
+
+                <EmptyView
+                  title="No reviews found"
+                  description="No reviews found for this breeder."
+
+                />
 
               </TabPanel>
             </TabPanels>
@@ -329,6 +363,15 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
             </ModalBody>
           </ModalContent>
         </Modal>
+
+
+        <ListingForm
+          isOpen={isListingFormOpen}
+          onClose={onListingFormClose}
+          userBreeds={breederBreeds}
+          userProfile={breederUser}
+          isEditing={false}
+        />
       </Container>
     </>
   );

@@ -41,6 +41,7 @@ import { useBreederProfile } from "lib/hooks/queries/useBreederProfile";
 import { GiDogHouse } from "react-icons/gi";
 import { BreederCard } from "lib/components/ui/BreederCard";
 import { BreederCard as BreederCard2 } from "lib/components/ui/BreederCard2";
+import { useBreedersForBreed } from "lib/hooks/queries/useBreeders";
 
 interface Breed {
   id: string;
@@ -66,10 +67,10 @@ const ExploreUserBreedDetailView = () => {
 
   const { data: breederProfile, isLoading: breederLoading, error: breederError } = useBreederProfile(userBreed?.user_id as string);
 
-  const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
-  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
+  const { data: otherBreeders, isLoading: isLoadingOtherBreeders, error: otherBreedersError } = useBreedersForBreed(userBreed?.breeds.id);
 
-  const deleteUserBreed = useDeleteUserBreed();
+
+  const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
 
   const activeListings = listingsForBreed?.filter((listing) => listing.status !== "sold");
   const pastListings = listingsForBreed?.filter((listing) => listing.status === "sold");
@@ -143,11 +144,11 @@ const ExploreUserBreedDetailView = () => {
 
                 <TabPanels>
                   <TabPanel px={0}>
-                    {/* <BreederCard
+                    <BreederCard2
                       breeder={breederProfile}
 
 
-                    /> */}
+                    />
                     {/* 
                     <BreederCard
                       breeder={breederProfile}
@@ -183,7 +184,7 @@ const ExploreUserBreedDetailView = () => {
                   </TabPanel>
                   <TabPanel px={0}>
                     <BreedersList
-                      breed={userBreed?.breeds}
+                      breed={otherBreeders}
                       emptyMessage={`No other ${userBreed?.breeds.name} breeders found`}
                       emptyDescription={`To get notified when new ${userBreed?.breeds.name} breeders are added, add ${userBreed?.breeds.name} to wishlist.`}
                       emptyActionLabel={`Add to Wishlist`}
