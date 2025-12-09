@@ -410,7 +410,7 @@ const UnifiedSearchPage = () => {
 
                           <BreedersList
                             breeders={breeders.slice(0, isDesktop ? 4 : 2)}
-                            columns={{ base: 2, lg: 4 }}
+                            columns={{ base: 2, lg: 2, xl: 3 }}
                           />
                         </Box>
                       )}
@@ -496,7 +496,7 @@ const UnifiedSearchPage = () => {
                         breeders={breeders}
                         isLoading={breedersLoading}
                         showLoader={false}
-                        columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
+                        columns={{ base: 1, md: 2, lg: 2, xl: 3 }}
                         spacing={6}
                         emptyMessage="No breeders found"
                       />

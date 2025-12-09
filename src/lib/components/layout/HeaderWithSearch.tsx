@@ -196,8 +196,8 @@ const HeaderWithSearch = () => {
       {!isDesktop && showSearchBar && (
         <HStack flex="1"
 
-          mx={{ base: "2", lg: "4" }}
-          mb={{ base: "2", lg: "4" }}
+          mx={{ base: "4", lg: "4" }}
+          mb={{ base: "4", lg: "4" }}
         >
           <SearchInput
             value={searchQuery}

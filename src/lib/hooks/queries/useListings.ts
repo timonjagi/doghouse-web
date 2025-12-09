@@ -344,11 +344,21 @@ export const useListing = (id: string) => {
             name
           ),
           users (
+            id,
             display_name,
             profile_photo_url,
             breeder_profiles (
               kennel_name,
-              kennel_location
+              kennel_location,
+              rating,
+              verified_at
+            ),
+            user_breeds (
+              id,
+              breeds (
+                id,
+                name
+              )
             )
           )
         `
@@ -357,6 +367,22 @@ export const useListing = (id: string) => {
         .single();
 
       if (error) throw error;
+
+      // Process users data to add userBreedsCount and breedNames for BreederCard2
+      if (data && data.users) {
+        const userBreeds = (data.users as any).user_breeds || [];
+        const breedNames: string[] = [];
+
+        userBreeds.forEach((userBreed: any) => {
+          if (userBreed.breeds?.name) {
+            breedNames.push(userBreed.breeds.name.toLowerCase());
+          }
+        });
+
+        (data.users as any).userBreedsCount = userBreeds.length;
+        (data.users as any).breedNames = breedNames;
+      }
+
       return data;
     },
     enabled: !!id,

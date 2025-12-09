@@ -48,11 +48,12 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
       position="relative"
     >
       {/* Breed Image */}
-      <Box position="relative" height="200px" overflow="hidden">
+      <Box position="relative" overflow="hidden">
         <Image
           src={featuredImage}
           alt={breed.name}
           objectFit="cover"
+          aspectRatio="1/1"
           width="100%"
           height="100%"
           fallback={<Skeleton width="100%" height="100%" />}
@@ -76,7 +77,7 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
 
             {userRole === 'seeker' && userBreed.breeder_count && (
               <HStack spacing={1}>
-                <Icon as={GiDogHouse} color="yellow.400" boxSize={3} />
+                <Icon as={GiDogHouse} color="brand.400" boxSize={3} />
                 <Text fontSize="xs" color="brand.600" fontWeight="medium">
                   {userBreed.breeder_count} breeder{userBreed.breeder_count !== 1 ? 's' : ''}
                 </Text>

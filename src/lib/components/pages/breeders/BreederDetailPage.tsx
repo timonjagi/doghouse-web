@@ -31,7 +31,7 @@ import {
   ModalCloseButton,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { MdLocationOn, MdStar, MdEmail, MdPhone } from 'react-icons/md';
+import { MdLocationOn, MdStar, MdEmail, MdPhone, MdVerifiedUser } from 'react-icons/md';
 import { Loader } from 'lib/components/ui/Loader';
 import { useUserProfileById } from 'lib/hooks/queries/useUserProfile';
 import { useBreederProfile } from 'lib/hooks/queries/useBreederProfile';
@@ -45,7 +45,7 @@ import { BsFillBuildingFill } from 'react-icons/bs';
 import { Rating } from 'lib/components/ui/Rating';
 import { CardContent, CardWithAvatar } from 'lib/components/ui/UserCardWithBackground';
 import { UserInfo } from 'lib/components/ui/UserInfo';
-import { FiBell, FiEdit, FiEdit2, FiEdit3, FiLogOut, FiPlus, FiShoppingBag, FiStar, FiUserPlus } from 'react-icons/fi';
+import { FiBell, FiEdit, FiEdit2, FiEdit3, FiLogOut, FiPlus, FiShield, FiShoppingBag, FiStar, FiUserPlus } from 'react-icons/fi';
 import { LuDog } from 'react-icons/lu';
 import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 import { KennelForm } from '../../ui/KennelForm';
@@ -209,12 +209,23 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
               }
             >
               <CardContent>
+
                 <Heading size="md" fontWeight="bold" letterSpacing="tight">
                   {breederProfile && breederProfile?.kennel_name}
                 </Heading>
-                <Text color={useColorModeValue("gray.600", "gray.400")}>
-                  {breederUser && breederUser?.email}
-                </Text>
+
+                <HStack>
+
+                  <Text color={useColorModeValue("gray.600", "gray.400")}>
+                    {breederProfile?.pet_type || 'Dog'} breeder
+                  </Text>
+                  <Badge colorScheme={breederProfile?.verified_at ? 'green' : 'gray'} size="sm">
+                    <HStack>
+                      <Icon as={breederProfile?.verified_at ? MdVerifiedUser : FiShield} />
+                      <Text fontSize="sm">{breederProfile?.verified_at ? 'Verified' : 'Not verified'}</Text>
+                    </HStack>
+                  </Badge>
+                </HStack>
 
                 <UserInfo
                   location={breederProfile?.kennel_location}

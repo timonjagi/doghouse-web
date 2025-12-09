@@ -1,6 +1,8 @@
-import { Card, CardBody, Stack, HStack, Avatar, VStack, Badge, Button, Text } from "@chakra-ui/react";
+import { Card, CardBody, Stack, HStack, Avatar, VStack, Badge, Button, Text, Icon } from "@chakra-ui/react";
 import Link from "next/link";
-import { MdLocationOn, MdStar } from "react-icons/md";
+import { FiShield } from "react-icons/fi";
+import { LuDog } from "react-icons/lu";
+import { MdLocationOn, MdStar, MdVerifiedUser } from "react-icons/md";
 
 interface BreederCardProps {
   breeder: any;
@@ -16,16 +18,30 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder }) => {
     <Card variant="outline" _hover={{ shadow: "md", transform: "translateY(-2px)" }} transition="all 0.2s">
       <CardBody>
         <Stack spacing={4}>
-          <HStack spacing={4}>
+          <Stack spacing={4} direction={{ base: "row", md: "row" }} justifyContent={{ base: "center", md: "start" }}>
             <Avatar
               src={user?.profile_photo_url}
               name={breederProfile?.kennel_name || user?.display_name}
               size="lg"
             />
+
             <VStack align="start" spacing={1} flex={1}>
-              <Text fontWeight="semibold" fontSize="lg">
-                {breederProfile?.kennel_name || user?.display_name}
-              </Text>
+              <HStack>
+
+                <Text fontWeight="semibold" fontSize="lg" noOfLines={2}>
+                  {breederProfile?.kennel_name || user?.display_name}
+                </Text>
+
+                <Badge colorScheme={breederProfile?.verified_at ? 'green' : 'gray'} size="sm">
+                  <HStack>
+                    <Icon as={breederProfile?.verified_at ? MdVerifiedUser : FiShield} />
+                    <Text fontSize="sm">{breederProfile?.verified_at ? 'Verified' : 'Not verified'}</Text>
+                  </HStack>
+                </Badge>
+              </HStack>
+
+
+
               {user?.pet_type && (
                 <Text color="gray.600" fontSize="sm">
                   {user?.pet_type}
@@ -34,32 +50,42 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder }) => {
               {breederProfile?.kennel_location && (
                 <HStack>
                   <MdLocationOn size={16} />
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color="gray.600" noOfLines={1}>
                     {breederProfile.kennel_location}
                   </Text>
                 </HStack>
               )}
             </VStack>
-          </HStack>
+
+          </Stack>
 
           <HStack spacing={2} flexWrap="wrap">
-            {breederProfile?.rating && (
+            <Badge colorScheme="yellow" size="sm">
               <HStack>
-                <MdStar color="gold" />
-                <Text fontSize="sm">{breederProfile.rating.toFixed(1)}</Text>
+                <Icon as={MdStar} color="gold" />
+                <Text fontSize="sm">{breederProfile.rating?.toFixed(1)}</Text>
               </HStack>
-            )}
-            {breederProfile?.verified_at && (
-              <Badge colorScheme="green" size="sm">Verified</Badge>
-            )}
-            <Badge colorScheme="blue" size="sm">
-              {breeder.userBreedsCount} breed{breeder.userBreedsCount !== 1 ? 's' : ''}
             </Badge>
+
+
+
+            {breeder.userBreedsCount && <Badge colorScheme="blue" size="sm">
+              <HStack>
+                <Icon as={LuDog} />
+                <Text fontSize="sm">
+                  {breeder.userBreedsCount} breed{breeder.userBreedsCount !== 1 ? 's' : ''}
+                </Text>
+              </HStack>
+            </Badge>}
           </HStack>
 
-          <Text fontSize="sm" color="gray.600" noOfLines={2}>
-            Specializing in: {breeder.breedNames?.join(', ')}
-          </Text>
+          <HStack wrap="nowrap" overflowY="scroll" css={{ scrollbarWidth: 'none' }}>
+            {breeder.breedNames?.map((breedName: string) => (
+              <Badge colorScheme="brand" size="sm" key={breedName}>
+                {breedName}
+              </Badge>
+            ))}
+          </HStack>
 
           <Link href={`/dashboard/breeders/${breeder.id}`} passHref>
             <Button colorScheme="brand" size="sm" w="full" as="a">

@@ -68,7 +68,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({ profile, onClose }) =>
       </Box>
       <Spacer />
       <Menu>
-
         <MenuButton
           as={IconButton}
           icon={<BsThreeDotsVertical />}
@@ -77,27 +76,25 @@ export const UserProfile: React.FC<UserProfileProps> = ({ profile, onClose }) =>
           cursor="pointer"
           minW={0}
           color="brand"
-        >
-
-          <MenuList>
-            <MenuItem
-              icon={<MdOutlineAccountCircle />}
-              cursor="pointer"
-              as="a"
-              href="/account"
-            >
-              Account
-            </MenuItem>
-            <MenuItem
-              icon={<MdLogout />}
-              cursor="pointer"
-              as="button"
-              onClick={onLogout}
-            >
-              Logout
-            </MenuItem>
-          </MenuList>
-        </MenuButton>
+        />
+        <MenuList>
+          <MenuItem
+            icon={<MdOutlineAccountCircle />}
+            cursor="pointer"
+            as="a"
+            href="/account"
+          >
+            Account
+          </MenuItem>
+          <MenuItem
+            icon={<MdLogout />}
+            cursor="pointer"
+            as="button"
+            onClick={onLogout}
+          >
+            Logout
+          </MenuItem>
+        </MenuList>
       </Menu>
     </HStack>
   );

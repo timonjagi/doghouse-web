@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, SimpleGrid, useBreakpointValue, useToast } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, SimpleGrid, useBreakpointValue, useToast, Badge } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -16,6 +16,7 @@ import { GalleryWithHorizontalCarousel } from "lib/components/ui/GalleryWithHori
 import { GiDogHouse } from "react-icons/gi";
 import { LuDog } from "react-icons/lu";
 import { useBreedersForBreed } from "lib/hooks/queries/useBreeders";
+import { PageHeaderWithTwoButtons } from "lib/components/ui/PageHeaderWithTwoButtons";
 
 const PublicBreedDetailPage = () => {
   const router = useRouter();
@@ -82,18 +83,45 @@ const PublicBreedDetailPage = () => {
         <meta name="robots" content="index, follow" />
       </Head>
 
-      <Container maxW="7xl">
+      <Container maxW="7xl" py={{ base: 6, md: 6 }}>
 
         <Stack
           spacing="8"
         >
 
-          <Heading
-            size={{ base: "xs", md: "sm" }}
-            textTransform="capitalize"
-          >
-            {breed?.name}
-          </Heading>
+          <Stack>
+            {/* <Heading
+              size={{ base: "xs", md: "sm" }}
+              textTransform="capitalize"
+            >
+              {breed?.name}
+            </Heading>
+            <Badge colorScheme="brand" w="fit-content">
+              {breed?.group} group
+            </Badge> */}
+
+            <PageHeaderWithTwoButtons
+              title={breed?.name}
+              description={breed?.group + " group"}
+              buttonPrimary={
+                {
+                  label: "Add to wishlist",
+                  variant: "secondary",
+                  onClick: onAddToWishlist,
+                  icon: <FiHeart />
+                }
+              }
+              flexDir={{ base: "row", md: "row" }}
+            // buttonSecondary={[
+            //   {
+            //     label: "Buy now",
+            //     variant: "primary",
+            //     onClick: () => router.push(`/listings/${listing.id}`),
+            //   },
+            // ]}
+            />
+
+          </Stack>
 
 
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>

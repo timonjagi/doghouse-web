@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, SimpleGrid } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, SimpleGrid } from "@chakra-ui/react";
 import { Loader } from "lib/components/ui/Loader";
 import { UserCardWithRating } from "./UserCardWithRating/UserCardWithRating";
 import { useRouter } from "next/router";
@@ -24,6 +24,7 @@ interface BreedersListProps {
   emptyActionLabel?: string;
   emptyActionIcon?: any;
   emptyAction?: () => void;
+  props?: any;
 }
 
 export const BreedersList: React.FC<BreedersListProps> = ({
@@ -38,7 +39,8 @@ export const BreedersList: React.FC<BreedersListProps> = ({
   showLoader = true,
   emptyAction,
   emptyActionLabel = "Clear Search",
-  emptyActionIcon = null
+  emptyActionIcon = null,
+  props
 }) => {
   const breeders = externalBreeders;
   const isLoading = externalIsLoading;
@@ -72,27 +74,29 @@ export const BreedersList: React.FC<BreedersListProps> = ({
   }
 
   return (
-    <SimpleGrid columns={columns} spacing={spacing}>
-      {breeders.map((breeder) => (
-        <BreederCard key={breeder?.id} breeder={breeder} />
-        // <UserCardWithRating
-        //   key={breeder?.id}
-        //   data={{
-        //     id: breeder.id,
-        //     display_name: breeder.breeder_profiles[0]?.kennel_name || breeder.display_name,
-        //     username: breeder.username || breeder.breeder_profiles[0]?.kennel_name,
-        //     bio: breeder.bio,
-        //     location_text: breeder?.breeder_profiles[0]?.kennel_location,
-        //     adoption_count: breeder.adoption_count,
-        //     rating: breeder.rating,
-        //     review_count: breeder.review_count,
-        //     profile_photo_url: breeder.breeder_profiles[0]?.kennel_avatar_url || breeder.profile_photo_url,
-        //     tags: breeder.breedNames || [],
-        //     role: `${breeder?.breeder_profiles[0]?.pet_type || 'dog'} breeder`
-        //   }}
-        //   action={() => router.push(`/dashboard/breeders/${breeder.id}`)}
-        // />
-      ))}
-    </SimpleGrid>
+    <Box {...props}>
+      <SimpleGrid columns={columns} spacing={spacing}>
+        {breeders.map((breeder) => (
+          <BreederCard key={breeder?.id} breeder={breeder} />
+          // <UserCardWithRating
+          //   key={breeder?.id}
+          //   data={{
+          //     id: breeder.id,
+          //     display_name: breeder.breeder_profiles[0]?.kennel_name || breeder.display_name,
+          //     username: breeder.username || breeder.breeder_profiles[0]?.kennel_name,
+          //     bio: breeder.bio,
+          //     location_text: breeder?.breeder_profiles[0]?.kennel_location,
+          //     adoption_count: breeder.adoption_count,
+          //     rating: breeder.rating,
+          //     review_count: breeder.review_count,
+          //     profile_photo_url: breeder.breeder_profiles[0]?.kennel_avatar_url || breeder.profile_photo_url,
+          //     tags: breeder.breedNames || [],
+          //     role: `${breeder?.breeder_profiles[0]?.pet_type || 'dog'} breeder`
+          //   }}
+          //   action={() => router.push(`/dashboard/breeders/${breeder.id}`)}
+          // />
+        ))}
+      </SimpleGrid>
+    </Box>
   );
 };

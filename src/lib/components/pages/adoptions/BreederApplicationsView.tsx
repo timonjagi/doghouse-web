@@ -140,8 +140,19 @@ const BreederApplicationsView: React.FC<BreederApplicationsViewProps> = () => {
             colorScheme="brand"
             variant='soft-rounded'
           >
-            <TabList>
-              <Tab >
+            <TabList
+              overflowY="hidden"
+              whiteSpace="nowrap"
+              css={{
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
+                scrollbarWidth: 'none',
+              }}
+            >
+              <Tab
+
+              >
                 New ({groupedApplications.new.length})
               </Tab>
               <Tab >

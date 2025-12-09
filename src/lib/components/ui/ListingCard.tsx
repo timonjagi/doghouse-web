@@ -56,7 +56,7 @@ function ListingCard({
     <Box key={listing.id} onClick={() => handleListingClick(listing.id)} cursor="pointer">
       {/* Main Photo */}
       {listing.photos && listing.photos.length > 0 && (
-        <Box position="relative" height="200px" overflow="hidden" borderRadius="lg">
+        <Box position="relative" overflow="hidden" borderRadius="lg">
           <Image
             src={listing.photos[0]}
             alt={listing.title}
@@ -69,9 +69,9 @@ function ListingCard({
           />
 
           <HStack position="absolute" top={2} right={2} spacing={2}>
-            <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
+            {/* <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
               {listing.type.replace('_', ' ')}
-            </Badge>
+            </Badge> */}
             <Badge colorScheme={getStatusColor(listing.status)}>
               {listing.status}
             </Badge>
