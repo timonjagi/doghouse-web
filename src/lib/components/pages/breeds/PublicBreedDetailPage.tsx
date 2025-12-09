@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, SimpleGrid, useBreakpointValue } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, SimpleGrid, useBreakpointValue, useToast } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -11,7 +11,11 @@ import { useListingsForBreed } from "lib/hooks/queries/useListings";
 import { NextSeo } from 'next-seo';
 import ListingList from "lib/components/ui/ListingList";
 import EthicalQuestionairreCard from "lib/components/ui/EthicalQuestionairreCard";
-import { FiHeart } from "react-icons/fi";
+import { FiHeart, FiInfo, FiShoppingBag } from "react-icons/fi";
+import { GalleryWithHorizontalCarousel } from "lib/components/ui/GalleryWithHorizontalCarousel";
+import { GiDogHouse } from "react-icons/gi";
+import { LuDog } from "react-icons/lu";
+import { useBreedersForBreed } from "lib/hooks/queries/useBreeders";
 
 const PublicBreedDetailPage = () => {
   const router = useRouter();
@@ -21,23 +25,32 @@ const PublicBreedDetailPage = () => {
 
   const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForBreed(breed?.id);
 
+
+  const { data: breeders, isLoading: isLoadingBreeders, error: breedersError } = useBreedersForBreed(breed?.id);
+
   const handleListingClick = (listing) => {
     router.push(`/listings/${listing.id}`);
   };
-
+  const toast = useToast();
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const onAddToWishlist = () => {
-
+    toast({
+      title: "Added to wishlist",
+      description: "You will be notified when new listings are added.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
   }
 
-  if (isLoadingBreed) {
+  if (isLoadingBreed || isLoadingListings || isLoadingBreeders) {
     return (
       <Loader />
     );
   }
 
-  if (errorLoadingBreed) {
+  if (errorLoadingBreed || error || breedersError) {
     return (
       <Container maxW="7xl">
         <Alert status="error">
@@ -84,18 +97,63 @@ const PublicBreedDetailPage = () => {
 
 
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-            <Gallery
-              rootProps={{ flex: "1", flexGrow: 1, minHeight: "100%", }}
-              images={[{ src: breed?.featured_image_url, alt: breed?.name }]}
-
-            />
+            <Gallery images={[{ src: breed?.featured_image_url, alt: breed?.name }]} />
 
             <Tabs variant='soft-rounded' colorScheme='brand'>
-              <TabList>
-                <Tab>Details</Tab>
-                <Tab>Traits</Tab>
-                <Tab>Listings</Tab>
-                <Tab>Breeders</Tab>
+              <TabList
+                overflowY="hidden"
+                whiteSpace="nowrap"
+                css={{
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                  scrollbarWidth: 'none',
+                }}
+              >
+                <Tab>
+                  <HStack>
+                    <FiInfo />
+                    <Text
+                      fontSize="xs"
+                      textTransform="capitalize"
+                    >
+                      Details
+                    </Text>
+                  </HStack>
+                </Tab>
+                <Tab>
+                  <HStack>
+                    <LuDog />
+                    <Text
+                      fontSize="xs"
+                      textTransform="capitalize"
+                    >
+                      Traits
+                    </Text>
+                  </HStack>
+                </Tab>
+                <Tab>
+                  <HStack>
+                    <FiShoppingBag />
+                    <Text
+                      fontSize="xs"
+                      textTransform="capitalize"
+                    >
+                      Listings
+                    </Text>
+                  </HStack>
+                </Tab>
+                <Tab>
+                  <HStack>
+                    <GiDogHouse />
+                    <Text
+                      fontSize="xs"
+                      textTransform="capitalize"
+                    >
+                      Breeders
+                    </Text>
+                  </HStack>
+                </Tab>
               </TabList>
 
               <TabPanels>
@@ -182,7 +240,7 @@ const PublicBreedDetailPage = () => {
 
                 <TabPanel>
                   <BreedersList
-                    breed={breed}
+                    breeders={breeders}
                     emptyMessage={`No ${breed?.name} breeders found`}
                     emptyDescription="Add to wishlist to get notified when new breeders are added."
                     emptyActionLabel="Add to Wishlist"

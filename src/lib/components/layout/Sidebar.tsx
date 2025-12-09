@@ -193,8 +193,12 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
   };
 
   return (
-    <>
-      <Stack spacing="3" pt="3">
+    <Flex
+      direction="column"
+      justify="space-between"
+      h="full"
+    >
+      <Stack spacing="3" >
         <ColumnHeader>
           <HStack spacing="3" justify="space-between" w="full">
 
@@ -264,7 +268,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
       <Box borderTopWidth="1px" p="3">
         <UserProfile profile={profile} onClose={onClose} />
       </Box>
-    </>
+    </Flex>
   );
 };
 

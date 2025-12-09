@@ -1,3 +1,3 @@
-import BreedDetailPage from "lib/components/pages/breeds/BreedDetailPage";
+import PublicBreedDetailPage from "lib/components/pages/breeds/PublicBreedDetailPage";
 
-export default BreedDetailPage;
+export default PublicBreedDetailPage;

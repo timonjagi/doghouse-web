@@ -38,21 +38,53 @@ interface CreateKennelData {
   photos?: string[];
 }
 
-// Query to get breeder's profile with kennels
+// Query to get breeder's profile with user breeds
 export const useBreederProfile = (userId?: string) => {
   return useQuery({
     queryKey: ['users', 'breeder-profile', userId] as const,
-    queryFn: async (): Promise<BreederProfile | null> => {
+    queryFn: async (): Promise<(BreederProfile & { userBreedsCount: number; breedNames: string[]; user_breeds: any[] }) | null> => {
       if (!userId) return null;
 
       const { data, error } = await supabase
         .from('breeder_profiles')
-        .select('*')
+        .select(`*, 
+          users (
+            user_breeds (
+              id,
+              breed_id,
+              created_at,
+              images,
+              breeds (
+                id,
+                name
+              )
+            )
+          )
+        `)
         .eq('user_id', userId)
         .single();
 
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
-      return data;
+      if (!data) return null;
+
+      // Extract user_breeds from the nested users object (single object, not array)
+      const userBreeds = data.users?.user_breeds || [];
+
+      // Collect breed names and count
+      const breedNames: string[] = [];
+      userBreeds.forEach((userBreed: any) => {
+        if (userBreed.breeds?.name) {
+          breedNames.push(userBreed.breeds.name.toLowerCase());
+        }
+      });
+
+      // Return the breeder profile with aggregated breed data
+      return {
+        ...data,
+        user_breeds: userBreeds,
+        userBreedsCount: userBreeds.length,
+        breedNames,
+      };
     },
     enabled: !!userId,
   });

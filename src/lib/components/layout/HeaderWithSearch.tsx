@@ -123,79 +123,36 @@ const HeaderWithSearch = () => {
       zIndex={3}
       position="sticky"
       top="0"
+      bg="g-surface"
     >
-      <Container
-        py={{
-          base: "4",
-          lg: "4",
-        }}
-      >
-        <Flex justify="space-between" align="center">
-          {/* Left side - Logo and Menu Button */}
+      <Flex justify="space-between" align="center">
+        {/* Left side - Logo and Menu Button */}
 
 
-          {!isDesktop && <HStack spacing="0" align="center">
-            <IconButton
-              icon={<FiMenu fontSize="1.25rem" />}
-              aria-label="Open Menu"
-              variant="ghost"
-              onClick={onToggleSidebar}
-            />
+        {!isDesktop && <HStack spacing="0" align="center">
+          <IconButton
+            icon={<FiMenu fontSize="1.25rem" />}
+            aria-label="Open Menu"
+            variant="ghost"
+            onClick={onToggleSidebar}
+          />
 
-            {/* <Box as={MdMenu} fontSize="3xl" onClick={onToggleSidebar} */}
-
-
-            <Logo color="on-brand" />
-
-          </HStack>}
-
-          {/* Center - Conditional Search Bar */}
-          {isDesktop && showSearchBar && (
-
-            <HStack flex="1" mx={{ base: "8", lg: "0" }}>
-
-              <SearchInput
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={handleKeyPress}
-                searchQuery={searchQuery}
-                onClear={() => searchService.clearSearchParams(currentFilters)}
-              />
-            </HStack>
-          )}
-
-          {!showSearchBar && <Spacer />}
-
-          <HStack spacing="1">
-
-            <IconButton
-              icon={<FiHelpCircle fontSize="1.25rem" />}
-              aria-label="Help & Support"
-              variant="ghost"
-              onClick={() => router.push('/support')}
-            />
-
-            <Box position="relative">
-
-              {unreadCount > 0 && <Circle size="2" bg="brand.500" position="absolute" top={0} right={1} zIndex={1} />}
-
-              <IconButton
-                icon={<FiBell fontSize="1.25rem" />}
-                aria-label="Notifications"
-                variant="ghost"
-                onClick={onToggleNotifications}
-              />
-
-            </Box>
-
-          </HStack>
-        </Flex>
+          {/* <Box as={MdMenu} fontSize="3xl" onClick={onToggleSidebar} */}
 
 
+          <Logo color="on-brand" />
 
-        {/* Mobile Search Bar */}
-        {!isDesktop && showSearchBar && (
-          <HStack flex="1" >
+        </HStack>}
+
+        {/* Center - Conditional Search Bar */}
+        {isDesktop && showSearchBar && (
+
+          <HStack
+            flex="1"
+            mx={{ base: "8", lg: "4" }}
+            my={{ base: "2", lg: "4" }}
+          >
+
             <SearchInput
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -205,7 +162,52 @@ const HeaderWithSearch = () => {
             />
           </HStack>
         )}
-      </Container>
+
+        {!showSearchBar && <Spacer />}
+
+        <HStack spacing="1">
+
+          <IconButton
+            icon={<FiHelpCircle fontSize="1.25rem" />}
+            aria-label="Help & Support"
+            variant="ghost"
+            onClick={() => router.push('/support')}
+          />
+
+          <Box position="relative">
+
+            {unreadCount > 0 && <Circle size="2" bg="brand.500" position="absolute" top={0} right={1} zIndex={1} />}
+
+            <IconButton
+              icon={<FiBell fontSize="1.25rem" />}
+              aria-label="Notifications"
+              variant="ghost"
+              onClick={onToggleNotifications}
+            />
+
+          </Box>
+
+        </HStack>
+      </Flex>
+
+
+
+      {/* Mobile Search Bar */}
+      {!isDesktop && showSearchBar && (
+        <HStack flex="1"
+
+          mx={{ base: "2", lg: "4" }}
+          mb={{ base: "2", lg: "4" }}
+        >
+          <SearchInput
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            searchQuery={searchQuery}
+            onClear={() => searchService.clearSearchParams(currentFilters)}
+          />
+        </HStack>
+      )}
 
       {/* Sidebar Drawer */}
       <Drawer

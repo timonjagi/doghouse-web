@@ -1,3 +1,3 @@
-import BreedsPage from "lib/components/pages/breeds/ExploreBreedsView";
+import ExploreBreedsView from "lib/components/pages/breeds/ExploreBreedsView";
 
-export default BreedsPage;
+export default ExploreBreedsView;

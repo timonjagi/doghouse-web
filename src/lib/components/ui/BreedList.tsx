@@ -32,31 +32,15 @@ import { useRouter } from "next/router";
 import { BreedCard } from "lib/components/ui/BreedCard";
 import { EmptyView } from "./EmptyView";
 import * as searchService from "lib/services/searchService";
+import { UserBreed, Breed } from "lib/db/schema";
 
-// Local types for now - will fix imports later
-interface Breed {
-  id: string;
-  name: string;
-  description?: string;
-  group?: string;
-  featured_image_url?: string;
-}
-
-interface UserBreed {
-  id: string;
-  user_id: string;
-  breed_id: string;
-  is_owner: boolean;
-  notes?: string;
-  images?: string[];
-  created_at: string;
-  updated_at: string;
-  breeds?: Breed;
-  breeder_count: any;
-}
+// Extended type for UserBreed with joined breeds data
+export type UserBreedWithBreed = UserBreed & {
+  breeds?: Breed | null;
+};
 
 interface BreedListProps {
-  breeds: any[];
+  breeds: UserBreedWithBreed[];
   userRole?: 'breeder' | 'seeker' | 'admin';
   onEditBreed?: () => void;
 
@@ -71,7 +55,7 @@ interface BreedListProps {
   showSort?: boolean;
 
   // Custom handlers
-  onBreedClick?: (userBreed: UserBreed) => void;
+  onBreedClick?: (userBreed: UserBreedWithBreed) => void;
 
   // Empty state
   emptyMessage?: string;
@@ -102,7 +86,7 @@ export const BreedList = ({
   // Filter breeds based on search and group
   const filteredBreeds = useMemo(() => {
     return breeds.filter((userBreed) => {
-      const breed = userBreed.breeds || userBreed;
+      const breed = userBreed.breeds;
       if (!breed) return false;
 
       const matchesSearch = !showSearch || !searchTerm ||
@@ -126,11 +110,11 @@ export const BreedList = ({
     return Array.from(groups) as string[];
   }, [breeds]);
 
-  const handleBreedClick = (userBreed: UserBreed) => {
+  const handleBreedClick = (userBreed: UserBreedWithBreed) => {
     if (onBreedClick) {
       onBreedClick(userBreed);
     } else if (userRole === 'seeker') {
-      router.push(`/dashboard/breeds/${userBreed.breeds.name.replace(/\s+/g, '-').toLowerCase()}`);
+      router.push(`/dashboard/breeds/${userBreed.breeds?.name?.replace(/\s+/g, '-').toLowerCase()}`);
     } else if (userRole === 'breeder') {
       router.push(`/dashboard/breeds/${userBreed.id}`);
     }

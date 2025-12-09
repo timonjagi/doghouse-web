@@ -47,6 +47,7 @@ import { supabase } from 'lib/supabase/client';
 import { ApplicationForm } from '../adoptions/ApplicationForm';
 import ListingForm from './ListingForm';
 import WhatsIncluded from 'lib/components/ui/WhatsIncluded';
+import { SectionHeaderWithDescription } from 'lib/components/ui/SectionHeaderWithDescription';
 
 interface ListingDetailPageProps {
   id: string;
@@ -201,7 +202,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
         `${getTitle()} - DogHouse Kenya`
       } />
 
-      <Container maxW="7xl" py={{ base: 4, md: 0 }}>
+      <Container maxW="7xl" py={{ base: 4, md: 4 }}>
 
 
         <Stack spacing={6} >
@@ -293,15 +294,15 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             </Tabs>
           </SimpleGrid>
 
-          {/* <Button
-            leftIcon={<ArrowForwardIcon />}
-            variant="ghost"
-            onClick={() => router.push('/dashboard/adoptions')}
-            mb={4}
-            p={0}
-          >
-            View Applications
-          </Button> */}
+
+
+          {!isOwner && (
+            <WhatsIncluded
+              buttonText={listing.status === 'available' ? 'Apply Now' : 'Not Available'}
+              buttonSubtext={listing.status === 'available' ? 'Apply now to express your interest in this listing' : `This listing has been ${listing.status} and is no longer available. `}
+              onButtonClick={() => onApplicationOpen()}
+            />
+          )}
         </Stack>
 
         <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={undefined} onClose={onDeleteClose}>
@@ -328,14 +329,9 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           </AlertDialogOverlay>
         </AlertDialog>
 
-        {/* Application Form Modal */}
-        {!isOwner && (
-          <WhatsIncluded
-            buttonText={listing.status === 'available' ? 'Apply Now' : 'Not Available'}
-            buttonSubtext={listing.status === 'available' ? 'Apply now to express your interest in this listing' : `This listing has been ${listing.status} and is no longer available. `}
-            onButtonClick={() => onApplicationOpen()}
-          />
-        )}
+
+
+        {/* Listing Form Modal */}
 
         {isOwner && listing && (
           <ListingForm

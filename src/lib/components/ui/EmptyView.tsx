@@ -4,8 +4,8 @@ import Link from "next/link";
 interface EmptyViewProps {
   title: string,
   description: string,
-  ctaText: string,
-  ctaAction: () => void
+  ctaText?: string,
+  ctaAction?: () => void
   ctaIcon?: any
 }
 
@@ -33,7 +33,7 @@ export const EmptyView: React.FC<EmptyViewProps> = ({ title, description, ctaTex
 
       <Spacer />
 
-      <Button
+      {ctaText && ctaAction && <Button
         colorScheme='brand'
         size='lg'
         w="full"
@@ -41,7 +41,7 @@ export const EmptyView: React.FC<EmptyViewProps> = ({ title, description, ctaTex
         leftIcon={ctaIcon ? ctaIcon : null}
       >
         {ctaText}
-      </Button>
+      </Button>}
 
     </VStack>
 

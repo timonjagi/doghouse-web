@@ -193,3 +193,83 @@ export const useFeaturedBreeders = (limit: number = 4) => {
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };
+
+// Query to get breeders offering a specific breed
+export const useBreedersForBreed = (breedId: string) => {
+  return useQuery({
+    queryKey: queryKeys.breeds.breedBreeders(breedId),
+    queryFn: async (): Promise<any[]> => {
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      // First, get the user IDs of breeders who have this breed
+      const { data: breedersWithBreed, error: breederError } = await supabase
+        .from('user_breeds')
+        .select('user_id')
+        .eq('breed_id', breedId)
+        .eq('is_owner', true);
+
+      if (breederError) throw breederError;
+      if (!breedersWithBreed || breedersWithBreed.length === 0) return [];
+
+      // Get unique breeder user IDs
+      let breederUserIds = [...new Set(breedersWithBreed.map(b => b.user_id))];
+
+      // Filter out current user if they are a breeder
+      if (user && user?.user_metadata?.role === 'breeder') {
+        breederUserIds = breederUserIds.filter(id => id !== user.id);
+      }
+
+      if (breederUserIds.length === 0) return [];
+
+      // Now fetch all user_breeds for those breeders to get complete breed info
+      const { data, error } = await supabase
+        .from('users')
+        .select(`
+          id,
+          profile_photo_url,
+          display_name,
+          breeder_profiles(
+            id,
+            user_id,
+            kennel_name,
+            kennel_location,
+            rating,
+            verified_at
+          ),
+          user_breeds(
+            id,
+            breed_id,
+            breeds (
+              id,
+              name
+            )
+          )
+        `)
+        .in('id', breederUserIds);
+
+      if (error) throw error;
+
+      // Process data to add userBreedsCount and breedNames
+      const results = (data || []).map((breeder: any) => {
+        const breedNames: string[] = [];
+        const userBreeds = breeder.user_breeds || [];
+
+        userBreeds.forEach((userBreed: any) => {
+          if (userBreed.breeds?.name) {
+            breedNames.push(userBreed.breeds.name.toLowerCase());
+          }
+        });
+
+        return {
+          ...breeder,
+          userBreedsCount: userBreeds.length,
+          breedNames,
+        };
+      });
+
+      return results;
+    },
+    enabled: !!breedId,
+  });
+};
