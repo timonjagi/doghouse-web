@@ -108,7 +108,7 @@ const ManageListingsPage: React.FC = () => {
               <Text color="gray.400" textAlign="center" maxW="md">
                 Create your first listing to start connecting with potential pet adopters.
               </Text>
-              <Button colorScheme="brand" onClick={() => router.push('/dashboard/listings/create')}>
+              <Button colorScheme="brand" onClick={onListingFormOpen}>
                 Create Your First Listing
               </Button>
             </VStack>
