@@ -1,13 +1,12 @@
-import { Container, Stack } from "@chakra-ui/react";
+import { Container, useBreakpointValue } from "@chakra-ui/react";
 import EthicalQuestionairreCard from "lib/components/ui/EthicalQuestionairreCard";
+import ExploreOverview from "lib/components/ui/ExploreOverview";
 import { NextSeo } from "next-seo";
 import Head from "next/head";
-import UnifiedSearchPage from "lib/components/pages/search/UnifiedSearchPage";
-import { SearchInput } from "lib/components/layout/SearchInput";
-import SeekerDashboardOverview from "lib/components/pages/dashboard/SeekerDashboardOverview";
-import SeekerExploreOverview from "lib/components/ui/SeekerExploreOverview";
 
 const ExplorePage = () => {
+
+  const isMobile = useBreakpointValue({ base: true, md: false })
   return (
     <>
       <Head >
@@ -45,12 +44,14 @@ const ExplorePage = () => {
       />
 
 
-      <Container maxW="5xl" bg="bg-surface" h="full">
-        <SeekerExploreOverview />
+      <Container maxW="5xl" bg="bg-surface" h="full" pb={{ base: 0, md: 12 }}>
 
+        <ExploreOverview />
 
+        {!isMobile && <EthicalQuestionairreCard />}
       </Container>
-      <EthicalQuestionairreCard />
+
+      {isMobile && <EthicalQuestionairreCard />}
 
     </>
 

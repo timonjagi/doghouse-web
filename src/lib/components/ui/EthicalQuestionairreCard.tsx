@@ -7,10 +7,10 @@ const EthicalQuestionairreCard: React.FC<CompleteProfileCTAProps> = () => {
   return (
     <CtaCentredOnAccent
       title="Is Your Home Pet-Ready?"
-      description="Take our quick  questionnaire to see if you're prepared for the joy, commitment, and love that adopting a furry friend brings."
+      description="Take our quick  questionnaire to ensure you're prepared for the joy, love, and commitment that adopting a furry friend brings."
       ctaText1="Learn more"
       ctaLink1="#"
-      ctaText2="Find Out Now"
+      ctaText2="Take the Quiz"
       ctaLink2="#"
     />
   );

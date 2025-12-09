@@ -152,18 +152,13 @@ export const useCategories = ({ page, tab, isDesktop }: UseCategoriesParams) => 
             href: '/dashboard/search?tab=listings&sort=upcoming'
           },
           {
-            label: 'Adoption Events',
-            href: '/dashboard/search?tab=listings&sort=events'
-          },
-          {
             label: 'Lost & Found',
-            href: '/dashboard/search?tab=listings&sort=lost'
+            href: '/dashboard/search?tab=listings&lost=true'
           },
           {
             label: 'Missing Pets',
-            href: '/dashboard/search?tab=listings&sort=missing'
+            href: '/dashboard/search?tab=listings&missing=true'
           },
-
         )
 
         categories.breeds.push(
@@ -220,8 +215,8 @@ export const useCategories = ({ page, tab, isDesktop }: UseCategoriesParams) => 
             href: page === 'explore' ? '/explore?category=cats' : '/dashboard?category=cats',
           },
           {
-            label: 'Bunnies',
-            href: page === 'explore' ? '/explore?category=bunnies' : '/dashboard?category=bunnies',
+            label: 'Rabbits',
+            href: page === 'explore' ? '/explore?category=rabbits' : '/dashboard?category=rabbits',
           },
           {
             label: 'Hamsters',

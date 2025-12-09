@@ -35,6 +35,7 @@ import { BreedersList } from "../../ui/BreederList";
 import { FiEdit } from "react-icons/fi";
 import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import ListingList from "lib/components/ui/ListingList";
+import { PageHeaderWithTwoButtons } from "lib/components/ui/PageHeaderWithTwoButtons";
 
 interface Breed {
   id: string;
@@ -106,42 +107,41 @@ const ManageBreedDetailView = () => {
       <VStack spacing={6} align="stretch">
 
         <VStack align="stretch" spacing={{ base: 4, md: 6 }}>
-          <HStack justify="space-between" align="center" wrap="wrap">
-            <Box>
-              <Heading size={{ base: 'sm', lg: 'md' }}>
-                Manage {userBreed?.breeds.name}
-              </Heading>
-              <Text color="gray.600">
-                Manage your {userBreed?.breeds.name}'s breed information, photos, and availability.
-              </Text>
-            </Box>
 
-            <ButtonGroup>
-              <Button
-                onClick={onFormOpen}
-                colorScheme="brand"
-                leftIcon={<FiEdit />}
-              >
-                Edit
-              </Button>
-
-              <Button
-                leftIcon={<DeleteIcon />}
-                colorScheme="red"
-                onClick={onDeleteOpen}
-                isLoading={deleteUserBreed.isPending}
-              >
-                Delete
-              </Button>
-            </ButtonGroup>
-          </HStack>
-
+          <PageHeaderWithTwoButtons
+            title={`Manage ${userBreed?.breeds.name}`}
+            description={`Manage your ${userBreed?.breeds.name}'s breed information, photos, and availability.`}
+            buttonPrimary={{
+              label: "Edit",
+              onClick: onFormOpen,
+              icon: <FiEdit />,
+              colorScheme: "brand",
+            }}
+            buttonSecondary={{
+              label: "Delete",
+              onClick: onDeleteOpen,
+              icon: <DeleteIcon />,
+              colorScheme: "red",
+              isLoading: deleteUserBreed.isPending,
+            }}
+          />
 
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
             <Gallery images={userBreed.images?.map((image) => ({ src: image, alt: userBreed.breeds.name })) || []} />
 
-            <Tabs variant='soft-rounded' colorScheme='brand'>
-              <TabList>
+            <Tabs variant='soft-rounded' colorScheme='brand'
+
+            >
+              <TabList
+                overflowY="hidden"
+                whiteSpace="nowrap"
+                css={{
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                  scrollbarWidth: 'none',
+                }}
+              >
                 <Tab>Overview</Tab>
                 <Tab>Listings</Tab>
                 <Tab>Adoptions</Tab>

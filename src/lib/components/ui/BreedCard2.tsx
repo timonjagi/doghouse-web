@@ -43,7 +43,7 @@ export const BreedCard = ({ userBreed, }: any) => {
 
         </Box>
 
-
+        {/* 
 
         <Box
           position="absolute"
@@ -51,7 +51,7 @@ export const BreedCard = ({ userBreed, }: any) => {
           boxSize="full"
         >
           <ProductBadge />
-        </Box>
+        </Box> */}
 
         <Box
           position="absolute"

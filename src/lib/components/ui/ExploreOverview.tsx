@@ -14,7 +14,7 @@ import { TabBar } from 'lib/components/ui/TabBar';
 import { Category, useCategories } from 'lib/hooks/queries/useCategories';
 import { BreedersList } from 'lib/components/ui/BreederList';
 
-const SeekerExploreOverview: React.FC = () => {
+const ExploreOverview: React.FC = () => {
   const router = useRouter();
   const isDesktop = useBreakpointValue({ base: false, md: true })
 
@@ -31,9 +31,10 @@ const SeekerExploreOverview: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState(filters.tab)
 
+  const page = router.pathname.includes('explore') ? 'explore' : 'dashboard';
   const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories(
     {
-      page: router.pathname.includes('explore') ? 'explore' : 'dashboard',
+      page,
       tab: activeTab, isDesktop
     });
 
@@ -77,7 +78,7 @@ const SeekerExploreOverview: React.FC = () => {
 
 
   return (
-    <Box w="full" h="full" bg="bg-surface">
+    <Box w="full" minH={{ base: 'auto', md: '5s00px' }} bg="bg-surface">
 
       <TabBar menuItems={categories.tabMenuItems} activeTab={activeTab} />
 
@@ -89,7 +90,14 @@ const SeekerExploreOverview: React.FC = () => {
       >
 
         <VisuallyHidden>
-          <TabList>
+          <TabList overflowY="hidden"
+            whiteSpace="nowrap"
+            css={{
+              '&::-webkit-scrollbar': {
+                display: 'none',
+              },
+              scrollbarWidth: 'none',
+            }}>
             {categories.tabMenuItems.map((item, index) => (
               <Tab key={index}>{item.label}</Tab>
             ))}
@@ -117,12 +125,15 @@ const SeekerExploreOverview: React.FC = () => {
                           links: categories.breeds,
                         },
                         featured: {
-                          label: 'Breed Groups',
-                          links: categories.breedGroups
+                          label: 'Popular Breeds',
+                          links: popularBreeds?.map(breed => ({
+                            label: breed.name,
+                            href: page === 'explore' ? `/explore/breeds/${encodeURIComponent(breed.name)}` : `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                          }))
                         },
                         products: popularBreeds.map(breed => ({
                           label: breed.name,
-                          href: `/dashboard/search?q=${encodeURIComponent(breed.name)}`,
+                          href: page === 'explore' ? `/explore/breeds/${encodeURIComponent(breed.name)}` : `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
                           imageUrl: breed.featured_image_url,
                         }))
                       }}
@@ -138,12 +149,12 @@ const SeekerExploreOverview: React.FC = () => {
                           label: 'Popular Breeds',
                           links: popularBreeds?.map(breed => ({
                             label: breed.name,
-                            href: `/dashboard/search?q=${encodeURIComponent(breed.name)}`,
+                            href: page === 'explore' ? `/explore/breeds/${encodeURIComponent(breed.name)}` : `/dashboard/search?q=${encodeURIComponent(breed.name)}`,
                           }))
                         },
                         products: popularBreeds.map(breed => ({
                           label: breed.name,
-                          href: `/dashboard/search?q=${encodeURIComponent(breed.name)}`,
+                          href: page === 'explore' ? `/explore/breeds/${encodeURIComponent(breed.name)}` : `/dashboard/search?q=${encodeURIComponent(breed.name)}`,
                           imageUrl: breed.featured_image_url,
                         }))
                       }}
@@ -176,7 +187,7 @@ const SeekerExploreOverview: React.FC = () => {
                           label: 'Popular Breeds',
                           links: popularBreeds?.map(breed => ({
                             label: breed.name,
-                            href: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                            href: page === 'explore' ? `/explore/breeds/${encodeURIComponent(breed.name)}` : `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
                           }))
                         },
                         products: popularListings.map(listing => ({
@@ -184,7 +195,7 @@ const SeekerExploreOverview: React.FC = () => {
                           name: listing.title,
                           price: listing.price,
                           currency: 'KES',
-                          href: `/dashboard/listings/${listing.id}`,
+                          href: page === 'explore' ? `/explore/listings/${listing.id}` : `/dashboard/listings/${listing.id}`,
                           imageUrl: listing.photos[0],
                         }))
                       }}
@@ -202,7 +213,7 @@ const SeekerExploreOverview: React.FC = () => {
                         label: 'Popular Breeds',
                         links: popularBreeds?.map(breed => ({
                           label: breed.name,
-                          url: `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
+                          url: page === 'explore' ? `/explore/breeds/${encodeURIComponent(breed.name)}` : `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
                         }))
                       },
                       products: [
@@ -213,7 +224,7 @@ const SeekerExploreOverview: React.FC = () => {
                             name: listing.title,
                             price: listing.price,
                             currency: 'KES',
-                            href: `/dashboard/listings/${listing.id}`,
+                            href: page === 'explore' ? `/explore/listings/${listing.id}` : `/dashboard/listings/${listing.id}`,
                             imageUrl: listing.photos[0],
                           }))
                         },
@@ -224,9 +235,33 @@ const SeekerExploreOverview: React.FC = () => {
                             name: listing.title,
                             price: listing.price,
                             currency: 'KES',
-                            href: `/dashboard/listings/${listing.id}`,
+                            href: page === 'explore' ? `/explore/listings/${listing.id}` : `/dashboard/listings/${listing.id}`,
                             imageUrl: listing.photos[0],
                           }))
+                        },
+                        {
+                          label: 'Cats',
+                          products: []
+                        },
+                        {
+                          label: 'Rabbits',
+                          products: []
+                        },
+                        {
+                          label: 'Hamsters',
+                          products: []
+                        },
+                        {
+                          label: 'Guinea Pigs',
+                          products: []
+                        },
+                        {
+                          label: 'Parrots',
+                          products: []
+                        },
+                        {
+                          label: 'Other',
+                          products: []
                         },
                       ]
                     }}
@@ -247,6 +282,9 @@ const SeekerExploreOverview: React.FC = () => {
                 columns={{ base: 1, md: 2, lg: 3 }}
                 spacing={4}
                 emptyMessage="No breeders found"
+                props={{
+                  py: 4
+                }}
               />
             </TabPanel>
 
@@ -265,5 +303,5 @@ const SeekerExploreOverview: React.FC = () => {
 
 };
 
-export default SeekerExploreOverview;
+export default ExploreOverview;
 

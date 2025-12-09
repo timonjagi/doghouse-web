@@ -1,6 +1,6 @@
 import { Box, Button, HStack, Progress, Stack, Text } from '@chakra-ui/react'
 import React from 'react';
-import SeekerExploreOverview from 'lib/components/ui/SeekerExploreOverview';
+import SeekerExploreOverview from 'lib/components/ui/ExploreOverview';
 import EthicalQuestionairreCard from 'lib/components/ui/EthicalQuestionairreCard';
 
 const SeekerDashboardOverview: React.FC = () => {

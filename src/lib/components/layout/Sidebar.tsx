@@ -10,6 +10,7 @@ import {
   useBreakpointValue,
   useColorModeValue as mode,
   Progress,
+  Divider,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -25,6 +26,7 @@ import { UserProfile } from "./UserProfile";
 import NextLink from "next/link";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { BsTiktok } from "react-icons/bs";
+import CompleteProfileCard from "../ui/CompleteProfileCard";
 
 // Logged out navigation links
 const LOGGED_OUT_NAV = {
@@ -196,7 +198,14 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
     <Flex
       direction="column"
       justify="space-between"
-      h="full"
+      h="100dvh"
+      overflow="scroll"
+      css={{
+        scrollbarWidth: "none",
+        "::-webkit-scrollbar": {
+          display: "none",
+        },
+      }}
     >
       <Stack spacing="3" >
         <ColumnHeader>
@@ -237,6 +246,16 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
             </Stack>
           ))}
 
+
+        </Stack>
+
+
+      </Stack>
+
+      {/* User Profile at bottom */}
+      <Box p="3">
+        <Stack spacing="3">
+
           {/* Extra links */}
           <Stack spacing="3">
             <NavHeading>Support</NavHeading>
@@ -259,14 +278,13 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
               </NavLink>
             </Stack>
           </Stack>
+          <Divider />
+
+          {!profile?.profile_photo_url && <CompleteProfileCard onUpdateProfileClick={() => router.push("/dashboard/account/profile")} />}
+
+
+          <UserProfile profile={profile} onClose={onClose} />
         </Stack>
-
-
-      </Stack>
-
-      {/* User Profile at bottom */}
-      <Box borderTopWidth="1px" p="3">
-        <UserProfile profile={profile} onClose={onClose} />
       </Box>
     </Flex>
   );

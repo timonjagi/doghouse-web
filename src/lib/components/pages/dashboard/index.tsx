@@ -27,7 +27,7 @@ import { NextSeo } from "next-seo";
 import BreederDashboardOverview from "./BreederDashboardOverview";
 import SeekerDashboardOverview from "./SeekerDashboardOverview";
 import AdminDashboardOverview from "./AdminDashboardOverview";
-import SeekerExploreOverview from "../../ui/SeekerExploreOverview";
+import SeekerExploreOverview from "../../ui/ExploreOverview";
 
 const DashboardHome = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);

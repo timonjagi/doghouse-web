@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react';
 import {
   Container,
-  Heading,
   Text,
   VStack,
   HStack,
   Button,
-  Card,
-  CardBody,
   Badge,
   Box,
   SimpleGrid,
@@ -15,7 +12,6 @@ import {
   Center,
   useToast,
   useDisclosure,
-  ButtonGroup,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
@@ -23,20 +19,18 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Stack,
-  IconButton,
   useBreakpointValue,
   Tabs,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
-  Divider,
   AlertIcon,
   Alert,
-  Spacer,
-  Img
+  Img,
+  Icon
 } from '@chakra-ui/react';
-import { ArrowBackIcon, EditIcon, ChatIcon, DeleteIcon, ArrowForwardIcon } from '@chakra-ui/icons';
+import { EditIcon, ChatIcon, DeleteIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserBreedsFromUser, useUserProfile } from 'lib/hooks/queries';
 import { useDeleteListing, useIncrementListingViews, useListing } from 'lib/hooks/queries/useListings';
@@ -44,10 +38,13 @@ import { NextSeo } from 'next-seo';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { Loader } from 'lib/components/ui/Loader';
 import { supabase } from 'lib/supabase/client';
-import { ApplicationForm } from '../adoptions/ApplicationForm';
 import ListingForm from './ListingForm';
 import WhatsIncluded from 'lib/components/ui/WhatsIncluded';
-import { SectionHeaderWithDescription } from 'lib/components/ui/SectionHeaderWithDescription';
+import { PageHeaderWithTwoButtons } from 'lib/components/ui/PageHeaderWithTwoButtons';
+import { FiHeart, FiInfo, FiList } from 'react-icons/fi';
+import { MdOutlineMedicalInformation } from 'react-icons/md';
+import { GiDogHouse } from 'react-icons/gi';
+import { BreederCard } from 'lib/components/ui/BreederCard2';
 
 interface ListingDetailPageProps {
   id: string;
@@ -202,104 +199,141 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
         `${getTitle()} - DogHouse Kenya`
       } />
 
-      <Container maxW="7xl" py={{ base: 4, md: 4 }}>
+      <Container maxW="7xl" pb={{ base: 4, md: 24 }}>
+        <Stack spacing={{ base: 8, md: 16 }} >
 
+          <Stack spacing="6">
+            <PageHeaderWithTwoButtons
+              title={getTitle()}
+              description={formatPrice(parseInt(listing.price))}
+              buttonPrimary={isOwner ? {
+                label: "Edit",
+                onClick: onListingFormOpen,
+                icon: <EditIcon />,
+                colorScheme: "brand",
+                isDisabled: listing.status !== 'available',
+              } : {
+                label: "Add to Wishlist",
+                onClick: () => { /* Handle add to wishlist logic */ },
+                icon: <FiHeart />,
+                colorScheme: "gray",
+              }}
+              buttonSecondary={isOwner ? {
+                label: "Delete",
+                onClick: onDeleteOpen,
+                icon: <DeleteIcon />,
+                colorScheme: "red",
+                isLoading: deleteListingMutation.isPending,
+                isDisabled: listing.status !== 'available',
+              } : !isOwner && canApply ? {
+                label: "Apply Now",
+                onClick: onApplicationOpen,
+                icon: <ArrowForwardIcon />, // Or a more suitable icon for application
+                colorScheme: "brand",
+              } : !isOwner && !canApply ? {
+                label: "Message Seller",
+                onClick: () => router.push(`/chat/${listing.owner_id}`), // Assuming a chat route
+                icon: <ChatIcon />,
+                colorScheme: "brand",
+              } : undefined}
 
-        <Stack spacing={6} >
-          <HStack justify="space-between" align="start" wrap="wrap" spacing={4}>
+            />
 
-            <HStack flex={1}>
-              <Heading size={{ base: 'xs', lg: 'sm' }} mb={2}>{
-                getTitle()
-              }</Heading>
-              <Badge colorScheme={getStatusColor(listing.status)}>
-                {formatStatus(listing.status)}
-              </Badge>
+            <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+              <Stack spacing={4}>
+                <Gallery
+                  images={[
+                    ...Array.from(listing.photos as string[]).map((photo) => ({ src: photo })),
+                    ...((listing.parents as { sire?: { photos?: (string | File)[] }; dam?: { photos?: (string | File)[] } })?.sire?.photos || []).map((photo) => ({ src: typeof photo === 'string' ? photo : URL.createObjectURL(photo), alt: 'Sire Photo' })),
+                    ...((listing.parents as { sire?: { photos?: (string | File)[] }; dam?: { photos?: (string | File)[] } })?.dam?.photos || []).map((photo) => ({ src: typeof photo === 'string' ? photo : URL.createObjectURL(photo), alt: 'Dam Photo' }))
+                  ]}
+                  flex={1}
+                  minW="50vw"
+                >
+                  <HStack spacing={3} mb={4} position="absolute" top="4" left="4" zIndex={1}>
+                    <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
+                      {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
+                    </Badge>
+                    <Badge colorScheme={getStatusColor(listing.status)}>
+                      {listing.status}
+                    </Badge>
+                    {listing.is_featured && (
+                      <Badge colorScheme="purple">Featured</Badge>
+                    )}
+                  </HStack>
+                </Gallery>
 
-            </HStack>
+              </Stack>
 
-            {isOwner && <ButtonGroup>
-              <Button
-                leftIcon={<EditIcon />}
-                colorScheme="brand"
-                onClick={onListingFormOpen}
-                isDisabled={listing.status !== 'available'}
-              >
-                Edit
-              </Button>
+              <Tabs variant='soft-rounded' colorScheme='brand' >
+                <TabList
+                  overflowY="hidden"
+                  whiteSpace="nowrap"
+                  css={{
+                    '&::-webkit-scrollbar': {
+                      display: 'none',
+                    },
+                    scrollbarWidth: 'none',
+                  }}
+                >
+                  <Tab>
+                    <HStack>
+                      <Icon as={FiInfo} />
+                      <Text>Info</Text>
+                    </HStack>
+                  </Tab>
+                  <Tab>
+                    <HStack>
+                      <Icon as={MdOutlineMedicalInformation} />
+                      <Text>Health</Text>
+                    </HStack>
+                  </Tab>
+                  <Tab>
+                    <HStack>
+                      <Icon as={FiList} />
+                      <Text>Requirements</Text>
+                    </HStack>
+                  </Tab>
+                  <Tab>
+                    <HStack>
+                      <Icon as={GiDogHouse} />
+                      <Text>Breeder</Text>
+                    </HStack>
+                  </Tab>
 
-              <Button
-                leftIcon={<DeleteIcon />}
-                colorScheme="red"
-                onClick={onDeleteOpen}
-                isLoading={deleteListingMutation.isPending}
-                isDisabled={listing.status !== 'available'}
-              >
-                Delete
-              </Button>
+                </TabList>
 
-            </ButtonGroup>}
-          </HStack>
+                <TabPanels>
+                  <TabPanel>
+                    <PetInformation
+                      listing={listing}
+                      bgColor={bgColor}
+                      formatDate={formatDate}
+                      formatPrice={formatPrice}
+                    />
 
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-            <Stack spacing={4}>
-              <Gallery
-                images={Array.from(listing.photos as string[]).map((photo) => ({ src: photo }))}
-                flex={1}
-                minW="50vw"
-              >
-                <HStack spacing={3} mb={4} position="absolute" top="4" left="4" zIndex={1}>
-                  <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
-                    {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
-                  </Badge>
-                  <Badge colorScheme={getStatusColor(listing.status)}>
-                    {listing.status}
-                  </Badge>
-                  {listing.is_featured && (
-                    <Badge colorScheme="purple">Featured</Badge>
-                  )}
-                </HStack>
-              </Gallery>
+                  </TabPanel>
 
-            </Stack>
+                  <TabPanel>
+                    <HealthInfo listing={listing} />
+                  </TabPanel>
+                  <TabPanel>
+                    <Requirements listing={listing} />
+                  </TabPanel>
 
-            <Tabs variant='soft-rounded' colorScheme='brand' >
-              <TabList>
-                <Tab>Details</Tab>
-                <Tab>Parents</Tab>
-                <Tab>Health</Tab>
-                <Tab>Requirements</Tab>
-              </TabList>
+                  <TabPanel>
+                    <BreederInfo listing={listing} />
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </SimpleGrid>
 
-              <TabPanels>
-                <TabPanel>
-                  <PetInformation
-                    listing={listing}
-                    bgColor={bgColor}
-                    formatDate={formatDate}
-                    formatPrice={formatPrice}
-                  />
-
-                </TabPanel>
-                <TabPanel>
-                  <ParentInfo listing={listing} />
-                </TabPanel>
-                <TabPanel>
-                  <HealthInfo listing={listing} />
-                </TabPanel>
-                <TabPanel>
-                  <Requirements listing={listing} />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </SimpleGrid>
-
-
+          </Stack>
 
           {!isOwner && (
             <WhatsIncluded
               buttonText={listing.status === 'available' ? 'Apply Now' : 'Not Available'}
-              buttonSubtext={listing.status === 'available' ? 'Apply now to express your interest in this listing' : `This listing has been ${listing.status} and is no longer available. `}
+              buttonSubtext={listing.status === 'available' ? 'Apply now to express your interest in this listing' : `This listing has been ${listing.status} and is no longer available. Please contact the seller for more information or subscribe to be notified when the listing is available again.`}
               onButtonClick={() => onApplicationOpen()}
             />
           )}
@@ -410,23 +444,7 @@ const PetInformation = ({ listing, bgColor, formatDate, formatPrice }) => {
                 <Text>{listing.number_of_puppies || 'Not specified'}</Text>
               </Box>
 
-              <Box>
-                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                  Price
-                </Text>
-                <Text >
-                  Ksh. {listing.price || 'Not specified'}
-                </Text>
-              </Box>
 
-              <Box>
-                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                  Reservation Fee
-                </Text>
-                <Text >
-                  Ksh. {listing.reservation_fee || 'Not specified'}
-                </Text>
-              </Box>
             </>
           ) : (
             <>
@@ -457,56 +475,57 @@ const PetInformation = ({ listing, bgColor, formatDate, formatPrice }) => {
                 <Text>{listing.pet_gender?.charAt(0).toUpperCase() + listing.pet_gender?.slice(1) || 'Not specified'}</Text>
               </Box>
 
-              <Box>
-                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                  Location
-                </Text>
-                <Text >
-                  {listing.location_text || 'Not specified'}
-                </Text>
-              </Box>
 
-              <Box>
-                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                  Price
-                </Text>
-                <Text >
-                  Ksh. {listing.price || 'Not specified'}
-                </Text>
-              </Box>
-
-              <Box>
-                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                  Reservation Fee
-                </Text>
-                <Text >
-                  Ksh. {listing.reservation_fee || 'Not specified'}
-                </Text>
-              </Box>
             </>
           )}
         </SimpleGrid>
       </VStack>
 
-      <Divider />
+      <VStack spacing={4} align="stretch">
+        <Text fontSize="lg" fontWeight="semibold" color="brand.600">
+          Parent Information
+        </Text>
 
+        <SimpleGrid columns={2} spacing={4}>
+          {listing.parents?.sire ? (
+            <>
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Sire Name
+                </Text>
+                <Text>{listing.parents?.sire?.name || 'Not specified'}</Text>
+              </Box>
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Sire Breed
+                </Text>
+                <Text>{listing.parents?.sire?.breed || 'Not specified'}</Text>
+              </Box>
+            </>
+          ) : (
+            <Text>No sire information available.</Text>
+          )}
 
-
-      <SimpleGrid columns={2} spacing={4}>
-        <Box>
-          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-            Views
-          </Text>
-          <Text >{listing.view_count || 0} views</Text>
-        </Box>
-        <Box>
-          <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-            Listed
-          </Text>
-          <Text >{formatDate(listing.created_at.toString())}</Text>
-        </Box>
-      </SimpleGrid>
-
+          {listing.parents?.dam ? (
+            <>
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Dam Name
+                </Text>
+                <Text>{listing.parents?.dam?.name || 'Not specified'}</Text>
+              </Box>
+              <Box>
+                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                  Dam Breed
+                </Text>
+                <Text>{listing.parents?.dam?.breed || 'Not specified'}</Text>
+              </Box>
+            </>
+          ) : (
+            <Text>No dam information available.</Text>
+          )}
+        </SimpleGrid>
+      </VStack>
 
     </Stack>
   )
@@ -536,23 +555,6 @@ const ParentInfo = ({ listing }) => {
                   <Text>{listing.parents?.sire?.breed || 'Not specified'}</Text>
                 </Box>
               </SimpleGrid>
-              <Box>
-
-                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                  Photos
-                </Text>
-                {listing.parents?.sire?.photos.length ? listing.parents.sire.photos.map((file, index) => (
-                  <Box key={index} borderRadius="md" overflow="hidden" borderWidth={1}>
-                    <Img
-                      src={file && typeof file === 'string' ? file : URL.createObjectURL(file)}
-                      alt={`Sire Photo ${index + 1}`}
-                      objectFit="cover"
-                      w="full"
-                      h="100px"
-                    />
-                  </Box>
-                )) : <>No sire photos available</>}
-              </Box>
             </Stack>
 
           ) : (
@@ -580,24 +582,6 @@ const ParentInfo = ({ listing }) => {
                   <Text>{listing.parents?.dam?.breed || 'Not specified'}</Text>
                 </Box>
               </SimpleGrid>
-
-              <Box>
-                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                  Photos
-                </Text>
-                {listing.parents?.dam?.photos?.length ? listing.parents?.dam?.photos?.map((file, index) => (
-                  <Box key={index} borderRadius="md" overflow="hidden" borderWidth={1}>
-                    <Img
-
-                      src={file && typeof file === 'string' ? file : URL.createObjectURL(file)}
-                      alt={`Dam Photo ${index + 1}`}
-                      objectFit="cover"
-                      w="full"
-                      h="100px"
-                    />
-                  </Box>
-                )) : <>No dam photos available</>}
-              </Box>
 
             </Stack>
           ) : (
@@ -689,6 +673,14 @@ const Requirements = ({ listing }) => {
         )) : <Text>No requirements specified.</Text>}
       </SimpleGrid>
     </Box>
+  )
+}
+
+const BreederInfo = ({ listing }) => {
+  return (
+    <BreederCard
+      breeder={listing.users}
+    />
   )
 }
 

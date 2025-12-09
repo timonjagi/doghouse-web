@@ -125,7 +125,16 @@ const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = () => {
           {/* Applications Tabs */}
 
           <Tabs variant='soft-rounded' index={selectedTab} onChange={setSelectedTab} colorScheme="brand">
-            <TabList>
+            <TabList
+              overflowY="hidden"
+              whiteSpace="nowrap"
+              css={{
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
+                scrollbarWidth: 'none',
+              }}
+            >
               <Tab>
                 Active ({groupedApplications.active.length})
               </Tab>
