@@ -19,7 +19,7 @@ const About = () => {
 
   return (
     <>
-      <NextSeo title="About | Doghouse" />
+      <NextSeo title="About | Pethouse" />
 
       <Box bg="bg-surface" as="section">
         <Container maxW="5xl" py={{ base: 12, md: 20 }}>

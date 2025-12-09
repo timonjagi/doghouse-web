@@ -138,9 +138,9 @@ export const Testimonials = () => {
               company="Nairobi, Kenya"
               image="https://images.unsplash.com/photo-1603610515737-193e0b423983?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mjk4fHxsYWR5JTIwaGVhZHNob3QlMjBzbWlsaW5nfGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
             >
-              We had an amazing experience adopting our dog through Doghouse. Their customer service was top-notch,
+              We had an amazing experience adopting our dog through Pethouse. Their customer service was top-notch,
               they were always available to answer any questions or concerns we had. Our dog has brought so much joy
-              into our lives and we couldn't be happier with our decision. We would highly recommend Doghouse to anyone
+              into our lives and we couldn't be happier with our decision. We would highly recommend Pethouse to anyone
               looking to adopt a dog, they truly care about finding the perfect home for their dogs.
             </Testimonial>
 

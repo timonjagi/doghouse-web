@@ -1,4 +1,4 @@
-const APP_NAME = "Doghouse";
+const APP_NAME = "Pethouse";
 
 const Meta = () => {
   return (

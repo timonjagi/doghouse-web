@@ -23,7 +23,7 @@ import { NextSeo } from "next-seo";
 const Blog = () => {
   return (
     <Box bg="bg-surface" >
-      <NextSeo title="Blog | Doghouse" />
+      <NextSeo title="Blog | Pethouse" />
 
       <Box bg="bg-accent" color="on-accent">
         <Container

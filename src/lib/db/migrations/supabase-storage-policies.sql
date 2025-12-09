@@ -1,8 +1,8 @@
 -- =====================================================
--- Doghouse Platform - Storage Bucket Policies
+-- Pethouse Platform - Storage Bucket Policies
 -- =====================================================
 -- Run this script in your Supabase SQL Editor to configure
--- proper storage access controls for the Doghouse platform
+-- proper storage access controls for the Pethouse platform
 
 -- Create breed-images bucket if it doesn't exist
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

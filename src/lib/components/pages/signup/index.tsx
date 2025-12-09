@@ -79,7 +79,7 @@ const Features = () => {
           </Flex>
           {/* <Flex align="center" h="24">
             <Text color="on-accent-subtle" fontSize="sm">
-              © 2022 Doghouse Kenya. All rights reserved.
+              © 2022 Pethouse Kenya. All rights reserved.
             </Text>
           </Flex> */}
         </Flex>
@@ -154,7 +154,7 @@ const SignUp = () => {
 
             <Flex align="center" h="24">
               <Text color="on-accent-subtle" fontSize="sm">
-                © 2022 Doghouse Kenya. All rights reserved.
+                © 2022 Pethouse Kenya. All rights reserved.
               </Text>
             </Flex>
           </Flex>

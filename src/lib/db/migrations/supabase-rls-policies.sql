@@ -1,9 +1,9 @@
 -- =====================================================
--- Doghouse Platform - Row Level Security (RLS) Policies
+-- Pethouse Platform - Row Level Security (RLS) Policies
 -- Updated for Unified Schema
 -- =====================================================
 -- Run this script in your Supabase SQL Editor to configure
--- proper data access controls for the Doghouse platform
+-- proper data access controls for the Pethouse platform
 --
 -- IMPORTANT: This script will DROP existing policies before
 -- creating new ones to avoid conflicts.

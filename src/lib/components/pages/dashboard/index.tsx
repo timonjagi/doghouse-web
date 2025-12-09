@@ -135,7 +135,7 @@ const Welcome: React.FC<{ router: any }> = ({ router }) => {
 
         <Stack mx="auto" textAlign="center">
           <Heading size="md" letterSpacing="tight">
-            Welcome to Doghouse
+            Welcome to Pethouse
           </Heading>
           <Text color="muted">
             We are happy to have you here! Before you get started, please take a few minutes to answer a few questions.

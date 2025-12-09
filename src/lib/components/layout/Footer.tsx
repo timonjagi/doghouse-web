@@ -51,7 +51,7 @@ const Footer = () => (
           </ButtonGroup>
         </Stack>
         <Text fontSize="sm" color="on-accent-subtle">
-          &copy; {new Date().getFullYear()} Doghouse Kenya. All rights reserved.
+          &copy; {new Date().getFullYear()} Pethouse Kenya. All rights reserved.
         </Text>
       </Stack>
     </Container>

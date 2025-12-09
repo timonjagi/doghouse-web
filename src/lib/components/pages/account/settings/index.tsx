@@ -74,7 +74,7 @@ const Settings = () => {
                   Notifications
                 </Text>
                 <Text fontSize="sm" color="muted">
-                  Receive notifications about Doghouse updates.
+                  Receive notifications about Pethouse updates.
                 </Text>
               </Stack>
               {notifications.map((notification, id) => (

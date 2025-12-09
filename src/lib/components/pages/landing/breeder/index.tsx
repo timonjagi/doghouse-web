@@ -22,7 +22,7 @@ const Home = () => {
         minHeight="70vh"
         w="full"
       >
-        <NextSeo title="Doghouse - Quality breeds" />
+        <NextSeo title="Pethouse - Quality breeds" />
         <Hero />
 
         <BreedTraits />

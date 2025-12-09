@@ -23,7 +23,7 @@ const Home = () => {
         justifyContent="center"
         w="full"
       >
-        <NextSeo title="Doghouse - Your Home for Quality Breeds" />
+        <NextSeo title="Pethouse - Your Home for Quality Breeds" />
 
         <Hero />
 
