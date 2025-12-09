@@ -13,7 +13,7 @@ export const DoghouseLogo: React.FC<LogoProps> = ({ color }) => {
       <HStack align="center">
         <Image src={logo} height={8} fallbackSrc="images/logo_brand.png" />
         {color === 'on-accent' && <Text fontWeight="semibold" fontSize="20pt" color="white">
-          doghouse
+          pethouse
         </Text>
         }
       </HStack>

@@ -6,7 +6,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 
 import { Logo } from "./Logo";
 import { BsTiktok } from "react-icons/bs";
@@ -18,6 +18,12 @@ const Footer = () => (
         <Stack justify="space-between" direction="row" align="center">
           <Logo color="on-accent" />
           <ButtonGroup variant="ghost-on-accent">
+            <IconButton
+              as="a"
+              href="https://wa.me/+254789949979"
+              aria-label="Whatsapp"
+              icon={<FaWhatsapp fontSize="1.25rem" />}
+            />
             <IconButton
               as="a"
               href="https://www.facebook.com/profile.php?id=100012765483528"
@@ -45,7 +51,7 @@ const Footer = () => (
           </ButtonGroup>
         </Stack>
         <Text fontSize="sm" color="on-accent-subtle">
-          &copy; {new Date().getFullYear()} Doghouse Kenya. All rights reserved.
+          &copy; {new Date().getFullYear()} Pethouse Kenya. All rights reserved.
         </Text>
       </Stack>
     </Container>

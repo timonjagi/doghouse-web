@@ -204,7 +204,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
                 <UserInfo
                   location={breederProfile?.kennel_location}
-                  website="doghouse.co.ke"
+                  website="pethouse.co.ke"
                   memberSince={new Date(
                     breederUser?.created_at
                   ).toDateString()}

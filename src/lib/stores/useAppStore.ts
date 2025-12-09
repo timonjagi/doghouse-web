@@ -117,7 +117,7 @@ export const useAppStore = create<AppState>()(
         },
       }),
       {
-        name: 'doghouse-app-store',
+        name: 'pethouse-app-store',
         partialize: (state) => ({
           userSession: state.userSession,
           isSidebarOpen: state.isSidebarOpen,

@@ -1,4 +1,4 @@
-# Doghouse Web
+# Pethouse Web
 
 A modern web application built with Next.js, Chakra UI, and TypeScript, designed to provide a comprehensive platform for dog enthusiasts. This project aims to host a blog for articles and updates.
 
@@ -39,8 +39,8 @@ Ensure you have the following installed:
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/timonjagi/doghouse-web.git
-    cd doghouse-web
+    git clone https://github.com/timonjagi/pethouse-web.git
+    cd pethouse-web
     ```
 2.  Install dependencies:
     ```bash
@@ -77,5 +77,5 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 This project is configured for easy deployment to platforms like [Vercel](https://vercel.com/), [Netlify](https://www.netlify.com/), or [Railway](https://railway.app/).
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftimonjagi%2Fdoghouse-web)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/timonjagi/doghouse-web)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/timonjagi/pethouse-web)
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/aqmmai?referralCode=9lKVVo)

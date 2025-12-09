@@ -76,7 +76,7 @@ export default async function handler(
     });
 
     // Send welcome message to group
-    const welcomeMessage = `Welcome ${name} to the Doghouse community! We're excited to have you here.`;
+    const welcomeMessage = `Welcome ${name} to the Pethouse community! We're excited to have you here.`;
 
     await fetch(`${WHAPI_SERVER}/messages/text`, {
       method: 'POST',

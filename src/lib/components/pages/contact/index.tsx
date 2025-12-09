@@ -240,7 +240,7 @@ const FAQSection = () => {
     {
       question: "How do I get a dog?",
       answer:
-        "Getting a dog through Doghouse is easy! We have a simple adoption process to ensure the best match between you and your future pet. Start by filling out our adoption application form where we&apos;ll learn about your lifestyle and preferences.",
+        "Getting a dog through Pethouse is easy! We have a simple adoption process to ensure the best match between you and your future pet. Start by filling out our adoption application form where we&apos;ll learn about your lifestyle and preferences.",
       link: "/contact/adoption",
       linkText: "Start Your Adoption Journey",
     },
@@ -312,7 +312,7 @@ const FAQSection = () => {
 function Contact() {
   return (
     <Box as="section" bg="bg-surface" minH="100vh">
-      <NextSeo title="Contact | Doghouse" />
+      <NextSeo title="Contact | Pethouse" />
 
       <Container maxW="7xl" py={{ base: 8, md: 12, lg: 16 }}>
         <Stack spacing={{ base: 8, md: 12, lg: 16 }}>

@@ -24,7 +24,6 @@ const Login = () => {
 
   return (
     <Flex
-      minH="100vh"
       bgGradient={useBreakpointValue({
         md: mode(
           "linear(to-r, brand.600 50%, white 50%)",
@@ -90,7 +89,7 @@ const Login = () => {
               </Flex>
               <Flex align="center" h="24">
                 <Text color="on-accent-subtle" fontSize="sm">
-                  © 2022 Doghouse Kenya. All rights reserved.
+                  © 2022 Pethouse Kenya. All rights reserved.
                 </Text>
               </Flex>
             </Flex>

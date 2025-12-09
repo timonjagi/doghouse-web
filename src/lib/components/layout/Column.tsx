@@ -18,7 +18,7 @@ export const ColumnHeader = (props: FlexProps) => (
     position="sticky"
     zIndex={1}
     top="0"
-    px="3"
+    px="6"
     align="center"
     bg={useColorModeValue("bg-subtle", "gray.800")}
     color={useColorModeValue("gray.700", "white")}

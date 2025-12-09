@@ -42,10 +42,11 @@ import { ListingList } from '../../ui/ListingList'
 import { BreedList } from '../../ui/BreedList'
 import { BreedersList } from '../../ui/BreederList'
 import { SortbySelect, } from 'lib/components/ui/SortBySelect'
-import { ArrowBackIcon, ChevronLeftIcon } from '@chakra-ui/icons'
+import { ArrowBackIcon, ArrowRightIcon, ChevronLeftIcon } from '@chakra-ui/icons'
 import { ActiveFilters } from 'lib/components/ui/ActiveFilters'
 import { EmptyView } from 'lib/components/ui/EmptyView'
 import { useCategories } from 'lib/hooks/queries/useCategories'
+import { FaArrowRight } from 'react-icons/fa'
 
 const UnifiedSearchPage = () => {
   const router = useRouter()
@@ -183,6 +184,7 @@ const UnifiedSearchPage = () => {
     error: breedersError
   } = useAllBreeders(undefined, breedersParams)
 
+  console.log('breeders', breeders)
   const handleListingClick = async (listingId: string) => {
     try {
       await incrementViewsMutation.mutateAsync(listingId)
@@ -243,10 +245,11 @@ const UnifiedSearchPage = () => {
                 {categories?.searchTabMenuItems.map((category) => (
                   <Tab key={category.tab} >
                     {category.label.includes('All') ? 'All' : category.label}
-                    ({category.tab === 'all' && totalResults})
-                    ({category.tab === 'breeds' && availableBreeds.length})
-                    ({category.tab === 'breeders' && breeders.length})
-                    ({category.tab === 'listings' && listings.length})
+                    {' '}
+                    {category.tab === 'all' && `(${totalResults})`}
+                    {category.tab === 'breeds' && `(${availableBreeds.length})`}
+                    {category.tab === 'breeders' && `(${breeders.length})`}
+                    {category.tab === 'listings' && `(${listings.length})`}
 
                   </Tab>
                 ))}
@@ -340,14 +343,15 @@ const UnifiedSearchPage = () => {
                       {listings.length > 0 && (
                         <Box>
                           <Flex justify="space-between" align="center" mb={4}>
-                            <Heading size="xs">Listings ({listings.length})</Heading>
+                            <Text size="lg" fontWeight="semibold">Listings ({listings.length})</Text>
                             <Button
-                              size="sm"
+                              size="xs"
                               variant="link"
                               colorScheme="brand"
+                              rightIcon={<FaArrowRight />}
                               onClick={() => handleTabChange(1)}
                             >
-                              View All Listings →
+                              View All Listings
                             </Button>
                           </Flex>
                           <ListingList
@@ -365,14 +369,15 @@ const UnifiedSearchPage = () => {
                       {availableBreeds.length > 0 && (
                         <Box>
                           <Flex justify="space-between" align="center" mb={4}>
-                            <Heading size="xs">Breeds ({availableBreeds.length})</Heading>
+                            <Text size="lg" fontWeight="semibold">Breeds ({availableBreeds.length})</Text>
                             <Button
-                              size="sm"
+                              size="xs"
                               variant="link"
                               colorScheme="brand"
+                              rightIcon={<FaArrowRight />}
                               onClick={() => handleTabChange(2)}
                             >
-                              View All Breeds →
+                              View All Breeds
                             </Button>
                           </Flex>
                           <BreedList
@@ -391,14 +396,15 @@ const UnifiedSearchPage = () => {
                       {breeders.length > 0 && (
                         <Box>
                           <Flex justify="space-between" align="center" mb={4}>
-                            <Heading size="xs">Breeders ({breeders.length})</Heading>
+                            <Text size="lg" fontWeight="semibold">Breeders ({breeders.length})</Text>
                             <Button
-                              size="sm"
+                              size="xs"
                               variant="link"
                               colorScheme="brand"
+                              rightIcon={<FaArrowRight />}
                               onClick={() => handleTabChange(3)}
                             >
-                              View All Breeders →
+                              View All Breeders
                             </Button>
                           </Flex>
 

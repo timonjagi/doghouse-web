@@ -114,7 +114,7 @@ const WhyDoghouse = () => {
               }}
               color="muted"
             >
-              Finding a quality dog breed can be difficult, but Doghouse makes
+              Finding a quality dog breed can be difficult, but Pethouse makes
               it easy to find the perfect pup for your needs
             </Text>
           </Stack>
@@ -151,7 +151,7 @@ const WhyDoghouse = () => {
                 minH={{ base: '100%', lg: '560px' }}
                 objectFit="cover"
                 src="images/breeds/doghousekenya_curly_coated_retriever_1.jpg"
-                alt="Doghouse"
+                alt="Pethouse"
               />
             </Box>
           </Stack>

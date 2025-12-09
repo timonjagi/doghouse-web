@@ -1,13 +1,13 @@
-Excellent — let’s refine the **Doghouse PRD** to make the dashboard features much more robust and actionable.
+Excellent — let’s refine the **Pethouse PRD** to make the dashboard features much more robust and actionable.
 We’ll expand the **Dashboard** section into three role-specific views (Breeder, Seeker, Admin) with detailed modules, user interactions, and notification logic — while polishing the rest for clarity and alignment with the new product direction.
 
 ---
 
-## 🐾 **Refined Product Requirements Document (PRD) — Doghouse Platform**
+## 🐾 **Refined Product Requirements Document (PRD) — Pethouse Platform**
 
 ### **1. Overview**
 
-Doghouse is a digital platform connecting verified breeders with responsible dog seekers in Kenya.
+Pethouse is a digital platform connecting verified breeders with responsible dog seekers in Kenya.
 It streamlines the discovery, matching, and adoption workflow through an intelligent dashboard system and seamless WhatsApp integration — making dog ownership more ethical, transparent, and human-centered.
 
 ---

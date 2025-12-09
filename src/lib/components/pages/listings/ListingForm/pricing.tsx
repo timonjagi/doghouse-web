@@ -116,7 +116,7 @@ export const PricingStep: React.FC<PricingStepProps> = ({ data, updateData }) =>
             <Divider />
 
             <Text fontSize="xs" color="gray.500">
-              Note: Doghouse takes a 10% commission on your adoption price. Read our{' '}<Text as={Link} color="brand.600" cursor="pointer" href="/terms#listing" target="_blank">Listing Terms</Text> to learn more.
+              Note: Pethouse takes a 10% commission on your adoption price. Read our{' '}<Text as={Link} color="brand.600" cursor="pointer" href="/terms#listing" target="_blank">Listing Terms</Text> to learn more.
             </Text>
 
           </VStack>

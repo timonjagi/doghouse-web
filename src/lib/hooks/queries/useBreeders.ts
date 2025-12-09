@@ -51,7 +51,6 @@ export const useAllBreeders = (
 
       if (error) throw error;
 
-      console.log('breeder data', data)
       // Group by breeder and collect breed names
       const breederMap = new Map();
 
@@ -65,11 +64,19 @@ export const useAllBreeders = (
           });
         }
         const breederData = breederMap.get(breederId);
-        breederData.userBreedsCount += 1;
-        // Collect breed names for search
-        if (breeder.user_breeds?.breeds?.name) {
-          breederData.breedNames.push(breeder.user_breeds.breeds.name.toLowerCase());
+
+        // user_breeds is an array - iterate over it
+        if (Array.isArray(breeder.user_breeds)) {
+          breeder.user_breeds.forEach((userBreed: any) => {
+            breederData.userBreedsCount += 1;
+            // Collect breed names for search
+            if (userBreed.breeds?.name) {
+              breederData.breedNames.push(userBreed.breeds.name.toLowerCase());
+            }
+          });
         }
+
+        breederMap.set(breederId, breederData);
       });
 
       let results = Array.from(breederMap.values());
@@ -166,11 +173,18 @@ export const useFeaturedBreeders = (limit: number = 4) => {
           });
         }
 
-        breederMap.get(breederId).activeListingsCount += 1;
-        breederMap.get(breederId).userBreedsCount += 1;
-        // Collect breed names for search
-        if (breeder.user_breeds?.breeds?.name) {
-          breederMap.get(breederId).breedNames.push(breeder.user_breeds.breeds.name.toLowerCase());
+        const breederData = breederMap.get(breederId);
+
+        // user_breeds is an array - iterate over it
+        if (Array.isArray(breeder.user_breeds)) {
+          breeder.user_breeds.forEach((userBreed: any) => {
+            breederData.userBreedsCount += 1;
+            breederData.activeListingsCount += 1;
+            // Collect breed names for search
+            if (userBreed.breeds?.name) {
+              breederData.breedNames.push(userBreed.breeds.name.toLowerCase());
+            }
+          });
         }
       });
 

@@ -75,7 +75,7 @@ export const Hero = () => {
           overflow="hidden"
         >
           <Img
-            alt="Screenshot of Doghouse App"
+            alt="Screenshot of Pethouse App"
             src="/images/screenshot.png"
 
           />
