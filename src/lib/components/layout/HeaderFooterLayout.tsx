@@ -14,7 +14,7 @@ export const HeaderFooterLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header />}
-      <Box as="main" h={{ base: "calc(100vh - 64px)", md: "100vh" }} overflow="auto"
+      <Box as="main" h={{ base: "calc(100dvh - 64px)", md: "100dvh" }} overflow="auto"
       >
         {children}{" "}
       </Box>

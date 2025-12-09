@@ -26,7 +26,7 @@ export const NavButton = (props: NavButtonProps) => {
           <Text>{label}</Text>
         </HStack>
         {props.isExternal && (
-          <Icon as={FiArrowUpRight} boxSize="4" color="on-accent-subtle" />
+          <Icon as={FiArrowUpRight} boxSize="6" color="on-accent-subtle" />
         )}
         {endElement && <Box>{endElement}</Box>}
       </HStack>
