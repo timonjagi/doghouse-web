@@ -27,6 +27,7 @@ const DETAIL_PAGE_PATTERNS = [
   "/dashboard/breeders/[id]",
   "/dashboard/listings/[id]",
   "/dashboard/adoptions/[id]",
+  "/dashboard/breeders/[id]/breeds/[userBreedId]",
 ];
 
 export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
@@ -66,7 +67,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
       <Flex height={{ base: "auto", lg: "100vh" }}>
         {/* Primary Navigation Sidebar - Desktop only */}
         <Box
-          height="full"
+          h={{ base: "calc(100dvh - 64px)", lg: "full" }}
           width={{
             lg: "14rem",
             xl: "18rem",

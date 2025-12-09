@@ -169,21 +169,32 @@ export const useCategories = ({ page, tab, isDesktop }: UseCategoriesParams) => 
         categories.breeds.push(
           {
             label: 'Apartment Dogs',
-            href: page === 'explore' ? '/explore?tab=breeds&apartment=true' : '/dashboard/search?tab=breeds&apartment=true'
+            href: '/dashboard/search?tab=breeds&apartment=true'
           },
           {
             label: 'Family Dogs',
-            href: page === 'explore' ? '/explore?tab=breeds&family=true' : '/dashboard/search?tab=breeds&family=true'
+            href: '/dashboard/search?tab=breeds&family=true'
           },
           {
             label: 'Guard Dogs',
-            href: page === 'explore' ? '/explore?tab=breeds&guard=true' : '/dashboard/search?tab=breeds&guard=true'
+            href: '/dashboard/search?tab=breeds&guard=true'
           },
           {
-            label: 'Hypoallergenic Breeds',
-            href: '/dashboard/search?tab=breeds&hypoallergenic=true'
+            label: 'Companion Dogs',
+            href: '/dashboard/search?tab=breeds&companion=true'
           },
-
+          {
+            label: 'Large Breeds',
+            href: '/dashboard/search?tab=breeds&large=true'
+          },
+          {
+            label: 'Medium Breeds',
+            href: '/dashboard/search?tab=breeds&medium=true'
+          },
+          {
+            label: 'Small Breeds',
+            href: '/dashboard/search?tab=breeds&small=true'
+          },
         )
 
         categories.breeders.push(

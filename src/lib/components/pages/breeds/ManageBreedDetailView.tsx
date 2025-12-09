@@ -66,7 +66,7 @@ const ManageBreedDetailView = () => {
   const activeListings = listingsForBreed?.filter((listing) => listing.status !== "sold");
 
   const handleListingClick = (listingId: string) => {
-    router.push(`/dashboard/listings/${listingId}`);
+    router.push(`/dashboard/kennel/listings/${listingId}`);
   };
 
   const handleDeleteBreed = async () => {
@@ -79,7 +79,7 @@ const ManageBreedDetailView = () => {
         duration: 5000,
         isClosable: true,
       });
-      router.push("/dashboard/breeds");
+      router.push("/dashboard/kennel/");
     } catch (error) {
       console.error("Error deleting breed:", error);
     }
@@ -134,15 +134,11 @@ const ManageBreedDetailView = () => {
                 Delete
               </Button>
             </ButtonGroup>
-
-
           </HStack>
 
 
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
             <Gallery images={userBreed.images?.map((image) => ({ src: image, alt: userBreed.breeds.name })) || []} />
-
-
 
             <Tabs variant='soft-rounded' colorScheme='brand'>
               <TabList>
@@ -168,7 +164,9 @@ const ManageBreedDetailView = () => {
                 </TabPanel>
 
                 <TabPanel px={0}>
-                  <BreedersList breed={userBreed?.breeds} />
+                  <BreedersList
+                    breed={userBreed?.breeds}
+                  />
                 </TabPanel>
               </TabPanels>
             </Tabs>

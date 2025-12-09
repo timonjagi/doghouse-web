@@ -47,12 +47,52 @@ export const useBreederProfile = (userId?: string) => {
 
       const { data, error } = await supabase
         .from('breeder_profiles')
-        .select('*')
+        .select(`*, 
+          user_breeds!inner (
+            id,
+            breed_id,
+            created_at,
+            images,
+            breeds (
+              id,
+              name
+            )
+          )
+        `)
         .eq('user_id', userId)
         .single();
 
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
-      return data;
+      const breederMap = new Map();
+
+      data?.forEach((breeder: any) => {
+        const breederId = breeder.id;
+        if (!breederMap.has(breederId)) {
+          breederMap.set(breederId, {
+            ...breeder,
+            userBreedsCount: 0,
+            breedNames: [] as string[],
+          });
+        }
+        const breederData = breederMap.get(breederId);
+
+        // user_breeds is an array - iterate over it
+        if (Array.isArray(breeder.user_breeds)) {
+          breeder.user_breeds.forEach((userBreed: any) => {
+            breederData.userBreedsCount += 1;
+            // Collect breed names for search
+            if (userBreed.breeds?.name) {
+              breederData.breedNames.push(userBreed.breeds.name.toLowerCase());
+            }
+          });
+        }
+
+        breederMap.set(breederId, breederData);
+      });
+
+      let results: any = Array.from(breederMap.values());
+
+      return results;
     },
     enabled: !!userId,
   });

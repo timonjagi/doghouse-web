@@ -7,7 +7,7 @@ interface BreederCardProps {
 }
 
 export const BreederCard: React.FC<BreederCardProps> = ({ breeder }) => {
-  const user = breeder.users || breeder.userBreed?.users || breeder;
+  const user = breeder?.users || breeder?.userBreed?.users || breeder;
   const breederProfile = user?.breeder_profiles;
 
   //if (!user) return null;
@@ -53,15 +53,15 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder }) => {
               <Badge colorScheme="green" size="sm">Verified</Badge>
             )}
             {/* <Badge colorScheme="blue" size="sm">
-              {breeder.breeds.length} breed{breeder.breeds.length !== 1 ? 's' : ''}
+              {breeder?.breeds.length} breed{breeder?.breeds.length !== 1 ? 's' : ''}
             </Badge> */}
           </HStack>
 
           {/* <Text fontSize="sm" color="gray.600" noOfLines={2}>
-            Specializing in: {breeder.breeds.map(b => b.breeds?.name).filter(Boolean).join(', ')}
+            Specializing in: {breeder?.breeds.map(b => b.breeds?.name).filter(Boolean).join(', ')}
           </Text> */}
 
-          <Link href={`/dashboard/breeders/${breeder.id}`} passHref>
+          <Link href={`/dashboard/breeders/${breeder?.id}`} passHref>
             <Button colorScheme="brand" size="sm" w="full" as="a">
               View Profile
             </Button>

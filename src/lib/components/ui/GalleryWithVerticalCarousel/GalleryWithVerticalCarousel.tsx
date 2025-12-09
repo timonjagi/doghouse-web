@@ -22,7 +22,7 @@ interface GalleryProps {
   rootProps?: StackProps
 }
 
-export const Gallery = (props: GalleryProps) => {
+export const GalleryWithVerticalCarousel = (props: GalleryProps) => {
   const { images, aspectRatio = 4 / 3, rootProps } = props
   const [index, setIndex] = React.useState(0)
   const [currentSlide, setCurrentSlide] = React.useState(0)

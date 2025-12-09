@@ -45,12 +45,13 @@ import { BsFillBuildingFill } from 'react-icons/bs';
 import { Rating } from 'lib/components/ui/Rating';
 import { CardContent, CardWithAvatar } from 'lib/components/ui/UserCardWithBackground';
 import { UserInfo } from 'lib/components/ui/UserInfo';
-import { FiBell, FiEdit, FiEdit2, FiEdit3, FiLogOut } from 'react-icons/fi';
+import { FiBell, FiEdit, FiEdit2, FiEdit3, FiLogOut, FiPlus, FiShoppingBag, FiStar, FiUserPlus } from 'react-icons/fi';
 import { LuDog } from 'react-icons/lu';
 import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 import { KennelForm } from '../../ui/KennelForm';
-import { BreedList } from 'lib/components/ui/BreedList';
+import { BreedList, UserBreedWithBreed } from 'lib/components/ui/BreedList';
 import ListingList from 'lib/components/ui/ListingList';
+import { UserBreed } from 'lib/db/schema';
 
 interface BreederDetailPageProps {
 }
@@ -142,6 +143,9 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
     });
   };
 
+  const handleBreedClick = (b: UserBreedWithBreed) => {
+    router.push(`/dashboard/breeders/${breederId}/breeds/${b?.id}`);
+  };
 
   const handleListingClick = async (listingId: string) => {
     // Increment view count
@@ -216,11 +220,20 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
 
           <Tabs variant="soft-rounded" colorScheme="brand">
-            <TabList>
+            <TabList
+              overflowY="hidden"
+              whiteSpace="nowrap"
+              css={{
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
+                scrollbarWidth: 'none',
+              }}
+            >
               <Tab>
 
                 <HStack spacing={2}>
-                  {/* <Icon as={LuDog} /> */}
+                  <Icon as={LuDog} />
 
                   <Text>Breeds ({breederBreeds?.length || 0})</Text>
                 </HStack>
@@ -229,25 +242,26 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
 
                 <HStack spacing={2}>
-                  {/* <Icon as={LuDog} /> */}
+                  <Icon as={FiShoppingBag} />
 
                   <Text>Listings ({breederListings?.length || 0})</Text>
                 </HStack>
 
               </Tab>
-              <Tab>
+              {isManaging && <Tab>
                 <HStack spacing={2}>
-                  {/* <Icon as={LuDog} /> */}
+                  <Icon as={FiUserPlus} />
 
                   <Text>
                     Adoptions
                   </Text>
                 </HStack>
               </Tab>
+              }
               <Tab>
 
                 <HStack spacing={2}>
-                  {/* <Icon as={LuDog} /> */}
+                  <Icon as={FiStar} />
 
                   <Text>Reviews</Text>
                 </HStack>
@@ -260,6 +274,8 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                 <BreedList
                   breeds={breederBreeds}
                   userRole={user?.role as 'seeker' | 'breeder' | 'admin'}
+                  columns={{ base: 2, md: 3, lg: 4 }}
+                  onBreedClick={(userBreed: UserBreed) => handleBreedClick(userBreed)}
                 />
               </TabPanel>
 
@@ -269,10 +285,12 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   listings={breederListings}
                   onListingClick={handleListingClick}
                   emptyMessage={isManaging ? "No listings added" : "No listings found"}
-                  emptyDescription={isManaging ? "Add listings to your kennel to display them here." : ""}
+                  emptyDescription={isManaging ? "Add listings to your kennel to display them here." : `Subscribe to ${breederProfile?.kennel_name} to get notified when they add new listings.`}
                   showEmptyAction={true}
-                  onEmptyAction={() => router.push(`/dashboard/kennel/listings`)}
-                  emptyActionLabel="Add Listing"
+                  onEmptyAction={isManaging ? () => router.push(`/dashboard/kennel`) : handleSubscribeClick}
+                  emptyActionLabel={isManaging ? "Add Listing" : "Subscribe"}
+                  emptyActionIcon={isManaging ? <FiPlus /> : <FiBell />}
+                  columns={{ base: 2, md: 3, lg: 4 }}
                 />
               </TabPanel>
 

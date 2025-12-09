@@ -8,7 +8,7 @@ interface BreederCardProps {
 
 export const BreederCard: React.FC<BreederCardProps> = ({ breeder }) => {
   const user = breeder;
-  const breederProfile = user?.breeder_profiles[0];
+  const breederProfile = user?.breeder_profiles[0] || user;
 
   //if (!user) return null;
 
@@ -26,9 +26,9 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder }) => {
               <Text fontWeight="semibold" fontSize="lg">
                 {breederProfile?.kennel_name || user?.display_name}
               </Text>
-              {breederProfile?.kennel_name && (
+              {user?.pet_type && (
                 <Text color="gray.600" fontSize="sm">
-                  {user?.display_name}
+                  {user?.pet_type}
                 </Text>
               )}
               {breederProfile?.kennel_location && (

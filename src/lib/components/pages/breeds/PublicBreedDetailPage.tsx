@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, SimpleGrid, useBreakpointValue } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Container, Heading, HStack, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Table, TableContainer, Tr, Tbody, Td, SimpleGrid, useBreakpointValue, useToast } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -12,6 +12,7 @@ import { NextSeo } from 'next-seo';
 import ListingList from "lib/components/ui/ListingList";
 import EthicalQuestionairreCard from "lib/components/ui/EthicalQuestionairreCard";
 import { FiHeart } from "react-icons/fi";
+import { GalleryWithHorizontalCarousel } from "lib/components/ui/GalleryWithHorizontalCarousel";
 
 const PublicBreedDetailPage = () => {
   const router = useRouter();
@@ -24,11 +25,17 @@ const PublicBreedDetailPage = () => {
   const handleListingClick = (listing) => {
     router.push(`/listings/${listing.id}`);
   };
-
+  const toast = useToast();
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const onAddToWishlist = () => {
-
+    toast({
+      title: "Added to wishlist",
+      description: "You will be notified when new listings are added.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
   }
 
   if (isLoadingBreed) {
@@ -84,11 +91,7 @@ const PublicBreedDetailPage = () => {
 
 
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-            <Gallery
-              rootProps={{ flex: "1", flexGrow: 1, minHeight: "100%", }}
-              images={[{ src: breed?.featured_image_url, alt: breed?.name }]}
-
-            />
+            <GalleryWithHorizontalCarousel images={[{ src: breed?.featured_image_url, alt: breed?.name }]} />
 
             <Tabs variant='soft-rounded' colorScheme='brand'>
               <TabList>

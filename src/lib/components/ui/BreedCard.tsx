@@ -7,9 +7,11 @@ import {
   HStack,
   useColorModeValue,
   Skeleton,
+  Icon,
 } from "@chakra-ui/react";
 import { StarIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
+import { GiDogHouse } from "react-icons/gi";
 
 interface BreedCardProps {
   userBreed: any;
@@ -66,15 +68,15 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
           </Text>
           <HStack justify="space-between" align="center">
 
-            {breed.group && (
+            {/* {breed.group && (
               <Badge colorScheme="purple" variant="subtle" fontSize="xs">
                 {breed.group}
               </Badge>
-            )}
+            )} */}
 
             {userRole === 'seeker' && userBreed.breeder_count && (
               <HStack spacing={1}>
-                <StarIcon color="yellow.400" boxSize={3} />
+                <Icon as={GiDogHouse} color="yellow.400" boxSize={3} />
                 <Text fontSize="xs" color="brand.600" fontWeight="medium">
                   {userBreed.breeder_count} breeder{userBreed.breeder_count !== 1 ? 's' : ''}
                 </Text>

@@ -44,6 +44,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/breeds/[id]", layout: 'dashboard' },
     { path: "/dashboard/breeders", layout: 'dashboard' },
     { path: "/dashboard/breeders/[id]", layout: 'dashboard' },
+    { path: "/dashboard/breeders/[id]/breeds/[userBreedId]", layout: 'dashboard' },
     { path: "/dashboard/listings", layout: 'dashboard' },
     { path: "/dashboard/listings/[id]", layout: 'dashboard' },
     { path: "/dashboard/wishlist", layout: 'dashboard' },
