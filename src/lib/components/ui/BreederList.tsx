@@ -4,6 +4,7 @@ import { UserCardWithRating } from "./UserCardWithRating/UserCardWithRating";
 import { useRouter } from "next/router";
 import { EmptyView } from "./EmptyView";
 import * as searchService from "lib/services/searchService";
+import { BreederCard } from "./BreederCard2";
 
 interface BreedersListProps {
   // Optional: fetch data internally for a specific breed
@@ -73,24 +74,24 @@ export const BreedersList: React.FC<BreedersListProps> = ({
   return (
     <SimpleGrid columns={columns} spacing={spacing}>
       {breeders.map((breeder) => (
-        // <BreederCard key={breeder?.id} breeder={breeder} />
-        <UserCardWithRating
-          key={breeder?.id}
-          data={{
-            id: breeder.id,
-            display_name: breeder.breeder_profiles?.kennel_name || breeder.display_name,
-            username: breeder.username || breeder.breeder_profiles?.kennel_name,
-            bio: breeder.bio,
-            location_text: breeder?.breeder_profiles?.kennel_location,
-            adoption_count: breeder.adoption_count,
-            rating: breeder.rating,
-            review_count: breeder.review_count,
-            profile_photo_url: breeder.breeder_profiles?.kennel_avatar_url || breeder.profile_photo_url,
-            tags: breeder.breedNames || [],
-            role: `${breeder?.breeder_profiles?.pet_type || 'dog'} breeder`
-          }}
-          action={() => router.push(`/dashboard/breeders/${breeder.id}`)}
-        />
+        <BreederCard key={breeder?.id} breeder={breeder} />
+        // <UserCardWithRating
+        //   key={breeder?.id}
+        //   data={{
+        //     id: breeder.id,
+        //     display_name: breeder.breeder_profiles[0]?.kennel_name || breeder.display_name,
+        //     username: breeder.username || breeder.breeder_profiles[0]?.kennel_name,
+        //     bio: breeder.bio,
+        //     location_text: breeder?.breeder_profiles[0]?.kennel_location,
+        //     adoption_count: breeder.adoption_count,
+        //     rating: breeder.rating,
+        //     review_count: breeder.review_count,
+        //     profile_photo_url: breeder.breeder_profiles[0]?.kennel_avatar_url || breeder.profile_photo_url,
+        //     tags: breeder.breedNames || [],
+        //     role: `${breeder?.breeder_profiles[0]?.pet_type || 'dog'} breeder`
+        //   }}
+        //   action={() => router.push(`/dashboard/breeders/${breeder.id}`)}
+        // />
       ))}
     </SimpleGrid>
   );

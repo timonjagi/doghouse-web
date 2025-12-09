@@ -194,7 +194,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
 
   return (
     <>
-      <Stack spacing="3">
+      <Stack spacing="3" pt="3">
         <ColumnHeader>
           <HStack spacing="3" justify="space-between" w="full">
 
