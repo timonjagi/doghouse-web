@@ -1,3 +1,3 @@
-import ApplicationsPage from "lib/components/pages/admin/applications";
+import AdminAdoptionsPage from "lib/components/pages/admin/adoptions";
 
-export default ApplicationsPage;
+export default AdminAdoptionsPage;
