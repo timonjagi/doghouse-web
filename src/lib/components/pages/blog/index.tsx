@@ -139,7 +139,6 @@ const Blog = () => {
           </Stack>
         </Stack>
       </Container>
-      <Footer />
     </Box>
   );
 };

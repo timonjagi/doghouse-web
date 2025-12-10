@@ -4,7 +4,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import { DashboardLayout } from "./DashboardLayout";
+import { DashboardLayout } from "./SidebarLayout";
 import { HeaderFooterLayout } from "./HeaderFooterLayout";
 
 type LayoutProps = {

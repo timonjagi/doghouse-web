@@ -203,7 +203,7 @@ export const navigationConfig: NavigationConfig = {
         },
         {
           label: "Adoptions",
-          href: "/dashboard/admin/applications",
+          href: "/dashboard/admin/adoptions",
           icon: FiClipboard,
           ariaLabel: "My applications"
         },

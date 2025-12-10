@@ -16,18 +16,18 @@ import {
   TimeIcon,
   CalendarIcon,
 } from '@chakra-ui/icons';
-import { ApplicationWithListing } from '../../hooks/queries/useApplications';
+import { AdoptionWithListing } from '../../hooks/queries/useAdoptions';
 import { useRouter } from 'next/router';
 import { FiUser } from 'react-icons/fi';
 import { PriceTag } from './PriceTag';
 
-interface ApplicationCardProps {
-  application: ApplicationWithListing;
+interface AdoptionCardProps {
+  adoption: AdoptionWithListing;
   userRole: 'seeker' | 'breeder';
 }
 
-export const ApplicationCard: React.FC<ApplicationCardProps> = ({
-  application,
+export const AdoptionCard: React.FC<AdoptionCardProps> = ({
+  adoption,
   userRole,
 }) => {
   const router = useRouter();
@@ -60,15 +60,15 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
 
   const handleViewDetails = () => {
-    router.push(`/dashboard/adoptions/${application.id}`);
+    router.push(`/dashboard/adoptions/${adoption.id}`);
   };
 
-  const breedName = application.listings.breeds?.name || 'Unknown Breed';
+  const breedName = adoption.listings.breeds?.name || 'Unknown Breed';
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
   return (
     <Box
-      key={application.id}
+      key={adoption.id}
       overflow="hidden"
       border="1px solid"
       borderColor={borderColor}
@@ -85,7 +85,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
       {/* Main Photo */}
       <Box position="relative" height="200px" overflow="hidden">
         <Image
-          src={application.listings.photos?.[0]}
+          src={adoption.listings.photos?.[0]}
           alt={breedName}
           objectFit="cover"
           w="full"
@@ -96,32 +96,32 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
         />
 
         <HStack position="absolute" top={2} right={2} spacing={2}>
-          <Badge colorScheme={getStatusColor(application.status)}>
-            {formatStatus(application.status)}
+          <Badge colorScheme={getStatusColor(adoption.status)}>
+            {formatStatus(adoption.status)}
           </Badge>
         </HStack>
       </Box>
 
       <VStack spacing={2} align="stretch" p={4}>
         <Text fontSize="lg" fontWeight="semibold" noOfLines={2}>
-          {application.listings.title}
+          {adoption.listings.title}
         </Text>
 
         <Text fontSize="sm" color="gray.600" noOfLines={2}>
-          {`${application.listings.type === 'litter' ? 'Litter' : 'Pet'} • ${breedName}`}
+          {`${adoption.listings.type === 'litter' ? 'Litter' : 'Pet'} • ${breedName}`}
         </Text>
 
-        {userRole === 'breeder' && application.users && (
+        {userRole === 'breeder' && adoption.users && (
           <HStack align="center" spacing={1}>
             <Icon as={FiUser} boxSize={4} color="gray.500" />
             <Text fontSize="sm" color="gray.500">
-              {application.users.display_name}
+              {adoption.users.display_name}
             </Text>
 
           </HStack>
         )}
 
-        <PriceTag price={application.listings.price} currency='KES' />
+        <PriceTag price={adoption.listings.price} currency='KES' />
 
       </VStack>
     </Box>

@@ -214,7 +214,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   {breederProfile && breederProfile?.kennel_name}
                 </Heading>
 
-                <HStack justifyContent={{ base: 'flex-start', md: 'center' }} py="2">
+                <HStack justifyContent={{ base: 'flex-start', sm: 'center' }} py="2">
                   <Text color={useColorModeValue("gray.600", "gray.400")}>
                     {breederProfile?.pet_type || 'Dog'} breeder
                   </Text>

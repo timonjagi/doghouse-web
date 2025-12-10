@@ -165,7 +165,7 @@ export const useInitiatePayment = () => {
       }
 
       // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: queryKeys.applications.all() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.adoptions.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     },
   });
@@ -317,7 +317,7 @@ export const useVerifyPayment = (applicationId?: string) => {
       }
 
       // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: queryKeys.applications.all() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.adoptions.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
     },
   });

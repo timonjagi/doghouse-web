@@ -1,16 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { useUserProfile } from './useUserProfile';
-import { useApplicationsByUser } from './useApplications';
+import { useAdoptionsByUser } from './useAdoptions';
 import { useTransactions } from './useTransactions';
 import { useListings } from './useListings';
 import { supabase } from 'lib/supabase/client';
 
 export interface SeekerDashboardStats {
-  activeApplications: number;
-  completedApplications: number;
+  activeAdoptions: number;
+  completedAdoptions: number;
   totalSpent: number;
   spendingChange: number;
-  applicationTrend: Array<{ month: string; applications: number }>;
+  adoptionTrend: Array<{ month: string; adoptions: number }>;
   spendingTrend: Array<{ month: string; spending: number }>;
   recommendedListings: Array<{
     id: string;
@@ -23,7 +23,7 @@ export interface SeekerDashboardStats {
   }>;
   recentActivity: Array<{
     id: string;
-    type: 'application' | 'payment' | 'match';
+    type: 'adoption' | 'payment' | 'match';
     title: string;
     timestamp: string;
     status?: string;
@@ -33,8 +33,8 @@ export interface SeekerDashboardStats {
 export const useSeekerDashboardStats = () => {
   const { data: profile } = useUserProfile();
 
-  // Get seeker's applications
-  const { data: applications = [] } = useApplicationsByUser(profile?.id);
+  // Get seeker's adoptions
+  const { data: adoptions = [] } = useAdoptionsByUser(profile?.id);
 
   // Get transactions for seeker (useTransactions automatically filters for current user)
   const { data: transactions = [] } = useTransactions();
@@ -45,22 +45,22 @@ export const useSeekerDashboardStats = () => {
       if (!profile?.id) {
         return {
           recommendedListings: [],
-          activeApplications: 0,
-          completedApplications: 0,
+          activeAdoptions: 0,
+          completedAdoptions: 0,
           totalSpent: 0,
           spendingChange: 0,
-          applicationTrend: [],
+          adoptionTrend: [],
           spendingTrend: [],
           recentActivity: [],
         };
       }
 
       // Calculate metrics
-      const activeApplications = applications.filter(app =>
+      const activeAdoptions = adoptions.filter(app =>
         ['submitted', 'pending', 'approved'].includes(app.status)
       ).length;
 
-      const completedApplications = applications.filter(app =>
+      const completedAdoptions = adoptions.filter(app =>
         app.status === 'completed'
       ).length;
 
@@ -88,8 +88,8 @@ export const useSeekerDashboardStats = () => {
         ? ((recentSpending - previousSpending) / previousSpending) * 100
         : 0;
 
-      // Generate application trend (last 6 months)
-      const applicationTrend = generateMonthlyTrend(applications, 6, 'created_at');
+      // Generate adoption trend (last 6 months)
+      const adoptionTrend = generateMonthlyTrend(adoptions, 6, 'created_at');
 
       // Generate spending trend (last 6 months)
       const spendingTrend = generateMonthlyTrend(
@@ -103,14 +103,14 @@ export const useSeekerDashboardStats = () => {
       const recommendedListings = await generateRecommendedListings(profile);
 
       // Generate recent activity
-      const recentActivity = generateRecentActivity(applications, transactions);
+      const recentActivity = generateRecentActivity(adoptions, transactions);
 
       return {
-        activeApplications,
-        completedApplications,
+        activeAdoptions,
+        completedAdoptions,
         totalSpent,
         spendingChange,
-        applicationTrend,
+        adoptionTrend,
         spendingTrend,
         recommendedListings,
         recentActivity,
@@ -146,21 +146,21 @@ function generateMonthlyTrend(
 
     trend.push({
       month: monthName,
-      [valueField ? valueField.replace('amount', 'spending') : 'applications']: value,
+      [valueField ? valueField.replace('amount', 'spending') : 'adoptions']: value,
     });
   }
 
   return trend;
 }
 
-function generateRecentActivity(applications: any[], transactions: any[]) {
+function generateRecentActivity(adoptions: any[], transactions: any[]) {
   const activities = [];
 
-  // Add recent applications
-  applications.slice(0, 3).forEach(app => {
+  // Add recent adoptions
+  adoptions.slice(0, 3).forEach(app => {
     activities.push({
       id: `app-${app.id}`,
-      type: 'application' as const,
+      type: 'adoption' as const,
       title: `Applied for ${app.listings?.title || 'listing'}`,
       timestamp: app.created_at,
       status: app.status,
@@ -202,12 +202,12 @@ async function generateRecommendedListings(profile: any) {
         title,
         price,
         photos,
-        location,
+        location_text,
         status,
         breeds(name)
       `)
       .eq('status', 'active')
-      .neq('breeder_id', profile.id); // Don't show own listings
+      .neq('owner_id', profile.id); // Don't show own listings
 
     // Filter by preferred breeds if seeker has preferences
     if (preferredBreeds.length > 0) {
@@ -215,8 +215,8 @@ async function generateRecommendedListings(profile: any) {
     }
 
     // Filter by location proximity (same city/country for now)
-    if (profile.location) {
-      query = query.ilike('location', `%${profile.location}%`);
+    if (profile.location_text) {
+      query = query.ilike('location_text', `%${profile.location_text}%`);
     }
 
     const { data: listings } = await query.limit(6);
@@ -232,7 +232,7 @@ async function generateRecommendedListings(profile: any) {
       }
 
       // Higher score for location matches
-      if (profile.location && listing.location?.toLowerCase().includes(profile.location.toLowerCase())) {
+      if (profile.location_text && listing.location_text?.toLowerCase().includes(profile.location_text.toLowerCase())) {
         matchScore += 20;
       }
 
@@ -243,7 +243,7 @@ async function generateRecommendedListings(profile: any) {
         photos: listing.photos || [],
         // @ts-ignore
         breed: listing.breeds?.name || 'Unknown',
-        location: listing.location || 'Unknown',
+        location: listing.location_text || 'Unknown',
         matchScore: Math.min(matchScore, 100), // Cap at 100
       };
     }).sort((a, b) => b.matchScore - a.matchScore) || [];

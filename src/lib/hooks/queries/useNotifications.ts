@@ -25,7 +25,7 @@ export const useNotifications = (userId?: string) => {
 // Query to get unread notifications count
 export const useUnreadNotificationsCount = (userId?: string) => {
   return useQuery({
-    queryKey: queryKeys.notifications.unreadCount(),
+    queryKey: queryKeys.notifications.unreadCount(userId),
     queryFn: async (): Promise<number> => {
       if (!userId) return 0;
 

@@ -1,16 +1,18 @@
 import { AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, VStack, FormControl, FormLabel, Textarea, AlertDialogFooter, Button, Text } from '@chakra-ui/react';
 import React from 'react'
 
-interface ApplicationStatusDialogProps {
+interface AdoptionStatusDialogProps {
   isOpen: boolean;
   onClose: () => void;
   pendingAction: any
   setPendingAction: (any) => void;
-  onSubmit: () => void;
+  onSubmit: (e?: React.FormEvent) => void;
   isLoading: boolean
+  form: any;
+  setForm: (any) => void;
 }
 
-function ApplicationStatusDialog({
+const AdoptionStatusDialog: React.FC<AdoptionStatusDialogProps> = ({
   form,
   setForm,
   isOpen,
@@ -19,7 +21,7 @@ function ApplicationStatusDialog({
   setPendingAction,
   onSubmit,
   isLoading
-}) {
+}) => {
   return (
     <AlertDialog isCentered isOpen={isOpen} leastDestructiveRef={undefined} onClose={() => {
       setPendingAction(null);
@@ -28,7 +30,7 @@ function ApplicationStatusDialog({
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {pendingAction?.title || 'Update Application Status'}
+            {pendingAction?.title || 'Update Adoption Status'}
           </AlertDialogHeader>
           <AlertDialogBody>
             <form onSubmit={onSubmit}>
@@ -52,19 +54,19 @@ function ApplicationStatusDialog({
 
                 {pendingAction?.type === 'withdraw' && (
                   <Text>
-                    Are you sure you want to withdraw this application? This action cannot be undone.
+                    Are you sure you want to withdraw this adoption request? This action cannot be undone.
                   </Text>
                 )}
 
                 {pendingAction?.type === 'approve' && (
                   <Text>
-                    Approving this application will notify the applicant and allow them to proceed with the adoption process.
+                    Approving this adoption will notify the applicant and allow them to proceed with the process.
                   </Text>
                 )}
 
                 {pendingAction?.type === 'reject' && (
                   <Text>
-                    Rejecting this application will notify the applicant that their application was not approved.
+                    Rejecting this adoption will notify the applicant that their request was not approved.
                   </Text>
                 )}
               </VStack>
@@ -79,7 +81,7 @@ function ApplicationStatusDialog({
             </Button>
             <Button
               colorScheme={pendingAction?.colorScheme || 'blue'}
-              onClick={onSubmit}
+              onClick={() => onSubmit()}
               ml={3}
               isLoading={isLoading}
             >
@@ -92,4 +94,4 @@ function ApplicationStatusDialog({
   )
 }
 
-export default ApplicationStatusDialog
+export default AdoptionStatusDialog;

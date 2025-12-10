@@ -63,7 +63,7 @@ const BreederDashboardOverview: React.FC = () => {
             Welcome back, Breeder!
           </Text>
           <Text color="gray.600" fontSize="lg">
-            Here's what's happening with your listings and applications.
+            Here's what's happening with your listings and adoptions.
           </Text>
         </Box>
 
@@ -76,8 +76,8 @@ const BreederDashboardOverview: React.FC = () => {
             colorScheme="blue"
           />
           <MetricCard
-            title="Pending Applications"
-            value={stats?.pendingApplications || 0}
+            title="Pending Adoptions"
+            value={stats?.pendingAdoptions || 0}
             icon={FiEye}
             colorScheme="orange"
           />
@@ -92,8 +92,8 @@ const BreederDashboardOverview: React.FC = () => {
             colorScheme="green"
           />
           <MetricCard
-            title="Application Rate"
-            value={`${stats?.applicationTrend?.[stats.applicationTrend.length - 1]?.applications || 0}/month`}
+            title="Adoption Rate"
+            value={`${stats?.adoptionTrend?.[stats.adoptionTrend.length - 1]?.adoptions || 0}/month`}
             icon={FiTrendingUp}
             colorScheme="purple"
           />
@@ -102,10 +102,10 @@ const BreederDashboardOverview: React.FC = () => {
         {/* Charts Section */}
         <Grid templateColumns="repeat(auto-fit, minmax(400px, 1fr))" gap={6}>
           <LineChart
-            data={stats?.applicationTrend || []}
+            data={stats?.adoptionTrend || []}
             xKey="month"
-            yKey="applications"
-            title="Application Trends"
+            yKey="adoptions"
+            title="Adoption Trends"
             color="#3182ce"
             height="300px"
           />
@@ -240,7 +240,7 @@ const BreederDashboardOverview: React.FC = () => {
               _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
               transition="all 0.2s"
             >
-              View Applications
+              View Adoptions
             </Button>
             <Button
               leftIcon={<FiUsers />}

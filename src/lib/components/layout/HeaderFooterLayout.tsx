@@ -2,6 +2,7 @@ import { useBreakpointValue, Box } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import Header from "./Header";
 import { ReactNode } from "react";
+import Footer from "./Footer";
 
 
 type LayoutProps = {
@@ -13,11 +14,15 @@ export const HeaderFooterLayout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <>
+
+    // refactor to auth layour
       {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header />}
       <Box as="main" h={{ base: "calc(100dvh - 64px)", md: "100dvh" }} overflow="auto"
       >
         {children}{" "}
       </Box>
+
+      <Footer />
     </>
   );
 };

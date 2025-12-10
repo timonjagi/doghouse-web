@@ -263,6 +263,9 @@ const PublicBreedDetailPage = () => {
                     onEmptyAction={onAddToWishlist}
                     emptyActionLabel="Add to Wishlist"
                     emptyActionIcon={<FiHeart />}
+                    showFilters={false}
+                    showResultsCount={false}
+                    showSearch={false}
                   />
                 </TabPanel>
 
@@ -274,14 +277,13 @@ const PublicBreedDetailPage = () => {
                     emptyActionLabel="Add to Wishlist"
                     emptyActionIcon={<FiHeart />}
                     emptyAction={onAddToWishlist}
-                    columns={{ base: 1, md: 2, xl: 3 }}
+                    columns={{ base: 1, md: 2 }}
                   />
                 </TabPanel>
               </TabPanels>
             </Tabs>
           </SimpleGrid>
 
-          {!isMobile && <EthicalQuestionairreCard />}
 
         </Stack>
       </Container>

@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import {
   Box,
   VStack,
-  Card,
-  CardBody,
-  CardHeader,
   Heading,
   Text,
   Button,
@@ -15,29 +12,28 @@ import {
   TabPanels,
   Tab,
   TabPanel,
-  Spinner,
   SimpleGrid,
   Container,
 } from '@chakra-ui/react';
-import { useApplicationsByUser } from '../../../hooks/queries/useApplications';
+import { useAdoptionsByUser } from '../../../hooks/queries/useAdoptions';
 import { Loader } from 'lib/components/ui/Loader';
 import Link from 'next/link';
-import { ApplicationCard } from 'lib/components/ui/ApplicationCard';
+import { AdoptionCard } from 'lib/components/ui/AdoptionCard';
 import { useUserProfile } from 'lib/hooks/queries/useUserProfile';
 import { NextSeo } from 'next-seo';
 
-interface SeekerApplicationsViewProps {
+interface SeekerAdoptionsViewProps {
 }
 
-const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = () => {
+const SeekerAdoptionsView: React.FC<SeekerAdoptionsViewProps> = () => {
   const { data: userProfile, isLoading: profileLoading, error: profileError } = useUserProfile();
 
-  const { data: applications, isLoading, error } = useApplicationsByUser(userProfile.id);
+  const { data: adoptions, isLoading, error } = useAdoptionsByUser(userProfile?.id);
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const groupedApplications = {
-    active: applications?.filter(app => ['submitted', 'pending', 'approved', 'reserved'].includes(app.status)) || [],
-    completed: applications?.filter(app => ['rejected', 'completed'].includes(app.status)) || [],
+  const groupedAdoptions = {
+    active: adoptions?.filter(app => ['submitted', 'pending', 'approved', 'reserved'].includes(app.status)) || [],
+    completed: adoptions?.filter(app => ['rejected', 'completed'].includes(app.status)) || [],
   };
 
   if (isLoading) {
@@ -51,22 +47,22 @@ const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = () => {
       <Alert status="error">
         <AlertIcon />
         <Box>
-          <Text fontWeight="bold">Error loading applications</Text>
+          <Text fontWeight="bold">Error loading adoptions</Text>
           <Text fontSize="sm">{error.message}</Text>
         </Box>
       </Alert>
     );
   }
 
-  if (!applications || applications.length === 0) {
+  if (!adoptions || adoptions.length === 0) {
     return (
 
       <Box textAlign="center" py={12}>
         <Heading size="sm" color="gray.600" mb={4}>
-          No Applications Yet
+          No Adoptions Yet
         </Heading>
         <Text color="gray.500" mb={6}>
-          Start browsing listings and submit your first application to adopt your perfect companion.
+          Start browsing listings and submit your first adoption request to adopt your perfect companion.
         </Text>
         <Button colorScheme="brand" size="lg" as={Link} href="/dashboard/listings">
           Browse Listings
@@ -74,8 +70,6 @@ const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = () => {
       </Box>
     );
   }
-
-
 
   return (
     <>
@@ -90,39 +84,11 @@ const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = () => {
               Adoptions
             </Heading>
             <Text color="gray.600" mt={2}>
-              View your adoption applications and track their status'
+              View your adoptions and track their status
             </Text>
           </Box>
 
-          {/* Applications Overview */}
-          {/* <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-        <Card>
-          <CardBody textAlign="center">
-            <Text fontSize="3xl" fontWeight="bold" color="blue.500">
-              {applications.length}
-            </Text>
-            <Text color="gray.600">Total Applications</Text>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody textAlign="center">
-            <Text fontSize="3xl" fontWeight="bold" color="yellow.500">
-              {groupedApplications.active.length}
-            </Text>
-            <Text color="gray.600">Active Applications</Text>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody textAlign="center">
-            <Text fontSize="3xl" fontWeight="bold" color="green.500">
-              {applications.filter(app => app.status === 'approved').length}
-            </Text>
-            <Text color="gray.600">Approved</Text>
-          </CardBody>
-        </Card>
-      </SimpleGrid> */}
-
-          {/* Applications Tabs */}
+          {/* Adoptions Tabs */}
 
           <Tabs variant='soft-rounded' index={selectedTab} onChange={setSelectedTab} colorScheme="brand">
             <TabList
@@ -136,28 +102,28 @@ const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = () => {
               }}
             >
               <Tab>
-                Active ({groupedApplications.active.length})
+                Active ({groupedAdoptions.active.length})
               </Tab>
               <Tab>
-                Completed ({groupedApplications.completed.length})
+                Completed ({groupedAdoptions.completed.length})
               </Tab>
               <Tab>
-                All ({applications.length})
+                All ({adoptions.length})
               </Tab>
             </TabList>
 
             <TabPanels>
               <TabPanel px={0}>
-                {groupedApplications.active.length === 0 ? (
+                {groupedAdoptions.active.length === 0 ? (
                   <Box textAlign="center" py={8}>
-                    <Text color="gray.500">No active applications</Text>
+                    <Text color="gray.500">No active adoptions</Text>
                   </Box>
                 ) : (
                   <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
-                    {groupedApplications.active.map((application) => (
-                      <ApplicationCard
-                        key={application.id}
-                        application={application}
+                    {groupedAdoptions.active.map((adoption) => (
+                      <AdoptionCard
+                        key={adoption.id}
+                        adoption={adoption}
                         userRole="seeker"
                       />
                     ))}
@@ -166,16 +132,16 @@ const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = () => {
               </TabPanel>
 
               <TabPanel px={0}>
-                {groupedApplications.completed.length === 0 ? (
+                {groupedAdoptions.completed.length === 0 ? (
                   <Box textAlign="center" py={8}>
-                    <Text color="gray.500">No completed applications</Text>
+                    <Text color="gray.500">No completed adoptions</Text>
                   </Box>
                 ) : (
                   <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
-                    {groupedApplications.completed.map((application) => (
-                      <ApplicationCard
-                        key={application.id}
-                        application={application}
+                    {groupedAdoptions.completed.map((adoption) => (
+                      <AdoptionCard
+                        key={adoption.id}
+                        adoption={adoption}
                         userRole="seeker"
                       />
                     ))}
@@ -185,10 +151,10 @@ const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = () => {
 
               <TabPanel px={0}>
                 <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} >
-                  {applications.map((application) => (
-                    <ApplicationCard
-                      key={application.id}
-                      application={application}
+                  {adoptions.map((adoption) => (
+                    <AdoptionCard
+                      key={adoption.id}
+                      adoption={adoption}
                       userRole="seeker"
                     />
                   ))}
@@ -203,4 +169,4 @@ const SeekerApplicationsView: React.FC<SeekerApplicationsViewProps> = () => {
   );
 };
 
-export default SeekerApplicationsView;
+export default SeekerAdoptionsView;

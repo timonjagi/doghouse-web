@@ -166,6 +166,7 @@ const ManageBreedDetailView = () => {
                 <TabPanel px={0}>
                   <BreedersList
                     breed={userBreed?.breeds}
+                    columns={{ base: 1, md: 2 }}
                   />
                 </TabPanel>
               </TabPanels>

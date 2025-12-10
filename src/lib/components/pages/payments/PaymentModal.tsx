@@ -23,13 +23,13 @@ import {
 } from '@chakra-ui/react';
 import { FaCreditCard, FaMobileAlt } from 'react-icons/fa';
 import { useInitiatePayment } from '../../../hooks/queries/usePayments';
-import { ApplicationWithListing } from '../../../hooks/queries/useApplications';
+import { AdoptionWithListing } from '../../../hooks/queries/useAdoptions';
 import { CheckCircleIcon, ChevronRightIcon } from '@chakra-ui/icons';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  application: ApplicationWithListing;
+  adoption: AdoptionWithListing;
   paymentType: 'reservation' | 'final';
   onPaymentSuccess?: (reference: string) => void;
 }
@@ -37,7 +37,7 @@ interface PaymentModalProps {
 export const PaymentModal: React.FC<PaymentModalProps> = ({
   isOpen,
   onClose,
-  application,
+  adoption,
   paymentType,
   onPaymentSuccess,
 }) => {
@@ -47,7 +47,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   // Calculate payment amount and description
   const getPaymentDetails = () => {
-    const listing = application.listings;
+    const listing = adoption.listings;
     if (paymentType === 'reservation') {
       return {
         amount: Number(listing.reservation_fee) || 0,
@@ -94,9 +94,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       const result = await initiatePaymentMutation.mutateAsync({
         amount,
         type: paymentType,
-        applicationId: application.id,
+        applicationId: adoption.id,
         description,
-        application, // Pass application data to avoid redundant fetch
+        application: adoption, // Pass application data to avoid redundant fetch
       });
 
       if (result?.data?.authorization_url) {
@@ -218,7 +218,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     </ListItem>
                     <ListItem>
                       <ListIcon as={ChevronRightIcon} color="green.500" />
-                      Your application status will update automatically
+                      Your adoption application status will update automatically
                     </ListItem>
                   </List>
                 </AlertDescription>

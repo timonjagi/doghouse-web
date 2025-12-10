@@ -25,6 +25,7 @@ interface BreedersListProps {
   emptyActionIcon?: any;
   emptyAction?: () => void;
   props?: any;
+  showCardActions?: boolean;
 }
 
 export const BreedersList: React.FC<BreedersListProps> = ({
@@ -40,7 +41,8 @@ export const BreedersList: React.FC<BreedersListProps> = ({
   emptyAction,
   emptyActionLabel = "Clear Search",
   emptyActionIcon = null,
-  props
+  props,
+  showCardActions = true
 }) => {
   const breeders = externalBreeders;
   const isLoading = externalIsLoading;
@@ -77,7 +79,7 @@ export const BreedersList: React.FC<BreedersListProps> = ({
     <Box {...props}>
       <SimpleGrid columns={columns} spacing={spacing}>
         {breeders.map((breeder) => (
-          <BreederCard key={breeder?.id} breeder={breeder} />
+          <BreederCard key={breeder?.id} breeder={breeder} showActions={showCardActions} />
           // <UserCardWithRating
           //   key={breeder?.id}
           //   data={{
