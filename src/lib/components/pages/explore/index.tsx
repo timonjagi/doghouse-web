@@ -48,7 +48,6 @@ const ExplorePage = () => {
 
         <ExploreOverview />
 
-        {!isMobile && <EthicalQuestionairreCard />}
       </Container>
 
       {isMobile && <EthicalQuestionairreCard />}

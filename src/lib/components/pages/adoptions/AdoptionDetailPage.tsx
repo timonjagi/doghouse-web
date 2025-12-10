@@ -502,7 +502,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
       <PaymentModal
         isOpen={paymentModal.isOpen}
         onClose={handlePaymentModalClose}
-        application={adoption}
+        adoption={adoption}
         paymentType={paymentModal.type}
       />
 
@@ -513,7 +513,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
         paymentReference={statusModal.paymentReference}
         paymentType={statusModal.paymentType}
         expectedAmount={statusModal.expectedAmount}
-        applicationId={id as string}
+        adoptionId={id as string}
       />
     </>
   );
