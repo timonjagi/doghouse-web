@@ -1,3 +1,3 @@
-import ApplicationDetailPage from "lib/components/pages/adoptions/ApplicationDetailPage";
+import AdoptionDetailPage from "lib/components/pages/adoptions/AdoptionDetailPage";
 
-export default ApplicationDetailPage;
+export default AdoptionDetailPage;
