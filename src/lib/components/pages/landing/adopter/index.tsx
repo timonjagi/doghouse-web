@@ -45,7 +45,6 @@ const Home = () => {
 
         <Blog />
       </Flex>
-      <Footer />
     </Box>
   );
 };

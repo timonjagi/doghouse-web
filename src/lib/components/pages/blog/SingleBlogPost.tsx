@@ -88,7 +88,6 @@ function BlogPost({ slug }: BlogPostProps) {
           <Box dangerouslySetInnerHTML={{ __html: post.content }} />
         </Stack>
       </Container>
-      <Footer />
     </Box>
   );
 }

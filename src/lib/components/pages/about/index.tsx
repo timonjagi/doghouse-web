@@ -71,7 +71,6 @@ const About = () => {
 
           </VStack>
         </Container>
-        <Footer />
       </Box >
     </>
   );

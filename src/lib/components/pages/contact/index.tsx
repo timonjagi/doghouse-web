@@ -366,7 +366,6 @@ function Contact() {
           <FAQSection />
         </Stack>
       </Container>
-      <Footer />
     </Box>
   );
 }
