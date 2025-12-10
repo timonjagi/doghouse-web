@@ -3,10 +3,10 @@ import * as React from 'react'
 
 interface PageHeaderWithTwoButtonsProps {
   title: string;
-  description: string;
+  description: React.ReactNode;
   buttonPrimary?: {
     label: string;
-    variant?: 'primary' | 'secondary';
+    variant?: string;
     onClick: () => void;
     icon?: any;
     colorScheme?: string;
@@ -15,7 +15,7 @@ interface PageHeaderWithTwoButtonsProps {
   };
   buttonSecondary?: {
     label: string;
-    variant?: 'primary' | 'secondary';
+    variant?: string;
     onClick: () => void;
     icon?: any;
     colorScheme?: string;
@@ -37,7 +37,11 @@ export const PageHeaderWithTwoButtons = ({
       <Heading size={useBreakpointValue({ base: 'xs', md: 'sm' })} fontWeight="medium">
         {title}
       </Heading>
-      <Text color="muted">{description}</Text>
+      {typeof description === 'string' ? (
+        <Text color="muted">{description}</Text>
+      ) : (
+        <Box color="muted">{description}</Box>
+      )}
     </Stack>
     <Stack direction="row" spacing="3">
       {buttonPrimary && (

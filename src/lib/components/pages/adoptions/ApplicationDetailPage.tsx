@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   Container,
-  Heading,
   Text,
   VStack,
   HStack,
   Button,
-  Card,
-  CardBody,
-  CardHeader,
   Badge,
   Box,
   SimpleGrid,
@@ -16,21 +12,26 @@ import {
   Center,
   useToast,
   useDisclosure,
-  ButtonGroup,
   Stack,
   useBreakpointValue,
   Divider,
   AlertIcon,
   Alert,
   Avatar,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  Icon,
 } from '@chakra-ui/react';
 import {
   ArrowBackIcon,
   CheckCircleIcon,
   WarningIcon,
   PhoneIcon,
-  EmailIcon,
-  ChatIcon
+  ChatIcon,
+  TimeIcon
 } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserProfile } from '../../../hooks/queries/useUserProfile';
@@ -44,6 +45,9 @@ import { PaymentModal } from '../payments/PaymentModal';
 import { PaymentStatusModal } from '../payments/PaymentStatusModal';
 import ApplicationStatusDialog from './ApplicationStatusDialog';
 import { formatPrice } from 'lib/components/ui/PriceTag';
+import { PageHeaderWithTwoButtons } from 'lib/components/ui/PageHeaderWithTwoButtons';
+import { FiInfo, FiUser } from 'react-icons/fi';
+import { BsListCheck } from 'react-icons/bs';
 
 interface ApplicationDetailPageProps {
   id: string;
@@ -334,8 +338,9 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
   }
 
   const isOwner = userProfile?.id === application.listings.owner_id;
-  const isApplicant = userProfile?.id === application.seeker_id;
+  // const isApplicant = userProfile?.id === application.seeker_id;
   const canUpdateStatus = isOwner && ['submitted', 'pending'].includes(application.status);
+  const canWithdraw = !isOwner && application.status === 'submitted';
 
   const getTitle = () => {
     if (application.listings.title) return application.listings.title;
@@ -344,161 +349,139 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
       return `${application.listings.breeds?.name.charAt(0).toUpperCase() + application.listings.breeds?.name.slice(1)} Puppies`;
     } else {
       //@ts-ignore
-      return `${application.listings.breeds?.name.charAt(0).toUpperCase() + listing.breeds?.name.slice(1)} ${listing.pet_age} old`;
+      return `${application.listings.breeds?.name.charAt(0).toUpperCase() + application.listings.breeds?.name.slice(1)} ${application.listings.pet_age} old`;
     }
-  }
-
-  const getAge = () => {
-    const today = new Date();
-    const birthDate = new Date(application.listings.birth_date);
-
-    const age = Math.floor((today.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
-    return age;
   }
 
   return (
     <>
       <NextSeo title={`Application for ${application.listings.title} - DogHouse Kenya`} />
 
-      <Container maxW="7xl" py={{ base: 4, md: 0 }} >
-        <Button
-          leftIcon={<ArrowBackIcon />}
-          variant="ghost"
-          onClick={() => router.push('/dashboard/adoptions')}
-          mb={4}
-          p={0}
-        >
-          Back to Applications
-        </Button>
+      <Container maxW="7xl" pb={{ base: 4, md: 24 }}>
+        <Stack spacing={{ base: 8, md: 16 }}>
 
+          <Stack spacing="6">
+            <PageHeaderWithTwoButtons
+              title={getTitle()}
+              description={
+                <HStack spacing={2}>
+                  <Badge colorScheme={getStatusColor(application.status)}>
+                    {formatStatus(application.status)}
+                  </Badge>
+                  <Text fontSize="sm" color="gray.500">
+                    Applied {formatDate(application.created_at.toString())}
+                  </Text>
+                </HStack>
+              }
+              buttonPrimary={canUpdateStatus ? {
+                label: "Approve",
+                onClick: handleApproveApplication,
+                icon: <CheckCircleIcon />,
+                colorScheme: "green",
+              } : undefined}
+              buttonSecondary={canUpdateStatus ? {
+                label: "Reject",
+                onClick: handleRejectApplication,
+                icon: <WarningIcon />,
+                colorScheme: "red",
+                variant: "outline"
+              } : canWithdraw ? {
+                label: "Withdraw Application",
+                onClick: handleWithdrawApplication,
+                icon: <WarningIcon />,
+                colorScheme: "red",
+                variant: "outline"
+              } : undefined}
+            />
 
-        <Stack spacing={6}>
-          <HStack justify="space-between" align="start" wrap="wrap" spacing={4}>
-            <Box flex={1}>
-              <Heading size={{ base: 'sm', lg: 'md' }} mb={2}>
-                Application for {getTitle()}
-              </Heading>
-              <HStack spacing={3}>
-                <Badge colorScheme={getStatusColor(application.status)} variant="solid">
-                  {formatStatus(application.status)}
-                </Badge>
-                <Text fontSize="sm" color="gray.500">
-                  Applied {formatDate(application.created_at.toString())}
-                </Text>
-              </HStack>
-            </Box>
-
-            {canUpdateStatus && (
-              <ButtonGroup>
-                <Button
-                  leftIcon={<CheckCircleIcon />}
-                  colorScheme="green"
-                  onClick={handleApproveApplication}
+            <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+              <Stack spacing={4}>
+                <Gallery
+                  images={Array.from(application.listings.photos as string[]).map((photo) => ({ src: photo }))}
+                  flex={1}
+                  minW="50vw"
                 >
-                  Approve
-                </Button>
-                <Button
-                  leftIcon={<WarningIcon />}
-                  colorScheme="red"
-                  variant="outline"
-                  onClick={handleRejectApplication}
-                >
-                  Reject
-                </Button>
-              </ButtonGroup>
-            )}
-          </HStack>
+                  <HStack spacing={3} mb={4} position="absolute" top="4" left="4" zIndex={1}>
+                    <Badge colorScheme={application.listings.type === 'litter' ? 'blue' : 'green'}>
+                      {application.listings.type === 'litter' ? 'Litter' : 'Single Pet'}
+                    </Badge>
+                  </HStack>
+                </Gallery>
+              </Stack>
 
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6} minChildWidth="300px">
-            {/* <Box
-            sx={{
-              columnCount: [1, 2], // Responsive column count
-              columnGap: 4,
-            }}
-          > */}
-            <Card
-              sx={{ display: 'inline-block', width: '100%' }}
-              mb={4}
-            >
-              <CardHeader>
-                <Heading size="xs">Application Timeline</Heading>
-              </CardHeader>
-              <CardBody>
-                <ApplicationTimeline
-                  application={application}
-                  userProfile={userProfile}
-                  transactions={transactions}
-                  onPayReservation={handlePayReservation}
-                  onSignContract={handleSignContract}
-                  onCompletePayment={handleCompletePayment}
-                  onMarkCompleted={handleMarkCompleted}
-                  onWithdrawApplication={handleWithdrawApplication}
-                  onApproveApplication={handleApproveApplication}
-                  onRejectApplication={handleRejectApplication}
-                  onCheckPaymentStatus={(reference, type) => {
-                    setStatusModal({
-                      isOpen: true,
-                      paymentReference: reference,
-                      paymentType: type,
-                      expectedAmount: type === 'reservation'
-                        ? Number(application.listings.reservation_fee)
-                        : Number(application.listings.price) - Number(application.listings.reservation_fee),
-                    });
+              <Tabs variant='soft-rounded' colorScheme='brand' >
+                <TabList
+                  overflowY="hidden"
+                  whiteSpace="nowrap"
+                  css={{
+                    '&::-webkit-scrollbar': {
+                      display: 'none',
+                    },
+                    scrollbarWidth: 'none',
                   }}
-                />
-              </CardBody>
-            </Card>
+                >
+                  <Tab>
+                    <HStack>
+                      <Icon as={BsListCheck} />
+                      <Text>Timeline</Text>
+                    </HStack>
+                  </Tab>
+                  <Tab>
+                    <HStack>
+                      <Icon as={FiInfo} />
+                      <Text>Info</Text>
+                    </HStack>
+                  </Tab>
+                  <Tab>
+                    <HStack>
+                      <Icon as={FiUser} />
+                      <Text>{isOwner ? 'Applicant' : 'Breeder'}</Text>
+                    </HStack>
+                  </Tab>
+                </TabList>
 
-            {/* <Card
-              sx={{ display: 'inline-block', width: '100%' }}
-              mb={4}
-            >
-              <CardHeader>
-                <Heading size="xs">Application Details</Heading>
-              </CardHeader>
-              <CardBody>
-                <ApplicationDetails application={application} formatDate={formatDate} />
-              </CardBody>
-            </Card> */}
-
-
-
-            <Card
-              sx={{ display: 'inline-block', width: '100%' }}
-              mb={4}
-            >
-              <CardHeader>
-                <Heading size="xs">Listing Information</Heading>
-              </CardHeader>
-              <CardBody>
-                <ListingInfo application={application} />
-              </CardBody>
-            </Card>
-
-
-
-
-            {/* </Box> */}
-          </SimpleGrid>
-          <Card
-            // sx={{ display: 'inline-block', width: '100%' }}
-            mb={4}
-          >
-            <CardHeader>
-              <Heading size="xs">
-                {isOwner ? 'Applicant Information' : 'Breeder Information'}
-              </Heading>
-            </CardHeader>
-            <CardBody>
-              {isOwner ? (
-                <ApplicantInfo application={application} />
-              ) : (
-                <BreederInfo application={application} formatDate={formatDate} />
-              )}
-            </CardBody>
-          </Card>
+                <TabPanels>
+                  <TabPanel px={0}>
+                    <ApplicationTimeline
+                      application={application}
+                      userProfile={userProfile}
+                      transactions={transactions}
+                      onPayReservation={handlePayReservation}
+                      onSignContract={handleSignContract}
+                      onCompletePayment={handleCompletePayment}
+                      onMarkCompleted={handleMarkCompleted}
+                      onWithdrawApplication={handleWithdrawApplication}
+                      onApproveApplication={handleApproveApplication}
+                      onRejectApplication={handleRejectApplication}
+                      onCheckPaymentStatus={(reference, type) => {
+                        setStatusModal({
+                          isOpen: true,
+                          paymentReference: reference,
+                          paymentType: type,
+                          expectedAmount: type === 'reservation'
+                            ? Number(application.listings.reservation_fee)
+                            : Number(application.listings.price) - Number(application.listings.reservation_fee),
+                        });
+                      }}
+                    />
+                  </TabPanel>
+                  <TabPanel px={0}>
+                    <ListingInfo application={application} />
+                  </TabPanel>
+                  <TabPanel px={0}>
+                    {isOwner ? (
+                      <ApplicantInfo application={application} />
+                    ) : (
+                      <BreederInfo application={application} formatDate={formatDate} />
+                    )}
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </SimpleGrid>
+          </Stack>
         </Stack>
       </Container>
+
 
       {/* Status Update Modal */}
       <ApplicationStatusDialog
@@ -533,63 +516,12 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
   );
 };
 
-// Application Details Component
-const ApplicationDetails = ({ application, formatDate }) => {
-  return (
-    <VStack spacing={4} align="stretch">
-      <SimpleGrid columns={2} spacing={4}>
-
-        <Box>
-          <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
-            Application Date
-          </Text>
-          <Text>{formatDate(application.created_at.toString())}</Text>
-        </Box>
-
-
-        <Box>
-          <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
-            Application Message
-          </Text>
-          <Text>{application.application_data?.message || 'No message provided'}</Text>
-        </Box>
-
-        {application.application_data?.offer_price && (
-          <Box>
-            <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
-              Offer Price
-            </Text>
-            <Text>Ksh. {application.application_data.offer_price}</Text>
-          </Box>
-        )}
-
-        {application.listings.type === 'litter' && application.application_data?.quantity && (
-          <Box>
-            <Text fontSize="sm" color="gray.500" textTransform="uppercase" mb={1}>
-              Quantity
-            </Text>
-            <Text>{application.application_data.quantity}</Text>
-          </Box>
-        )}
-
-      </SimpleGrid>
-
-    </VStack>
-  );
-};
-
 // Listing Information Component
 const ListingInfo = ({ application }) => {
   return (
     <VStack spacing={4} align="stretch">
-      <Gallery
-        images={Array.from(application.listings.photos as string[]).map((photo) => ({ src: photo }))}
-        flex={1}
-        minW="50vw"
-      >
-
-      </Gallery>
-      <Divider />
+      {/* Removed Gallery from here as it is now in main layout */}
+      {/* Removed Divider */}
 
       <SimpleGrid columns={2} spacing={4}>
         <Box>
@@ -675,7 +607,6 @@ const ListingInfo = ({ application }) => {
 const ApplicantInfo = ({ application }) => {
   return (
     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-
       <Stack>
         <HStack spacing={4}>
           <Avatar
@@ -797,6 +728,5 @@ const BreederInfo = ({ application, formatDate }) => {
     </SimpleGrid>
   );
 };
-
 
 export default ApplicationDetailPage;
