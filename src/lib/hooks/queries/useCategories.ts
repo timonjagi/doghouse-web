@@ -17,7 +17,7 @@ interface UseCategoriesParams {
 export const useCategories = ({ page, tab, isDesktop }: UseCategoriesParams) => {
 
   return useQuery({
-    queryKey: ['categories'],
+    queryKey: ['categories', page, tab, isDesktop],
     queryFn:
       // async (): Promise<BreedCategory[]> => {
       //   // Get breeds with their listing counts

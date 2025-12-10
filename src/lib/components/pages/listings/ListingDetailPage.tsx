@@ -380,27 +380,6 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
       </Container >
 
-      {isMobile && canApply && (
-        <Box
-          position="sticky"
-          bottom="0"
-          p={4}
-          boxShadow="md"
-          bg="white"
-          zIndex={10}
-          w="full"
-        >
-          <Button
-            leftIcon={<ChatIcon />}
-            colorScheme="brand"
-            size="lg"
-            w="full"
-            onClick={onApplicationOpen}
-          >
-            Reserve This Pet
-          </Button>
-        </Box>)}
-
     </>
   );
 };
