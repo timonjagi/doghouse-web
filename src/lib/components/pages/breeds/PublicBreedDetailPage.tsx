@@ -263,6 +263,9 @@ const PublicBreedDetailPage = () => {
                     onEmptyAction={onAddToWishlist}
                     emptyActionLabel="Add to Wishlist"
                     emptyActionIcon={<FiHeart />}
+                    showFilters={false}
+                    showResultsCount={false}
+                    showSearch={false}
                   />
                 </TabPanel>
 
