@@ -51,7 +51,7 @@ interface UpdateSeekerProfileData {
 // Query to get seeker's profile
 export const useSeekerProfile = (userId?: string) => {
   return useQuery({
-    queryKey: ['users', 'seeker-profile', userId] as const,
+    queryKey: queryKeys.users.seekerProfile(userId),
     queryFn: async (): Promise<SeekerProfile | null> => {
       if (!userId) return null;
 
@@ -90,7 +90,7 @@ export const useCreateSeekerProfile = () => {
       return result;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['users', 'seeker-profile', data.user_id] as const });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.seekerProfile(data.user_id) });
     },
   });
 };
@@ -115,7 +115,7 @@ export const useUpdateSeekerProfile = () => {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['users', 'seeker-profile', data.user_id] as const });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.seekerProfile(data.user_id) });
     },
   });
 };
@@ -166,7 +166,7 @@ export const useUpsertSeekerProfile = () => {
       }
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['users', 'seeker-profile', data.user_id] as const });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.seekerProfile(data.user_id) });
     },
   });
 };

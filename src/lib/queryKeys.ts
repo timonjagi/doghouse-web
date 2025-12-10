@@ -14,6 +14,8 @@ export const queryKeys = {
     detail: (id: string): readonly string[] => ['users', 'detail', id] as const,
     profile: (id?: string): readonly string[] => ['users', 'detail', 'profile', id].filter(Boolean) as any,
     currentProfile: (userId?: string): readonly string[] => ['users', 'current-profile', userId].filter(Boolean) as any,
+    seekerProfile: (userId?: string): readonly string[] => ['users', 'seeker-profile', userId].filter(Boolean) as any,
+    breederProfile: (userId?: string): readonly string[] => ['users', 'breeder-profile', userId].filter(Boolean) as any,
     featured: (limit?: number): readonly string[] => ['users', 'featured', limit].filter(Boolean) as any,
   },
 

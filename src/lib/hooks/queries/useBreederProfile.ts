@@ -41,7 +41,7 @@ interface CreateKennelData {
 // Query to get breeder's profile with user breeds
 export const useBreederProfile = (userId?: string) => {
   return useQuery({
-    queryKey: ['users', 'breeder-profile', userId] as const,
+    queryKey: queryKeys.users.breederProfile(userId),
     queryFn: async (): Promise<(BreederProfile & { userBreedsCount: number; breedNames: string[]; user_breeds: any[] }) | null> => {
       if (!userId) return null;
 
@@ -132,7 +132,7 @@ export const useCreateBreederProfile = () => {
       return result;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['users', 'breeder-profile', data.user_id] as const });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.breederProfile(data.user_id) });
     },
   });
 };
@@ -157,7 +157,7 @@ export const useUpdateBreederProfile = () => {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['users', 'breeder-profile', data.user_id] as const });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.breederProfile(data.user_id) });
     },
   });
 };
@@ -208,7 +208,7 @@ export const useUpsertBreederProfile = () => {
       }
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['users', 'breeder-profile', data.user_id] as const });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.breederProfile(data.user_id) });
     },
   });
 };
