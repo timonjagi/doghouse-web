@@ -14,7 +14,7 @@ import {
   useDisclosure,
   Stack,
   useBreakpointValue,
-  Divider,
+  // Divider,
   AlertIcon,
   Alert,
   Avatar,
@@ -26,20 +26,20 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import {
-  ArrowBackIcon,
+  // ArrowBackIcon,
   CheckCircleIcon,
   WarningIcon,
   PhoneIcon,
   ChatIcon,
-  TimeIcon
+  // TimeIcon
 } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserProfile } from '../../../hooks/queries/useUserProfile';
-import { useApplication, useUpdateApplication } from '../../../hooks/queries/useApplications';
+import { useAdoption, useUpdateAdoption, AdoptionWithListing } from '../../../hooks/queries/useAdoptions';
 import { useTransactionsByApplication } from '../../../hooks/queries/useTransactions';
 import { NextSeo } from 'next-seo';
 import { Loader } from '../../ui/Loader';
-import { ApplicationTimeline } from './ApplicationTimeline';
+import { AdoptionTimeline } from './AdoptionTimeline';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { PaymentModal } from '../payments/PaymentModal';
 import { PaymentStatusModal } from '../payments/PaymentStatusModal';
@@ -49,22 +49,22 @@ import { PageHeaderWithTwoButtons } from 'lib/components/ui/PageHeaderWithTwoBut
 import { FiInfo, FiUser } from 'react-icons/fi';
 import { BsListCheck } from 'react-icons/bs';
 
-interface ApplicationDetailPageProps {
+interface AdoptionDetailPageProps {
   id: string;
 }
 
-const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
+const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   const router = useRouter();
   const { id, payment } = router.query;
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
   const toast = useToast();
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const isMobile = useBreakpointValue({ base: true, lg: false });
+  // const bgColor = useColorModeValue('white', 'gray.800');
+  // const isMobile = useBreakpointValue({ base: true, lg: false });
   const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onClose: onUpdateClose } = useDisclosure();
 
-  const { data: application, isLoading: applicationLoading, error: applicationError } = useApplication(id as string);
+  const { data: adoption, isLoading: adoptionLoading, error: adoptionError } = useAdoption(id as string);
   const { data: transactions, isLoading: transactionsLoading, error: transactionsError } = useTransactionsByApplication(id as string);
-  const updateApplicationMutation = useUpdateApplication();
+  const updateAdoptionMutation = useUpdateAdoption();
 
   const [updateForm, setUpdateForm] = useState({
     status: '',
@@ -133,12 +133,12 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     if (!pendingAction) return;
 
     try {
-      await updateApplicationMutation.mutateAsync({
-        id: application.id,
+      await updateAdoptionMutation.mutateAsync({
+        id: adoption.id,
         updates: {
           status: pendingAction.status,
           application_data: {
-            ...application.application_data as any,
+            ...adoption.application_data as any,
             response_message: updateForm.response_message || pendingAction.message,
           }
         }
@@ -162,7 +162,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
       }
     } catch (error) {
       toast({
-        title: `Error ${pendingAction.type === 'withdraw' ? 'withdrawing' : pendingAction.type === 'approve' ? 'approving' : 'rejecting'} application`,
+        title: `Error ${pendingAction.type === 'withdraw' ? 'withdrawing' : pendingAction.type === 'approve' ? 'approving' : 'rejecting'} adoption`,
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -179,9 +179,9 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         actionConfig = {
           type: 'withdraw' as const,
           status: 'rejected',
-          title: 'Application Withdrawn',
-          message: 'Your application has been successfully withdrawn',
-          confirmText: 'Withdraw Application',
+          title: 'Adoption Withdrawn',
+          message: 'Your adoption application has been successfully withdrawn',
+          confirmText: 'Withdraw Adoption',
           colorScheme: 'red',
         };
         break;
@@ -189,9 +189,9 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         actionConfig = {
           type: 'approve' as const,
           status: 'approved',
-          title: 'Approve Application',
-          message: 'The application has been approved successfully',
-          confirmText: 'Approve Application',
+          title: 'Approve Adoption',
+          message: 'The adoption application has been approved successfully',
+          confirmText: 'Approve Adoption',
           colorScheme: 'green',
         };
         break;
@@ -199,9 +199,9 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         actionConfig = {
           type: 'reject' as const,
           status: 'rejected',
-          title: 'Reject Application',
-          message: 'The application has been rejected',
-          confirmText: 'Reject Application',
+          title: 'Reject Adoption',
+          message: 'The adoption application has been rejected',
+          confirmText: 'Reject Adoption',
           colorScheme: 'red',
         };
         break;
@@ -209,7 +209,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         actionConfig = {
           type: 'complete' as const,
           status: 'completed',
-          title: 'Complete Application',
+          title: 'Complete Adoption',
           message: 'The adoption process has been marked as completed',
           confirmText: 'Mark as Completed',
           colorScheme: 'purple',
@@ -222,9 +222,9 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     onUpdateOpen();
   };
 
-  const handleWithdrawApplication = () => initiateAction('withdraw');
-  const handleApproveApplication = () => initiateAction('approve');
-  const handleRejectApplication = () => initiateAction('reject');
+  const handleWithdrawAdoption = () => initiateAction('withdraw');
+  const handleApproveAdoption = () => initiateAction('approve');
+  const handleRejectAdoption = () => initiateAction('reject');
   const handleMarkCompleted = () => initiateAction('complete');
 
   // Payment handlers
@@ -232,16 +232,16 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     setPaymentModal({
       isOpen: true,
       type: 'reservation',
-      amount: Number(application.listings.reservation_fee) || 0,
-      description: `Reservation fee for ${application.listings.title}`,
+      amount: Number(adoption.listings.reservation_fee) || 0,
+      description: `Reservation fee for ${adoption.listings.title}`,
     });
   };
 
   const handleSignContract = async () => {
     // In the future, this could integrate with a digital signature service
     try {
-      await updateApplicationMutation.mutateAsync({
-        id: application.id,
+      await updateAdoptionMutation.mutateAsync({
+        id: adoption.id,
         updates: { contract_signed: true }
       });
 
@@ -264,12 +264,12 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
   };
 
   const handleCompletePayment = () => {
-    const finalAmount = Number(application.listings.price) - Number(application.listings.reservation_fee);
+    const finalAmount = Number(adoption.listings.price) - Number(adoption.listings.reservation_fee);
     setPaymentModal({
       isOpen: true,
       type: 'final',
       amount: finalAmount,
-      description: `Final payment for ${application.listings.title}`,
+      description: `Final payment for ${adoption.listings.title}`,
     });
   };
 
@@ -284,14 +284,14 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
 
   // Handle payment success callback from Paystack
   useEffect(() => {
-    if (payment === 'success' && application && !statusModal.isOpen && transactions) {
-      // Determine payment type based on application state
+    if (payment === 'success' && adoption && !statusModal.isOpen && transactions) {
+      // Determine payment type based on adoption state
       let paymentType: 'reservation' | 'final' = 'reservation';
-      let expectedAmount = Number(application.listings.reservation_fee) || 0;
+      let expectedAmount = Number(adoption.listings.reservation_fee) || 0;
 
-      if (application.reservation_paid && !application.payment_completed) {
+      if (adoption.reservation_paid && !adoption.payment_completed) {
         paymentType = 'final';
-        expectedAmount = Number(application.listings.price) - Number(application.listings.reservation_fee);
+        expectedAmount = Number(adoption.listings.price) - Number(adoption.listings.reservation_fee);
       }
       const transaction = transactions?.find(tx => tx.status === 'pending');
       // Show payment status modal
@@ -306,30 +306,30 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
       const newUrl = router.pathname.replace('[id]', id as string);
       router.replace(newUrl, undefined, { shallow: true });
     }
-  }, [payment, application, transactions, statusModal.isOpen, router, id]);
+  }, [payment, adoption, transactions, statusModal.isOpen, router, id]);
 
-  if (profileLoading || applicationLoading || transactionsLoading) {
+  if (profileLoading || adoptionLoading || transactionsLoading) {
     return <Loader />;
   }
 
-  if (applicationError || transactionsError) {
+  if (adoptionError || transactionsError) {
     return (
       <Alert status="error">
         <AlertIcon />
-        Error loading application. Please try again later.
-        {applicationError?.message || transactionsError?.message}
+        Error loading adoption. Please try again later.
+        {adoptionError?.message || transactionsError?.message}
       </Alert>
     );
   }
 
-  if (!application) {
+  if (!adoption) {
     return (
       <Container maxW="7xl" py={8}>
         <Center h="400px">
           <VStack spacing={4}>
-            <Text fontSize="lg" color="gray.500">Application not found</Text>
+            <Text fontSize="lg" color="gray.500">Adoption not found</Text>
             <Button onClick={() => router.push('/dashboard/adoptions')}>
-              Back to Applications
+              Back to Adoptions
             </Button>
           </VStack>
         </Center>
@@ -337,25 +337,25 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
     );
   }
 
-  const isOwner = userProfile?.id === application.listings.owner_id;
-  // const isApplicant = userProfile?.id === application.seeker_id;
-  const canUpdateStatus = isOwner && ['submitted', 'pending'].includes(application.status);
-  const canWithdraw = !isOwner && application.status === 'submitted';
+  const isOwner = userProfile?.id === adoption.listings.owner_id;
+  // const isApplicant = userProfile?.id === adoption.seeker_id;
+  const canUpdateStatus = isOwner && ['submitted', 'pending'].includes(adoption.status);
+  const canWithdraw = !isOwner && adoption.status === 'submitted';
 
   const getTitle = () => {
-    if (application.listings.title) return application.listings.title;
-    if (application.listings.type === 'litter') {
+    if (adoption.listings.title) return adoption.listings.title;
+    if (adoption.listings.type === 'litter') {
       //@ts-ignore
-      return `${application.listings.breeds?.name.charAt(0).toUpperCase() + application.listings.breeds?.name.slice(1)} Puppies`;
+      return `${adoption.listings.breeds?.name.charAt(0).toUpperCase() + adoption.listings.breeds?.name.slice(1)} Puppies`;
     } else {
       //@ts-ignore
-      return `${application.listings.breeds?.name.charAt(0).toUpperCase() + application.listings.breeds?.name.slice(1)} ${application.listings.pet_age} old`;
+      return `${adoption.listings.breeds?.name.charAt(0).toUpperCase() + adoption.listings.breeds?.name.slice(1)} ${adoption.listings.pet_age} old`;
     }
   }
 
   return (
     <>
-      <NextSeo title={`Application for ${application.listings.title} - DogHouse Kenya`} />
+      <NextSeo title={`Adoption for ${adoption.listings.title} - DogHouse Kenya`} />
 
       <Container maxW="7xl" pb={{ base: 4, md: 24 }}>
         <Stack spacing={{ base: 8, md: 16 }}>
@@ -365,29 +365,29 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
               title={getTitle()}
               description={
                 <HStack spacing={2}>
-                  <Badge colorScheme={getStatusColor(application.status)}>
-                    {formatStatus(application.status)}
+                  <Badge colorScheme={getStatusColor(adoption.status)}>
+                    {formatStatus(adoption.status)}
                   </Badge>
                   <Text fontSize="sm" color="gray.500">
-                    Applied {formatDate(application.created_at.toString())}
+                    Applied {formatDate(adoption.created_at.toString())}
                   </Text>
                 </HStack>
               }
               buttonPrimary={canUpdateStatus ? {
                 label: "Approve",
-                onClick: handleApproveApplication,
+                onClick: handleApproveAdoption,
                 icon: <CheckCircleIcon />,
                 colorScheme: "green",
               } : undefined}
               buttonSecondary={canUpdateStatus ? {
                 label: "Reject",
-                onClick: handleRejectApplication,
+                onClick: handleRejectAdoption,
                 icon: <WarningIcon />,
                 colorScheme: "red",
                 variant: "outline"
               } : canWithdraw ? {
-                label: "Withdraw Application",
-                onClick: handleWithdrawApplication,
+                label: "Withdraw Adoption",
+                onClick: handleWithdrawAdoption,
                 icon: <WarningIcon />,
                 colorScheme: "red",
                 variant: "outline"
@@ -397,13 +397,13 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
             <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
               <Stack spacing={4}>
                 <Gallery
-                  images={Array.from(application.listings.photos as string[]).map((photo) => ({ src: photo }))}
+                  images={Array.from(adoption.listings.photos as string[]).map((photo) => ({ src: photo }))}
                   flex={1}
                   minW="50vw"
                 >
                   <HStack spacing={3} mb={4} position="absolute" top="4" left="4" zIndex={1}>
-                    <Badge colorScheme={application.listings.type === 'litter' ? 'blue' : 'green'}>
-                      {application.listings.type === 'litter' ? 'Litter' : 'Single Pet'}
+                    <Badge colorScheme={adoption.listings.type === 'litter' ? 'blue' : 'green'}>
+                      {adoption.listings.type === 'litter' ? 'Litter' : 'Single Pet'}
                     </Badge>
                   </HStack>
                 </Gallery>
@@ -442,37 +442,37 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
 
                 <TabPanels>
                   <TabPanel px={0}>
-                    <ApplicationTimeline
-                      application={application}
+                    <AdoptionTimeline
+                      adoption={adoption}
                       userProfile={userProfile}
                       transactions={transactions}
                       onPayReservation={handlePayReservation}
                       onSignContract={handleSignContract}
                       onCompletePayment={handleCompletePayment}
                       onMarkCompleted={handleMarkCompleted}
-                      onWithdrawApplication={handleWithdrawApplication}
-                      onApproveApplication={handleApproveApplication}
-                      onRejectApplication={handleRejectApplication}
+                      onWithdrawAdoption={handleWithdrawAdoption}
+                      onApproveAdoption={handleApproveAdoption}
+                      onRejectAdoption={handleRejectAdoption}
                       onCheckPaymentStatus={(reference, type) => {
                         setStatusModal({
                           isOpen: true,
                           paymentReference: reference,
                           paymentType: type,
                           expectedAmount: type === 'reservation'
-                            ? Number(application.listings.reservation_fee)
-                            : Number(application.listings.price) - Number(application.listings.reservation_fee),
+                            ? Number(adoption.listings.reservation_fee)
+                            : Number(adoption.listings.price) - Number(adoption.listings.reservation_fee),
                         });
                       }}
                     />
                   </TabPanel>
                   <TabPanel px={0}>
-                    <ListingInfo application={application} />
+                    <ListingInfo adoption={adoption} />
                   </TabPanel>
                   <TabPanel px={0}>
                     {isOwner ? (
-                      <ApplicantInfo application={application} />
+                      <ApplicantInfo adoption={adoption} />
                     ) : (
-                      <BreederInfo application={application} formatDate={formatDate} />
+                      <BreederInfo adoption={adoption} formatDate={formatDate} />
                     )}
                   </TabPanel>
                 </TabPanels>
@@ -492,14 +492,14 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
         pendingAction={pendingAction}
         setPendingAction={setPendingAction}
         onSubmit={handleStatusUpdate}
-        isLoading={updateApplicationMutation.isPending}
+        isLoading={updateAdoptionMutation.isPending}
       />
 
       {/* Payment Modal */}
       <PaymentModal
         isOpen={paymentModal.isOpen}
         onClose={handlePaymentModalClose}
-        application={application}
+        application={adoption}
         paymentType={paymentModal.type}
       />
 
@@ -517,7 +517,7 @@ const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = () => {
 };
 
 // Listing Information Component
-const ListingInfo = ({ application }) => {
+const ListingInfo = ({ adoption }) => {
   return (
     <VStack spacing={4} align="stretch">
       {/* Removed Gallery from here as it is now in main layout */}
@@ -528,43 +528,43 @@ const ListingInfo = ({ application }) => {
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Type
           </Text>
-          <Text>{application.listings.type}</Text>
+          <Text>{adoption.listings.type}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Breed
           </Text>
-          <Text>{application.listings.breeds?.name || 'Unknown'}</Text>
+          <Text>{adoption.listings.breeds?.name || 'Unknown'}</Text>
         </Box>
-        {application.listings.type === 'litter' && (
+        {adoption.listings.type === 'litter' && (
           <>
             <Box>
               <Text fontSize="xs" color="gray.500" textTransform="uppercase">
                 Birth Date
               </Text>
-              <Text>{application.listings.birth_date ? new Date(application.listings.birth_date).toLocaleDateString() : 'Not specified'}</Text>
+              <Text>{adoption.listings.birth_date ? new Date(adoption.listings.birth_date).toLocaleDateString() : 'Not specified'}</Text>
             </Box>
             <Box>
               <Text fontSize="xs" color="gray.500" textTransform="uppercase">
                 Puppies
               </Text>
-              <Text>{application.listings.number_of_puppies || 'Not specified'}</Text>
+              <Text>{adoption.listings.number_of_puppies || 'Not specified'}</Text>
             </Box>
           </>
         )}
-        {application.listings.type === 'single_pet' && (
+        {adoption.listings.type === 'single_pet' && (
           <>
             <Box>
               <Text fontSize="xs" color="gray.500" textTransform="uppercase">
                 Age
               </Text>
-              <Text>{application.listings.pet_age || 'Not specified'}</Text>
+              <Text>{adoption.listings.pet_age || 'Not specified'}</Text>
             </Box>
             <Box>
               <Text fontSize="xs" color="gray.500" textTransform="uppercase">
                 Gender
               </Text>
-              <Text>{application.listings.pet_gender || 'Not specified'}</Text>
+              <Text>{adoption.listings.pet_gender || 'Not specified'}</Text>
             </Box>
           </>
         )}
@@ -575,10 +575,10 @@ const ListingInfo = ({ application }) => {
 
           <Box>
             <Text>
-              {formatPrice(application.listings.price * (application.application_data?.quantity || 1))}
+              {formatPrice(adoption.listings.price * (adoption.application_data?.quantity || 1))}
             </Text>
-            {application.listings.type === 'litter' && <Text fontSize="xs" color="muted">
-              {formatPrice(application.listings.price)} each x {application.application_data?.quantity || 1}
+            {adoption.listings.type === 'litter' && <Text fontSize="xs" color="muted">
+              {formatPrice(adoption.listings.price)} each x {adoption.application_data?.quantity || 1}
             </Text>}
           </Box>
 
@@ -589,10 +589,10 @@ const ListingInfo = ({ application }) => {
             Reservation Fee
           </Text>
           <Box>
-            <Text>{formatPrice(application.listings.reservation_fee * (application.application_data?.quantity || 1))}</Text>
+            <Text>{formatPrice(adoption.listings.reservation_fee * (adoption.application_data?.quantity || 1))}</Text>
 
-            {application.listings.type === 'litter' && <Text fontSize="xs" color="muted">
-              {formatPrice(application.listings.reservation_fee)} each x {application.application_data?.quantity || 1}
+            {adoption.listings.type === 'litter' && <Text fontSize="xs" color="muted">
+              {formatPrice(adoption.listings.reservation_fee)} each x {adoption.application_data?.quantity || 1}
             </Text>}
           </Box>
         </Box>
@@ -604,31 +604,31 @@ const ListingInfo = ({ application }) => {
 };
 
 // Applicant Information Component
-const ApplicantInfo = ({ application }) => {
+const ApplicantInfo = ({ adoption }) => {
   return (
     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
       <Stack>
         <HStack spacing={4}>
           <Avatar
-            src={application.users.profile_photo_url || undefined}
-            name={application.users.display_name}
+            src={adoption.users.profile_photo_url || undefined}
+            name={adoption.users.display_name}
             size="lg"
           />
           <VStack align="start" spacing={1}>
-            <Text fontWeight="bold" fontSize="lg">{application.users.display_name}</Text>
-            <Text color="gray.600">{application.users.email.replace(
-              application.users.email.split('@')[0],
-              application.users.email.split('@')[0].slice(0, 3) + '***'
+            <Text fontWeight="bold" fontSize="lg">{adoption.users.display_name}</Text>
+            <Text color="gray.600">{adoption.users.email.replace(
+              adoption.users.email.split('@')[0],
+              adoption.users.email.split('@')[0].slice(0, 3) + '***'
             )}</Text>
           </VStack>
         </HStack>
 
 
         <HStack spacing={4} pt={2}>
-          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline" isDisabled={!application?.reservation_paid}>
+          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline" isDisabled={!adoption?.reservation_paid}>
             Call Applicant
           </Button>
-          <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={!application?.reservation_paid}>
+          <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={!adoption?.reservation_paid}>
             Message Applicant
           </Button>
         </HStack>
@@ -640,37 +640,37 @@ const ApplicantInfo = ({ application }) => {
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Location
           </Text>
-          <Text>{application.users.location_text || 'Not specified'}</Text>
+          <Text>{adoption.users.location_text || 'Not specified'}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Member Since
           </Text>
-          <Text>{new Date(application.users.created_at).toLocaleDateString()}</Text>
+          <Text>{new Date(adoption.users.created_at).toLocaleDateString()}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Experience Level
           </Text>
-          <Text>{application.users?.seeker_profiles?.experience_level || 'Not specified'}</Text>
+          <Text>{adoption.users?.seeker_profiles?.experience_level || 'Not specified'}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Living Situation
           </Text>
-          <Text>{application.users?.seeker_profiles?.living_situation || 'Not specified'}</Text>
+          <Text>{adoption.users?.seeker_profiles?.living_situation || 'Not specified'}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Children
           </Text>
-          <Text>{application.application_data?.has_children ? 'Yes' : 'No'}</Text>
+          <Text>{adoption.application_data?.has_children ? 'Yes' : 'No'}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Other Pets
           </Text>
-          <Text>{application.users?.seeker_profiles?.has_other_pets ? 'Yes' : 'No'}</Text>
+          <Text>{adoption.users?.seeker_profiles?.has_other_pets ? 'Yes' : 'No'}</Text>
         </Box>
       </SimpleGrid>
     </SimpleGrid>
@@ -678,34 +678,34 @@ const ApplicantInfo = ({ application }) => {
 };
 
 // Breeder Information Component
-const BreederInfo = ({ application, formatDate }) => {
+const BreederInfo = ({ adoption, formatDate }) => {
   return (
     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
 
       <Stack spacing={4} >
         <HStack spacing={4}>
           <Avatar
-            src={application.listings.users?.profile_photo_url || undefined}
-            name={application.listings.users?.display_name || 'Breeder'}
+            src={adoption.listings.users?.profile_photo_url || undefined}
+            name={adoption.listings.users?.display_name || 'Breeder'}
             size="lg"
           />
           <VStack align="start" spacing={1}>
             <Text fontWeight="bold" fontSize="lg">
-              {application.listings.users?.display_name || 'Breeder'}
+              {adoption.listings.users?.display_name || 'Breeder'}
             </Text>
-            <Text color="gray.600">{application.listings.users?.email.replace(
-              application.listings.users?.email.split('@')[0],
-              application.listings.users?.email.split('@')[0].slice(0, 3) + '***'
+            <Text color="gray.600">{adoption.listings.users?.email.replace(
+              adoption.listings.users?.email.split('@')[0],
+              adoption.listings.users?.email.split('@')[0].slice(0, 3) + '***'
             )}</Text>
           </VStack>
         </HStack>
 
         <HStack spacing={4} pt={2}>
 
-          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline" isDisabled={application?.reservation_paid}>
+          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline" isDisabled={adoption?.reservation_paid}>
             Call Breeder
           </Button>
-          <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={application?.reservation_paid}>
+          <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={adoption?.reservation_paid}>
             Message Breeder
           </Button>
         </HStack>
@@ -716,17 +716,17 @@ const BreederInfo = ({ application, formatDate }) => {
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Location
           </Text>
-          <Text>{application.listings?.users?.location_text || 'Not specified'}</Text>
+          <Text>{adoption.listings?.users?.location_text || 'Not specified'}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Listing Created
           </Text>
-          <Text>{formatDate(application.listings.created_at)}</Text>
+          <Text>{formatDate(adoption.listings.created_at)}</Text>
         </Box>
       </SimpleGrid>
     </SimpleGrid>
   );
 };
 
-export default ApplicationDetailPage;
+export default AdoptionDetailPage;

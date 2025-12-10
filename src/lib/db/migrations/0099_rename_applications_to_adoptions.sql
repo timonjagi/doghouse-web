@@ -1,9 +1,14 @@
 -- Rename table
 ALTER TABLE applications RENAME TO adoptions;
 
--- Rename foreign key column in transactions (optional but recommended for consistency, though verify with user first. The prompt said "update the schemas well")
--- ALTER TABLE transactions RENAME COLUMN application_id TO adoption_id;
+-- Create adoption_status_history table
+CREATE TABLE IF NOT EXISTS "adoption_status_history" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"adoption_id" uuid NOT NULL REFERENCES "adoptions"("id"),
+	"status" varchar(50) NOT NULL,
+	"notes" text,
+	"created_by" uuid REFERENCES "users"("id"),
+	"created_at" timestamp DEFAULT now() NOT NULL
+);
 
--- I will stick to just renaming the table first as it's the primary request and less likely to break FK constraints unless cascade is set or checking is on. 
--- Actually, renaming a table usually preserves FKs in Postgres.
--- However, the schema definition for 'transactions' refers to 'applications.id'. I will need to update schema.ts for that.
+-- Note: 'transactions' table still has 'application_id' column which now points to 'adoptions' table based on FK constraints usually moving with table rename, but IF strict constraints were named specifically, might need checking. Drizzle usually handles logic, but raw SQL here assumes standard Postgres behavior where RENAME TABLE preserves relation integrity but keeps old column names if not changed.

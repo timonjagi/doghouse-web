@@ -7,9 +7,10 @@ import { useToast } from "@chakra-ui/react";
 
 interface BreederCardProps {
   breeder: any;
+  showActions?: boolean;
 }
 
-export const BreederCard: React.FC<BreederCardProps> = ({ breeder }) => {
+export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions = true }) => {
   const user = breeder;
   const breederProfile = user?.breeder_profiles ? user.breeder_profiles[0] : user;
   const toast = useToast();
@@ -111,32 +112,31 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder }) => {
             ))}
           </HStack>
 
-          <ButtonGroup>
+          {showActions && (
+            <ButtonGroup>
+              <Button
+                variant="secondary"
+                colorScheme="gr"
+                size="sm"
+                w="full"
+                onClick={handleSubscribe}
+                rightIcon={<Icon as={FiBell} />}
+              >
+                Subscribe
+              </Button>
 
-
-            <Button
-              variant="secondary"
-              colorScheme="gr"
-              size="sm"
-              w="full"
-              onClick={handleSubscribe}
-              rightIcon={<Icon as={FiBell} />}
-            >
-              Subscribe
-            </Button>
-
-            <Button
-              colorScheme="brand"
-              size="sm"
-              w="full"
-              as={Link}
-              href={`/dashboard/breeders/${breeder.id}`}
-              rightIcon={<Icon as={FiArrowRight} />}
-            >
-              View Profile
-            </Button>
-
-          </ButtonGroup>
+              <Button
+                colorScheme="brand"
+                size="sm"
+                w="full"
+                as={Link}
+                href={`/dashboard/breeders/${breeder.id}`}
+                rightIcon={<Icon as={FiArrowRight} />}
+              >
+                View Profile
+              </Button>
+            </ButtonGroup>
+          )}
         </Stack>
       </CardBody>
     </Card>

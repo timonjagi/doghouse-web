@@ -659,6 +659,7 @@ const BreederInfo = ({ listing }) => {
   return (
     <BreederCard
       breeder={listing.users}
+      showActions={false}
     />
   )
 }

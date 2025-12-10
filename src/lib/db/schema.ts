@@ -161,8 +161,8 @@ export const listings = pgTable("listings", {
 });
 
 
-// APPLICATIONS (adoption requests)
-export const applications = pgTable("applications", {
+// ADOPTIONS (adoption requests) - Renamed from applications
+export const adoptions = pgTable("adoptions", {
   id: uuid("id").primaryKey().defaultRandom(),
   listing_id: uuid("listing_id").references(() => listings.id),
   seeker_id: uuid("seeker_id").notNull().references(() => users.id),
@@ -174,6 +174,16 @@ export const applications = pgTable("applications", {
   payment_completed: boolean("payment_completed").notNull().default(false),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// ADOPTION STATUS HISTORY (new table)
+export const adoption_status_history = pgTable("adoption_status_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  adoption_id: uuid("adoption_id").notNull().references(() => adoptions.id),
+  status: varchar("status", { length: 50 }).notNull(),
+  notes: text("notes"),
+  created_by: uuid("created_by").references(() => users.id),
+  created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
 // MESSAGES (lightweight)
@@ -229,7 +239,7 @@ export const wishlists = pgTable("wishlists", {
 // Optional transactions table for reservation payments
 export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey().defaultRandom(),
-  application_id: uuid("application_id").references(() => applications.id),
+  application_id: uuid("application_id").references(() => adoptions.id), // Kept column name, referenced adoptions
   seeker_id: uuid("seeker_id").notNull().references(() => users.id),
   breeder_id: uuid("breeder_id").notNull().references(() => users.id),
   amount: numeric("amount", { precision: 10, scale: 2 }),
@@ -249,7 +259,7 @@ export type Breed = typeof breeds.$inferSelect;
 export type UserBreed = typeof user_breeds.$inferSelect;
 export type Kennel = typeof kennels.$inferSelect;
 export type Listing = typeof listings.$inferSelect;
-export type Application = typeof applications.$inferSelect;
+export type Adoption = typeof adoptions.$inferSelect;
 export type Message = typeof messages.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type ActivityLog = typeof activity_logs.$inferSelect;

@@ -133,12 +133,13 @@ export const useTransactionsByApplication = (applicationId: string) => {
 };
 
 // Query to get billing history (enhanced transaction data)
-export const useBillingHistory = () => {
+export const useBillingHistory = (userId?: string) => {
   return useQuery({
-    queryKey: queryKeys.transactions.billing('current'),
+    queryKey: queryKeys.transactions.billing(userId),
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { payments: [], earnings: [] };
+      if (!userId) return { payments: [], earnings: [] };
+      const user = { id: userId }; // Use passed userId instead of fetching current user
+
 
       // Get payments made (as seeker)
       const { data: payments, error: paymentsError } = await supabase
@@ -178,16 +179,18 @@ export const useBillingHistory = () => {
         earnings: earnings || [],
       };
     },
+    enabled: !!userId,
   });
 };
 
 // Query to get transaction statistics
-export const useTransactionStats = () => {
+export const useTransactionStats = (userId?: string) => {
   return useQuery({
-    queryKey: ['transactions', 'stats', 'current'],
+    queryKey: queryKeys.transactions.stats(userId),
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { totalPaid: 0, totalEarned: 0, pendingPayments: 0 };
+      if (!userId) return { totalPaid: 0, totalEarned: 0, pendingPayments: 0 };
+      const user = { id: userId }; // Use passed userId
+
 
       // Get total paid (as seeker)
       const { data: payments, error: paymentsError } = await supabase
@@ -215,6 +218,7 @@ export const useTransactionStats = () => {
         pendingPayments,
       };
     },
+    enabled: !!userId,
   });
 };
 

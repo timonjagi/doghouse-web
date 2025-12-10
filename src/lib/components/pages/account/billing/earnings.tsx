@@ -38,8 +38,8 @@ import { Loader } from 'lib/components/ui/Loader';
 
 const EarningsPage: React.FC = () => {
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
-  const { data: billingHistory, isLoading: billingLoading } = useBillingHistory();
-  const { data: stats, isLoading: statsLoading } = useTransactionStats();
+  const { data: billingHistory, isLoading: billingLoading } = useBillingHistory(userProfile?.id);
+  const { data: stats, isLoading: statsLoading } = useTransactionStats(userProfile?.id);
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');

@@ -57,18 +57,18 @@ export const queryKeys = {
     userLitters: (userId?: string): readonly string[] => ['litters', 'user-litters', userId].filter(Boolean) as any,
   },
 
-  // Application related queries
-  applications: {
-    all: (): readonly string[] => ['applications'] as const,
-    lists: (): readonly string[] => ['applications', 'list'] as const,
-    list: (filters?: Record<string, unknown>): readonly string[] => ['applications', 'list', filters].filter(Boolean) as any,
-    details: (): readonly string[] => ['applications', 'detail'] as const,
-    detail: (id: string): readonly string[] => ['applications', 'detail', id] as const,
-    byLitter: (litterId: string): readonly string[] => ['applications', 'litter', litterId] as const,
-    byListing: (listingId: string): readonly string[] => ['applications', 'listing', listingId] as const,
-    byUser: (userId?: string): readonly string[] => ['applications', 'user', userId].filter(Boolean) as any,
-    received: (breederId?: string): readonly string[] => ['applications', 'received', breederId].filter(Boolean) as any,
-    userApplications: (userId?: string): readonly string[] => ['applications', 'user-applications', userId].filter(Boolean) as any,
+  // Adoption related queries
+  adoptions: {
+    all: (): readonly string[] => ['adoptions'] as const,
+    lists: (): readonly string[] => ['adoptions', 'list'] as const,
+    list: (filters?: Record<string, unknown>): readonly string[] => ['adoptions', 'list', filters].filter(Boolean) as any,
+    details: (): readonly string[] => ['adoptions', 'detail'] as const,
+    detail: (id: string): readonly string[] => ['adoptions', 'detail', id] as const,
+    byLitter: (litterId: string): readonly string[] => ['adoptions', 'litter', litterId] as const,
+    byListing: (listingId: string): readonly string[] => ['adoptions', 'listing', listingId] as const,
+    byUser: (userId?: string): readonly string[] => ['adoptions', 'user', userId].filter(Boolean) as any,
+    received: (breederId?: string): readonly string[] => ['adoptions', 'received', breederId].filter(Boolean) as any,
+    userAdoptions: (userId?: string): readonly string[] => ['adoptions', 'user-adoptions', userId].filter(Boolean) as any,
   },
 
   // Authentication related queries
@@ -86,7 +86,8 @@ export const queryKeys = {
     details: (): readonly string[] => ['transactions', 'detail'] as const,
     detail: (id: string): readonly string[] => ['transactions', 'detail', id] as const,
     byUser: (userId: string): readonly string[] => ['transactions', 'user', userId] as const,
-    billing: (userId: string): readonly string[] => ['transactions', 'billing', userId] as const,
+    billing: (userId?: string): readonly string[] => ['transactions', 'billing', userId].filter(Boolean) as any,
+    stats: (userId?: string): readonly string[] => ['transactions', 'stats', userId].filter(Boolean) as any,
   },
 
   // Payout related queries
@@ -103,7 +104,7 @@ export const queryKeys = {
     lists: (): readonly string[] => ['notifications', 'list'] as const,
     list: (filters?: Record<string, unknown>): readonly string[] => ['notifications', 'list', filters].filter(Boolean) as any,
     unread: (): readonly string[] => ['notifications', 'unread'] as const,
-    unreadCount: (): readonly string[] => ['notifications', 'unread-count'] as const,
+    unreadCount: (userId?: string): readonly string[] => ['notifications', 'unread-count', userId].filter(Boolean) as any,
   },
 } as const;
 

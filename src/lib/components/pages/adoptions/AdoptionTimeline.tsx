@@ -6,11 +6,8 @@ import {
   Text,
   Button,
   Badge,
-  Divider,
   useColorModeValue,
   Icon,
-  Flex,
-  Spacer,
   Step,
   StepDescription,
   StepIcon,
@@ -24,29 +21,36 @@ import {
 } from '@chakra-ui/react';
 import {
   CheckCircleIcon,
-  TimeIcon,
   WarningIcon,
-  CalendarIcon,
-  LockIcon,
-  CheckIcon,
-  EditIcon,
   StarIcon,
   InfoIcon,
   PhoneIcon,
+  CheckIcon,
+  EditIcon,
 } from '@chakra-ui/icons';
-import { ApplicationWithListing } from 'lib/hooks/queries';
+import { AdoptionWithListing } from 'lib/hooks/queries/useAdoptions';
 
-interface ApplicationTimelineProps {
-  application: ApplicationWithListing;
+// Type definition matching schema
+export interface AdoptionStatusHistory {
+  id: string;
+  adoption_id: string;
+  status: string;
+  notes?: string;
+  created_at: string | Date;
+}
+
+interface AdoptionTimelineProps {
+  adoption: AdoptionWithListing;
   userProfile: any;
   transactions?: any[];
+  statusHistory?: AdoptionStatusHistory[];
   onPayReservation?: () => void;
   onSignContract?: () => void;
   onCompletePayment?: () => void;
   onMarkCompleted?: () => void;
-  onWithdrawApplication?: () => void;
-  onApproveApplication?: () => void;
-  onRejectApplication?: () => void;
+  onWithdrawAdoption?: () => void;
+  onApproveAdoption?: () => void;
+  onRejectAdoption?: () => void;
   onCheckPaymentStatus?: (reference: string, type: 'reservation' | 'final') => void;
   onLeaveReview?: () => void;
   onContactBreeder?: () => void;
@@ -69,48 +73,55 @@ interface TimelineStep {
   info?: string[];
 }
 
-export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
-  application,
+export const AdoptionTimeline: React.FC<AdoptionTimelineProps> = ({
+  adoption,
   userProfile,
   transactions = [],
+  statusHistory = [],
   onPayReservation,
   onSignContract,
   onCompletePayment,
   onMarkCompleted,
-  onWithdrawApplication,
-  onApproveApplication,
-  onRejectApplication,
+  onWithdrawAdoption,
+  onApproveAdoption,
+  onRejectAdoption,
   onCheckPaymentStatus,
   onLeaveReview,
   onContactBreeder,
   onContactNewOwner,
 }) => {
-  const isOwner = userProfile?.id === application.listings.owner_id;
-  const isApplicant = userProfile?.id === application.seeker_id;
+  const isOwner = userProfile?.id === adoption.listings.owner_id;
+  const isApplicant = userProfile?.id === adoption.seeker_id;
+
+  // Helper to get date from history
+  const getStatusDate = (statusKey: string) => {
+    const entry = statusHistory.find(h => h.status === statusKey);
+    return entry ? new Date(entry.created_at).toLocaleDateString() : undefined;
+  };
 
   // Check for pending transactions from props
   const pendingTransactions = transactions?.filter(tx => tx.status === 'pending') || [];
   const hasPendingReservationPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'reservation');
   const hasPendingFinalPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'final');
 
-  const contractRequired = application.listings.requirements?.contract_required;
+  const contractRequired = adoption.listings.requirements?.contract_required;
   const getTimelineSteps = (): TimelineStep[] => {
     if (isApplicant) {
       // Steps for seekers (applicants)
       const steps: TimelineStep[] = [
         {
           id: 'submitted',
-          title: 'Application Submitted',
-          description: 'Your application has been received and is awaiting review',
+          title: 'Adoption Submitted',
+          description: 'Your adoption application has been received and is awaiting review',
           status: 'completed',
-          date: new Date(application.created_at).toLocaleDateString(),
+          date: getStatusDate('submitted') || new Date(adoption.created_at).toLocaleDateString(),
           info: [
             'Application includes your personal details and preferences',
             'Breeder will review your suitability for adoption',
           ],
-          actionButtons: application.status === 'submitted' && onWithdrawApplication ? [{
-            label: 'Withdraw Application',
-            onClick: onWithdrawApplication,
+          actionButtons: adoption.status === 'submitted' && onWithdrawAdoption ? [{
+            label: 'Withdraw Adoption',
+            onClick: onWithdrawAdoption,
             colorScheme: 'red',
             icon: WarningIcon,
           }] : undefined,
@@ -119,8 +130,9 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           id: 'under_review',
           title: 'Under Review',
           description: 'Your application is being reviewed by the breeder',
-          status: application.status === 'submitted' ? 'current' :
-            ['pending', 'approved', 'rejected', 'reserved', 'completed'].includes(application.status) ? 'completed' : 'pending',
+          status: adoption.status === 'submitted' ? 'current' :
+            ['pending', 'approved', 'rejected', 'reserved', 'completed'].includes(adoption.status) ? 'completed' : 'pending',
+          date: getStatusDate('pending'),
           info: [
             'Breeder evaluates your application against their requirements',
             'May include phone/video calls or home visits',
@@ -129,22 +141,23 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
 
       ];
 
-      if (['approved', 'rejected', 'reserved'].includes(application.status)) {
+      if (['approved', 'rejected', 'reserved'].includes(adoption.status)) {
         steps.push(
           {
             id: 'decision',
-            title: application.status === 'approved' ? 'Application Approved' : 'Decision Made',
-            description: application.status === 'approved' || application.status === 'reserved'
-              ? 'Congratulations! Your application has been approved'
-              : application.status === 'rejected'
-                ? 'Your application was not approved at this time'
+            title: adoption.status === 'approved' ? 'Adoption Approved' : 'Decision Made',
+            description: adoption.status === 'approved' || adoption.status === 'reserved'
+              ? 'Congratulations! Your adoption application has been approved'
+              : adoption.status === 'rejected'
+                ? 'Your adoption application was not approved at this time'
                 : 'Awaiting breeder decision',
-            status: ['approved', 'rejected', 'reserved'].includes(application.status) ? 'completed' :
-              application.status === 'pending' ? 'current' : 'pending',
-            info: application.status === 'approved' ? [
+            status: ['approved', 'rejected', 'reserved'].includes(adoption.status) ? 'completed' :
+              adoption.status === 'pending' ? 'current' : 'pending',
+            date: getStatusDate(adoption.status),
+            info: adoption.status === 'approved' ? [
               'Listing is now temporarily reserved for you',
               'Next step: Pay reservation fee within 24 hours',
-            ] : application.status === 'rejected' ? [
+            ] : adoption.status === 'rejected' ? [
               'You can apply for other available listings',
               'Consider reaching out to the breeder for feedback',
             ] : [
@@ -156,20 +169,21 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         )
       }
       // Add post-approval steps only if approved
-      if (['approved', 'reserved'].includes(application.status)) {
+      if (['approved', 'reserved'].includes(adoption.status)) {
         steps.push(
           {
             id: 'reserved',
             title: 'Reserve Listing',
-            description: application.reservation_paid ? 'The listing has been reserved for you' : 'Pay reservation fee to secure your adoption',
-            status: application.reservation_paid ? 'completed' : 'current',
+            description: adoption.reservation_paid ? 'The listing has been reserved for you' : 'Pay reservation fee to secure your adoption',
+            status: adoption.reservation_paid ? 'completed' : 'current',
+            date: getStatusDate('reserved'), // Assumes 'reserved' status update happens on payment success
             info: [
               'Reservation fee is deducted from final payment',
               'If payment is not received within 24 hours, listing will be released',
             ],
             actionButtons: (() => {
               const buttons = [];
-              if (application.status === 'approved' && !application.reservation_paid) {
+              if (adoption.status === 'approved' && !adoption.reservation_paid) {
                 buttons.push({
                   label: 'Pay Reservation Fee',
                   onClick: onPayReservation || (() => { }),
@@ -196,20 +210,20 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         );
       }
 
-      if (application.reservation_paid && contractRequired) {
+      if (adoption.reservation_paid && contractRequired) {
         steps.push(
           {
             id: 'contract',
             title: 'Sign Adoption Contract',
             description: 'Review and sign the adoption contract',
-            status: application.contract_signed ? 'completed' :
-              application.reservation_paid ? 'current' : 'locked',
+            status: adoption.contract_signed ? 'completed' :
+              adoption.reservation_paid ? 'current' : 'locked',
             info: [
               'Legal agreement outlining adoption terms',
               'Includes responsibilities of both parties',
               'Required by breeder before final payment',
             ],
-            actionButtons: application.reservation_paid && !application.contract_signed ? [{
+            actionButtons: adoption.reservation_paid && !adoption.contract_signed ? [{
               label: 'Sign Contract',
               onClick: onSignContract || (() => { }),
               colorScheme: 'blue',
@@ -219,21 +233,21 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         )
       }
 
-      if (application.contract_signed || (application.reservation_paid && !contractRequired)) {
+      if (adoption.contract_signed || (adoption.reservation_paid && !contractRequired)) {
         steps.push(
           {
             id: 'payment',
             title: 'Complete Payment',
             description: 'Make final payment to complete adoption',
-            status: application.payment_completed ? 'completed' :
-              application.contract_signed || (application.reservation_paid && !contractRequired) ? 'current' : 'locked',
+            status: adoption.payment_completed ? 'completed' :
+              adoption.contract_signed || (adoption.reservation_paid && !contractRequired) ? 'current' : 'locked',
             info: [
               'Reservation fee will be deducted from final amount',
               'Payment secures ownership transfer',
             ],
             actionButtons: (() => {
               const buttons = [];
-              if ((application.contract_signed || application.reservation_paid && !contractRequired) && !application.payment_completed) {
+              if ((adoption.contract_signed || adoption.reservation_paid && !contractRequired) && !adoption.payment_completed) {
                 buttons.push({
                   label: 'Complete Payment',
                   onClick: onCompletePayment || (() => { }),
@@ -260,17 +274,18 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         )
       }
 
-      if (application.payment_completed) {
+      if (adoption.payment_completed) {
         steps.push(
           {
             id: 'completed',
-            title: application.status === 'completed' ? 'Adoption Completed' : 'Pickup/ Delivery Arrangements',
-            description: application.status === 'completed' ? 'Congratulations! Adoption process is complete. If you enjoyed your experiece, please leave us a review.' : 'Contact the breeder for pickup/delivery arrangements',
-            status: application.status === 'completed' ? 'completed' : 'current',
-            // info: application.status === 'completed' ? [
+            title: adoption.status === 'completed' ? 'Adoption Completed' : 'Pickup/ Delivery Arrangements',
+            description: adoption.status === 'completed' ? 'Congratulations! Adoption process is complete. If you enjoyed your experiece, please leave us a review.' : 'Contact the breeder for pickup/delivery arrangements',
+            status: adoption.status === 'completed' ? 'completed' : 'current',
+            date: getStatusDate('completed'),
+            // info: adoption.status === 'completed' ? [
             //   'Ownership transfer is complete',
             // ] : ['You will receive pickup/delivery arrangements'],
-            actionButtons: application.status === 'completed' ? [
+            actionButtons: adoption.status === 'completed' ? [
               {
                 label: 'Leave Review',
                 onClick: onLeaveReview || (() => { }),
@@ -296,9 +311,9 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         {
           id: 'received',
           title: 'Application Received',
-          description: 'New application received for your listing',
+          description: 'New adoption application received for your listing',
           status: 'completed',
-          date: new Date(application.created_at).toLocaleDateString(),
+          date: getStatusDate('submitted') || new Date(adoption.created_at).toLocaleDateString(),
           info: [
             'Applicant has submitted their details and preferences',
             'Review their suitability for adoption',
@@ -308,22 +323,23 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
           id: 'review',
           title: 'Review Application',
           description: 'Review the applicant\'s suitability',
-          status: application.status === 'submitted' ? 'current' :
-            ['pending', 'approved', 'rejected', 'reserved', 'completed'].includes(application.status) ? 'completed' : 'pending',
+          status: adoption.status === 'submitted' ? 'current' :
+            ['pending', 'approved', 'rejected', 'reserved', 'completed'].includes(adoption.status) ? 'completed' : 'pending',
+          date: getStatusDate('pending'),
           info: [
             'Evaluate applicant against your requirements',
             'Consider phone/video calls or home visits if needed',
           ],
-          actionButtons: application.status === 'submitted' && onApproveApplication && onRejectApplication ? [
+          actionButtons: adoption.status === 'submitted' && onApproveAdoption && onRejectAdoption ? [
             {
               label: 'Approve',
-              onClick: onApproveApplication,
+              onClick: onApproveAdoption,
               colorScheme: 'green',
               icon: CheckCircleIcon,
             },
             {
               label: 'Reject',
-              onClick: onRejectApplication,
+              onClick: onRejectAdoption,
               colorScheme: 'red',
               icon: WarningIcon,
             },
@@ -331,19 +347,20 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         },
         {
           id: 'decision',
-          title: application.status === 'approved' ? 'Application Approved' :
-            application.status === 'rejected' ? 'Application Rejected' : 'Application Approved',
-          description: ['approved', 'reserved', 'completed'].includes(application.status)
-            ? 'You approved this application'
-            : application.status === 'rejected'
-              ? 'You rejected this application'
+          title: adoption.status === 'approved' ? 'Adoption Approved' :
+            adoption.status === 'rejected' ? 'Adoption Rejected' : 'Adoption Approved',
+          description: ['approved', 'reserved', 'completed'].includes(adoption.status)
+            ? 'You approved this adoption'
+            : adoption.status === 'rejected'
+              ? 'You rejected this adoption'
               : 'Approve or reject the application',
-          status: ['approved', 'rejected', 'reserved', 'completed'].includes(application.status) ? 'completed' :
-            application.status === 'pending' ? 'current' : 'pending',
-          info: application.status === 'approved' ? [
+          status: ['approved', 'rejected', 'reserved', 'completed'].includes(adoption.status) ? 'completed' :
+            adoption.status === 'pending' ? 'current' : 'pending',
+          date: getStatusDate(adoption.status),
+          info: adoption.status === 'approved' ? [
             'Applicant will be notified of approval',
             'They have 24 hours to pay reservation fee',
-          ] : application.status === 'rejected' ? [
+          ] : adoption.status === 'rejected' ? [
             'Applicant will be notified of rejection',
             'They can apply for other listings',
           ] : [
@@ -354,13 +371,14 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
       ];
 
       // Add post-approval steps only if approved
-      if (['approved', 'reserved', 'completed'].includes(application.status)) {
+      if (['approved', 'reserved', 'completed'].includes(adoption.status)) {
         steps.push(
           {
             id: 'awaiting_payment',
             title: 'Awaiting Reservation Payment',
-            description: application.reservation_paid ? 'Reservation fee has been paid' : 'Waiting for applicant to pay reservation fee',
-            status: application.reservation_paid ? 'completed' : 'current',
+            description: adoption.reservation_paid ? 'Reservation fee has been paid' : 'Waiting for applicant to pay reservation fee',
+            status: adoption.reservation_paid ? 'completed' : 'current',
+            date: getStatusDate('reserved'),
             info: [
               'Applicant has 24 hours to pay reservation fee',
               'If payment is not received within 24 hours, listing will be released',
@@ -370,14 +388,14 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         );
       }
 
-      if (application.reservation_paid && contractRequired) {
+      if (adoption.reservation_paid && contractRequired) {
         steps.push(
           {
             id: 'awaiting_contract',
             title: 'Awaiting Contract Signature',
-            description: application.contract_signed ? 'Contract has been signed' : 'Waiting for applicant to sign adoption contract',
-            status: application.contract_signed ? 'completed' :
-              application.reservation_paid ? 'current' : 'locked',
+            description: adoption.contract_signed ? 'Contract has been signed' : 'Waiting for applicant to sign adoption contract',
+            status: adoption.contract_signed ? 'completed' :
+              adoption.reservation_paid ? 'current' : 'locked',
             info: [
               'Contract outlines adoption terms and responsibilities',
               'Both parties must agree to the terms',
@@ -386,14 +404,14 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         )
       }
 
-      if (application.contract_signed || (application.reservation_paid && !contractRequired)) {
+      if (adoption.contract_signed || (adoption.reservation_paid && !contractRequired)) {
         steps.push(
           {
             id: 'awaiting_final_payment',
             title: 'Awaiting Final Payment',
-            description: application.payment_completed ? 'Final payment has been completed' : 'Waiting for applicant to complete final payment',
-            status: application.payment_completed ? 'completed' :
-              application.contract_signed || (application.reservation_paid && !contractRequired) ? 'current' : 'locked',
+            description: adoption.payment_completed ? 'Final payment has been completed' : 'Waiting for applicant to complete final payment',
+            status: adoption.payment_completed ? 'completed' :
+              adoption.contract_signed || (adoption.reservation_paid && !contractRequired) ? 'current' : 'locked',
             info: [
               'Final payment completes the adoption',
               'Reservation fee will be deducted from total',
@@ -402,18 +420,19 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
         )
       }
 
-      if (application.payment_completed) {
+      if (adoption.payment_completed) {
         steps.push(
           {
             id: 'finalize',
-            title: application.status === 'completed' ? 'Adoption Completed' : 'Finalize Adoption',
-            description: application.status === 'completed' ? 'Congratulations! Your adoption is complete. If you enjoyed your experiece, please leave us a review.' : 'Finalize the adoption.',
-            status: application.status === 'completed' ? 'completed' : 'current',
+            title: adoption.status === 'completed' ? 'Adoption Completed' : 'Finalize Adoption',
+            description: adoption.status === 'completed' ? 'Congratulations! Your adoption is complete. If you enjoyed your experiece, please leave us a review.' : 'Finalize the adoption.',
+            status: adoption.status === 'completed' ? 'completed' : 'current',
+            date: getStatusDate('completed'),
             info: [
               'Mark adoption as completed',
               'Arrange pickup/delivery with new owner',
             ],
-            actionButtons: application.payment_completed && application.status !== 'completed' ? [{
+            actionButtons: adoption.payment_completed && adoption.status !== 'completed' ? [{
               label: 'Mark as Completed',
               onClick: onMarkCompleted || (() => { }),
               colorScheme: 'green',
@@ -441,7 +460,11 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
   const steps = getTimelineSteps();
 
   const getCurrentStepIndex = () => {
-    return steps.findIndex(step => step.status === 'current');
+    // If completed, return length
+    if (adoption.status === 'completed') return steps.length;
+    // Otherwise find the first non-completed or current
+    const idx = steps.findIndex(step => step.status === 'current');
+    return idx === -1 ? steps.findIndex(step => step.status === 'locked') : idx;
   };
 
   const { activeStep } = useSteps({
@@ -463,15 +486,14 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
 
           <Box flexShrink="1" w="full">
             <VStack align="start" spacing={2}>
-              <HStack align="center">
+              <HStack align="center" justify="space-between" w="full">
                 <Box>
                   <StepTitle>{step.title}</StepTitle>
-                  {/* 
                   {step.date && (
                     <StepDescription fontSize="xs" color="gray.500">
                       {step.date}
                     </StepDescription>
-                  )} */}
+                  )}
                 </Box>
 
                 {step.status === 'current' && (
@@ -488,11 +510,11 @@ export const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
 
               <StepDescription pt={2} pb={4}>{step.description}</StepDescription>
 
-              {application.status === 'approved' || application.status === 'rejected' || application.status === 'withdrawn' && (
+              {adoption.status === 'approved' || adoption.status === 'rejected' || adoption.status === 'withdrawn' && (
                 <Text fontSize="xs" color="red.500">
                   {
                     //@ts-ignore
-                    application.application_data?.response_message
+                    adoption.application_data?.response_message
                   }
                 </Text>
               )}
