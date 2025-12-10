@@ -39,7 +39,7 @@ import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { Loader } from 'lib/components/ui/Loader';
 import { supabase } from 'lib/supabase/client';
 import ListingForm from './ListingForm';
-import WhatsIncluded from 'lib/components/ui/WhatsIncluded';
+import WhatsIncluded from 'lib/components/ui/WhatsIncluded2';
 import { PageHeaderWithTwoButtons } from 'lib/components/ui/PageHeaderWithTwoButtons';
 import { FiHeart, FiInfo, FiList } from 'react-icons/fi';
 import { MdOutlineMedicalInformation } from 'react-icons/md';
@@ -200,7 +200,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
         `${getTitle()} - DogHouse Kenya`
       } />
 
-      <Container maxW="7xl" pb={{ base: 4, md: 24 }}>
+      <Container maxW="7xl" pt={{ base: 6, md: 6 }} pb={{ base: 6, md: 24 }}>
         <Stack spacing={{ base: 8, md: 16 }} >
 
           <Stack spacing="6">
