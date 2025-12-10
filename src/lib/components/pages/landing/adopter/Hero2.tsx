@@ -52,7 +52,7 @@ export default function Hero() {
             >
               <Button
                 as={Link}
-                href="/breeds"
+                href="/explore"
                 variant="primary"
                 color="brand.500"
                 backgroundColor="brand.500"
@@ -64,7 +64,7 @@ export default function Hero() {
                 fontSize="md"
                 fontWeight="bold"
               >
-                <Text color="white">View Breeds</Text>
+                <Text color="white">Explore Pets</Text>
               </Button>
               <HStack
                 as={Link}
