@@ -129,7 +129,6 @@ const SignUp = () => {
               align="center"
               textAlign="center"
             >
-              <Heading size="lg">Let's create your account</Heading>
 
               <Box position="relative" mx="auto">
                 <Img
@@ -142,6 +141,9 @@ const SignUp = () => {
                   objectPosition="90% center"
                 />
               </Box>
+              <Heading size="lg">Let's create your account</Heading>
+
+
 
               <SignupForm />
 
