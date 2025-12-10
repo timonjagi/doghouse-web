@@ -5,7 +5,7 @@ import Footer from "lib/components/layout/Footer";
 
 import { Blog } from "./Blog";
 import BreedTraits from "./BreedTraits";
-import { Hero } from "./Hero";
+import Hero from "./Hero2";
 import { Process } from "./OurProcess";
 import { OurBreeds } from "./Breeds";
 import { Stats } from "./Stats";
