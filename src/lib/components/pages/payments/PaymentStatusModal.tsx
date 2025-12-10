@@ -31,7 +31,7 @@ interface PaymentStatusModalProps {
   paymentReference: string;
   paymentType: 'reservation' | 'final';
   expectedAmount: number;
-  applicationId?: string;
+  adoptionId?: string;
 }
 
 type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed';
@@ -42,11 +42,11 @@ export const PaymentStatusModal: React.FC<PaymentStatusModalProps> = ({
   paymentReference,
   paymentType,
   expectedAmount,
-  applicationId,
+  adoptionId,
 }) => {
   const [status, setStatus] = useState<PaymentStatus>('pending');
   const [pollingCount, setPollingCount] = useState(0);
-  const verifyPaymentMutation = useVerifyPayment(applicationId);
+  const verifyPaymentMutation = useVerifyPayment(adoptionId);
   const toast = useToast();
 
   const maxPollingAttempts = 30; // 30 attempts = ~2.5 minutes
@@ -84,7 +84,7 @@ export const PaymentStatusModal: React.FC<PaymentStatusModalProps> = ({
             setStatus('failed');
             toast({
               title: 'Payment Timeout',
-              description: 'Payment verification is taking longer than expected. Please check your application status.',
+              description: 'Payment verification is taking longer than expected. Please check your adoption status.',
               status: 'warning',
               duration: 5000,
               isClosable: true,
@@ -233,7 +233,7 @@ export const PaymentStatusModal: React.FC<PaymentStatusModalProps> = ({
                 <Box>
                   <Text fontWeight="bold">Payment Verification Issue</Text>
                   <Text fontSize="sm">
-                    Unable to confirm payment. Please check your application status or contact support.
+                    Unable to confirm payment. Please check your adoption status or contact support.
                   </Text>
                 </Box>
               </Alert>

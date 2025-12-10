@@ -31,16 +31,16 @@ import {
   ListIcon,
 } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
-import { useCreateApplication } from '../../../hooks/queries/useApplications';
+import { useCreateAdoption } from '../../../hooks/queries/useAdoptions';
 import { useRouter } from 'next/router';
 
-interface ApplicationFormProps {
+interface AdoptionFormProps {
   isOpen: boolean;
   onClose: () => void;
   listing: any;
 }
 
-interface ApplicationData {
+interface AdoptionData {
   message?: string;
   contact_preference: string;
   timeline: string;
@@ -48,7 +48,7 @@ interface ApplicationData {
   quantity?: number; // For litters only
 }
 
-export const ApplicationForm: React.FC<ApplicationFormProps> = ({
+export const AdoptionForm: React.FC<AdoptionFormProps> = ({
   isOpen,
   onClose,
   listing,
@@ -56,10 +56,10 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
   const toast = useToast();
   const router = useRouter();
 
-  const createApplicationMutation = useCreateApplication();
+  const createAdoptionMutation = useCreateAdoption();
 
-  // Initialize form with application-specific data only
-  const [formData, setFormData] = useState<ApplicationData>({
+  // Initialize form with adoption-specific data only
+  const [formData, setFormData] = useState<AdoptionData>({
     message: '',
     contact_preference: 'email',
     timeline: '',
@@ -67,7 +67,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     quantity: listing.type === 'litter' ? 1 : undefined,
   });
 
-  const [errors, setErrors] = useState<Partial<ApplicationData>>({});
+  const [errors, setErrors] = useState<Partial<AdoptionData>>({});
 
   const validateForm = (): boolean => {
     const newErrors: any = {};
@@ -92,8 +92,8 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     }
 
     try {
-      // Prepare application data for the JSONB field - only application-specific fields
-      const applicationData = {
+      // Prepare adoption data for the JSONB field - only adoption-specific fields
+      const adoptionData = {
         // message: formData.message,
         contact_preference: formData.contact_preference,
         timeline: formData.timeline,
@@ -102,14 +102,14 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
         submitted_at: new Date().toISOString(),
       };
 
-      const result = await createApplicationMutation.mutateAsync({
+      const result = await createAdoptionMutation.mutateAsync({
         listing_id: listing.id,
-        application_data: applicationData,
+        application_data: adoptionData,
       });
 
       toast({
-        title: 'Application submitted!',
-        description: 'Your application has been sent to the breeder. You will be notified of any updates.',
+        title: 'Adoption submitted!',
+        description: 'Your adoption request has been sent to the breeder. You will be notified of any updates.',
         status: 'success',
         duration: 5000,
         isClosable: true,
@@ -131,8 +131,8 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
 
     } catch (error) {
       toast({
-        title: 'Application failed',
-        description: error.message || 'Failed to submit application. Please try again.',
+        title: 'Adoption failed',
+        description: error.message || 'Failed to submit adoption. Please try again.',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -140,7 +140,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     }
   };
 
-  const handleInputChange = (field: keyof ApplicationData, value: any) => {
+  const handleInputChange = (field: keyof AdoptionData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
@@ -164,10 +164,6 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
         <ModalHeader>
           <VStack align="start" spacing={2}>
             <Text fontSize="lg" fontWeight="bold">Apply for {getListingTitle()}</Text>
-            {/* <HStack>
-              <Badge colorScheme="blue">{listing.type === 'litter' ? 'Litter' : 'Single Pet'}</Badge>
-              <Badge colorScheme="green">KSH {listing.price?.toLocaleString()}</Badge>
-            </HStack> */}
           </VStack>
         </ModalHeader>
         <ModalCloseButton />
@@ -176,7 +172,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
           <ModalBody>
             <VStack spacing={6} align="stretch">
 
-              {/* Application Form - Enhanced fields */}
+              {/* Adoption Form - Enhanced fields */}
               <VStack spacing={4} align="stretch">
 
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
@@ -198,18 +194,6 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
                       <Text fontSize="sm" color="red.500">{errors.timeline}</Text>
                     )}
                   </FormControl>
-                  {/* 
-                  <FormControl>
-                    <FormLabel>Preferred Contact Method</FormLabel>
-                    <Select
-                      value={formData.contact_preference}
-                      onChange={(e) => handleInputChange('contact_preference', e.target.value)}
-                    >
-                      <option value="email">Email</option>
-                      <option value="phone">Phone</option>
-                      <option value="whatsapp">WhatsApp</option>
-                    </Select>
-                  </FormControl> */}
 
                   <FormControl>
                     <FormLabel>Your Offer Price (KSH)</FormLabel>
@@ -273,7 +257,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
                     <List spacing={1} fontSize="sm">
                       <ListItem>
                         <ListIcon as={CheckCircleIcon} color="green.500" />
-                        Your application will be reviewed by the breeder
+                        Your adoption will be reviewed by the breeder
                       </ListItem>
                       <ListItem>
                         <ListIcon as={CheckCircleIcon} color="green.500" />
@@ -301,9 +285,9 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
             <Button
               colorScheme="brand"
               type="submit"
-              isLoading={createApplicationMutation.isPending}
+              isLoading={createAdoptionMutation.isPending}
             >
-              Submit Application
+              Submit Adoption
             </Button>
           </ModalFooter>
         </form>

@@ -1,3 +1,3 @@
-import BreederApplicationsView from "lib/components/pages/adoptions/BreederApplicationsView";
+import BreederAdoptionsView from "lib/components/pages/adoptions/BreederAdoptionsView";
 
-export default BreederApplicationsView;
+export default BreederAdoptionsView;

@@ -45,6 +45,7 @@ import { FiHeart, FiInfo, FiList } from 'react-icons/fi';
 import { MdOutlineMedicalInformation } from 'react-icons/md';
 import { GiDogHouse } from 'react-icons/gi';
 import { BreederCard } from 'lib/components/ui/BreederCard2';
+import { AdoptionForm } from '../adoptions/AdoptionForm';
 
 interface ListingDetailPageProps {
   id: string;
@@ -272,9 +273,10 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                   css={{
                     '&::-webkit-scrollbar': {
                       display: 'none',
-                    },
-                    scrollbarWidth: 'none',
-                  }}
+                      scrollbarWidth: 'none',
+                    }
+                  }
+                  }
                 >
                   <Tab>
                     <HStack>
@@ -375,6 +377,15 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             userProfile={user}
             listing={listing}
             isEditing={true}
+          />
+        )}
+
+        {/* Adoption Form Modal */}
+        {!isOwner && listing && (
+          <AdoptionForm
+            isOpen={isApplicationOpen}
+            onClose={onApplicationClose}
+            listing={listing}
           />
         )}
 
@@ -510,68 +521,6 @@ const PetInformation = ({ listing, bgColor, formatDate, formatPrice }) => {
   )
 }
 
-const ParentInfo = ({ listing }) => {
-  return (
-    <Box>
-      <VStack spacing={6} align="stretch">
-        <Box>
-          <Text fontSize="lg" fontWeight="semibold" color="brand.600" mb={4}>
-            Sire Information
-          </Text>
-          {listing.parents?.sire ? (
-            <Stack>
-              <SimpleGrid columns={2} spacing={4}>
-                <Box>
-                  <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                    Name
-                  </Text>
-                  <Text>{listing.parents?.sire?.name || 'Not specified'}</Text>
-                </Box>
-                <Box>
-                  <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                    Breed
-                  </Text>
-                  <Text>{listing.parents?.sire?.breed || 'Not specified'}</Text>
-                </Box>
-              </SimpleGrid>
-            </Stack>
-
-          ) : (
-            <Text>No sire information available.</Text>
-          )}
-        </Box>
-
-        <Box>
-          <Text fontSize="lg" fontWeight="semibold" color="brand.600" mb={4}>
-            Dam Information
-          </Text>
-          {listing.parents?.dam ? (
-            <Stack >
-              <SimpleGrid columns={2} spacing={4}>
-                <Box>
-                  <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                    Name
-                  </Text>
-                  <Text>{listing.parents?.dam?.name || 'Not specified'}</Text>
-                </Box>
-                <Box>
-                  <Text fontSize="xs" color="gray.500" textTransform="uppercase">
-                    Breed
-                  </Text>
-                  <Text>{listing.parents?.dam?.breed || 'Not specified'}</Text>
-                </Box>
-              </SimpleGrid>
-
-            </Stack>
-          ) : (
-            <Text>No dam information available.</Text>
-          )}
-        </Box>
-      </VStack>
-    </Box>
-  )
-}
-
 const HealthInfo = ({ listing }) => {
   return (
     <Stack>
@@ -597,7 +546,6 @@ const HealthInfo = ({ listing }) => {
           )}
         </HStack>
       </Stack>
-
       <Stack>
         <Text fontSize="xs" color="gray.500" textTransform="uppercase" mb={1}>
           Certificates ({listing.health?.certificates?.length || 0})

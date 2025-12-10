@@ -35,6 +35,8 @@ import {
 } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserProfile } from '../../../hooks/queries/useUserProfile';
+import { useUserBreedsFromUser } from 'lib/hooks/queries/useUserBreeds';
+import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 import { useAdoption, useUpdateAdoption, AdoptionWithListing } from '../../../hooks/queries/useAdoptions';
 import { useTransactionsByApplication } from '../../../hooks/queries/useTransactions';
 import { NextSeo } from 'next-seo';
@@ -43,7 +45,7 @@ import { AdoptionTimeline } from './AdoptionTimeline';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { PaymentModal } from '../payments/PaymentModal';
 import { PaymentStatusModal } from '../payments/PaymentStatusModal';
-import ApplicationStatusDialog from './ApplicationStatusDialog';
+import AdoptionStatusDialog from './AdoptionStatusDialog';
 import { formatPrice } from 'lib/components/ui/PriceTag';
 import { PageHeaderWithTwoButtons } from 'lib/components/ui/PageHeaderWithTwoButtons';
 import { FiInfo, FiUser } from 'react-icons/fi';
@@ -416,9 +418,10 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                   css={{
                     '&::-webkit-scrollbar': {
                       display: 'none',
-                    },
-                    scrollbarWidth: 'none',
-                  }}
+                      scrollbarWidth: 'none',
+                    }
+                  }
+                  }
                 >
                   <Tab>
                     <HStack>
@@ -484,7 +487,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
 
 
       {/* Status Update Modal */}
-      <ApplicationStatusDialog
+      <AdoptionStatusDialog
         form={updateForm}
         setForm={setUpdateForm}
         isOpen={isUpdateOpen}

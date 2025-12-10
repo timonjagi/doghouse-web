@@ -1,17 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { useUserProfileById } from './useUserProfile';
 import { useListings } from './useListings';
-import { useApplicationsReceived } from './useApplications';
+import { useAdoptionsReceived } from './useAdoptions';
 import { useTransactions } from './useTransactions';
 import { supabase } from '../../supabase/client';
 import { useCurrentUser } from './useAuth';
 
 export interface BreederDashboardStats {
   activeLitters: number;
-  pendingApplications: number;
+  pendingAdoptions: number;
   totalEarnings: number;
   earningsChange: number;
-  applicationTrend: Array<{ month: string; applications: number }>;
+  adoptionTrend: Array<{ month: string; adoptions: number }>;
   earningsTrend: Array<{ month: string; earnings: number }>;
   potentialMatches: Array<{
     id: string;
@@ -23,7 +23,7 @@ export interface BreederDashboardStats {
   }>;
   recentActivity: Array<{
     id: string;
-    type: 'application' | 'payment' | 'listing';
+    type: 'adoption' | 'payment' | 'listing';
     title: string;
     timestamp: string;
     status?: string;
@@ -40,8 +40,8 @@ export const useBreederDashboardStats = () => {
     status: 'active',
   });
 
-  // Get applications for breeder's listings
-  const { data: applications = [] } = useApplicationsReceived(profile?.id);
+  // Get adoptions for breeder's listings
+  const { data: adoptions = [] } = useAdoptionsReceived(profile?.id);
 
   // Get transactions for breeder (useTransactions automatically filters for current user)
   const { data: transactions = [] } = useTransactions();
@@ -52,10 +52,10 @@ export const useBreederDashboardStats = () => {
       if (!profile?.id) {
         return {
           activeLitters: 0,
-          pendingApplications: 0,
+          pendingAdoptions: 0,
           totalEarnings: 0,
           earningsChange: 0,
-          applicationTrend: [],
+          adoptionTrend: [],
           earningsTrend: [],
           potentialMatches: [],
           recentActivity: [],
@@ -64,7 +64,7 @@ export const useBreederDashboardStats = () => {
 
       // Calculate metrics
       const activeLitters = listings.filter(listing => listing.status === 'active').length;
-      const pendingApplications = applications.filter(app => app.status === 'pending').length;
+      const pendingAdoptions = adoptions.filter(app => app.status === 'pending').length;
 
       // Calculate earnings (sum of completed transactions)
       const completedTransactions = transactions.filter(t => t.status === 'completed');
@@ -90,8 +90,8 @@ export const useBreederDashboardStats = () => {
         ? ((recentEarnings - previousEarnings) / previousEarnings) * 100
         : 0;
 
-      // Generate application trend (last 6 months)
-      const applicationTrend = generateMonthlyTrend(applications, 6, 'created_at');
+      // Generate adoption trend (last 6 months)
+      const adoptionTrend = generateMonthlyTrend(adoptions, 6, 'created_at');
 
       // Generate earnings trend (last 6 months)
       const earningsTrend = generateMonthlyTrend(
@@ -105,14 +105,14 @@ export const useBreederDashboardStats = () => {
       const potentialMatches = await generatePotentialMatches(profile, listings);
 
       // Generate recent activity
-      const recentActivity = generateRecentActivity(applications, transactions, listings);
+      const recentActivity = generateRecentActivity(adoptions, transactions, listings);
 
       return {
         activeLitters,
-        pendingApplications,
+        pendingAdoptions,
         totalEarnings,
         earningsChange,
-        applicationTrend,
+        adoptionTrend,
         earningsTrend,
         potentialMatches,
         recentActivity,
@@ -148,22 +148,22 @@ function generateMonthlyTrend(
 
     trend.push({
       month: monthName,
-      [valueField ? valueField.replace('amount', 'earnings') : 'applications']: value,
+      [valueField ? valueField.replace('amount', 'earnings') : 'adoptions']: value,
     });
   }
 
   return trend;
 }
 
-function generateRecentActivity(applications: any[], transactions: any[], listings: any[]) {
+function generateRecentActivity(adoptions: any[], transactions: any[], listings: any[]) {
   const activities = [];
 
-  // Add recent applications
-  applications.slice(0, 3).forEach(app => {
+  // Add recent adoptions
+  adoptions.slice(0, 3).forEach(app => {
     activities.push({
       id: `app-${app.id}`,
-      type: 'application' as const,
-      title: `New application for ${app.listing?.title || 'listing'}`,
+      type: 'adoption' as const,
+      title: `New adoption for ${app.listing?.title || 'listing'}`,
       timestamp: app.created_at,
       status: app.status,
     });
@@ -207,14 +207,14 @@ async function generatePotentialMatches(profile: any, listings: any[]) {
     // For now, we'll simulate this with seekers who have applied to listings
     // In a real implementation, you'd have a listing_views table
     const { data: recentSeekers } = await supabase
-      .from('applications')
+      .from('adoptions')
       .select(`
         seeker_id,
         created_at,
         users!inner(
           id,
-          name,
-          location
+          display_name,
+          location_text
         )
       `)
       .in('listing_id', listingIds)
@@ -229,8 +229,8 @@ async function generatePotentialMatches(profile: any, listings: any[]) {
       if (!acc[seekerId]) {
         acc[seekerId] = {
           id: seekerId,
-          name: (app.users as any)?.name || 'Unknown',
-          location: (app.users as any)?.location || 'Unknown',
+          name: (app.users as any)?.display_name || 'Unknown',
+          location: (app.users as any)?.location_text || 'Unknown',
           lastViewed: app.created_at,
           preferredBreeds: [] as string[],
         };
@@ -275,7 +275,7 @@ async function generatePotentialMatches(profile: any, listings: any[]) {
       }
 
       // Higher score for location proximity
-      if (profile.location && seeker.location?.toLowerCase().includes(profile.location.toLowerCase())) {
+      if (profile.location_text && seeker.location?.toLowerCase().includes(profile.location_text.toLowerCase())) {
         matchScore += 20;
       }
 

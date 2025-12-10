@@ -1,3 +1,3 @@
-import SeekerApplicationsView from "lib/components/pages/adoptions/SeekerApplicationsView";
+import SeekerAdoptionsView from "lib/components/pages/adoptions/SeekerAdoptionsView";
 
-export default SeekerApplicationsView;
+export default SeekerAdoptionsView;
