@@ -14,7 +14,11 @@ import {
   ButtonGroup,
   Img,
   Icon,
-  useColorModeValue as mode
+  useColorModeValue as mode,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -35,8 +39,8 @@ const DashboardHome = () => {
   const [showWhatsNextModal, setShowWhatsNextModal] = useState(false);
   const router = useRouter();
   const { onClose } = useDisclosure();
-  const { data: user, isLoading: userLoading } = useCurrentUser();
-  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+  const { data: user, isLoading: userLoading, error: userError } = useCurrentUser();
+  const { data: userProfile, isLoading: profileLoading, error: profileError } = useUserProfile();
 
   const profile = userProfile || (user ? {
     id: user.id,
@@ -48,21 +52,40 @@ const DashboardHome = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (profile && !profile?.onboarding_completed) {
+    // Only determine modals when loading is finished
+    if (userLoading || profileLoading) return;
+
+    const onboardingCompletedParam = searchParams.get('onboarding_completed');
+
+    if (profile && (profile.onboarding_completed || onboardingCompletedParam)) {
+      setShowWhatsNextModal(true);
+      setShowWelcomeModal(false); // Ensure conflict is resolved
+    } else if (profile && !profile.onboarding_completed) {
       setShowWelcomeModal(true);
+      setShowWhatsNextModal(false);
     }
-  }, [profile]);
+  }, [profile, searchParams, userLoading, profileLoading]);
 
-  useEffect(() => {
-    const onboardingCompleted = searchParams.get('onboarding_completed');
-
-    if (profile && (profile.onboarding_completed || onboardingCompleted)) {
-      setShowWhatsNextModal(true)
-    }
-  }, [profile, searchParams]);
-
-  if (userLoading) {
+  // Combined loading state
+  if (userLoading || profileLoading) {
     return <Loader />
+  }
+
+  // Error handling
+  if (userError || profileError) {
+    return (
+      <Container centerContent py={10}>
+        <Alert status='error' borderRadius="md">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>Error loading dashboard</AlertTitle>
+            <AlertDescription>
+              {userError?.message || profileError?.message || "An unexpected error occurred."}
+            </AlertDescription>
+          </Box>
+        </Alert>
+      </Container>
+    )
   }
 
   // Show role-specific dashboard if user is onboarded
