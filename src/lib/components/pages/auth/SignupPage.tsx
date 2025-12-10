@@ -11,6 +11,8 @@ import {
   AvatarGroup,
   Button,
   Center,
+  Img,
+  useColorModeValue as mode
 } from "@chakra-ui/react";
 // import * as React from "react";
 import { NextSeo } from "next-seo";
@@ -19,19 +21,6 @@ import { Logo } from "../../layout/Logo";
 import { SignupForm } from "lib/components/auth/SignupForm";
 import { useRouter } from "next/router";
 
-type User = {
-  // eslint-disable-next-line
-  customClaims: any;
-  disabled: boolean;
-  displayName: string;
-  emailVerified: boolean;
-  // eslint-disable-next-line
-  metadata: any;
-  phoneNumber: string;
-  // eslint-disable-next-line
-  providerData: any;
-  uid: string;
-};
 
 const Features = () => {
   return (
@@ -77,11 +66,11 @@ const Features = () => {
               </HStack>
             </Stack>
           </Flex>
-          {/* <Flex align="center" h="24">
+          <Flex align="center" h="24">
             <Text color="on-accent-subtle" fontSize="sm">
-              © 2022 Pethouse Kenya. All rights reserved.
+              © {new Date().getFullYear()} Pethouse Kenya. All rights reserved.
             </Text>
-          </Flex> */}
+          </Flex>
         </Flex>
       </DarkMode>
     </Box>
@@ -120,70 +109,55 @@ const SignUp = () => {
             >
               <Features />
 
-              {/* {user?.uid && (
-                <Stepper
-                  index={activeStep}
-                  orientation="vertical"
-                  height="400px"
-                  gap="0"
-                  colorScheme="brand"
-                >
-                  {steps.map((step, index) => (
-                    <Step key={index}>
-                      <StepIndicator>
-                        <StepStatus
-                          complete={<StepIcon />}
-                          incomplete={<StepNumber />}
-                          active={<StepNumber />}
-                        />
-                      </StepIndicator>
-
-                      <Box flexShrink="0">
-                        <StepTitle>{step.title}</StepTitle>
-                        <StepDescription>
-                          <Text color="whiteAlpha.600">{step.description}</Text>
-                        </StepDescription>
-                      </Box>
-
-                      <StepSeparator />
-                    </Step>
-                  ))}
-                </Stepper>
-              )} */}
             </Flex>
 
             <Flex align="center" h="24">
               <Text color="on-accent-subtle" fontSize="sm">
-                © 2022 Pethouse Kenya. All rights reserved.
+                © {new Date().getFullYear()} Pethouse Kenya. All rights reserved.
               </Text>
             </Flex>
           </Flex>
         </Box>
         {/* end sidebar */}
 
-        <Center w="full" flex="1">
-          <Stack
-            spacing={{ base: "6", md: "9" }}
-            px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
-            align="center"
-            textAlign="center"
-          >
-            <Heading size="lg">Let's create your account</Heading>
+        <Box w="full">
 
-            <SignupForm />
+          <Center flex="1">
+            <Stack
+              spacing={{ base: "6", md: "9" }}
+              px={{ base: "6", sm: "8", lg: "16", xl: "32" }}
+              align="center"
+              textAlign="center"
+            >
+              <Heading size="lg">Let's create your account</Heading>
 
-            <HStack justify="center" spacing="1">
-              <Text color="muted">Already&apos;t have an account?</Text>
-              <Button
-                variant="link"
-                colorScheme="brand"
-                onClick={() => router.push("/login")}
-              >
-                Log in
-              </Button>
-            </HStack>
-          </Stack>
-        </Center>
+              <Box position="relative" mx="auto">
+                <Img
+                  src={mode('images/pethouse-logo-icon-light.png', 'images/pethouse-logo-icon-dark.png')}
+                  alt="Main Image"
+                  w="150"
+                  h="150"
+                  borderRadius="0.5rem 0.5rem 0 0"
+                  objectFit="cover"
+                  objectPosition="90% center"
+                />
+              </Box>
+
+              <SignupForm />
+
+              <HStack justify="center" spacing="1">
+                <Text color="muted">Already&apos;t have an account?</Text>
+                <Button
+                  variant="link"
+                  colorScheme="brand"
+                  onClick={() => router.push("/login")}
+                >
+                  Log in
+                </Button>
+              </HStack>
+            </Stack>
+          </Center>
+        </Box>
       </Flex>
     </Flex>
   );

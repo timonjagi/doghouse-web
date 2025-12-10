@@ -14,6 +14,7 @@ import {
   ButtonGroup,
   Img,
   Icon,
+  useColorModeValue as mode
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -55,7 +56,7 @@ const DashboardHome = () => {
   useEffect(() => {
     const onboardingCompleted = searchParams.get('onboarding_completed');
 
-    if (profile && profile.onboarding_completed && onboardingCompleted) {
+    if (profile && (profile.onboarding_completed || onboardingCompleted)) {
       setShowWhatsNextModal(true)
     }
   }, [profile, searchParams]);
@@ -130,7 +131,7 @@ const Welcome: React.FC<{ router: any }> = ({ router }) => {
       >
         <Box position="relative" mx="auto">
           <Img
-            src="images/logo.png"
+            src={mode('images/pethouse-logo-icon-light.png', 'images/pethouse-logo-icon-dark.png')}
             alt="Main Image"
             w="150"
             h="150"
