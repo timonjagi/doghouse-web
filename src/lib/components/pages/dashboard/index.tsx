@@ -18,7 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Loader } from "../../ui/Loader";
-import { useCurrentUser } from "lib/hooks/queries";
+import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
 import { MdCheckCircle } from "react-icons/md";
 import { useSearchParams } from "next/navigation";
 import { RadioCard } from "../../ui/RadioCard";
@@ -35,10 +35,13 @@ const DashboardHome = () => {
   const router = useRouter();
   const { onClose } = useDisclosure();
   const { data: user, isLoading: userLoading } = useCurrentUser();
-  const profile = user ? {
+  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+
+  const profile = userProfile || (user ? {
+    id: user.id,
     role: user.user_metadata?.role,
     onboarding_completed: user.user_metadata?.onboarding_completed,
-  } : null;
+  } : null);
 
   const [showBanner, setShowBanner] = useState(true);
   const searchParams = useSearchParams();

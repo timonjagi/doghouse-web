@@ -41,6 +41,7 @@ const AccountPage = () => {
   const toast = useToast();
 
   const userProfile = user ? {
+    id: user.id,
     display_name: user.user_metadata?.display_name,
     avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.profile_photo_url,
     profile_photo_url: user.user_metadata?.avatar_url || user.user_metadata?.profile_photo_url,
@@ -174,7 +175,7 @@ const AccountPage = () => {
 
               <UserInfo
                 location={userProfile?.location_text}
-                website="esther.com"
+                website={`pethouse.com/u/${userProfile?.id}`}
                 memberSince={new Date(
                   user?.created_at
                 ).toDateString()}

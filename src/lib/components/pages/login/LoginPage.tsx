@@ -19,7 +19,7 @@ import { useRouter } from "next/router";
 
 import { Logo } from "../../layout/Logo";
 
-const Login = () => {
+const LoginPage = () => {
   const router = useRouter();
 
   return (
@@ -122,4 +122,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
