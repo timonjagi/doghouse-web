@@ -57,7 +57,7 @@ const DashboardHome = () => {
 
     const onboardingCompletedParam = searchParams.get('onboarding_completed');
 
-    if (profile && (profile.onboarding_completed || onboardingCompletedParam)) {
+    if (profile && profile.onboarding_completed && onboardingCompletedParam) {
       setShowWhatsNextModal(true);
       setShowWelcomeModal(false); // Ensure conflict is resolved
     } else if (profile && !profile.onboarding_completed) {
