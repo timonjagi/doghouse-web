@@ -1,0 +1,1 @@
+ALTER TABLE "breeder_profiles" ADD COLUMN "website" text;

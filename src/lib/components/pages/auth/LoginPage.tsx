@@ -12,6 +12,7 @@ import {
   Text,
   useBreakpointValue,
   useColorModeValue as mode,
+  Img,
 } from "@chakra-ui/react";
 import { LoginForm } from "lib/components/auth/LoginForm";
 import { NextSeo } from "next-seo";
@@ -19,7 +20,7 @@ import { useRouter } from "next/router";
 
 import { Logo } from "../../layout/Logo";
 
-const Login = () => {
+const LoginPage = () => {
   const router = useRouter();
 
   return (
@@ -101,6 +102,18 @@ const Login = () => {
             textAlign="center"
             px={{ base: "8", lg: "16", xl: "32" }}
           >
+
+            <Box position="relative" mx="auto">
+              <Img
+                src={mode('images/pethouse-logo-icon-light.png', 'images/pethouse-logo-icon-dark.png')}
+                alt="Main Image"
+                w="150"
+                h="150"
+                borderRadius="0.5rem 0.5rem 0 0"
+                objectFit="cover"
+                objectPosition="90% center"
+              />
+            </Box>
             <Heading size="lg">Log in to your account</Heading>
 
             <LoginForm />
@@ -122,4 +135,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

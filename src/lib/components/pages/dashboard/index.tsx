@@ -14,11 +14,16 @@ import {
   ButtonGroup,
   Img,
   Icon,
+  useColorModeValue as mode,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Loader } from "../../ui/Loader";
-import { useUserProfile } from "lib/hooks/queries";
+import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
 import { MdCheckCircle } from "react-icons/md";
 import { useSearchParams } from "next/navigation";
 import { RadioCard } from "../../ui/RadioCard";
@@ -34,27 +39,53 @@ const DashboardHome = () => {
   const [showWhatsNextModal, setShowWhatsNextModal] = useState(false);
   const router = useRouter();
   const { onClose } = useDisclosure();
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const { data: user, isLoading: userLoading, error: userError } = useCurrentUser();
+  const { data: userProfile, isLoading: profileLoading, error: profileError } = useUserProfile();
+
+  const profile = userProfile || (user ? {
+    id: user.id,
+    role: user.user_metadata?.role,
+    onboarding_completed: user.user_metadata?.onboarding_completed,
+  } : null);
 
   const [showBanner, setShowBanner] = useState(true);
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (profile && !profile?.onboarding_completed) {
+    // Only determine modals when loading is finished
+    if (userLoading || profileLoading) return;
+
+    const onboardingCompletedParam = searchParams.get('onboarding_completed');
+
+    if (profile && profile.onboarding_completed && onboardingCompletedParam) {
+      setShowWhatsNextModal(true);
+      setShowWelcomeModal(false); // Ensure conflict is resolved
+    } else if (profile && !profile.onboarding_completed) {
       setShowWelcomeModal(true);
+      setShowWhatsNextModal(false);
     }
-  }, [profile]);
+  }, [profile, searchParams, userLoading, profileLoading]);
 
-  useEffect(() => {
-    const onboardingCompleted = searchParams.get('onboarding_completed');
-
-    if (profile && profile.onboarding_completed && onboardingCompleted) {
-      setShowWhatsNextModal(true)
-    }
-  }, [profile, searchParams]);
-
-  if (profileLoading) {
+  // Combined loading state
+  if (userLoading || profileLoading) {
     return <Loader />
+  }
+
+  // Error handling
+  if (userError || profileError) {
+    return (
+      <Container centerContent py={10}>
+        <Alert status='error' borderRadius="md">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>Error loading dashboard</AlertTitle>
+            <AlertDescription>
+              {userError?.message || profileError?.message || "An unexpected error occurred."}
+            </AlertDescription>
+          </Box>
+        </Alert>
+      </Container>
+    )
   }
 
   // Show role-specific dashboard if user is onboarded
@@ -123,7 +154,7 @@ const Welcome: React.FC<{ router: any }> = ({ router }) => {
       >
         <Box position="relative" mx="auto">
           <Img
-            src="images/logo.png"
+            src={mode('images/pethouse-logo-icon-light.png', 'images/pethouse-logo-icon-dark.png')}
             alt="Main Image"
             w="150"
             h="150"

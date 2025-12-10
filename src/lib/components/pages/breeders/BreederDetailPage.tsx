@@ -202,7 +202,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   variant="primary"
                   size="sm"
                   rightIcon={<FiBell />}
-                  onClick={() => onOpen()}
+                  onClick={handleSubscribeClick}
                 >
                   Subscribe
                 </Button>
@@ -214,8 +214,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   {breederProfile && breederProfile?.kennel_name}
                 </Heading>
 
-                <HStack>
-
+                <HStack justifyContent={{ base: 'flex-start', md: 'center' }} py="2">
                   <Text color={useColorModeValue("gray.600", "gray.400")}>
                     {breederProfile?.pet_type || 'Dog'} breeder
                   </Text>
@@ -229,7 +228,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
                 <UserInfo
                   location={breederProfile?.kennel_location}
-                  website="pethouse.co.ke"
+                  website={breederProfile?.website || `pethouse.co.ke/u/${breederProfile?.kennel_name.replace(/\s+/g, '-').toLowerCase()}`}
                   memberSince={new Date(
                     breederUser?.created_at
                   ).toDateString()}

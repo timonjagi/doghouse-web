@@ -20,7 +20,7 @@ import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
 
 import UserProfileMenu from "lib/components/layout/UserProfileMenu";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+import { useCurrentUser } from "lib/hooks/queries";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import { SearchInput } from "./SearchInput";
 
@@ -35,7 +35,7 @@ const Header = () => {
   const router = useRouter();
   const { pathname } = router;
 
-  const { user } = useSupabaseAuth();
+  const { data: user } = useCurrentUser();
 
   return (
     <Box
@@ -137,7 +137,7 @@ const Header = () => {
                     borderColor="white"
                     onClick={() => router.push("/login")}
                   >
-                    Log in
+                    Sign in
                   </Button>
                 </HStack>
               )}

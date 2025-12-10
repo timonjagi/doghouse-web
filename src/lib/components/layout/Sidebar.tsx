@@ -19,9 +19,8 @@ import { ColumnHeader, ColumnIconButton } from "./Column";
 import { Logo } from "./Logo";
 import { NavButton } from "./NavButton";
 import { NavSection, getNavigationForRole } from "./navLinks";
-import { User } from "../../db/schema";
-import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
-import { useCurrentUser } from "lib/hooks/queries";
+import { User } from "@supabase/supabase-js";
+import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
 import { UserProfile } from "./UserProfile";
 import NextLink from "next/link";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
@@ -65,11 +64,9 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const { data: user, isLoading: userLoading } = useCurrentUser();
-  const { data: profile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
-
   // Wait for auth check to complete before deciding which sidebar to show
   // This prevents the flash between logged-out and logged-in views
-  const isAuthLoading = userLoading || (user && profileLoading);
+  const isAuthLoading = userLoading;
 
   if (isAuthLoading) {
     return (
@@ -81,8 +78,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
 
   return (
     <Flex as="nav" height="full" direction="column" justify="space-between">
-      {profile?.id ? (
-        <LoggedInSidebar profile={profile} onClose={onClose} />
+      {user ? (
+        <LoggedInSidebar onClose={onClose} />
       ) : (
         <LoggedOutSidebar onClose={onClose} />
       )}
@@ -173,21 +170,27 @@ const SignInButton = (props: any) => (
 // Logged In Sidebar
 // ============================================
 interface LoggedInSidebarProps {
-  profile: User;
   onClose: () => void;
 }
 
-const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) => {
+const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
   const router = useRouter();
   const isMobile = useBreakpointValue({ base: true, lg: false });
+  const { data: user, isLoading: userLoading } = useCurrentUser();
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
+
+  // Wait for auth check to complete before deciding which sidebar to show
+  const isAuthLoading = userLoading || (user && profileLoading);
+
   const [navigationSections, setNavigationSections] = useState<NavSection[]>([]);
 
   useEffect(() => {
-    if (profile?.role) {
-      const sections = getNavigationForRole(profile.role as any);
+    const role = profile?.role || user?.user_metadata?.role;
+    if (role) {
+      const sections = getNavigationForRole(role as any);
       setNavigationSections(sections);
     }
-  }, [profile]);
+  }, [user, profile]);
 
   const handleNavClick = (href: string) => {
     router.push(href);
@@ -283,7 +286,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ profile, onClose }) =
           {!profile?.profile_photo_url && <CompleteProfileCard onUpdateProfileClick={() => router.push("/dashboard/account/profile")} />}
 
 
-          <UserProfile profile={profile} onClose={onClose} />
+          <UserProfile profile={profile || undefined} onClose={onClose} />
         </Stack>
       </Box>
     </Flex>

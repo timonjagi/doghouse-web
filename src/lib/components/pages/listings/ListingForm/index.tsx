@@ -131,7 +131,7 @@ interface ListingFormProps {
   isOpen: boolean;
   onClose: () => void;
   userBreeds: UserBreed[];
-  userProfile: User;
+  userProfile: { id: string } | null;
   isEditing?: boolean,
   listing?: Listing
 }

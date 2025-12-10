@@ -17,18 +17,18 @@ import { BreedForm } from "../../ui/BreedForm";
 import { AddIcon } from "@chakra-ui/icons";
 import { Loader } from "lib/components/ui/Loader";
 import { NextSeo } from "next-seo";
-import { useUserProfile } from "lib/hooks/queries/useUserProfile";
+import { useCurrentUser } from "lib/hooks/queries";
 
 const DashboardBreedsPage = () => {
   const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
-  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+  const { data: user, isLoading: profileLoading } = useCurrentUser();
 
   return (
     <Container maxW="7xl" >
       <NextSeo title="Manage Breeds " />
 
       <Box>
-        <UserBreeds userProfile={userProfile} onFormOpen={onFormOpen} />
+        <UserBreeds userProfile={user} onFormOpen={onFormOpen} />
 
         <BreedForm
           isOpen={isFormOpen}

@@ -26,21 +26,29 @@ import { useRouter } from "next/router";
 import { CardContent } from "../../ui/CardContent";
 import { CardWithAvatar } from "../../ui/CardWithAvatar";
 
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+import { useCurrentUser } from "lib/hooks/queries";
 import { Loader } from "lib/components/ui/Loader";
 import { UserInfo } from "../../ui/UserInfo";
-import { useUserProfile } from "lib/hooks/queries/useUserProfile";
+
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { useSignOut } from "lib/hooks/queries/useAuth";
 import { FiLogOut, FiTrash2 } from "react-icons/fi";
 import Link from "next/link";
 
 const AccountPage = () => {
-  const { user, loading } = useSupabaseAuth();
+  const { data: user, isLoading, error } = useCurrentUser();
   const router = useRouter();
-
   const toast = useToast();
-  const { data: userProfile, isLoading, error } = useUserProfile();
+
+  const userProfile = user ? {
+    id: user.id,
+    display_name: user.user_metadata?.display_name,
+    avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.profile_photo_url,
+    profile_photo_url: user.user_metadata?.avatar_url || user.user_metadata?.profile_photo_url,
+    email: user.email,
+    role: user.user_metadata?.role,
+    location_text: user.user_metadata?.location_text || user.user_metadata?.location,
+  } : null;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
@@ -74,7 +82,7 @@ const AccountPage = () => {
     return <Loader />;
   }
 
-  if (error || !userProfile) {
+  if (error || (!isLoading && !user)) {
     return (
       <Container maxW="6xl" py={8}>
         <Alert status="error">
@@ -167,7 +175,7 @@ const AccountPage = () => {
 
               <UserInfo
                 location={userProfile?.location_text}
-                website="esther.com"
+                website={`pethouse.com/u/${userProfile?.id}`}
                 memberSince={new Date(
                   user?.created_at
                 ).toDateString()}

@@ -26,12 +26,12 @@ import { Logo } from "./Logo";
 
 import { FiBell, FiCheck, FiHelpCircle } from "react-icons/fi";
 import { useRouter } from "next/router";
-import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
+
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import Link from "next/link";
 import { useMarkAllNotificationsAsRead, useNotifications, useUnreadNotificationsCount } from "lib/hooks/queries/useNotifications";
 import UserProfileMenu from "./UserProfileMenu";
-import { useCurrentUser } from "lib/hooks/queries";
+import { useCurrentUser, useUserProfileById } from "lib/hooks/queries";
 import { ToggleButton } from "./ToggleButton";
 
 export const Navbar = () => {
@@ -42,10 +42,17 @@ export const Navbar = () => {
   const toast = useToast();
 
   const { data: user } = useCurrentUser();
-  const { data: userProfile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
-  const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
+  const { data: dbProfile } = useUserProfileById(user?.id as string);
 
-  const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
+  const userProfile = dbProfile || (user ? {
+    id: user.id,
+    display_name: user?.user_metadata?.display_name,
+    profile_photo_url: user?.user_metadata?.avatar_url || user?.user_metadata?.profile_photo_url,
+    email: user.email
+  } : null);
+  const { data: unreadCount } = useUnreadNotificationsCount(user?.id);
+
+  const { data: notifications, isLoading, error } = useNotifications(user?.id);
   const markAllAsReadMutation = useMarkAllNotificationsAsRead();
 
   const handleMarkAllAsRead = async () => {

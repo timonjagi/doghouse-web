@@ -190,6 +190,7 @@ const ExploreUserBreedDetailView = () => {
                       emptyActionLabel={`Add to Wishlist`}
                       emptyActionIcon={<FiHeart />}
                       emptyAction={onAddToWishlist}
+                      columns={{ base: 1, md: 2, xl: 3 }}
                     />
                   </TabPanel>
                 </TabPanels>
