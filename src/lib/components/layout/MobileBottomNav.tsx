@@ -3,16 +3,16 @@ import * as React from 'react'
 import { useRouter } from 'next/router'
 import { NavAction } from './NavAction'
 import { items } from './NavItemIcons'
-import { useCurrentUser, useUnreadNotificationsCount, useUserProfileById } from 'lib/hooks/queries'
+import { useCurrentUser, useUnreadNotificationsCount } from 'lib/hooks/queries'
 
 export const MobileBottomNav = () => {
   const router = useRouter()
   const { data: user, isLoading: userLoading } = useCurrentUser();
-  const { data: profile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
+  const profile = user ? { id: user.id, role: user.user_metadata?.role } : null;
 
   // Wait for auth check to complete before deciding which nav items to show
   // This prevents the flash between different role-based nav items
-  const isAuthLoading = userLoading || (user && profileLoading);
+  const isAuthLoading = userLoading;
 
   const navItems = profile?.role === 'seeker' ?
     items.filter(item => !item.role || item.role === 'seeker') :

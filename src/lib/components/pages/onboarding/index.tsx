@@ -16,7 +16,7 @@ import {
   Card,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { useCurrentUser, useUserProfile } from "../../../hooks/queries";
+import { useCurrentUser } from "../../../hooks/queries";
 import { useSeekerProfile } from "../../../hooks/queries/useSeekerProfile";
 import { useBreederProfile } from "../../../hooks/queries/useBreederProfile";
 import { BreederOnboardingFlow } from "./breeder";
@@ -28,15 +28,16 @@ import { Logo } from "lib/components/layout/Logo";
 import { Loader } from "lib/components/ui/Loader";
 
 const OnboardingPage = () => {
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const { data: user, isLoading: userLoading } = useCurrentUser();
+  const profile = user ? {
+    id: user.id,
+    display_name: user.user_metadata?.display_name,
+    email: user.email,
+    role: user.user_metadata?.role,
+    onboarding_completed: user.user_metadata?.onboarding_completed,
+  } : null;
 
-  if (profileLoading) {
-    return (
-      <Center h="100vh">
-        <Loader />
-      </Center>
-    );
-  }
+  if (userLoading) return <Loader />;
 
   return (
     <Flex

@@ -42,10 +42,15 @@ export const Navbar = () => {
   const toast = useToast();
 
   const { data: user } = useCurrentUser();
-  const { data: userProfile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
-  const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
+  const userProfile = user ? {
+    id: user.id,
+    display_name: user?.user_metadata?.display_name,
+    profile_photo_url: user?.user_metadata?.avatar_url || user?.user_metadata?.profile_photo_url,
+    email: user.email
+  } : null;
+  const { data: unreadCount } = useUnreadNotificationsCount(user?.id);
 
-  const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
+  const { data: notifications, isLoading, error } = useNotifications(user?.id);
   const markAllAsReadMutation = useMarkAllNotificationsAsRead();
 
   const handleMarkAllAsRead = async () => {

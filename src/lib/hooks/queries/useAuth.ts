@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-import { useAppStore } from '../../stores/useAppStore';
+
 
 // Types
 interface SignUpData {
@@ -77,7 +77,6 @@ export const useSignUp = () => {
 // Mutation for signing in
 export const useSignIn = () => {
   const queryClient = useQueryClient();
-  const { setUserSession } = useAppStore.getState();
 
   return useMutation({
     mutationFn: async ({ email, password }: SignInData) => {
@@ -89,17 +88,6 @@ export const useSignIn = () => {
       return data;
     },
     onSuccess: (data) => {
-      // Update Zustand store with user session
-      if (data.user) {
-        setUserSession({
-          id: data.user.id,
-          email: data.user.email!,
-          role: (data.user.user_metadata?.role as 'breeder' | 'seeker' | 'admin') || 'seeker',
-          displayName: data.user.user_metadata?.display_name,
-          isAuthenticated: true,
-          onboardingCompleted: false, // This should be checked from the database
-        });
-      }
 
       // Invalidate auth queries
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.all() });
@@ -110,7 +98,6 @@ export const useSignIn = () => {
 // Mutation for signing out
 export const useSignOut = () => {
   const queryClient = useQueryClient();
-  const { clearUserSession } = useAppStore.getState();
 
   return useMutation({
     mutationFn: async () => {
@@ -118,8 +105,6 @@ export const useSignOut = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      // Clear Zustand store
-      clearUserSession();
 
       // Clear all cached queries
       queryClient.clear();
@@ -148,12 +133,6 @@ export const useUpdateProfile = () => {
       return { user, updates };
     },
     onSuccess: (data) => {
-      // Update the user session in Zustand store
-      const { updateUserProfile } = useAppStore.getState();
-      updateUserProfile({
-        displayName: data.updates.display_name,
-        avatarUrl: data.updates.avatar_url,
-      });
 
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.all() });

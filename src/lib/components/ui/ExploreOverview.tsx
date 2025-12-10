@@ -279,7 +279,7 @@ const ExploreOverview: React.FC = () => {
                 breeders={featuredBreeders}
                 isLoading={isLoading}
                 showLoader={false}
-                columns={{ base: 1, md: 2, lg: 3 }}
+                columns={{ base: 1, md: 2, xl: 3 }}
                 spacing={4}
                 emptyMessage="No breeders found"
                 props={{

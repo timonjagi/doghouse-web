@@ -57,10 +57,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ profile, onClose }) =>
 
   return (
     <HStack spacing="3" px="2">
-      <Avatar name={profile?.display_name} src={profile?.avatar_url} boxSize="10" />
+      <Avatar name={profile?.display_name || profile?.name} src={profile?.avatar_url || profile?.profile_photo_url} boxSize="10" />
       <Box>
         <Text fontWeight="medium" fontSize="sm">
-          {profile?.display_name}
+          {profile?.display_name || profile?.name}
         </Text>
         <Text color="muted" fontSize="sm">
           {profile?.email}

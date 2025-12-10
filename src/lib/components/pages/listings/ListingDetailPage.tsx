@@ -32,7 +32,7 @@ import {
 } from '@chakra-ui/react';
 import { EditIcon, ChatIcon, DeleteIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
-import { useUserBreedsFromUser, useUserProfile } from 'lib/hooks/queries';
+import { useUserBreedsFromUser, useCurrentUser } from 'lib/hooks/queries';
 import { useDeleteListing, useIncrementListingViews, useListing } from 'lib/hooks/queries/useListings';
 import { NextSeo } from 'next-seo';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
@@ -54,12 +54,12 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+  const { data: user, isLoading: profileLoading } = useCurrentUser();
   const {
     data: userBreeds,
     isLoading: userBreedsLoading,
     error: userBreedsError
-  } = useUserBreedsFromUser(userProfile?.id);
+  } = useUserBreedsFromUser(user?.id);
 
   const toast = useToast();
   const bgColor = useColorModeValue('white', 'gray.800');
@@ -174,7 +174,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   }
 
 
-  const isOwner = userProfile?.id === listing.owner_id;
+  const isOwner = user?.id === listing.owner_id;
   const canApply = !isOwner && listing.status === 'available';
 
   const getTitle = () => {
@@ -372,7 +372,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             isOpen={isListingFormOpen}
             onClose={onListingFormClose}
             userBreeds={userBreeds}
-            userProfile={userProfile}
+            userProfile={user}
             listing={listing}
             isEditing={true}
           />

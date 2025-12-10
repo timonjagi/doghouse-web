@@ -27,14 +27,14 @@ export const UserInfo = (props: any) => {
         <Icon as={HiLocationMarker} />
         <Text>{location}</Text>
       </HStack>
-      {/* <HStack>
+      <HStack>
         <Icon as={HiLink} />
         <Text>{website}</Text>
-      </HStack> */}
+      </HStack>
 
       <HStack>
         <Icon as={HiCalendar} />
-        <Text>{memberSince}</Text>
+        <Text>Joined {memberSince}</Text>
       </HStack>
     </Stack>
   );

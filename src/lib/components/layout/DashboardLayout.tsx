@@ -12,8 +12,7 @@ import { HeaderWithTitle } from "./HeaderWithTitle";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { Sidebar } from "./Sidebar";
 import { ReactNode } from "react";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
-import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
+import { useCurrentUser } from "lib/hooks/queries";
 
 type LayoutProps = {
   children: ReactNode;
@@ -34,8 +33,8 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
   const isDesktop = useBreakpointValue({ base: false, lg: true });
   const isMobile = useBreakpointValue({ base: true, lg: false });
-  const { user } = useSupabaseAuth();
-  const { data: profile } = useUserProfileById(user?.id);
+  const { data: user } = useCurrentUser();
+  const profile = user ? { role: user.user_metadata?.role } : null;
   const [mainIsScrolled, setMainIsScrolled] = useState(false);
 
   const breedName = router.query.breedName;

@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { FiBell, FiCheck } from 'react-icons/fi';
 import { useRouter } from 'next/router';
-import { useUserProfile } from '../../../lib/hooks/queries';
+
 import {
   useNotifications,
   useMarkNotificationAsRead,

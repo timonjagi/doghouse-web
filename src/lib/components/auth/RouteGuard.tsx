@@ -3,17 +3,17 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Box, Center, Flex, Spinner, useToast } from "@chakra-ui/react";
 import { Loader } from "../ui/Loader";
-import { useSupabaseAuth } from "lib/hooks/useSupabaseAuth";
+import { useCurrentUser } from "lib/hooks/queries";
 
 const RouteGuard = ({ children, ...rest }) => {
   const router = useRouter();
-  const { user, loading } = useSupabaseAuth();
+  const { data: user, isLoading } = useCurrentUser();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const protectedRoutes = ["onboarding", "dashboard", "profile", "account"];
   const toast = useToast();
 
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading) {
       // If the authentication state is loaded
       if (!user && protectedRoutes.find((route) => router.pathname.includes(route))) {
         router.replace("/login");
@@ -28,9 +28,9 @@ const RouteGuard = ({ children, ...rest }) => {
         setIsAuthorized(true);
       }
     }
-  }, [user, loading, router]);
+  }, [user, isLoading, router]);
 
-  return loading ? (
+  return isLoading ? (
     <Loader />
 
   ) : isAuthorized ? (

@@ -78,6 +78,7 @@ export const breeder_profiles = pgTable("breeder_profiles", {
   review_count: integer("review_count").default(0),
   kennel_avatar_url: text("kennel_avatar_url"),
   pet_type: varchar("pet_type", { length: 50 }),
+  website: text("website"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });

@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-import { useAppStore } from '../../stores/useAppStore';
 import { User } from '../../db/schema';
+import { useCurrentUser } from './useAuth';
 
 interface UpdateProfileData {
   display_name?: string;
@@ -18,11 +18,12 @@ interface UpdateProfileData {
 
 // Query to get current user profile from database
 export const useUserProfile = () => {
+  const { data: user } = useCurrentUser();
+
   return useQuery({
-    queryKey: queryKeys.users.currentProfile(),
+    queryKey: queryKeys.users.currentProfile(user?.id),
     queryFn: async (): Promise<User | null> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!user?.id) return null;
 
       const { data, error } = await supabase
         .from('users')
@@ -33,6 +34,7 @@ export const useUserProfile = () => {
       if (error) throw error;
       return data;
     },
+    enabled: !!user?.id,
   });
 };
 
@@ -57,11 +59,10 @@ export const useUserProfileById = (userId: string) => {
 // Mutation to update user profile in database
 export const useUpdateUserProfile = () => {
   const queryClient = useQueryClient();
+  const { data: user } = useCurrentUser();
 
   return useMutation({
     mutationFn: async (updates: UpdateProfileData) => {
-      const { data: { user } } = await supabase.auth.getUser();
-
       if (!user) throw new Error('No authenticated user');
 
       const { data, error } = await supabase
@@ -78,16 +79,9 @@ export const useUpdateUserProfile = () => {
       return data;
     },
     onSuccess: (data) => {
-      // Update the user session in Zustand store
-      const { updateUserProfile } = useAppStore.getState();
-      updateUserProfile({
-        displayName: data.display_name,
-        avatarUrl: data.profile_photo_url,
-      });
-
       // Invalidate relevant queries - avoid infinite recursion
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.profile() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile(user?.id) });
     },
   });
 };
@@ -95,10 +89,10 @@ export const useUpdateUserProfile = () => {
 // Mutation to upload profile photo
 export const useUploadProfilePhoto = () => {
   const queryClient = useQueryClient();
+  const { data: user } = useCurrentUser();
 
   return useMutation({
     mutationFn: async (file: File): Promise<string> => {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No authenticated user');
 
       const fileExt = file.name.split('.').pop();
@@ -125,13 +119,9 @@ export const useUploadProfilePhoto = () => {
       return publicUrl;
     },
     onSuccess: (avatarUrl) => {
-      // Update the user session in Zustand store
-      const { updateUserProfile } = useAppStore.getState();
-      updateUserProfile({ avatarUrl });
-
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile(user?.id) });
     },
   });
 };

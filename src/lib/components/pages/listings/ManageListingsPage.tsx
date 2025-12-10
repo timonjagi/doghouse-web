@@ -21,22 +21,22 @@ import { NextSeo } from 'next-seo';
 import { Loader } from 'lib/components/ui/Loader';
 import ManageListingCard from '../../ui/ManageListingCard';
 import ListingForm from './ListingForm';
-import { useUserBreedsFromUser, useUserProfile } from 'lib/hooks/queries';
+import { useUserBreedsFromUser, useCurrentUser } from 'lib/hooks/queries';
 
 const ManageListingsPage: React.FC = () => {
   const router = useRouter();
   const bgColor = useColorModeValue('white', 'gray.800');
-  const { data: userProfile, isLoading: profileLoading, error: profileError } = useUserProfile();
+  const { data: user, isLoading: userLoading, error: userError } = useCurrentUser();
 
   const { data: listings, isLoading: listingsLoading, error: listingsError } = useListingsByOwner(
-    userProfile?.id || ''
+    user?.id || ''
   );
 
   const {
     data: userBreeds,
     isLoading: userBreedsLoading,
     error: userBreedsError
-  } = useUserBreedsFromUser(userProfile?.id);
+  } = useUserBreedsFromUser(user?.id);
 
 
   const { isOpen: isListingFormOpen, onOpen: onListingFormOpen, onClose: onListingFormClose } = useDisclosure();
@@ -69,13 +69,13 @@ const ManageListingsPage: React.FC = () => {
   }
 
 
-  if (listingsError || profileError || userBreedsError) {
+  if (listingsError || userError || userBreedsError) {
     return (
       <Alert status="error">
         <AlertIcon />
         Error loading listing data. Please try again later.
         {listingsError?.message}
-        {profileError?.message}
+        {userError?.message}
         {userBreedsError?.message}
       </Alert>
     );
@@ -130,7 +130,7 @@ const ManageListingsPage: React.FC = () => {
         isOpen={isListingFormOpen}
         onClose={onListingFormClose}
         userBreeds={userBreeds}
-        userProfile={userProfile}
+        userProfile={user}
         isEditing={false}
       />
     </>

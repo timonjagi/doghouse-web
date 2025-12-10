@@ -18,7 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Loader } from "../../ui/Loader";
-import { useUserProfile } from "lib/hooks/queries";
+import { useCurrentUser } from "lib/hooks/queries";
 import { MdCheckCircle } from "react-icons/md";
 import { useSearchParams } from "next/navigation";
 import { RadioCard } from "../../ui/RadioCard";
@@ -34,7 +34,11 @@ const DashboardHome = () => {
   const [showWhatsNextModal, setShowWhatsNextModal] = useState(false);
   const router = useRouter();
   const { onClose } = useDisclosure();
-  const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const { data: user, isLoading: userLoading } = useCurrentUser();
+  const profile = user ? {
+    role: user.user_metadata?.role,
+    onboarding_completed: user.user_metadata?.onboarding_completed,
+  } : null;
 
   const [showBanner, setShowBanner] = useState(true);
   const searchParams = useSearchParams();
@@ -53,7 +57,7 @@ const DashboardHome = () => {
     }
   }, [profile, searchParams]);
 
-  if (profileLoading) {
+  if (userLoading) {
     return <Loader />
   }
 
