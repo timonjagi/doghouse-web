@@ -14,8 +14,6 @@ export const HeaderFooterLayout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <>
-
-    // refactor to auth layour
       {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header />}
       <Box as="main" h={{ base: "calc(100dvh - 64px)", md: "100dvh" }} overflow="auto"
       >

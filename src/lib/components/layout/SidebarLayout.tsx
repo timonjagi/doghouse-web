@@ -68,7 +68,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
       <Flex height={{ base: "auto", lg: "100vh" }}>
         {/* Primary Navigation Sidebar - Desktop only */}
         <Box
-          h={{ base: showTopBanner ? "calc(100dvh -85px)" : "calc(100dvh - 64px)", lg: "full" }}
+          h={{ base: showTopBanner ? "calc(100dvh - 85px)" : "calc(100dvh - 64px)", lg: "full" }}
           width={{
             lg: "14rem",
             xl: "18rem",

@@ -202,6 +202,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
       direction="column"
       justify="space-between"
       h="100dvh"
+      w="full"
       overflow="scroll"
       css={{
         scrollbarWidth: "none",
@@ -214,7 +215,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
         <ColumnHeader>
           <HStack spacing="3" justify="space-between" w="full">
 
-            <Logo color="on-brand" />
+            <Logo color={mode('on-brand', 'on-accent')} />
 
             <ColumnIconButton
               onClick={onClose}
@@ -322,11 +323,12 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
       direction="column"
       justify="space-between"
       h="full"
+      w="full"
     >
       <Stack spacing="8" py="6" px="4">
         <HStack spacing="3" justify="space-between" w="full">
 
-          <Logo color="on-accent" />
+          <Logo color={mode('on-brand', 'on-accent')} />
 
           <ColumnIconButton
             onClick={onClose}
