@@ -16,6 +16,7 @@ function ListingCard({
 
 }: ListingCardProps) {
   const borderColor = useColorModeValue("gray.200", "gray.600");
+  const textColor = useColorModeValue("gray.600", "gray.400");
 
   const getTitle = () => {
     if (listing.title) return listing.title;
@@ -95,11 +96,11 @@ function ListingCard({
         </Text>
 
 
-        {listing.type === 'single_pet' && <Text fontSize="xs" color="gray.600" noOfLines={2}>
+        {listing.type === 'single_pet' && <Text fontSize="xs" color={textColor} noOfLines={2}>
           {listing.pet_gender} • {listing.pet_age} old
         </Text>}
 
-        {listing.type === 'litter' && <Text fontSize="xs" color="gray.600" noOfLines={2}>
+        {listing.type === 'litter' && <Text fontSize="xs" color={textColor} noOfLines={2}>
           {listing.number_of_puppies} puppies • {getAge()} months old
         </Text>}
 

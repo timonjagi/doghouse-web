@@ -146,8 +146,7 @@ const ExploreUserBreedDetailView = () => {
                   <TabPanel px={0}>
                     <BreederCard2
                       breeder={breederProfile}
-
-
+                      showActions={false}
                     />
                     {/* 
                     <BreederCard
@@ -191,6 +190,16 @@ const ExploreUserBreedDetailView = () => {
                       emptyActionIcon={<FiHeart />}
                       emptyAction={onAddToWishlist}
                       columns={{ base: 1, md: 2 }}
+                      props={{
+                        overflow: "scroll",
+                        whiteSpace: "nowrap",
+                        css: {
+                          '&::-webkit-scrollbar': {
+                            display: 'none',
+                          },
+                          scrollbarWidth: 'none',
+                        }
+                      }}
                     />
                   </TabPanel>
                 </TabPanels>

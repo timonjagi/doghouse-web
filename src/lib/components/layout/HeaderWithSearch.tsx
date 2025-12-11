@@ -21,6 +21,8 @@ import {
   useToast,
   Spacer,
 } from "@chakra-ui/react";
+import { MdDarkMode, MdLightMode } from "react-icons/md";
+import { useColorMode } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FiBell, FiCheck, FiHelpCircle, FiMenu } from "react-icons/fi";
 
@@ -35,6 +37,7 @@ import * as searchService from "lib/services/searchService";
 import { useCurrentUser, useUserProfileById, useUnreadNotificationsCount, useNotifications, useMarkAllNotificationsAsRead } from "lib/hooks/queries";
 
 const HeaderWithSearch = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
@@ -168,10 +171,10 @@ const HeaderWithSearch = () => {
         <HStack spacing="1">
 
           <IconButton
-            icon={<FiHelpCircle fontSize="1.25rem" />}
-            aria-label="Help & Support"
+            icon={colorMode === 'light' ? <MdDarkMode fontSize="1.25rem" /> : <MdLightMode fontSize="1.25rem" />}
+            aria-label={`Switch to ${colorMode === 'light' ? 'dark' : 'light'} mode`}
             variant="ghost"
-            onClick={() => router.push('/support')}
+            onClick={toggleColorMode}
           />
 
           <Box position="relative">

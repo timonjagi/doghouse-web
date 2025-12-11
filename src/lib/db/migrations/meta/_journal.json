@@ -127,6 +127,13 @@
       "when": 1765356303622,
       "tag": "0017_right_squirrel_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1765448630210,
+      "tag": "0018_sleepy_slyde",
+      "breakpoints": true
     }
   ]
 }

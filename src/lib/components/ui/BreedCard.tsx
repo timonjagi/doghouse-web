@@ -24,6 +24,11 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
 
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.600");
+  const brandColor = useColorModeValue("brand.600", "brand.400");
+  const brandIconColor = useColorModeValue("brand.400", "brand.300");
+  const starColor = useColorModeValue("yellow.400", "yellow.300");
+  const textColor = useColorModeValue("gray.600", "gray.400");
+  const mutedTextColor = useColorModeValue("gray.500", "gray.400");
 
   if (!breed) {
     return null;
@@ -77,8 +82,8 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
 
             {userRole === 'seeker' && userBreed.breeder_count && (
               <HStack spacing={1}>
-                <Icon as={GiDogHouse} color="brand.400" boxSize={3} />
-                <Text fontSize="xs" color="brand.600" fontWeight="medium">
+                <Icon as={GiDogHouse} color={brandIconColor} boxSize={3} />
+                <Text fontSize="xs" color={brandColor} fontWeight="medium">
                   {userBreed.breeder_count} breeder{userBreed.breeder_count !== 1 ? 's' : ''}
                 </Text>
               </HStack>
@@ -87,8 +92,8 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
             {/* Image count indicator */}
             {userRole === 'breeder' && userBreed.images && userBreed.images.length > 0 && (
               <HStack spacing={1}>
-                <StarIcon color="yellow.400" boxSize={3} />
-                <Text fontSize="xs" color="gray.500">
+                <StarIcon color={starColor} boxSize={3} />
+                <Text fontSize="xs" color={mutedTextColor}>
                   {userBreed.images.length} photo{userBreed.images.length !== 1 ? 's' : ''}
                 </Text>
               </HStack>
@@ -96,7 +101,7 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
           </HStack>
 
           {breed.description && userRole === 'breeder' && (
-            <Text fontSize="sm" color="gray.600" noOfLines={2}>
+            <Text fontSize="sm" color={textColor} noOfLines={2}>
               {breed.description}
             </Text>
           )}
@@ -104,7 +109,7 @@ export const BreedCard = ({ userBreed, userRole, onClick }: BreedCardProps) => {
 
         {/* User-specific info */}
         {userRole === 'breeder' && userBreed.notes && (
-          <Text fontSize="xs" color="gray.500" noOfLines={2}>
+          <Text fontSize="xs" color={mutedTextColor} noOfLines={2}>
             Notes: {userBreed.notes}
           </Text>
         )}
