@@ -178,7 +178,7 @@ const BrowseListingsPage: React.FC = () => {
       <VStack spacing={6} align="stretch">
         <Box>
           <Heading size={{ base: 'sm', lg: 'md' }} mb={2} >Browse Available Pets</Heading>
-          <Text color="gray.600">Find your perfect companion from verified breeders</Text>
+          <Text color="muted">Find your perfect companion from verified breeders</Text>
         </Box>
 
 
@@ -196,7 +196,7 @@ const BrowseListingsPage: React.FC = () => {
 
             <InputGroup size="md">
               <InputLeftElement pointerEvents="none">
-                <SearchIcon color="gray.300" />
+                <SearchIcon color="muted" />
               </InputLeftElement>
               <Input
                 placeholder="Search listings..."
@@ -220,7 +220,7 @@ const BrowseListingsPage: React.FC = () => {
         </VStack>
         {/* Results Count */}
         <HStack justify="space-between">
-          <Text color="gray.600">
+          <Text color="muted">
           </Text>
         </HStack>
         {filteredListings.length} listing{filteredListings.length !== 1 ? 's' : ''} found
@@ -242,10 +242,10 @@ const BrowseListingsPage: React.FC = () => {
 
           {/* Listings Grid */}
           {!listingsLoading && !breedsLoading && filteredListings.length === 0 ? (
-            <Center h="300px" bg={bgColor} borderRadius="lg" border="2px dashed" borderColor="gray.300" p={8}>
+            <Center h="300px" bg={bgColor} borderRadius="lg" border="2px dashed" borderColor="muted" p={8}>
               <VStack spacing={4}>
-                <Text fontSize="lg" color="gray.500">No listings found</Text>
-                <Text color="gray.400" textAlign="center" maxW="md">
+                <Text fontSize="lg" color="muted">No listings found</Text>
+                <Text color="subtle" textAlign="center" maxW="md">
                   Try adjusting your filters or search terms to find more results.
                 </Text>
                 <Button variant="outline" onClick={clearFilters}>
@@ -374,4 +374,3 @@ const Filters = ({ bgColor, filters, updateFilter, breedsLoading, listingsLoadin
     </Card >
   )
 };
-

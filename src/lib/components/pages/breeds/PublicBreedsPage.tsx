@@ -136,7 +136,7 @@ export default function PublicBreedsPage({ initialBreeds }: BreedsPageProps) {
               Available Dog Breeds
             </Heading>
 
-            <Text color="muted">
+            <Text color="muted" sx={{ color: 'muted' }}>
               Explore our comprehensive list of dog breeds from verified breeders across Kenya.
             </Text>
           </Stack>
@@ -171,7 +171,7 @@ export default function PublicBreedsPage({ initialBreeds }: BreedsPageProps) {
 
           <HStack spacing={4} justify="space-between">
             {/* Results count */}
-            <Text color="gray.600" fontSize="sm">
+            <Text color="muted" fontSize="sm">
               Showing {filteredBreeds.length} of {breeds.length} breeds
             </Text>
             <SortbySelect
@@ -194,7 +194,7 @@ export default function PublicBreedsPage({ initialBreeds }: BreedsPageProps) {
             </SimpleGrid>
           ) : (
             <Center py={12}>
-              <Text color="gray.500">
+              <Text color="muted">
                 No breeds found matching your criteria.
               </Text>
             </Center>
