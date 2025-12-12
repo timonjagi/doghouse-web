@@ -16,14 +16,18 @@ const RouteGuard = ({ children, ...rest }) => {
     if (!isLoading) {
       // If the authentication state is loaded
       if (!user && protectedRoutes.find((route) => router.pathname.includes(route))) {
-        router.replace("/login");
-        // toast({
-        //   title: "Please log in to continue",
-        //   description: "You must be logged in to access this page",
-        //   status: "warning",
-        //   duration: 5000,
-        //   isClosable: true,
-        // })
+        router.replace("/signup");
+
+        /// fullroute with query params
+        localStorage.setItem('previousRoute', router.asPath);
+
+        toast({
+          title: "Please log in to continue",
+          description: "You must be logged in to access this page",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+        })
       } else {
         setIsAuthorized(true);
       }

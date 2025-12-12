@@ -24,7 +24,7 @@ export const steps = [
   {
     name: "Explore tailored matches.",
     description:
-      "Explore a curated list of breeds from verified breeders that align perfectly with your lifestyle and preferences ",
+      "Discover a curated selection of pets from trusted breeders and shelters that align with your unique lifestyle and preferences. We'll help you find the perfect companion for you and your family",
     icon: FaSearch,
   },
   // {
@@ -38,12 +38,12 @@ export const steps = [
       "Secure your pet with a reservation fee to ensure both your commitment and the breeder's dedication to providing a loving home",
     icon: BsBookmarkHeartFill,
   },
-  {
-    name: "Finalize the Adoption",
-    description:
-      "Schedule a visit to meet your new pet and sign the adoption contract to complete the adoption process",
-    icon: BsCheckCircleFill,
-  },
+  // {
+  //   name: "Finalize the Adoption",
+  //   description:
+  //     "Schedule a visit to meet your new pet and sign the adoption contract to complete the adoption process",
+  //   icon: BsCheckCircleFill,
+  // },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,7 +72,7 @@ const ProcessStep = (props: any) => {
           lg: "2xl",
         }}
       >
-        <Icon as={step.icon} fontSize="1.25rem" />
+        <Icon as={step.icon} fontSize="1.25rem" color="on-accent" />
       </Center>
       <Stack
         spacing={{
@@ -122,9 +122,9 @@ export const Process = () => (
           }}
         >
           <Stack spacing="3">
-            {/* <Text color="accent" fontWeight="semibold">
-              Pricing
-            </Text> */}
+            <Text color="accent" fontWeight="semibold">
+              Process
+            </Text>
             <Heading
               size={useBreakpointValue({
                 base: "md",
@@ -150,19 +150,19 @@ export const Process = () => (
         <Stack
           direction={{
             base: "column",
-            md: "row",
+            lg: "row",
           }}
           spacing={{
             base: "12",
             lg: "24",
           }}
+          w="full"
         >
           <Stack
             spacing={{
               base: "4",
               md: "8",
             }}
-            flex="1"
             justify="center"
           >
             {steps.map((step, id) => (
@@ -174,8 +174,8 @@ export const Process = () => (
 
           <Box width="full" overflow="hidden">
             <Image
-              maxW="100%"
-              minH={{ base: '100%', lg: '560px' }}
+              maxW={{ base: 'full', lg: 'md' }}
+              minH={{ base: '100%', lg: '200px' }}
               objectFit="cover"
               src="images/mockup.png"
               alt="Pethouse"

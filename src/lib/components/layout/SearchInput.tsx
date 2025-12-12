@@ -2,19 +2,31 @@ import { Icon, Input, InputGroup, InputLeftElement, InputRightElement } from '@c
 import * as React from 'react'
 import { FiSearch, FiX } from 'react-icons/fi'
 
-export const SearchInput = (props) => {
+interface SearchInputProps {
+  value?: string
+  variant?: string
+  colorScheme?: string
+  iconColor?: string
+  placeholder?: string
+  searchQuery?: string
+  onClear?: () => void
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void
+  maxW?: any
+}
+export const SearchInput: React.FC<SearchInputProps> = (props) => {
   return (
-    <InputGroup>
+    <InputGroup {...props}>
       <InputLeftElement>
-        <Icon as={FiSearch} color="gray.500" fontSize="lg" />
+        <Icon as={FiSearch} color={props.iconColor || "gray.500"} fontSize="lg" />
       </InputLeftElement>
       <Input
-        focusBorderColor="blue.500"
-        width="full"
+        focusBorderColor="brand.500"
         fontSize="sm"
-        variant="filled"
+        width="full"
+        variant={props.variant || "filled"}
         type="text"
-        placeholder="What are you looking for?"
+        placeholder={props.placeholder || "What are you looking for?"}
         autoComplete="off"
         {...props}
       />

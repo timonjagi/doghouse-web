@@ -124,7 +124,7 @@ const SignUp = () => {
 
         <Box w="full">
 
-          <Center flex="1">
+          <Center flex="1" py="4">
             <Stack
               spacing={{ base: "6", md: "9" }}
               px={{ base: "6", sm: "8", lg: "16", xl: "32" }}

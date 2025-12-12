@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Drawer,
   DrawerContent,
   DrawerOverlay,
@@ -9,12 +8,8 @@ import {
   HStack,
   useBreakpointValue,
   IconButton,
-  Select,
-  useColorModeValue,
   Button,
-  ButtonGroup,
   Circle,
-  Icon,
   Badge,
   DrawerCloseButton,
   DrawerHeader,
@@ -24,15 +19,13 @@ import {
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useColorMode } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { FiBell, FiCheck, FiHelpCircle, FiMenu } from "react-icons/fi";
+import { FiBell, FiCheck, FiMenu } from "react-icons/fi";
 
 import { Logo } from "./Logo";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import { SearchInput } from "./SearchInput";
 import { Sidebar } from "./Sidebar";
-import { MdMenu } from "react-icons/md";
 import { useEffect, useMemo, useState } from "react";
-import { CurrencySelect } from "../ui/CurrencySelect";
 import * as searchService from "lib/services/searchService";
 import { useCurrentUser, useUserProfileById, useUnreadNotificationsCount, useNotifications, useMarkAllNotificationsAsRead } from "lib/hooks/queries";
 
@@ -69,27 +62,6 @@ const HeaderWithSearch = () => {
   const [searchQuery, setSearchQuery] = useState(router.query?.q as string || '');
   const currentFilters = useMemo(() => searchService.parseSearchParams(router.query), [router.query])
 
-  const handleMarkAllAsRead = async () => {
-    if (!userProfile?.id) return;
-
-    try {
-      await markAllAsReadMutation.mutateAsync(userProfile.id);
-      toast({
-        title: 'All notifications marked as read',
-        status: 'success',
-        duration: 2000,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error updating notifications',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-      });
-    }
-  };
-
-
   const handleSearch = () => {
     // Parse existing filters from URL if on search page
     const currentFilters = pathname === '/dashboard/search'
@@ -112,10 +84,29 @@ const HeaderWithSearch = () => {
     });
   }
 
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (!userProfile?.id) return;
+
+    try {
+      await markAllAsReadMutation.mutateAsync(userProfile.id);
+      toast({
+        title: 'All notifications marked as read',
+        status: 'success',
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error updating notifications',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+      });
     }
   };
 
@@ -159,7 +150,7 @@ const HeaderWithSearch = () => {
             <SearchInput
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               searchQuery={searchQuery}
               onClear={() => searchService.clearSearchParams(currentFilters)}
             />
@@ -205,9 +196,12 @@ const HeaderWithSearch = () => {
           <SearchInput
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             searchQuery={searchQuery}
             onClear={() => searchService.clearSearchParams(currentFilters)}
+            variant="subtle"
+            placeholder="Search for pets, breeds, or locations..."
+            colorScheme="gray"
           />
         </HStack>
       )}

@@ -81,7 +81,7 @@ export const FeatureCard = (props: FeatureCardProps) => {
                 // eslint-disable-next-line react/no-array-index-key
                 <HStack key={index} as="li" spacing="3">
                   <Circle size="6" bg={mode("brand.50", "whiteAlpha.50")}>
-                    <Icon as={props.icon} color="accent" />
+                    <Icon as={props.icon} color="on-accent" />
                   </Circle>
                   <Text color="muted">{feature}</Text>
                 </HStack>

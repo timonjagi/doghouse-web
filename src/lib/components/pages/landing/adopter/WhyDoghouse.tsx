@@ -73,7 +73,7 @@ const WhyStep = (props: any) => {
           lg: "2xl",
         }}
       >
-        <Icon as={step.icon} fontSize="1.25rem" />
+        <Icon as={step.icon} fontSize="1.25rem" color="on-accent" />
       </Center>
       <Stack
         spacing={{

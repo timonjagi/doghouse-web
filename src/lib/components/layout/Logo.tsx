@@ -24,11 +24,14 @@ export const DoghouseLogo: React.FC<LogoProps> = ({ color }) => {
 
 
 export const Logo: React.FC<LogoProps> = ({ color }) => {
-  const logo = useColorModeValue(
-    "../../../../../images/pethouse-logo-icon-light.png",
-    "../../../../../images/pethouse-logo-icon-dark.png"
-  );
-  const logoTextColor = useColorModeValue("gray.900", "white");
+  // For headers with accent backgrounds, always use dark logo
+  const logo = color === 'on-accent'
+    ? "../../../../../images/pethouse-logo-icon-dark.png"
+    : useColorModeValue(
+      "../../../../../images/pethouse-logo-icon-light.png",
+      "../../../../../images/pethouse-logo-icon-dark.png"
+    );
+  const logoTextColor = color === 'on-accent' ? "white" : useColorModeValue("gray.900", "white");
 
   return (
     <Link href="/">
@@ -36,7 +39,7 @@ export const Logo: React.FC<LogoProps> = ({ color }) => {
         <Image
           src={logo}
           height={12}
-          fallbackSrc="../../../../../images/pethouse-logo-icon-light.png"
+          fallbackSrc={color === 'on-accent' ? "../../../../../images/pethouse-logo-icon-dark.png" : "../../../../../images/pethouse-logo-icon-light.png"}
         />
         <Text
           fontWeight="medium"

@@ -98,40 +98,46 @@ const LoginPage = () => {
             </Flex>
           </DarkMode>
         </Box>
-        <Center h="100vh" flex="1">
-          <Stack
-            spacing={{ base: "6", md: "9" }}
-            textAlign="center"
-            px={{ base: "8", lg: "16", xl: "32" }}
-          >
 
-            <Box position="relative" mx="auto">
-              <Img
-                src={mode('images/pethouse-logo-icon-light.png', 'images/pethouse-logo-icon-dark.png')}
-                alt="Main Image"
-                w="150"
-                h="150"
-                borderRadius="0.5rem 0.5rem 0 0"
-                objectFit="cover"
-                objectPosition="90% center"
-              />
-            </Box>
-            <Heading size="lg">Log in to your account</Heading>
+        <Box flex="1" overflow="auto">
+          <Center py="4" h="full">
+            <Stack
+              spacing={{ base: "6", md: "9" }}
+              textAlign="center"
+              px={{ base: "8", lg: "16", xl: "32" }}
+            >
 
-            <LoginForm />
+              <Box position="relative" mx="auto">
+                <Img
+                  src={mode('images/pethouse-logo-icon-light.png', 'images/pethouse-logo-icon-dark.png')}
+                  alt="Main Image"
+                  w="150"
+                  h="150"
+                  borderRadius="0.5rem 0.5rem 0 0"
+                  objectFit="cover"
+                  objectPosition="90% center"
+                />
+              </Box>
+              <Stack>
+                <Heading size="lg">Welcome back!</Heading>
+                <Text color="muted">Sign in to your account to continue</Text>
+              </Stack>
 
-            <HStack justify="center" spacing="1">
-              <Text color="muted">Don&apos;t have an account?</Text>
-              <Button
-                variant="link"
-                colorScheme="brand"
-                onClick={() => router.push("/signup")}
-              >
-                Sign up
-              </Button>
-            </HStack>
-          </Stack>
-        </Center>
+              <LoginForm />
+
+              <HStack justify="center" spacing="1">
+                <Text color="muted">Don&apos;t have an account?</Text>
+                <Button
+                  variant="link"
+                  colorScheme="brand"
+                  onClick={() => router.push("/signup")}
+                >
+                  Sign up
+                </Button>
+              </HStack>
+            </Stack>
+          </Center>
+        </Box>
       </Flex>
     </Flex>
   );
