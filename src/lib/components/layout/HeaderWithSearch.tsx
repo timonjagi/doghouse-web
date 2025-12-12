@@ -29,22 +29,17 @@ import { useEffect, useMemo, useState } from "react";
 import * as searchService from "lib/services/searchService";
 import { useCurrentUser, useUserProfileById, useUnreadNotificationsCount, useNotifications, useMarkAllNotificationsAsRead } from "lib/hooks/queries";
 
-const HeaderWithSearch = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
+const HeaderWithSearch = ({ rightElement }) => {
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
   });
   const { isOpen: isSidebarOpen, onToggle: onToggleSidebar, onClose: onCloseSidebar } = useDisclosure();
-  const { isOpen: isNotificationsOpen, onToggle: onToggleNotifications, onClose: onCloseNotifications } = useDisclosure();
   const toast = useToast();
 
   const { data: user } = useCurrentUser();
   const { data: userProfile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
-  const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
 
-  const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
-  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
 
   const router = useRouter();
   const { pathname } = router;
@@ -89,6 +84,11 @@ const HeaderWithSearch = () => {
       handleSearch();
     }
   };
+
+  const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
+
+  const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
 
   const handleMarkAllAsRead = async () => {
     if (!userProfile?.id) return;
@@ -159,29 +159,7 @@ const HeaderWithSearch = () => {
 
         {!showSearchBar && <Spacer />}
 
-        <HStack spacing="1">
-
-          <IconButton
-            icon={colorMode === 'light' ? <MdDarkMode fontSize="1.25rem" /> : <MdLightMode fontSize="1.25rem" />}
-            aria-label={`Switch to ${colorMode === 'light' ? 'dark' : 'light'} mode`}
-            variant="ghost"
-            onClick={toggleColorMode}
-          />
-
-          <Box position="relative">
-
-            {unreadCount > 0 && <Circle size="2" bg="brand.500" position="absolute" top={0} right={1} zIndex={1} />}
-
-            <IconButton
-              icon={<FiBell fontSize="1.25rem" />}
-              aria-label="Notifications"
-              variant="ghost"
-              onClick={onToggleNotifications}
-            />
-
-          </Box>
-
-        </HStack>
+        {rightElement}
       </Flex>
 
 
@@ -219,55 +197,6 @@ const HeaderWithSearch = () => {
         <DrawerContent>
           {/* Sidebar content would go here */}
           <Sidebar onClose={onCloseSidebar} />
-        </DrawerContent>
-      </Drawer>
-
-      {/* Notifications Drawer */}
-      <Drawer
-        isOpen={isNotificationsOpen}
-        placement="right"
-        onClose={onCloseNotifications}
-        isFullHeight
-        preserveScrollBarGap
-        trapFocus={false}
-        size={{ base: 'xs', md: 'sm' }}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>
-
-            Notifications
-
-            {unreadCount > 0 && (
-              <Badge colorScheme="red" borderRadius="full" px={2} fontSize="xs">
-                {unreadCount}
-              </Badge>
-            )}
-
-
-            {notifications && notifications.length > 0 && unreadCount > 0 && (
-              <Button
-                leftIcon={<FiCheck />}
-                variant="outline"
-                size="xs"
-                onClick={handleMarkAllAsRead}
-                isLoading={markAllAsReadMutation.isPending}
-              >
-                Mark All Read
-              </Button>
-            )}
-
-          </DrawerHeader>
-
-          <NotificationsDrawer
-            isOpen={isNotificationsOpen}
-            onClose={onCloseNotifications}
-            notifications={notifications!}
-            isLoading={isLoading}
-            error={error}
-            unreadCount={unreadCount!}
-          />
         </DrawerContent>
       </Drawer>
 
