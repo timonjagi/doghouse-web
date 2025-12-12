@@ -11,16 +11,19 @@ type LayoutProps = {
 export const HeaderFooterLayout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const headerHeight = useBreakpointValue({ base: "56px", md: "64px" });
 
   return (
     <>
       {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header />}
-      <Box as="main" h={{ base: "calc(100dvh - 64px)", md: "100dvh" }} overflow="auto"
+      <Box as="main" h={{ base: `calc(100dvh - ${headerHeight})`, md: "100dvh" }}
+        pb={{ base: "64px", md: "0" }} overflow="auto"
       >
-        {children}{" "}
+        {children}
       </Box>
-
       <Footer />
+
+
     </>
   );
 };

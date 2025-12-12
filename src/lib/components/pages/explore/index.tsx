@@ -50,7 +50,7 @@ const ExplorePage = () => {
 
       </Container>
 
-      {isMobile && <EthicalQuestionairreCard />}
+      <EthicalQuestionairreCard />
 
     </>
 

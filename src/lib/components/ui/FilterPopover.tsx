@@ -39,7 +39,7 @@ export const FilterPopoverButton = (props: FilterPopoverButtonProps) => {
         spacing="1"
         data-selected={selected || undefined}
         _expanded={{ bg: mode('gray.100', 'gray.700') }}
-        _selected={{ bg: 'brand.50', borderColor: 'brand.500' }}
+        _selected={{ bg: mode('brand.50', 'brand.900'), borderColor: 'brand.500' }}
       >
         {icon && <Icon as={icon} boxSize="2" />}
         <Text fontWeight="medium">{label}</Text>

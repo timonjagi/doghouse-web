@@ -46,6 +46,15 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
     (pattern) => router.pathname === pattern
   );
 
+  const searchHeaderHeight = 64;
+  const detailHeaderHeight = 56;
+  const headerHeight = isDetailPage
+    ? detailHeaderHeight
+    : searchHeaderHeight;
+  const bannerHeight = 21;
+  const footerHeight = 64;
+
+
   return (
     <RouteGuard>
       {isMobile && showTopBanner && (
@@ -68,10 +77,14 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
       <Flex height={{ base: "auto", lg: "100vh" }}>
         {/* Primary Navigation Sidebar - Desktop only */}
         <Box
-          h={{ base: showTopBanner ? "calc(100dvh - 85px)" : "calc(100dvh - 64px)", lg: "full" }}
+          h={{
+            base: showTopBanner
+              ? `calc(100dvh - ${headerHeight + bannerHeight})px`
+              : `calc(100dvh - ${headerHeight}px)`, lg: "full"
+          }}
           width={{
             lg: "14rem",
-            xl: "18rem",
+            xl: "20rem",
           }}
           display={{
             base: "none",
@@ -88,8 +101,8 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           flex="1"
           h={{
             base: profile?.role === "seeker" && !isDetailPage
-              ? "calc(100dvh - 230px)"
-              : "calc(100dvh - 160px)",
+              ? `calc(100dvh - ${searchHeaderHeight + footerHeight + (showTopBanner ? bannerHeight : 0)} px)`
+              : `calc(100dvh -${detailHeaderHeight + footerHeight + (showTopBanner ? bannerHeight : 0)}px)`,
             lg: "full"
           }}
           overflowY="auto"
