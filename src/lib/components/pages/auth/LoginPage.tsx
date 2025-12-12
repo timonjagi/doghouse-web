@@ -42,10 +42,12 @@ const LoginPage = () => {
               px={{ base: "4", md: "8" }}
               height="full"
               color="on-accent"
+              as={Stack}
+              spacing="12"
+              justify="center"
             >
-              <Flex align="center" h="24">
-                <Logo color="on-accent" />
-              </Flex>
+              <Logo color="on-accent" />
+
               <Flex flex="1" align="center">
                 <Stack spacing="8">
                   <Stack spacing="6">

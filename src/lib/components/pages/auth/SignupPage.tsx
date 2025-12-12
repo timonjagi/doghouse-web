@@ -97,10 +97,12 @@ const SignUp = () => {
             height="full"
             color="on-accent"
             minW={{ base: "none", md: "sm", lg: "md" }}
+            as={Stack}
+            spacing="12"
+            justify="center"
           >
-            <Flex align="center" h="24">
-              <Logo color="on-accent" />
-            </Flex>
+            <Logo color="on-accent" />
+
 
             <Flex
               align="center"
