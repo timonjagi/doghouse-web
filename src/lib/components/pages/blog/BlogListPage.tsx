@@ -17,10 +17,10 @@ import BlogPostCard from "./BlogPostCard";
 import { posts } from "./data";
 import Footer from "lib/components/layout/Footer";
 import { NextSeo } from "next-seo";
-// import client from "../../../../client";
+// import client from "../../../../client"; // sanity client
 // import groq from "groq";
 
-const Blog = () => {
+const BlogListPage = () => {
   return (
     <Box bg="bg-surface" >
       <NextSeo title="Blog | Pethouse" />
@@ -156,4 +156,4 @@ const Blog = () => {
 //   };
 // }
 
-export default Blog;
+export default BlogListPage;

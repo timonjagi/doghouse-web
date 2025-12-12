@@ -3,25 +3,16 @@ import {
   Container,
   Heading,
   Stack,
-  HStack,
   Text,
-  Button,
-  Circle,
   Icon,
-  SimpleGrid,
-  StackDivider,
   Center,
-  Link,
+  Image,
   useBreakpointValue,
-  useColorModeValue as mode,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 // import * as React from "react";
 import { BsBookmarkHeartFill, BsCheckCircleFill } from "react-icons/bs";
 import { ImProfile } from "react-icons/im";
 import { FaSearch } from "react-icons/fa";
-import { FiCheck } from "react-icons/fi";
-import { GoListOrdered } from "react-icons/go";
 
 export const steps = [
   {
@@ -104,120 +95,10 @@ const ProcessStep = (props: any) => {
   );
 };
 
-const features = [
-  "Breed Recommendations",
-  "Tailored Matches",
-  "Personalized Offers",
-  "Secure Reservations",
-  "Exclusive Network",
-  "Community Support",
-  "Expert Advice",
-  "24/7 Customer Support",
-];
+
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const FeatureCard = (props: any) => {
-  const router = useRouter();
-  return (
-    <Box
-      bg="bg-surface"
-      borderRadius="2xl"
-      boxShadow={mode("lg", "lg-dark")}
-      maxW={{
-        lg: "576px",
-      }}
-      py={{
-        base: "6",
-        lg: "8",
-      }}
-      {...props}
-    >
-      <Stack
-        spacing={{
-          base: "4",
-          lg: "8",
-        }}
-        justify="space-between"
-        align={{
-          base: "start",
-          lg: "center",
-        }}
-        px={{
-          base: "6",
-          md: "8",
-        }}
-      >
-        {/* <Stack spacing="1">
-          <Heading size="xs">Welcome Your New Family Member</Heading>
 
-          <Text color="muted">
-            Our community is here to support you every step of the way as you
-            embark on this exciting journey together.
-          </Text>
-        </Stack> */}
-
-        <Stack spacing="8" divider={<StackDivider />}>
-          <Stack spacing="6">
-            <Stack spacing="1">
-              <Text
-                fontSize={{
-                  base: "lg",
-                  lg: "xl",
-                }}
-                fontWeight="semibold"
-              >
-                What&apos;s included
-              </Text>
-              <Text color="muted">
-                Personalized assistance to help you find your perfect dog and
-                make all necessary arrangements, with a satisfaction guarantee
-              </Text>
-            </Stack>
-            <SimpleGrid
-              as="ul"
-              columns={{
-                base: 1,
-                lg: 2,
-              }}
-              columnGap="8"
-              rowGap="4"
-              pb="2"
-            >
-              {features.map((feature, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <HStack key={index} as="li" spacing="3">
-                  <Circle size="6" bg={mode("blue.50", "whiteAlpha.50")}>
-                    <Icon as={FiCheck} color="accent" />
-                  </Circle>
-                  <Text color="muted">{feature}</Text>
-                </HStack>
-              ))}
-            </SimpleGrid>
-          </Stack>
-
-          <Box
-            px={{
-              base: "6",
-              md: "8",
-            }}
-            pb="2"
-          >
-            <Button
-              variant="primary"
-              size="lg"
-              width="full"
-              rounded="full"
-              as={Link}
-              href="/signup"
-            >
-              Start Your Journey
-            </Button>
-          </Box>
-        </Stack>
-      </Stack>
-    </Box>
-  );
-};
 
 export const Process = () => (
   <Box as="section" maxW="6xl">
@@ -289,7 +170,17 @@ export const Process = () => (
               <ProcessStep key={id} step={step} />
             ))}
           </Stack>
-          <FeatureCard flex="1" />
+
+
+          <Box width="full" overflow="hidden">
+            <Image
+              maxW="100%"
+              minH={{ base: '100%', lg: '560px' }}
+              objectFit="cover"
+              src="images/mockup.png"
+              alt="Pethouse"
+            />
+          </Box>
         </Stack>
       </Stack>
     </Container>

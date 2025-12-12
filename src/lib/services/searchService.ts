@@ -7,6 +7,7 @@ import { ParsedUrlQuery } from 'querystring'
 export interface SearchFilters {
   q?: string
   tab?: string
+  category?: string
   sort?: string
   breed?: string
   breeds?: string[]
@@ -43,6 +44,8 @@ export enum SearchType {
   VETS = 'vets',
 }
 
+
+
 /**
  * Parse URL query parameters into internal filter state
  */
@@ -50,6 +53,7 @@ export const parseSearchParams = (query: ParsedUrlQuery): SearchFilters => {
   const filters: SearchFilters = {
     q: query.q?.toString() || '',
     tab: query.tab?.toString() || SearchType.ALL,
+    category: query.category?.toString() || 'dog',
     sort: query.sort?.toString() || '',
     breed: query.breed?.toString() || '',
     breeds: query.breeds as string[],
@@ -95,6 +99,7 @@ export const buildQueryParams = (filters: SearchFilters): Record<string, string>
   // Add simple string parameters
   if (filters.q) params.q = filters.q
   if (filters.tab && filters.tab !== SearchType.ALL) params.tab = filters.tab
+  if (filters.category) params.category = filters.category
   if (filters.sort) params.sort = filters.sort
   if (filters.breed) params.breed = filters.breed
   if (filters.size) params.size = filters.size
@@ -195,6 +200,7 @@ export const mapFiltersToBreederParams = (
 export const getDefaultFilters = (): SearchFilters => ({
   q: '',
   tab: SearchType.ALL,
+  category: 'dog',
   sort: '',
   breed: '',
   breeds: [],

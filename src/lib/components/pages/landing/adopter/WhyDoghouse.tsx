@@ -12,6 +12,8 @@ import {
 import { FaHeartbeat } from "react-icons/fa";
 import { MdBlock, } from "react-icons/md";
 import { GrUserExpert } from "react-icons/gr";
+import { FeatureCard } from "./FeatureCard";
+import { FiCheck } from "react-icons/fi";
 
 export const steps = [
   {
@@ -32,6 +34,17 @@ export const steps = [
       "Our expert team of dog experts will provide you with personalized advice on the best breed for you, your lifestyle, and your needs. We're here to guide you every step of the way.",
     icon: GrUserExpert,
   },
+];
+
+const features = [
+  "Breed Recommendations",
+  "Tailored Matches",
+  "Personalized Offers",
+  "Secure Reservations",
+  "Exclusive Network",
+  "Community Support",
+  "Expert Advice",
+  "24/7 Customer Support",
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -149,16 +162,15 @@ const WhyDoghouse = () => {
                 <WhyStep key={id} step={step} />
               ))}
             </Stack>
-            {/* 
-            <Box width="full" overflow="hidden">
-              <Image
-                maxW="100%"
-                minH={{ base: '100%', lg: '560px' }}
-                objectFit="cover"
-                src="images/breeds/doghousekenya_curly_coated_retriever_1.jpg"
-                alt="Pethouse"
-              />
-            </Box> */}
+
+            <FeatureCard
+              title="What's Included"
+              description="Personalized assistance to help you find your perfect dog and make all necessary arrangements, with a satisfaction guarantee"
+              icon={FiCheck}
+              features={features}
+            /
+            >
+
           </Stack>
         </Stack>
       </Container>
