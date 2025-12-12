@@ -26,7 +26,7 @@ import { MobileBottomNav } from "./MobileBottomNav";
 import { Sidebar } from "./Sidebar";
 import { ReactNode } from "react";
 import { useCurrentUser, useMarkAllNotificationsAsRead, useNotifications, useUnreadNotificationsCount, useUserProfileById } from "lib/hooks/queries";
-import { FiBell, FiCheck } from "react-icons/fi";
+import { FiBell, FiCheck, FiMoon, FiSun } from "react-icons/fi";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { notifications } from "lib/db/schema";
 import error from "next/error";
@@ -138,7 +138,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           }}
           width={{
             lg: "14rem",
-            xl: "20rem",
+            xl: "18rem",
           }}
           display={{
             base: "none",
@@ -253,7 +253,7 @@ const HeaderButtons = ({ unreadCount, onToggleNotifications }) => {
     <HStack spacing="1">
 
       <IconButton
-        icon={colorMode === 'light' ? <MdDarkMode fontSize="1.25rem" /> : <MdLightMode fontSize="1.25rem" />}
+        icon={colorMode === 'light' ? <FiMoon fontSize="1.25rem" /> : <FiSun fontSize="1.25rem" />}
         aria-label={`Switch to ${colorMode === 'light' ? 'dark' : 'light'} mode`}
         variant="ghost"
         onClick={toggleColorMode}

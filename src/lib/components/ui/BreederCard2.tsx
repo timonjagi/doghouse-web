@@ -131,8 +131,8 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
               </Button>
 
               <Button
-                colorScheme="brand"
                 size="sm"
+                variant="primary"
                 w="full"
                 as={Link}
                 href={`/dashboard/breeders/${breeder.id}`}
