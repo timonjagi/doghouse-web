@@ -21,7 +21,7 @@ import { NavButton } from "./NavButton";
 import { NavSection, getNavigationForRole } from "./navLinks";
 import { User } from "@supabase/supabase-js";
 import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
-import { UserProfile } from "./UserProfile";
+import { UserProfile } from "../auth/UserProfileCard";
 import NextLink from "next/link";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { BsTiktok } from "react-icons/bs";

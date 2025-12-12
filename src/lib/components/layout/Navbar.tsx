@@ -30,7 +30,7 @@ import { useRouter } from "next/router";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import Link from "next/link";
 import { useMarkAllNotificationsAsRead, useNotifications, useUnreadNotificationsCount } from "lib/hooks/queries/useNotifications";
-import UserProfileMenu from "./UserProfileMenu";
+import UserProfileMenu from "../auth/UserProfileMenu";
 import { useCurrentUser, useUserProfileById } from "lib/hooks/queries";
 import { ToggleButton } from "./ToggleButton";
 

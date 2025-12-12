@@ -89,7 +89,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = (
             </Box>
           </Center>
           <MenuDivider />
-          {router.pathname === '/' && <MenuItem
+          {!router.pathname.includes('dashboard') && <MenuItem
             icon={<MdDashboard />}
             cursor="pointer"
             as={Link}

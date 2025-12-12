@@ -19,7 +19,7 @@ import { FiHelpCircle, FiBell, FiMenu } from "react-icons/fi";
 import { Logo } from "./Logo";
 import { Sidebar } from "./Sidebar";
 
-import UserProfileMenu from "lib/components/layout/UserProfileMenu";
+import UserProfileMenu from "lib/components/auth/UserProfileMenu";
 import { useCurrentUser } from "lib/hooks/queries";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import { SearchInput } from "./SearchInput";
