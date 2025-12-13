@@ -52,7 +52,7 @@ const Header = () => {
       <Container
 
       >
-        <Flex justify="space-between">
+        <Flex justify="space-between" py={{ base: 2, md: 3 }} align="center">
           <Logo color="on-accent" />
 
 

@@ -286,7 +286,7 @@ const PublicBreedDetailPage = () => {
                     emptyActionLabel="Add to Wishlist"
                     emptyActionIcon={<FiHeart />}
                     emptyAction={onAddToWishlist}
-                    columns={{ base: 1, md: 2 }}
+                    columns={{ base: 1, md: 2, lg: 1 }}
                   />
                 </TabPanel>
               </TabPanels>
