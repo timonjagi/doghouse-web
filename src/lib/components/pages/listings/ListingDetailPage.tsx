@@ -207,6 +207,19 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             <PageHeaderWithTwoButtons
               title={getTitle()}
               description={formatPrice(parseInt(listing.price))}
+              badge={
+                <HStack spacing={2}>
+                  <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
+                    {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
+                  </Badge>
+                  <Badge colorScheme={getStatusColor(listing.status)}>
+                    {formatStatus(listing.status)}
+                  </Badge>
+                  {listing.is_featured && (
+                    <Badge colorScheme="purple">Featured</Badge>
+                  )}
+                </HStack>
+              }
               buttonPrimary={isOwner ? {
                 label: "Edit",
                 onClick: onListingFormOpen,
@@ -231,11 +244,13 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 onClick: onApplicationOpen,
                 icon: <ArrowForwardIcon />, // Or a more suitable icon for application
                 colorScheme: "brand",
+                variant: "primary"
               } : !isOwner && !canApply ? {
                 label: "Message Seller",
                 onClick: () => router.push(`/chat/${listing.owner_id}`), // Assuming a chat route
                 icon: <ChatIcon />,
                 colorScheme: "brand",
+                variant: "primary"
               } : undefined}
 
             />

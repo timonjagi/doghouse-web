@@ -60,6 +60,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   const { id, payment } = router.query;
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
   const toast = useToast();
+  const timelineRef = React.useRef<{ getCurrentStepButtons: () => any[] }>(null);
   // const bgColor = useColorModeValue('white', 'gray.800');
   // const isMobile = useBreakpointValue({ base: true, lg: false });
   const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onClose: onUpdateClose } = useDisclosure();
@@ -365,23 +366,32 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
           <Stack spacing="6">
             <PageHeaderWithTwoButtons
               title={getTitle()}
-              description={
-                <HStack spacing={2}>
-                  <Badge colorScheme={getStatusColor(adoption.status)}>
-                    {formatStatus(adoption.status)}
-                  </Badge>
-                  <Text fontSize="sm" color="gray.500">
-                    Applied {formatDate(adoption.created_at.toString())}
-                  </Text>
-                </HStack>
+              description={`Applied ${formatDate(adoption.created_at.toString())}`}
+              badge={
+                <Badge colorScheme={getStatusColor(adoption.status)}>
+                  {formatStatus(adoption.status)}
+                </Badge>
               }
-              buttonPrimary={canUpdateStatus ? {
+              buttonPrimary={timelineRef.current?.getCurrentStepButtons()?.[0] ? {
+                label: timelineRef.current.getCurrentStepButtons()[0].label,
+                onClick: timelineRef.current.getCurrentStepButtons()[0].onClick,
+                icon: timelineRef.current.getCurrentStepButtons()[0].icon,
+                colorScheme: timelineRef.current.getCurrentStepButtons()[0].colorScheme,
+                isDisabled: timelineRef.current.getCurrentStepButtons()[0].disabled,
+              } : canUpdateStatus ? {
                 label: "Approve",
                 onClick: handleApproveAdoption,
                 icon: <CheckCircleIcon />,
                 colorScheme: "green",
               } : undefined}
-              buttonSecondary={canUpdateStatus ? {
+              buttonSecondary={timelineRef.current?.getCurrentStepButtons()?.[1] ? {
+                label: timelineRef.current.getCurrentStepButtons()[1].label,
+                onClick: timelineRef.current.getCurrentStepButtons()[1].onClick,
+                icon: timelineRef.current.getCurrentStepButtons()[1].icon,
+                colorScheme: timelineRef.current.getCurrentStepButtons()[1].colorScheme,
+                variant: timelineRef.current.getCurrentStepButtons()[1].colorScheme === 'red' ? 'outline' : undefined,
+                isDisabled: timelineRef.current.getCurrentStepButtons()[1].disabled,
+              } : canUpdateStatus ? {
                 label: "Reject",
                 onClick: handleRejectAdoption,
                 icon: <WarningIcon />,
@@ -446,6 +456,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                 <TabPanels>
                   <TabPanel px={0}>
                     <AdoptionTimeline
+                      ref={timelineRef}
                       adoption={adoption}
                       userProfile={userProfile}
                       transactions={transactions}
@@ -473,9 +484,9 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                   </TabPanel>
                   <TabPanel px={0}>
                     {isOwner ? (
-                      <ApplicantInfo adoption={adoption} />
+                      <ApplicantInfo adoption={adoption} router={router} />
                     ) : (
-                      <BreederInfo adoption={adoption} formatDate={formatDate} />
+                      <BreederInfo adoption={adoption} formatDate={formatDate} router={router} />
                     )}
                   </TabPanel>
                 </TabPanels>
@@ -607,7 +618,7 @@ const ListingInfo = ({ adoption }) => {
 };
 
 // Applicant Information Component
-const ApplicantInfo = ({ adoption }) => {
+const ApplicantInfo = ({ adoption, router }) => {
   return (
     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
       <Stack>
@@ -633,6 +644,9 @@ const ApplicantInfo = ({ adoption }) => {
           </Button>
           <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={!adoption?.reservation_paid}>
             Message Applicant
+          </Button>
+          <Button leftIcon={<WarningIcon />} size="sm" variant="outline" onClick={() => router.push('/support')}>
+            Contact Support
           </Button>
         </HStack>
       </Stack>
@@ -681,7 +695,7 @@ const ApplicantInfo = ({ adoption }) => {
 };
 
 // Breeder Information Component
-const BreederInfo = ({ adoption, formatDate }) => {
+const BreederInfo = ({ adoption, formatDate, router }) => {
   return (
     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
 
@@ -710,6 +724,9 @@ const BreederInfo = ({ adoption, formatDate }) => {
           </Button>
           <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={adoption?.reservation_paid}>
             Message Breeder
+          </Button>
+          <Button leftIcon={<WarningIcon />} size="sm" variant="outline" onClick={() => router.push('/support')}>
+            Contact Support
           </Button>
         </HStack>
       </Stack>

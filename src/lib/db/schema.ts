@@ -186,15 +186,31 @@ export const adoption_status_history = pgTable("adoption_status_history", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
-// MESSAGES (lightweight)
+// CONVERSATIONS (context-aware messaging threads)
+export const conversations = pgTable("conversations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title", { length: 255 }),
+  context_type: varchar("context_type", { length: 50 }).notNull(), // 'adoption' | 'listing' | 'support' | 'general'
+  context_id: uuid("context_id"), // Reference to related entity (adoption_id, listing_id, etc.)
+  context_data: jsonb("context_data").$default(() => "{}"), // Metadata about the conversation context
+  participants: jsonb("participants").$default(() => "[]"), // Array of user IDs participating
+  last_message_at: timestamp("last_message_at"),
+  last_message_preview: text("last_message_preview"),
+  unread_count: jsonb("unread_count").$default(() => "{}"), // Unread counts per participant {userId: count}
+  is_active: boolean("is_active").notNull().default(true),
+  created_by: uuid("created_by").notNull().references(() => users.id),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// MESSAGES (enhanced with conversation support)
 export const messages = pgTable("messages", {
   id: uuid("id").primaryKey().defaultRandom(),
-  thread_id: uuid("thread_id"),
+  conversation_id: uuid("conversation_id").notNull().references(() => conversations.id),
   sender_id: uuid("sender_id").notNull().references(() => users.id),
-  recipient_id: uuid("recipient_id").notNull().references(() => users.id),
   content: text("content"),
   attachments: jsonb("attachments"),
-  read: boolean("read").notNull().default(false),
+  read_by: jsonb("read_by").$default(() => "[]"), // Array of user IDs who have read this message
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -260,6 +276,7 @@ export type UserBreed = typeof user_breeds.$inferSelect;
 export type Kennel = typeof kennels.$inferSelect;
 export type Listing = typeof listings.$inferSelect;
 export type Adoption = typeof adoptions.$inferSelect;
+export type Conversation = typeof conversations.$inferSelect;
 export type Message = typeof messages.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type ActivityLog = typeof activity_logs.$inferSelect;

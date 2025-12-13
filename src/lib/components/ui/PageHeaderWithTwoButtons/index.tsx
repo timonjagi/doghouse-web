@@ -4,6 +4,7 @@ import * as React from 'react'
 interface PageHeaderWithTwoButtonsProps {
   title: string;
   description: React.ReactNode;
+  badge?: React.ReactNode;
   buttonPrimary?: {
     label: string;
     variant?: string;
@@ -28,6 +29,7 @@ interface PageHeaderWithTwoButtonsProps {
 export const PageHeaderWithTwoButtons = ({
   title,
   description,
+  badge,
   buttonPrimary,
   buttonSecondary,
   flexDir = { base: 'column', md: 'row' },
@@ -37,6 +39,9 @@ export const PageHeaderWithTwoButtons = ({
       <Heading size={useBreakpointValue({ base: 'xs', md: 'sm' })} fontWeight="medium">
         {title}
       </Heading>
+      {badge && (
+        <Box>{badge}</Box>
+      )}
       {typeof description === 'string' ? (
         <Text color="muted">{description}</Text>
       ) : (

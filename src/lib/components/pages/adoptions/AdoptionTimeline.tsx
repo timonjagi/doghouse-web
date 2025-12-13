@@ -18,6 +18,7 @@ import {
   StepTitle,
   Stepper,
   useSteps,
+  useToast,
 } from '@chakra-ui/react';
 import {
   CheckCircleIcon,
@@ -29,6 +30,9 @@ import {
   EditIcon,
 } from '@chakra-ui/icons';
 import { AdoptionWithListing } from 'lib/hooks/queries/useAdoptions';
+import { useAdoptionConversation } from '../../../hooks/queries/useContextConversations';
+import { useCurrentUser } from '../../../hooks/queries/useAuth';
+import { useRouter } from 'next/router';
 
 // Type definition matching schema
 export interface AdoptionStatusHistory {
@@ -73,7 +77,9 @@ interface TimelineStep {
   info?: string[];
 }
 
-export const AdoptionTimeline: React.FC<AdoptionTimelineProps> = ({
+export const AdoptionTimeline = React.forwardRef<{
+  getCurrentStepButtons: () => any[];
+}, AdoptionTimelineProps>(({
   adoption,
   userProfile,
   transactions = [],
@@ -89,9 +95,94 @@ export const AdoptionTimeline: React.FC<AdoptionTimelineProps> = ({
   onLeaveReview,
   onContactBreeder,
   onContactNewOwner,
-}) => {
+}, ref) => {
+  const { data: currentUser } = useCurrentUser();
+  const { conversation: existingAdoptionConversation, createConversation: createAdoptionConversation, isLoading: isCreatingConversation } = useAdoptionConversation(adoption.id);
+  const toast = useToast();
+  const router = useRouter();
+
   const isOwner = userProfile?.id === adoption.listings.owner_id;
   const isApplicant = userProfile?.id === adoption.seeker_id;
+
+  // Handle contact breeder (for seekers)
+  const handleContactBreeder = async () => {
+    if (!currentUser?.id) return;
+
+    try {
+      if (existingAdoptionConversation) {
+        // Navigate to existing conversation
+        router.push(`/dashboard/inbox/${existingAdoptionConversation.id}`);
+        return;
+      }
+
+      // Create new conversation
+      const conversation = await createAdoptionConversation(
+        {
+          id: adoption.listings.id,
+          title: adoption.listings.title,
+          owner_id: adoption.listings.owner_id
+        },
+        [currentUser.id, adoption.listings.owner_id]
+      );
+
+      toast({
+        title: "Conversation started",
+        description: "You can now message the breeder directly.",
+        status: "success",
+        duration: 3000,
+      });
+
+      // Navigate to the new conversation
+      router.push(`/dashboard/inbox/${conversation.id}`);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start conversation. Please try again.",
+        status: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  // Handle contact new owner (for breeders)
+  const handleContactNewOwner = async () => {
+    if (!currentUser?.id) return;
+
+    try {
+      if (existingAdoptionConversation) {
+        // Navigate to existing conversation
+        router.push(`/dashboard/inbox/${existingAdoptionConversation.id}`);
+        return;
+      }
+
+      // Create new conversation
+      const conversation = await createAdoptionConversation(
+        {
+          id: adoption.listings.id,
+          title: adoption.listings.title,
+          owner_id: adoption.listings.owner_id
+        },
+        [currentUser.id, adoption.seeker_id]
+      );
+
+      toast({
+        title: "Conversation started",
+        description: "You can now coordinate pickup/delivery with the new owner.",
+        status: "success",
+        duration: 3000,
+      });
+
+      // Navigate to the new conversation
+      router.push(`/dashboard/inbox/${conversation.id}`);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start conversation. Please try again.",
+        status: "error",
+        duration: 3000,
+      });
+    }
+  };
 
   // Helper to get date from history
   const getStatusDate = (statusKey: string) => {
@@ -296,9 +387,10 @@ export const AdoptionTimeline: React.FC<AdoptionTimelineProps> = ({
               {
                 // contact breeder
                 label: 'Contact Breeder',
-                onClick: onContactBreeder || (() => { }),
+                onClick: handleContactBreeder,
                 colorScheme: 'blue',
                 icon: PhoneIcon,
+                disabled: isCreatingConversation,
               }
             ],
           }
@@ -472,6 +564,17 @@ export const AdoptionTimeline: React.FC<AdoptionTimelineProps> = ({
     count: steps.length,
   });
 
+  // Export function to get current step buttons for use in parent components
+  const getCurrentStepButtons = () => {
+    const currentStep = steps.find(step => step.status === 'current');
+    return currentStep?.actionButtons || [];
+  };
+
+  // Make this available to parent component
+  React.useImperativeHandle(ref, () => ({
+    getCurrentStepButtons,
+  }));
+
   return (
     <Stepper index={activeStep} orientation="vertical" gap="0" colorScheme="brand">
       {steps.map((step, index) => (
@@ -557,4 +660,4 @@ export const AdoptionTimeline: React.FC<AdoptionTimelineProps> = ({
       ))}
     </Stepper>
   );
-};
+});
