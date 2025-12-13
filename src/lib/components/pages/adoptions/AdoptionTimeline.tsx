@@ -30,7 +30,7 @@ import {
   EditIcon,
 } from '@chakra-ui/icons';
 import { AdoptionWithListing } from 'lib/hooks/queries/useAdoptions';
-import { useAdoptionConversation } from '../../../hooks/queries/useContextConversations';
+import { useAdoptionConversation, useSupportConversation } from '../../../hooks/queries/useContextConversations';
 import { useCurrentUser } from '../../../hooks/queries/useAuth';
 import { useRouter } from 'next/router';
 
@@ -98,6 +98,7 @@ export const AdoptionTimeline = React.forwardRef<{
 }, ref) => {
   const { data: currentUser } = useCurrentUser();
   const { conversation: existingAdoptionConversation, createConversation: createAdoptionConversation, isLoading: isCreatingConversation } = useAdoptionConversation(adoption.id);
+  const { conversation: existingSupportConversation, createConversation: createSupportConversation, isLoading: isCreatingSupportConversation } = useSupportConversation();
   const toast = useToast();
   const router = useRouter();
 
@@ -184,6 +185,42 @@ export const AdoptionTimeline = React.forwardRef<{
     }
   };
 
+  // Handle contact support
+  const handleContactSupport = async () => {
+    if (!currentUser?.id) return;
+
+    try {
+      if (existingSupportConversation) {
+        // Navigate to existing conversation
+        router.push(`/dashboard/inbox/${existingSupportConversation.id}`);
+        return;
+      }
+
+      // Create new support conversation
+      const conversation = await createSupportConversation(
+        `Adoption Support - ${adoption.listings.title}`,
+        adoption.id
+      );
+
+      toast({
+        title: "Support conversation started",
+        description: "A support agent will assist you shortly.",
+        status: "success",
+        duration: 3000,
+      });
+
+      // Navigate to the new conversation
+      router.push(`/dashboard/inbox/${conversation.id}`);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start support conversation. Please try again.",
+        status: "error",
+        duration: 3000,
+      });
+    }
+  };
+
   // Helper to get date from history
   const getStatusDate = (statusKey: string) => {
     const entry = statusHistory.find(h => h.status === statusKey);
@@ -255,6 +292,13 @@ export const AdoptionTimeline = React.forwardRef<{
               'Breeder will notify you of their decision',
               'This may take 1-3 business days',
             ],
+            actionButtons: adoption.status === 'rejected' ? [{
+              label: 'Contact Support',
+              onClick: handleContactSupport,
+              colorScheme: 'red',
+              icon: InfoIcon,
+              disabled: isCreatingSupportConversation,
+            }] : undefined,
 
           }
         )
@@ -293,6 +337,13 @@ export const AdoptionTimeline = React.forwardRef<{
                   },
                   colorScheme: 'blue',
                   icon: InfoIcon,
+                });
+                buttons.push({
+                  label: 'Contact Support',
+                  onClick: handleContactSupport,
+                  colorScheme: 'orange',
+                  icon: InfoIcon,
+                  disabled: isCreatingSupportConversation,
                 });
               }
               return buttons.length > 0 ? buttons : undefined;
@@ -357,6 +408,13 @@ export const AdoptionTimeline = React.forwardRef<{
                   },
                   colorScheme: 'blue',
                   icon: InfoIcon,
+                });
+                buttons.push({
+                  label: 'Contact Support',
+                  onClick: handleContactSupport,
+                  colorScheme: 'orange',
+                  icon: InfoIcon,
+                  disabled: isCreatingSupportConversation,
                 });
               }
               return buttons.length > 0 ? buttons : undefined;
