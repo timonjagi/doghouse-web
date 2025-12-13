@@ -91,7 +91,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   // switch case
   return (
-    <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out" overflow="hidden">
+    <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">
       {layout === 'auth' && <AuthLayout>{children}</AuthLayout>}
       {layout === 'dashboard' && <DashboardLayout>{children}</DashboardLayout>}
       {layout === 'headerfooter' && <HeaderFooterLayout>{children}</HeaderFooterLayout>}
@@ -102,4 +102,3 @@ const Layout = ({ children }: LayoutProps) => {
 export default Layout;
 
 // Separate layout components based on your needs
-
