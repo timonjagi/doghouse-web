@@ -215,17 +215,106 @@ export const messages = pgTable("messages", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
-// NOTIFICATIONS (history)
+// NOTIFICATIONS (enhanced with delivery tracking and multi-channel support)
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
   user_id: uuid("user_id").notNull().references(() => users.id),
-  type: varchar("type", { length: 100 }).notNull(), // 'match', 'application', etc.
+  notification_type_id: uuid("notification_type_id").references(() => notification_types.id),
+  type: varchar("type", { length: 100 }).notNull(), // 'match', 'application', 'payment', etc.
   title: varchar("title", { length: 255 }),
   body: text("body"),
-  target_type: varchar("target_type", { length: 100 }), // 'litter' | 'wanted' | 'application'
+  target_type: varchar("target_type", { length: 100 }), // 'listing' | 'adoption' | 'user'
   target_id: uuid("target_id"),
   is_read: boolean("is_read").notNull().default(false),
+
+  // Multi-channel delivery tracking
+  channels_delivered: jsonb("channels_delivered").$default(() => "[]"), // ['email', 'sms', 'whatsapp', 'push']
+  delivery_status: jsonb("delivery_status").$default(() => "{}"), // {email: 'sent', sms: 'failed', ...}
+  delivery_attempts: integer("delivery_attempts").notNull().default(0),
+  last_delivery_attempt: timestamp("last_delivery_attempt"),
+
+  // Enhanced metadata
   meta: jsonb("meta"),
+  priority: varchar("priority", { length: 20 }).notNull().default("normal"), // 'low', 'normal', 'high', 'urgent'
+  expires_at: timestamp("expires_at"), // For time-sensitive notifications
+
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// NOTIFICATION TYPES (predefined categories with templates)
+export const notification_types = pgTable("notification_types", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  key: varchar("key", { length: 100 }).notNull().unique(), // 'application_received', 'payment_completed', etc.
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  category: varchar("category", { length: 100 }).notNull(), // 'applications', 'payments', 'matches', 'system'
+
+  // Template configurations
+  email_template: jsonb("email_template"), // {subject: '', body: '', variables: []}
+  sms_template: jsonb("sms_template"), // {body: '', variables: []}
+  whatsapp_template: jsonb("whatsapp_template"), // {body: '', variables: []}
+  push_template: jsonb("push_template"), // {title: '', body: '', variables: []}
+
+  // Default settings
+  default_channels: jsonb("default_channels").$default(() => "['push']"), // Default delivery channels
+  default_priority: varchar("default_priority", { length: 20 }).notNull().default("normal"),
+
+  is_active: boolean("is_active").notNull().default(true),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// NOTIFICATION RULES (admin-configurable triggers and conditions)
+export const notification_rules = pgTable("notification_rules", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  notification_type_id: uuid("notification_type_id").notNull().references(() => notification_types.id),
+
+  // Trigger conditions
+  trigger_event: varchar("trigger_event", { length: 100 }).notNull(), // 'adoption_status_changed', 'payment_received', etc.
+  trigger_conditions: jsonb("trigger_conditions"), // Complex conditions for when to fire
+
+  // Target audience
+  target_roles: jsonb("target_roles").$default(() => "['all']"), // ['seeker', 'breeder', 'admin']
+  target_conditions: jsonb("target_conditions"), // Additional filtering
+
+  // Delivery configuration
+  channels: jsonb("channels").$default(() => "['push']"), // Override default channels
+  priority: varchar("priority", { length: 20 }).notNull().default("normal"),
+  cooldown_period: integer("cooldown_period"), // Minutes between similar notifications
+  max_per_day: integer("max_per_day"), // Rate limiting
+
+  // Admin controls
+  is_active: boolean("is_active").notNull().default(true),
+  created_by: uuid("created_by").references(() => users.id),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// USER NOTIFICATION PREFERENCES
+export const user_notification_preferences = pgTable("user_notification_preferences", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  user_id: uuid("user_id").notNull().references(() => users.id).unique(),
+
+  // Channel preferences
+  email_enabled: boolean("email_enabled").notNull().default(true),
+  sms_enabled: boolean("sms_enabled").notNull().default(true),
+  whatsapp_enabled: boolean("whatsapp_enabled").notNull().default(true),
+  push_enabled: boolean("push_enabled").notNull().default(true),
+
+  // Category preferences
+  applications_enabled: boolean("applications_enabled").notNull().default(true),
+  payments_enabled: boolean("payments_enabled").notNull().default(true),
+  matches_enabled: boolean("matches_enabled").notNull().default(true),
+  system_enabled: boolean("system_enabled").notNull().default(true),
+
+  // Quiet hours
+  quiet_hours_enabled: boolean("quiet_hours_enabled").notNull().default(false),
+  quiet_hours_start: time("quiet_hours_start"), // 22:00
+  quiet_hours_end: time("quiet_hours_end"), // 08:00
+
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });

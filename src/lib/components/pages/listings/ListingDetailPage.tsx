@@ -34,6 +34,7 @@ import { EditIcon, ChatIcon, DeleteIcon, ArrowForwardIcon } from '@chakra-ui/ico
 import { useRouter } from 'next/router';
 import { useUserBreedsFromUser, useCurrentUser } from 'lib/hooks/queries';
 import { useDeleteListing, useIncrementListingViews, useListing } from 'lib/hooks/queries/useListings';
+import { useListingConversation } from '../../../hooks/queries/useContextConversations';
 import { NextSeo } from 'next-seo';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { Loader } from 'lib/components/ui/Loader';
@@ -70,6 +71,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   const { isOpen: isListingFormOpen, onOpen: onListingFormOpen, onClose: onListingFormClose } = useDisclosure();
 
   const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id as string);
+  const { conversation: existingListingConversation, createConversation: createListingConversation, isLoading: isCreatingConversation } = useListingConversation(listing?.id);
 
   const deleteListingMutation = useDeleteListing();
   const incrementViewsMutation = useIncrementListingViews();
@@ -96,6 +98,42 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
       case 'reserved': return 'yellow';
       case 'sold': return 'red';
       default: return 'gray';
+    }
+  };
+
+  // Handle message seller (create listing conversation)
+  const handleMessageSeller = async () => {
+    if (!user?.id || !listing) return;
+
+    try {
+      if (existingListingConversation) {
+        // Navigate to existing conversation
+        router.push(`/dashboard/inbox/${existingListingConversation.id}`);
+        return;
+      }
+
+      // Create new conversation
+      const conversation = await createListingConversation(
+        listing,
+        [user.id, listing.owner_id]
+      );
+
+      toast({
+        title: "Conversation started",
+        description: "You can now message the seller directly.",
+        status: "success",
+        duration: 3000,
+      });
+
+      // Navigate to the new conversation
+      router.push(`/dashboard/inbox/${conversation.id}`);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start conversation. Please try again.",
+        status: "error",
+        duration: 3000,
+      });
     }
   };
 
@@ -247,10 +285,11 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 variant: "primary"
               } : !isOwner && !canApply ? {
                 label: "Message Seller",
-                onClick: () => router.push(`/chat/${listing.owner_id}`), // Assuming a chat route
+                onClick: handleMessageSeller,
                 icon: <ChatIcon />,
                 colorScheme: "brand",
-                variant: "primary"
+                variant: "primary",
+                isLoading: isCreatingConversation
               } : undefined}
 
             />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   VStack,
@@ -6,42 +6,49 @@ import {
   Text,
   Box,
   Badge,
-  Avatar,
-  Flex,
-  Spacer,
-  IconButton,
+  useColorModeValue,
+  Spinner,
+  Center,
+  Alert,
+  AlertIcon,
+  useBreakpointValue,
   Tabs,
   TabList,
   Tab,
   TabPanels,
   TabPanel,
-  Button,
-  useColorModeValue,
-  Divider,
-  Spinner,
-  Center,
-  Alert,
-  AlertIcon,
-  useDisclosure
 } from '@chakra-ui/react';
-import { ChatIcon, BellIcon, TimeIcon, CheckIcon } from '@chakra-ui/icons';
-import { useInbox, useUnreadInboxCount, InboxItem } from '../../../hooks/queries/useInbox';
+import { ChatIcon, BellIcon } from '@chakra-ui/icons';
+import { useInbox, useUnreadInboxCount } from '../../../hooks/queries/useInbox';
 import { useCurrentUser } from '../../../hooks/queries/useAuth';
-import { useMarkNotificationAsRead } from '../../../hooks/queries/useNotifications';
-import { useMarkConversationAsRead } from '../../../hooks/queries/useConversations';
+import ConversationList from './ConversationList';
+import NotificationList from './NotificationList';
+import ConversationView from './ConversationView';
 import { PageHeaderWithTwoButtons } from '../../ui/PageHeaderWithTwoButtons';
 
 interface InboxPageProps {
   children?: React.ReactNode;
+  defaultSelectedConversationId?: string;
 }
 
-const InboxPage: React.FC<InboxPageProps> = ({ children }) => {
+const InboxPage: React.FC<InboxPageProps> = ({ children, defaultSelectedConversationId }) => {
   const { data: user } = useCurrentUser();
   const { data: inboxItems, isLoading, error } = useInbox(user?.id);
   const { data: unreadCount } = useUnreadInboxCount(user?.id);
 
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>();
+  const [activeTab, setActiveTab] = useState<'conversations' | 'notifications'>('conversations');
+
+  // Check if we're on desktop (sidebar layout) or mobile (full screen)
+  const isDesktop = useBreakpointValue({ base: false, lg: true });
+
+  // Initialize selected conversation from URL parameter
+  useEffect(() => {
+    if (defaultSelectedConversationId) {
+      setSelectedConversationId(defaultSelectedConversationId);
+      setActiveTab('conversations');
+    }
+  }, [defaultSelectedConversationId]);
 
   if (isLoading) {
     return (
@@ -70,6 +77,110 @@ const InboxPage: React.FC<InboxPageProps> = ({ children }) => {
   const conversations = inboxItems?.filter(item => item.type === 'conversation') || [];
   const notifications = inboxItems?.filter(item => item.type === 'notification') || [];
 
+  const handleConversationSelect = (conversationId: string) => {
+    setSelectedConversationId(conversationId);
+    setActiveTab('conversations');
+    // Update URL for deep linking (only on desktop where we have sidebar)
+    if (isDesktop) {
+      window.history.replaceState({}, '', `/dashboard/inbox/${conversationId}`);
+    }
+  };
+
+  // Desktop layout with sidebar
+  if (isDesktop) {
+    return (
+      <Container maxW="7xl" py={{ base: 4, md: 8 }}>
+        <VStack spacing={6} align="stretch">
+          <PageHeaderWithTwoButtons
+            title="Inbox"
+            description={`${unreadCount || 0} unread messages`}
+          />
+
+          <Box
+            h="80vh"
+            border="1px"
+            borderColor={useColorModeValue('gray.200', 'gray.600')}
+            borderRadius="lg"
+            overflow="hidden"
+            bg={useColorModeValue('white', 'gray.800')}
+          >
+            <Tabs
+              variant="soft-rounded"
+              colorScheme="brand"
+              orientation="vertical"
+              h="full"
+              display="flex"
+            >
+              {/* Sidebar */}
+              <VStack w="320px" spacing={0} borderRight="1px" borderColor={useColorModeValue('gray.200', 'gray.600')}>
+                <Box p={4} borderBottom="1px" borderColor={useColorModeValue('gray.200', 'gray.600')} w="full">
+                  <Tabs variant="soft-rounded" colorScheme="brand" size="sm">
+                    <TabList>
+                      <Tab onClick={() => setActiveTab('conversations')}>
+                        <HStack>
+                          <ChatIcon />
+                          <Text>Conversations</Text>
+                          {conversations.filter(c => !c.isRead).length > 0 && (
+                            <Badge colorScheme="red" borderRadius="full" px={2} fontSize="xs">
+                              {conversations.filter(c => !c.isRead).length}
+                            </Badge>
+                          )}
+                        </HStack>
+                      </Tab>
+                      <Tab onClick={() => setActiveTab('notifications')}>
+                        <HStack>
+                          <BellIcon />
+                          <Text>Notifications</Text>
+                          {notifications.filter(n => !n.isRead).length > 0 && (
+                            <Badge colorScheme="red" borderRadius="full" px={2} fontSize="xs">
+                              {notifications.filter(n => !n.isRead).length}
+                            </Badge>
+                          )}
+                        </HStack>
+                      </Tab>
+                    </TabList>
+                  </Tabs>
+                </Box>
+
+                <Box flex={1} w="full">
+                  {activeTab === 'conversations' ? (
+                    <ConversationList
+                      conversations={conversations}
+                      selectedConversationId={selectedConversationId}
+                      onConversationSelect={handleConversationSelect}
+                    />
+                  ) : (
+                    <NotificationList notifications={notifications} />
+                  )}
+                </Box>
+              </VStack>
+
+              {/* Main Content Area */}
+              <Box flex={1}>
+                {selectedConversationId && activeTab === 'conversations' ? (
+                  <ConversationView conversationId={selectedConversationId} />
+                ) : (
+                  <Center h="full">
+                    <VStack spacing={4}>
+                      <ChatIcon boxSize={16} color="gray.400" />
+                      <Text color="gray.500" textAlign="center" fontSize="lg">
+                        {activeTab === 'conversations'
+                          ? 'Select a conversation to start messaging'
+                          : 'Your notifications will appear here'
+                        }
+                      </Text>
+                    </VStack>
+                  </Center>
+                )}
+              </Box>
+            </Tabs>
+          </Box>
+        </VStack>
+      </Container>
+    );
+  }
+
+  // Mobile layout - full screen tabs
   return (
     <Container maxW="7xl" py={{ base: 4, md: 8 }}>
       <VStack spacing={6} align="stretch">
@@ -106,344 +217,19 @@ const InboxPage: React.FC<InboxPageProps> = ({ children }) => {
 
           <TabPanels>
             <TabPanel px={0}>
-              <ConversationsTab conversations={conversations} />
+              <ConversationList
+                conversations={conversations}
+                selectedConversationId={selectedConversationId}
+                onConversationSelect={handleConversationSelect}
+              />
             </TabPanel>
             <TabPanel px={0}>
-              <NotificationsTab notifications={notifications} />
+              <NotificationList notifications={notifications} />
             </TabPanel>
           </TabPanels>
         </Tabs>
       </VStack>
     </Container>
-  );
-};
-
-interface ConversationsTabProps {
-  conversations: InboxItem[];
-}
-
-const ConversationsTab: React.FC<ConversationsTabProps> = ({ conversations }) => {
-  const markAsReadMutation = useMarkConversationAsRead();
-
-  const handleMarkAsRead = async (conversationId: string) => {
-    await markAsReadMutation.mutateAsync({ conversationId, userId: 'current-user-id' });
-  };
-
-  if (conversations.length === 0) {
-    return (
-      <Center py={12}>
-        <VStack spacing={4}>
-          <ChatIcon boxSize={12} color="gray.400" />
-          <Text color="gray.500" textAlign="center">
-            No conversations yet.<br />
-            Start a conversation by contacting breeders or seekers.
-          </Text>
-        </VStack>
-      </Center>
-    );
-  }
-
-  return (
-    <VStack spacing={0} align="stretch">
-      {conversations.map((conversation, index) => (
-        <ConversationItem
-          key={conversation.id}
-          conversation={conversation}
-          onMarkAsRead={handleMarkAsRead}
-          showDivider={index < conversations.length - 1}
-        />
-      ))}
-    </VStack>
-  );
-};
-
-interface ConversationItemProps {
-  conversation: InboxItem;
-  onMarkAsRead: (conversationId: string) => void;
-  showDivider: boolean;
-}
-
-const ConversationItem: React.FC<ConversationItemProps> = ({
-  conversation,
-  onMarkAsRead,
-  showDivider
-}) => {
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const hoverBg = useColorModeValue('gray.50', 'gray.700');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
-
-  const getContextIcon = (contextType?: string) => {
-    switch (contextType) {
-      case 'adoption':
-        return '🏠';
-      case 'listing':
-        return '🐕';
-      case 'support':
-        return '🆘';
-      default:
-        return '💬';
-    }
-  };
-
-  const getContextColor = (contextType?: string) => {
-    switch (contextType) {
-      case 'adoption':
-        return 'green';
-      case 'listing':
-        return 'blue';
-      case 'support':
-        return 'red';
-      default:
-        return 'gray';
-    }
-  };
-
-  return (
-    <>
-      <Box
-        p={4}
-        bg={bgColor}
-        _hover={{ bg: hoverBg }}
-        cursor="pointer"
-        borderWidth="1px"
-        borderColor={borderColor}
-        borderRadius="md"
-        transition="all 0.2s"
-      >
-        <HStack spacing={3} align="start">
-          <Box position="relative">
-            <Avatar
-              size="md"
-              name={conversation.title}
-              bg={`${getContextColor(conversation.contextType)}.500`}
-              color="white"
-            >
-              {getContextIcon(conversation.contextType)}
-            </Avatar>
-            {!conversation.isRead && (
-              <Box
-                position="absolute"
-                top={0}
-                right={0}
-                bg="red.500"
-                borderRadius="full"
-                w={3}
-                h={3}
-                border="2px solid white"
-              />
-            )}
-          </Box>
-
-          <VStack align="start" flex={1} spacing={1}>
-            <HStack justify="space-between" w="full">
-              <HStack>
-                <Text fontWeight="semibold" fontSize="md">
-                  {conversation.title}
-                </Text>
-                {conversation.contextType && (
-                  <Badge
-                    size="sm"
-                    colorScheme={getContextColor(conversation.contextType)}
-                    variant="subtle"
-                  >
-                    {conversation.contextType}
-                  </Badge>
-                )}
-              </HStack>
-              <Text fontSize="xs" color="gray.500">
-                {new Date(conversation.timestamp).toLocaleDateString()}
-              </Text>
-            </HStack>
-
-            <Text fontSize="sm" color="gray.600" noOfLines={2}>
-              {conversation.preview}
-            </Text>
-
-            {conversation.participants && conversation.participants.length > 0 && (
-              <Text fontSize="xs" color="gray.500">
-                {conversation.participants.length} participants
-              </Text>
-            )}
-          </VStack>
-
-          <VStack spacing={2}>
-            {!conversation.isRead && (
-              <Button
-                size="xs"
-                variant="ghost"
-                colorScheme="blue"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onMarkAsRead(conversation.id);
-                }}
-                isLoading={false} // Add loading state if needed
-              >
-                <CheckIcon mr={1} />
-                Mark Read
-              </Button>
-            )}
-          </VStack>
-        </HStack>
-      </Box>
-
-      {showDivider && <Divider />}
-    </>
-  );
-};
-
-interface NotificationsTabProps {
-  notifications: InboxItem[];
-}
-
-const NotificationsTab: React.FC<NotificationsTabProps> = ({ notifications }) => {
-  const markAsReadMutation = useMarkNotificationAsRead();
-
-  const handleMarkAsRead = async (notificationId: string) => {
-    await markAsReadMutation.mutateAsync(notificationId);
-  };
-
-  if (notifications.length === 0) {
-    return (
-      <Center py={12}>
-        <VStack spacing={4}>
-          <BellIcon boxSize={12} color="gray.400" />
-          <Text color="gray.500" textAlign="center">
-            No notifications yet.<br />
-            You'll receive notifications for important updates.
-          </Text>
-        </VStack>
-      </Center>
-    );
-  }
-
-  return (
-    <VStack spacing={0} align="stretch">
-      {notifications.map((notification, index) => (
-        <NotificationItem
-          key={notification.id}
-          notification={notification}
-          onMarkAsRead={handleMarkAsRead}
-          showDivider={index < notifications.length - 1}
-        />
-      ))}
-    </VStack>
-  );
-};
-
-interface NotificationItemProps {
-  notification: InboxItem;
-  onMarkAsRead: (notificationId: string) => void;
-  showDivider: boolean;
-}
-
-const NotificationItem: React.FC<NotificationItemProps> = ({
-  notification,
-  onMarkAsRead,
-  showDivider
-}) => {
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const hoverBg = useColorModeValue('gray.50', 'gray.700');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
-
-  const getNotificationIcon = (type?: string) => {
-    switch (type) {
-      case 'match':
-        return '💕';
-      case 'application':
-        return '📋';
-      case 'payment':
-        return '💰';
-      default:
-        return '🔔';
-    }
-  };
-
-  const getNotificationColor = (type?: string) => {
-    switch (type) {
-      case 'match':
-        return 'pink';
-      case 'application':
-        return 'blue';
-      case 'payment':
-        return 'green';
-      default:
-        return 'gray';
-    }
-  };
-
-  return (
-    <>
-      <Box
-        p={4}
-        bg={bgColor}
-        _hover={{ bg: hoverBg }}
-        cursor="pointer"
-        borderWidth="1px"
-        borderColor={borderColor}
-        borderRadius="md"
-        transition="all 0.2s"
-      >
-        <HStack spacing={3} align="start">
-          <Box position="relative">
-            <Avatar
-              size="md"
-              name={notification.title}
-              bg={`${getNotificationColor(notification.contextType)}.500`}
-              color="white"
-            >
-              {getNotificationIcon(notification.contextType)}
-            </Avatar>
-            {!notification.isRead && (
-              <Box
-                position="absolute"
-                top={0}
-                right={0}
-                bg="red.500"
-                borderRadius="full"
-                w={3}
-                h={3}
-                border="2px solid white"
-              />
-            )}
-          </Box>
-
-          <VStack align="start" flex={1} spacing={1}>
-            <HStack justify="space-between" w="full">
-              <Text fontWeight="semibold" fontSize="md">
-                {notification.title}
-              </Text>
-              <Text fontSize="xs" color="gray.500">
-                {new Date(notification.timestamp).toLocaleDateString()}
-              </Text>
-            </HStack>
-
-            <Text fontSize="sm" color="gray.600" noOfLines={2}>
-              {notification.preview}
-            </Text>
-          </VStack>
-
-          <VStack spacing={2}>
-            {!notification.isRead && (
-              <Button
-                size="xs"
-                variant="ghost"
-                colorScheme="blue"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onMarkAsRead(notification.id);
-                }}
-                isLoading={false} // Add loading state if needed
-              >
-                <CheckIcon mr={1} />
-                Mark Read
-              </Button>
-            )}
-          </VStack>
-        </HStack>
-      </Box>
-
-      {showDivider && <Divider />}
-    </>
   );
 };
 

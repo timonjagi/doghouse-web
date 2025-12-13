@@ -116,6 +116,7 @@ export const queryKeys = {
     list: (filters?: Record<string, unknown>): readonly string[] => ['conversations', 'list', filters].filter(Boolean) as any,
     details: (): readonly string[] => ['conversations', 'detail'] as const,
     detail: (id: string): readonly string[] => ['conversations', 'detail', id] as const,
+    withContext: (id: string): readonly string[] => ['conversations', 'detail', 'with-context', id] as const,
     unreadCount: (userId?: string): readonly string[] => ['conversations', 'unread-count', userId].filter(Boolean) as any,
     byContext: (contextType: string, contextId?: string): readonly string[] => ['conversations', 'context', contextType, contextId].filter(Boolean) as any,
   },
