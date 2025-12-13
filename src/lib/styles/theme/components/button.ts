@@ -7,7 +7,6 @@ export const Button: ComponentStyleConfig = {
   variants: {
     primary: {
       bg: "brand.500",
-      color: "white",
       _hover: {
         bg: "brand.600",
         _dark: {

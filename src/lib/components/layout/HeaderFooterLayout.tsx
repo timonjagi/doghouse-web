@@ -18,9 +18,11 @@ export const HeaderFooterLayout: React.FC<LayoutProps> = ({ children }) => {
         as="main"
         h={{ base: `calc(100dvh - ${headerHeight})`, md: "100%" }}
         overflow="scroll"
+        overflowY="auto"
+        display="flex"
+        flexDirection="column"
       >
         {children}
-
       </Box>
       <Footer />
 

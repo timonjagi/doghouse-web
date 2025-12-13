@@ -42,6 +42,7 @@ import { GiDogHouse } from "react-icons/gi";
 import { BreederCard } from "lib/components/ui/BreederCard";
 import { BreederCard as BreederCard2 } from "lib/components/ui/BreederCard2";
 import { useBreedersForBreed } from "lib/hooks/queries/useBreeders";
+import { PageHeaderWithTwoButtons } from "lib/components/ui/PageHeaderWithTwoButtons";
 
 interface Breed {
   id: string;
@@ -111,14 +112,16 @@ const ExploreUserBreedDetailView = () => {
       <Container maxW="7xl" py={{ base: 4, md: 0 }} >
         <VStack spacing={6} align="stretch">
 
-
-          <Heading
-            size={{ base: "xs", md: "sm" }}
-            textTransform="capitalize"
-          >
-            {userBreed?.breeds.name}
-          </Heading>
-
+          <PageHeaderWithTwoButtons
+            title={userBreed?.breeds.name}
+            description={breederProfile ? `${breederProfile.kennel_name} - Professional breeder` : "Explore this breed"}
+            buttonPrimary={{
+              label: "Add to Wishlist",
+              onClick: onAddToWishlist,
+              icon: <FiHeart />,
+              colorScheme: "brand",
+            }}
+          />
 
           <VStack align="stretch" spacing={{ base: 4, md: 6 }}>
 

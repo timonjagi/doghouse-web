@@ -102,7 +102,15 @@ const PublicBreedDetailPage = () => {
 
             <PageHeaderWithTwoButtons
               title={breed?.name}
-              description={breed?.group + " group"}
+              description=""
+              badge={
+                <HStack spacing={2}>
+                  <Badge colorScheme="brand" textTransform="capitalize">
+                    {breed?.group} group
+                  </Badge>
+
+                </HStack>
+              }
               buttonPrimary={
                 {
                   label: "Add to wishlist",
@@ -119,6 +127,7 @@ const PublicBreedDetailPage = () => {
             //     onClick: () => router.push(`/listings/${listing.id}`),
             //   },
             // ]}
+
             />
 
           </Stack>
@@ -288,7 +297,7 @@ const PublicBreedDetailPage = () => {
         </Stack>
       </Container>
 
-      {isMobile && <EthicalQuestionairreCard />}
+      <EthicalQuestionairreCard />
 
     </>
   );
