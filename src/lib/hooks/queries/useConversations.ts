@@ -201,7 +201,48 @@ export const useSendMessage = () => {
 
       return message;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: async (message, variables) => {
+      // Create notifications for other participants
+      try {
+        const { data: conversation } = await supabase
+          .from('conversations')
+          .select('participants, context_type, context_id, title')
+          .eq('id', variables.conversationId)
+          .single();
+
+        if (conversation) {
+          const otherParticipants = (conversation.participants as string[]).filter(
+            p => p !== variables.senderId
+          );
+
+          // Create notifications for each other participant
+          const notifications = otherParticipants.map(recipientId => ({
+            user_id: recipientId,
+            type: 'message_received',
+            title: `New message in ${conversation.title || 'conversation'}`,
+            body: message.content?.substring(0, 100) || 'New message received',
+            target_type: 'conversation',
+            target_id: variables.conversationId,
+            meta: {
+              conversationId: variables.conversationId,
+              contextType: conversation.context_type,
+              contextId: conversation.context_id,
+              senderId: variables.senderId,
+              messageId: message.id,
+            },
+          }));
+
+          if (notifications.length > 0) {
+            await supabase
+              .from('notifications')
+              .insert(notifications);
+          }
+        }
+      } catch (notificationError) {
+        console.error('Failed to create message notifications:', notificationError);
+        // Don't fail the message send if notification creation fails
+      }
+
       queryClient.invalidateQueries({
         queryKey: queryKeys.conversations.detail(variables.conversationId)
       });

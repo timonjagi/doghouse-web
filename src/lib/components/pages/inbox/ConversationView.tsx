@@ -28,7 +28,9 @@ import { useConversation, useSendMessage, useMarkConversationAsRead } from '../.
 import { useConversationWithContext } from '../../../hooks/queries/useContextConversations';
 import { useRealtimeMessaging } from '../../../hooks/queries/useRealtimeMessaging';
 import { useCurrentUser } from '../../../hooks/queries/useAuth';
+import { useTypingIndicator, useTypingUsers, useTypingSubscription } from '../../../hooks/queries/useTypingIndicator';
 import { PageHeaderWithTwoButtons } from '../../ui/PageHeaderWithTwoButtons';
+import FileAttachmentComponent from '../../ui/FileAttachment';
 
 interface ConversationViewProps {
   conversationId: string;
@@ -41,12 +43,18 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   const sendMessageMutation = useSendMessage();
   const markAsReadMutation = useMarkConversationAsRead();
   const [messageText, setMessageText] = useState('');
+  const [attachments, setAttachments] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const toast = useToast();
 
   // Enable real-time updates for conversations
   useRealtimeMessaging({ userId: user?.id, conversationId });
+
+  // Typing indicators
+  const { handleTyping } = useTypingIndicator(conversationId, user?.id);
+  const { data: typingUsers } = useTypingUsers(conversationId);
+  useTypingSubscription(conversationId);
 
   // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
@@ -65,16 +73,18 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   }, [conversation, user?.id, conversationId]);
 
   const handleSendMessage = async () => {
-    if (!messageText.trim() || !user?.id) return;
+    if ((!messageText.trim() && attachments.length === 0) || !user?.id) return;
 
     try {
       await sendMessageMutation.mutateAsync({
         conversationId,
         senderId: user.id,
-        content: messageText.trim(),
+        content: messageText.trim() || null,
+        attachments: attachments.length > 0 ? attachments : null,
       });
 
       setMessageText('');
+      setAttachments([]);
       toast({
         title: 'Message sent',
         status: 'success',
@@ -298,6 +308,31 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
             </Box>
           )}
 
+          {/* Typing Indicators */}
+          {typingUsers && typingUsers.length > 0 && (
+            <Box alignSelf="flex-start" maxW="70%">
+              <HStack spacing={2} align="start">
+                <Box w="32px" />
+                <VStack align="flex-start" spacing={1}>
+                  <Box
+                    bg={useColorModeValue('gray.100', 'gray.600')}
+                    px={4}
+                    py={2}
+                    borderRadius="lg"
+                    shadow="sm"
+                  >
+                    <Text fontSize="sm" color="gray.600">
+                      {typingUsers.length === 1
+                        ? `${typingUsers[0].displayName} is typing...`
+                        : `${typingUsers.length} people are typing...`
+                      }
+                    </Text>
+                  </Box>
+                </VStack>
+              </HStack>
+            </Box>
+          )}
+
           <div ref={messagesEndRef} />
         </VStack>
       </Box>
@@ -313,34 +348,48 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
         bottom={0}
         zIndex={10}
       >
-        <HStack spacing={3} maxW="4xl" mx="auto">
-          <Textarea
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            resize="none"
-            rows={1}
-            maxLength={1000}
-            bg={useColorModeValue('gray.50', 'gray.700')}
-            borderColor={useColorModeValue('gray.300', 'gray.600')}
-            _focus={{
-              borderColor: 'blue.500',
-              boxShadow: '0 0 0 1px blue.500',
-            }}
+        <VStack spacing={3} maxW="4xl" mx="auto">
+          {/* File Attachments */}
+          <FileAttachmentComponent
+            attachments={attachments}
+            onAttachmentsChange={setAttachments}
+            maxFiles={5}
+            maxSize={10}
           />
-          <Button
-            colorScheme="blue"
-            onClick={handleSendMessage}
-            isLoading={sendMessageMutation.isPending}
-            disabled={!messageText.trim()}
-            size="md"
-            px={6}
-          >
-            <IoSend style={{ marginRight: '8px' }} />
-            Send
-          </Button>
-        </HStack>
+
+          {/* Message Input */}
+          <HStack spacing={3} w="full">
+            <Textarea
+              value={messageText}
+              onChange={(e) => {
+                setMessageText(e.target.value);
+                handleTyping();
+              }}
+              onKeyPress={handleKeyPress}
+              placeholder="Type your message..."
+              resize="none"
+              rows={1}
+              maxLength={1000}
+              bg={useColorModeValue('gray.50', 'gray.700')}
+              borderColor={useColorModeValue('gray.300', 'gray.600')}
+              _focus={{
+                borderColor: 'blue.500',
+                boxShadow: '0 0 0 1px blue.500',
+              }}
+            />
+            <Button
+              colorScheme="blue"
+              onClick={handleSendMessage}
+              isLoading={sendMessageMutation.isPending}
+              disabled={!messageText.trim() && attachments.length === 0}
+              size="md"
+              px={6}
+            >
+              <IoSend style={{ marginRight: '8px' }} />
+              Send
+            </Button>
+          </HStack>
+        </VStack>
       </Box>
     </VStack>
   );
