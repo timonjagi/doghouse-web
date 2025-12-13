@@ -26,7 +26,7 @@ import { useRouter } from "next/router";
 import { CardContent } from "../../ui/CardContent";
 import { CardWithAvatar } from "../../ui/CardWithAvatar";
 
-import { useCurrentUser } from "lib/hooks/queries";
+import { useCurrentUser, useUserProfileById } from "lib/hooks/queries";
 import { Loader } from "lib/components/ui/Loader";
 import { UserInfo } from "../../ui/UserInfo";
 
@@ -37,10 +37,12 @@ import Link from "next/link";
 
 const AccountPage = () => {
   const { data: user, isLoading, error } = useCurrentUser();
+  const { data: profile, isLoading: profileLoading, error: profileError } = useUserProfileById(user?.id as string);
+
   const router = useRouter();
   const toast = useToast();
 
-  const userProfile = user ? {
+  const userProfile = profile || user ? {
     id: user.id,
     display_name: user.user_metadata?.display_name,
     avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.profile_photo_url,

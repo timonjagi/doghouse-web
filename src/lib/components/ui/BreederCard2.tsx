@@ -1,4 +1,4 @@
-import { Card, CardBody, Stack, HStack, Avatar, VStack, Badge, Button, Text, Icon, ButtonGroup } from "@chakra-ui/react";
+import { Card, CardBody, Stack, HStack, Avatar, VStack, Badge, Button, Text, Icon, ButtonGroup, useColorModeValue } from "@chakra-ui/react";
 import Link from "next/link";
 import { FiArrowRight, FiBell, FiShield } from "react-icons/fi";
 import { LuDog } from "react-icons/lu";
@@ -14,6 +14,11 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
   const user = breeder;
   const breederProfile = user?.breeder_profiles ? user.breeder_profiles[0] : user;
   const toast = useToast();
+
+  // Color mode values for dark mode support
+  const textColor = useColorModeValue("gray.600", "gray.400");
+  const starColor = useColorModeValue("gold", "yellow.400");
+  const mutedTextColor = useColorModeValue("gray.500", "gray.400");
   //if (!user) return null;
 
   const handleSubscribe = () => {
@@ -63,7 +68,7 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
 
                 <Badge colorScheme="yellow" size="sm">
                   <HStack>
-                    <Icon as={MdStar} color="gold" />
+                    <Icon as={MdStar} color={starColor} />
                     <Text fontSize="sm">{breederProfile.rating?.toFixed(1)}</Text>
                   </HStack>
                 </Badge>
@@ -72,7 +77,7 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
               {breederProfile?.kennel_location && (
                 <HStack>
                   <MdLocationOn size={16} />
-                  <Text fontSize="sm" color="gray.600" noOfLines={1}>
+                  <Text fontSize="sm" color={textColor} noOfLines={1}>
                     {breederProfile.kennel_location}
                   </Text>
                 </HStack>
@@ -126,8 +131,8 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
               </Button>
 
               <Button
-                colorScheme="brand"
                 size="sm"
+                variant="primary"
                 w="full"
                 as={Link}
                 href={`/dashboard/breeders/${breeder.id}`}

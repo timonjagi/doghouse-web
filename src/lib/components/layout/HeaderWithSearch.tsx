@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Drawer,
   DrawerContent,
   DrawerOverlay,
@@ -9,46 +8,38 @@ import {
   HStack,
   useBreakpointValue,
   IconButton,
-  Select,
-  useColorModeValue,
   Button,
-  ButtonGroup,
   Circle,
-  Icon,
   Badge,
   DrawerCloseButton,
   DrawerHeader,
   useToast,
   Spacer,
 } from "@chakra-ui/react";
+import { MdDarkMode, MdLightMode } from "react-icons/md";
+import { useColorMode } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { FiBell, FiCheck, FiHelpCircle, FiMenu } from "react-icons/fi";
+import { FiBell, FiCheck, FiMenu } from "react-icons/fi";
 
 import { Logo } from "./Logo";
 import { NotificationsDrawer } from "./NotificationsDrawer";
 import { SearchInput } from "./SearchInput";
 import { Sidebar } from "./Sidebar";
-import { MdMenu } from "react-icons/md";
 import { useEffect, useMemo, useState } from "react";
-import { CurrencySelect } from "../ui/CurrencySelect";
 import * as searchService from "lib/services/searchService";
 import { useCurrentUser, useUserProfileById, useUnreadNotificationsCount, useNotifications, useMarkAllNotificationsAsRead } from "lib/hooks/queries";
 
-const HeaderWithSearch = () => {
+const HeaderWithSearch = ({ rightElement }) => {
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
   });
   const { isOpen: isSidebarOpen, onToggle: onToggleSidebar, onClose: onCloseSidebar } = useDisclosure();
-  const { isOpen: isNotificationsOpen, onToggle: onToggleNotifications, onClose: onCloseNotifications } = useDisclosure();
   const toast = useToast();
 
   const { data: user } = useCurrentUser();
   const { data: userProfile, isLoading: profileLoading } = useUserProfileById(user?.id as string);
-  const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
 
-  const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
-  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
 
   const router = useRouter();
   const { pathname } = router;
@@ -65,27 +56,6 @@ const HeaderWithSearch = () => {
 
   const [searchQuery, setSearchQuery] = useState(router.query?.q as string || '');
   const currentFilters = useMemo(() => searchService.parseSearchParams(router.query), [router.query])
-
-  const handleMarkAllAsRead = async () => {
-    if (!userProfile?.id) return;
-
-    try {
-      await markAllAsReadMutation.mutateAsync(userProfile.id);
-      toast({
-        title: 'All notifications marked as read',
-        status: 'success',
-        duration: 2000,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error updating notifications',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-      });
-    }
-  };
-
 
   const handleSearch = () => {
     // Parse existing filters from URL if on search page
@@ -109,10 +79,34 @@ const HeaderWithSearch = () => {
     });
   }
 
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
+    }
+  };
+
+  const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
+
+  const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
+
+  const handleMarkAllAsRead = async () => {
+    if (!userProfile?.id) return;
+
+    try {
+      await markAllAsReadMutation.mutateAsync(userProfile.id);
+      toast({
+        title: 'All notifications marked as read',
+        status: 'success',
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error updating notifications',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+      });
     }
   };
 
@@ -156,7 +150,7 @@ const HeaderWithSearch = () => {
             <SearchInput
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               searchQuery={searchQuery}
               onClear={() => searchService.clearSearchParams(currentFilters)}
             />
@@ -165,29 +159,7 @@ const HeaderWithSearch = () => {
 
         {!showSearchBar && <Spacer />}
 
-        <HStack spacing="1">
-
-          <IconButton
-            icon={<FiHelpCircle fontSize="1.25rem" />}
-            aria-label="Help & Support"
-            variant="ghost"
-            onClick={() => router.push('/support')}
-          />
-
-          <Box position="relative">
-
-            {unreadCount > 0 && <Circle size="2" bg="brand.500" position="absolute" top={0} right={1} zIndex={1} />}
-
-            <IconButton
-              icon={<FiBell fontSize="1.25rem" />}
-              aria-label="Notifications"
-              variant="ghost"
-              onClick={onToggleNotifications}
-            />
-
-          </Box>
-
-        </HStack>
+        {rightElement}
       </Flex>
 
 
@@ -202,9 +174,12 @@ const HeaderWithSearch = () => {
           <SearchInput
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             searchQuery={searchQuery}
             onClear={() => searchService.clearSearchParams(currentFilters)}
+            variant="subtle"
+            placeholder="Search for pets, breeds, or locations..."
+            colorScheme="gray"
           />
         </HStack>
       )}
@@ -222,55 +197,6 @@ const HeaderWithSearch = () => {
         <DrawerContent>
           {/* Sidebar content would go here */}
           <Sidebar onClose={onCloseSidebar} />
-        </DrawerContent>
-      </Drawer>
-
-      {/* Notifications Drawer */}
-      <Drawer
-        isOpen={isNotificationsOpen}
-        placement="right"
-        onClose={onCloseNotifications}
-        isFullHeight
-        preserveScrollBarGap
-        trapFocus={false}
-        size={{ base: 'xs', md: 'sm' }}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>
-
-            Notifications
-
-            {unreadCount > 0 && (
-              <Badge colorScheme="red" borderRadius="full" px={2} fontSize="xs">
-                {unreadCount}
-              </Badge>
-            )}
-
-
-            {notifications && notifications.length > 0 && unreadCount > 0 && (
-              <Button
-                leftIcon={<FiCheck />}
-                variant="outline"
-                size="xs"
-                onClick={handleMarkAllAsRead}
-                isLoading={markAllAsReadMutation.isPending}
-              >
-                Mark All Read
-              </Button>
-            )}
-
-          </DrawerHeader>
-
-          <NotificationsDrawer
-            isOpen={isNotificationsOpen}
-            onClose={onCloseNotifications}
-            notifications={notifications!}
-            isLoading={isLoading}
-            error={error}
-            unreadCount={unreadCount!}
-          />
         </DrawerContent>
       </Drawer>
 

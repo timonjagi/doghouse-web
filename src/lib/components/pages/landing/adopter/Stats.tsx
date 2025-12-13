@@ -59,6 +59,9 @@ export const Stats = () => (
         textAlign="center"
         align="center"
       >
+        <Text color="accent" fontWeight="semibold">
+          Stats
+        </Text>
         <Heading
           size={useBreakpointValue({
             base: "md",

@@ -28,12 +28,12 @@ export const UserInfo = (props: UserInfoProps) => {
           <Text>{location}</Text>
         </HStack>
       )}
-      {website && (
+      {/* {website && (
         <HStack>
           <Icon as={HiLink} />
           <Text>{website}</Text>
         </HStack>
-      )}
+      )} */}
       {memberSince && (
         <HStack>
           <Icon as={HiCalendar} />

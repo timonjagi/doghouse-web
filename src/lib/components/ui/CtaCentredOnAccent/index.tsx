@@ -14,7 +14,7 @@ export const CtaCentredOnAccent = ({ title, description, ctaText1, ctaLink1, cta
   <Box as="section" bg="bg-accent" color="on-accent">
     <Container py={{ base: '16', md: '24' }} px="4">
       <Stack spacing={{ base: '8', md: '10' }}>
-        <Stack spacing={{ base: '4', md: '5' }} align="center">
+        <Stack spacing={{ base: '4', md: '5' }} align="center" textAlign="center">
           <Heading size={useBreakpointValue({ base: 'sm', md: 'md' })}>{title}</Heading>
           <Text color="on-accent-muteed" maxW="2xl" textAlign="center" fontSize="xl">
             {description}

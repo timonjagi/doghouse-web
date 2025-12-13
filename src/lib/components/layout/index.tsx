@@ -6,6 +6,7 @@ import {
 import { ReactNode } from "react";
 import { DashboardLayout } from "./SidebarLayout";
 import { HeaderFooterLayout } from "./HeaderFooterLayout";
+import AuthLayout from "./AuthLayout";
 
 type LayoutProps = {
   children: ReactNode;
@@ -14,11 +15,14 @@ type LayoutProps = {
 const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
 
+  const authRoutes: any = [
+    { path: "/login", layout: 'auth' },
+    { path: "/signup", layout: 'auth' },
+    { path: "/onboarding", layout: 'auth' },
+  ];
+
   const headerFooterRoutes: any = [
     { path: "/", layout: 'headerfooter' },
-    { path: "/login", layout: 'headerfooter' },
-    { path: "/signup", layout: 'headerfooter' },
-    { path: "/onboarding", layout: 'headerfooter' },
     { path: "/explore", layout: 'headerfooter' },
     { path: "/explore/breeds/[breedName]", layout: 'headerfooter' },
     { path: "/explore/breeders", layout: 'headerfooter' },
@@ -69,7 +73,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   ];
 
-  const matchedRoute = [...headerFooterRoutes, ...dashboardRoutes].find((route) => {
+  const matchedRoute = [...authRoutes, ...headerFooterRoutes, ...dashboardRoutes].find((route) => {
     if (route.path.includes("[")) {
       // If the route has square brackets, treat it as a dynamic route
       const regex = new RegExp(`^${route.path.replace(/\[.*\]/, ".*")}$`);
@@ -88,6 +92,7 @@ const Layout = ({ children }: LayoutProps) => {
   // switch case
   return (
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out" overflow="hidden">
+      {layout === 'auth' && <AuthLayout>{children}</AuthLayout>}
       {layout === 'dashboard' && <DashboardLayout>{children}</DashboardLayout>}
       {layout === 'headerfooter' && <HeaderFooterLayout>{children}</HeaderFooterLayout>}
     </Box >

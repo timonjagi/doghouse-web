@@ -32,7 +32,7 @@ export const Team = () => {
     },
     {
       role: 'Co-Founder / CTO',
-      image: '/images/team/2.jpeg',
+      image: '/images/doggo.png',
       name: 'Timothy Njagi',
       socials: [
         {

@@ -41,11 +41,8 @@ export const steps = [
 
 export const features = [
   "Health Certificate",
-  "Travel Assistance",
   "Secure Escrow Payment",
-  "Expert Advice",
   "24/7 Customer Support",
-  "Veterinary Referral",
   "Post-adoption Support",
 ];
 
@@ -114,8 +111,8 @@ const FeatureCard = (props: any) => {
               {features.map((feature, index) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <HStack key={index} as="li" spacing="3">
-                  <Circle size="6" bg={mode("blue.50", "whiteAlpha.50")}>
-                    <Icon as={FiCheck} color="accent" />
+                  <Circle size="6" bg={mode("brand.50", "whiteAlpha.50")}>
+                    <Icon as={FiCheck} color="on-accent" />
                   </Circle>
                   <Text color="muted">{feature}</Text>
                 </HStack>

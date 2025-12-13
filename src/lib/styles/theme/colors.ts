@@ -32,7 +32,62 @@ const extendedColors: DeepPartial<
 /** override chakra colors here */
 const overridenChakraColors: DeepPartial<Theme["colors"]> = {};
 
+/** semantic tokens */
+const semanticTokens = {
+  colors: {
+    accent: {
+      default: "brand.500",
+      _dark: "brand.400",
+    },
+    "accent-subtle": {
+      default: "brand.100",
+      _dark: "brand.900",
+    },
+    inverted: {
+      default: "white",
+      _dark: "gray.900",
+    },
+    muted: {
+      default: "gray.600",
+      _dark: "gray.400",
+    },
+    subtle: {
+      default: "gray.500",
+      _dark: "gray.400",
+    },
+    "on-accent": {
+      default: "white",
+      _dark: "gray.900",
+    },
+    "on-accent-subtle": {
+      default: "gray.600",
+      _dark: "gray.400",
+    },
+    "on-accent-muted": {
+      default: "gray.500",
+      _dark: "gray.500",
+    },
+    "bg-accent": {
+      default: "brand.500",
+      _dark: "brand.900",
+    },
+    "bg-accent-subtle": {
+      default: "brand.50",
+      _dark: "brand.800",
+    },
+    "bg-surface": {
+      default: "white",
+      _dark: "gray.800",
+    },
+    "g-surface": {
+      default: "gray.50",
+      _dark: "gray.900",
+    },
+  },
+};
+
 export const colors = {
   ...overridenChakraColors,
   ...extendedColors,
+  ...semanticTokens.colors,
 };

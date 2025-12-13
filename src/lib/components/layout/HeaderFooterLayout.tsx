@@ -9,20 +9,21 @@ type LayoutProps = {
   children: ReactNode;
 };
 export const HeaderFooterLayout: React.FC<LayoutProps> = ({ children }) => {
-  const router = useRouter();
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const headerHeight = useBreakpointValue({ base: "56px", md: "64px" });
 
   return (
     <>
-
-    // refactor to auth layour
-      {(!["/login", "/signup", "/onboarding"].includes(router.pathname) || isMobile) && <Header />}
-      <Box as="main" h={{ base: "calc(100dvh - 64px)", md: "100dvh" }} overflow="auto"
+      <Header />
+      <Box
+        as="main"
+        h={{ base: `calc(100dvh - ${headerHeight})`, md: "100%" }}
+        overflow="scroll"
       >
-        {children}{" "}
-      </Box>
+        {children}
 
+      </Box>
       <Footer />
+
     </>
   );
 };

@@ -14,7 +14,7 @@ import { Socials } from "./Socials";
 import { Team } from "./Team";
 import { Newsletter } from "./Newsletter";
 
-const About = () => {
+const AboutPage = () => {
   const textColor = useColorModeValue("gray.600", "gray.300");
 
   return (
@@ -76,6 +76,6 @@ const About = () => {
   );
 };
 
-export default About;
+export default AboutPage;
 
 

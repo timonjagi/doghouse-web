@@ -206,31 +206,17 @@ const ExploreOverview: React.FC = () => {
                   {!isDesktop && <NavMenu.Mobile
                     data={{
                       category: {
-                        label: 'Categories',
-                        links: categories.listings,
+                        label: '',
+                        links: [],
                       },
                       featured: {
-                        label: 'Popular Breeds',
-                        links: popularBreeds?.map(breed => ({
-                          label: breed.name,
-                          url: page === 'explore' ? `/explore/breeds/${encodeURIComponent(breed.name)}` : `/dashboard/breeds/${encodeURIComponent(breed.name)}`,
-                        }))
+                        label: '',
+                        links: []
                       },
                       products: [
                         {
                           label: 'Dogs',
                           products: popularListings.map(listing => ({
-                            id: listing.id,
-                            name: listing.title,
-                            price: listing.price,
-                            currency: 'KES',
-                            href: page === 'explore' ? `/explore/listings/${listing.id}` : `/dashboard/listings/${listing.id}`,
-                            imageUrl: listing.photos[0],
-                          }))
-                        },
-                        {
-                          label: 'Cats',
-                          products: newListings.map(listing => ({
                             id: listing.id,
                             name: listing.title,
                             price: listing.price,

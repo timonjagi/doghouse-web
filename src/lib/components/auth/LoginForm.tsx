@@ -62,7 +62,13 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
           isClosable: true,
         });
       } else if (data.user) {
-        router.push("/dashboard");
+
+        const previousRoute = localStorage.getItem('previousRoute');
+
+        if (previousRoute) {
+          localStorage.removeItem('previousRoute');
+          router.push(previousRoute);
+        }
         toast({
           title: "Login successful",
           description: "Welcome back!",

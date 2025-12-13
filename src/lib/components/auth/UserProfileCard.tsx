@@ -14,6 +14,7 @@ import {
 import { useSignOut } from "lib/hooks/queries";
 import { useRouter } from "next/router";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { FiLogOut, FiUser } from "react-icons/fi";
 // import * as React from "react";
 import { MdOutlineAccountCircle, MdLogout } from "react-icons/md";
 
@@ -79,15 +80,15 @@ export const UserProfile: React.FC<UserProfileProps> = ({ profile, onClose }) =>
         />
         <MenuList>
           <MenuItem
-            icon={<MdOutlineAccountCircle />}
+            icon={<FiUser />}
             cursor="pointer"
             as="a"
-            href="/account"
+            href="/dashboard/account"
           >
             Account
           </MenuItem>
           <MenuItem
-            icon={<MdLogout />}
+            icon={<FiLogOut />}
             cursor="pointer"
             as="button"
             onClick={onLogout}

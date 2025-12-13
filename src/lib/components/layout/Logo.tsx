@@ -1,21 +1,22 @@
-import { HStack, Image, Text } from "@chakra-ui/react";
+import { HStack, Image, Text, useColorModeValue } from "@chakra-ui/react";
 import Link from "next/link";
 
 interface LogoProps {
   color: 'on-accent' | 'on-brand';
 }
 export const DoghouseLogo: React.FC<LogoProps> = ({ color }) => {
-
-  const logo = color === 'on-accent' ? "../../../../../images/logo_white.png" : "../../../../../images/logo_brand.png";
+  const logo = useColorModeValue(
+    "../../../../../images/logo_brand.png",
+    "../../../../../images/logo_white.png"
+  );
 
   return (
     <Link href="/">
       <HStack align="center">
         <Image src={logo} height={8} fallbackSrc="images/logo_brand.png" />
-        {color === 'on-accent' && <Text fontWeight="semibold" fontSize="20pt" color="white">
+        <Text fontWeight="semibold" fontSize="20pt" color={useColorModeValue("gray.900", "white")}>
           pethouse
         </Text>
-        }
       </HStack>
     </Link>
   )
@@ -23,22 +24,28 @@ export const DoghouseLogo: React.FC<LogoProps> = ({ color }) => {
 
 
 export const Logo: React.FC<LogoProps> = ({ color }) => {
-  const logo = color === 'on-accent' ? "../../../../../images/pethouse-logo-icon-dark.png" : "../../../../../images/pethouse-logo-icon-light.png";
-  const logoText = color === 'on-accent' ? "white" : "";
+  // For headers with accent backgrounds, always use dark logo
+  const logo = color === 'on-accent'
+    ? "../../../../../images/pethouse-logo-icon-dark.png"
+    : useColorModeValue(
+      "../../../../../images/pethouse-logo-icon-light.png",
+      "../../../../../images/pethouse-logo-icon-dark.png"
+    );
+  const logoTextColor = color === 'on-accent' ? "white" : useColorModeValue("gray.900", "white");
+
   return (
     <Link href="/">
       <HStack align="center">
         <Image
           src={logo}
           height={12}
-          fallbackSrc={logo}
+          fallbackSrc={color === 'on-accent' ? "../../../../../images/pethouse-logo-icon-dark.png" : "../../../../../images/pethouse-logo-icon-light.png"}
         />
         <Text
           fontWeight="medium"
           fontSize="12pt"
-          color={logoText}
+          color={logoTextColor}
           fontStyle=""
-
         >
           PETHOUSE
         </Text>
