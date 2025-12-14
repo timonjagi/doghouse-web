@@ -5,14 +5,11 @@ import {
   HStack,
   Text,
   Avatar,
-  Input,
   Button,
-  Divider,
   Spinner,
   Alert,
   AlertIcon,
   useColorModeValue,
-  Flex,
   Badge,
   IconButton,
   Textarea,
@@ -29,8 +26,10 @@ import { useConversationWithContext } from '../../../hooks/queries/useContextCon
 import { useRealtimeMessaging } from '../../../hooks/queries/useRealtimeMessaging';
 import { useCurrentUser } from '../../../hooks/queries/useAuth';
 import { useTypingIndicator, useTypingUsers, useTypingSubscription } from '../../../hooks/queries/useTypingIndicator';
-import { PageHeaderWithTwoButtons } from '../../ui/PageHeaderWithTwoButtons';
+import { useUpdateAdoption } from '../../../hooks/queries/useAdoptions';
 import FileAttachmentComponent from '../../ui/FileAttachment';
+import { Banner } from '../../ui/Banner';
+import { useAdoptionTimelineLogic } from '../adoptions/AdoptionTimeline';
 
 interface ConversationViewProps {
   conversationId: string;
@@ -42,6 +41,8 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   const { data: contextData } = useConversationWithContext(conversationId);
   const sendMessageMutation = useSendMessage();
   const markAsReadMutation = useMarkConversationAsRead();
+  const updateAdoptionMutation = useUpdateAdoption();
+
   const [messageText, setMessageText] = useState('');
   const [attachments, setAttachments] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -107,29 +108,41 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
     }
   };
 
+  // Logic for Adoption Actions
+  const handleApproveAdoption = async (adoptionId: string) => {
+    try {
+      await updateAdoptionMutation.mutateAsync({ id: adoptionId, updates: { status: 'approved' } });
+      toast({ title: 'Adoption Approved', status: 'success' });
+    } catch (e) {
+      toast({ title: 'Error approving adoption', status: 'error' });
+    }
+  };
+
+  const handleRejectAdoption = async (adoptionId: string) => {
+    try {
+      await updateAdoptionMutation.mutateAsync({ id: adoptionId, updates: { status: 'rejected' } });
+      toast({ title: 'Adoption Rejected', status: 'info' });
+    } catch (e) {
+      toast({ title: 'Error rejecting adoption', status: 'error' });
+    }
+  };
+
+
   const getContextIcon = (contextType?: string) => {
     switch (contextType) {
-      case 'adoption':
-        return '🏠';
-      case 'listing':
-        return '🐕';
-      case 'support':
-        return '🆘';
-      default:
-        return '💬';
+      case 'adoption': return '🏠';
+      case 'listing': return '🐕';
+      case 'support': return '🆘';
+      default: return '💬';
     }
   };
 
   const getContextColor = (contextType?: string) => {
     switch (contextType) {
-      case 'adoption':
-        return 'green';
-      case 'listing':
-        return 'blue';
-      case 'support':
-        return 'red';
-      default:
-        return 'gray';
+      case 'adoption': return 'green';
+      case 'listing': return 'blue';
+      case 'support': return 'red';
+      default: return 'gray';
     }
   };
 
@@ -149,6 +162,29 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
 
     return date.toLocaleDateString();
   };
+
+  // Determine Adoption Banner Logic
+  let adoptionBannerProps = null;
+  if (contextData?.contextData?.adoption && user) {
+    const { adoption } = contextData.contextData;
+    // Re-use logic from timeline
+    const { getStatusBannerProps } = useAdoptionTimelineLogic({
+      adoption,
+      userProfile: user, // Simplified user profile match
+      actions: {
+        onApproveAdoption: () => handleApproveAdoption(adoption.id),
+        onRejectAdoption: () => handleRejectAdoption(adoption.id),
+        // Placeholder for other actions
+        onPayReservation: () => toast({ title: "Redirecting to payment...", status: "info" }),
+        onSignContract: () => toast({ title: "Opening contract...", status: "info" }),
+        onCompletePayment: () => toast({ title: "Redirecting to payment...", status: "info" }),
+        onMarkCompleted: () => updateAdoptionMutation.mutate({ id: adoption.id, updates: { status: 'completed' } }),
+        onWithdrawAdoption: () => updateAdoptionMutation.mutate({ id: adoption.id, updates: { status: 'withdrawn' } }),
+      }
+    });
+    adoptionBannerProps = getStatusBannerProps();
+  }
+
 
   if (isLoading) {
     return (
@@ -174,7 +210,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   }
 
   const participants = conversation.participants as string[];
-  const otherParticipants = participants?.filter(p => p !== user?.id) || [];
+  const showBanner = adoptionBannerProps && conversation.context_type === 'adoption';
 
   return (
     <VStack h="100vh" spacing={0} bg={useColorModeValue('gray.50', 'gray.900')}>
@@ -225,6 +261,17 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
             </Text>
           </VStack>
         </HStack>
+
+        {/* Helper Banner for Adoptions */}
+        {showBanner && (
+          <Box mt={4}>
+            <Banner
+              title={adoptionBannerProps.title}
+              description={adoptionBannerProps.description}
+              buttons={adoptionBannerProps.buttons}
+            />
+          </Box>
+        )}
       </Box>
 
       {/* Contextual Information */}

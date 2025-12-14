@@ -174,10 +174,10 @@ const ExplorePage = () => {
       <Container maxW="5xl" bg="bg-surface" h="full" pb={{ base: 0, md: 4 }} px={0}>
 
         <ExploreOverview />
-        <EthicalQuestionairreCard />
 
       </Container>
 
+      <EthicalQuestionairreCard />
 
     </>
 

@@ -6,7 +6,6 @@ import {
   Text,
   Button,
   Badge,
-  useColorModeValue,
   Icon,
   Step,
   StepDescription,
@@ -30,8 +29,6 @@ import {
   EditIcon,
 } from '@chakra-ui/icons';
 import { AdoptionWithListing } from 'lib/hooks/queries/useAdoptions';
-import { useAdoptionConversation, useSupportConversation } from '../../../hooks/queries/useContextConversations';
-import { useCurrentUser } from '../../../hooks/queries/useAuth';
 import { useRouter } from 'next/router';
 
 // Type definition matching schema
@@ -57,8 +54,8 @@ interface AdoptionTimelineProps {
   onRejectAdoption?: () => void;
   onCheckPaymentStatus?: (reference: string, type: 'reservation' | 'final') => void;
   onLeaveReview?: () => void;
-  onContactBreeder?: () => void;
-  onContactNewOwner?: () => void;
+  onContactBreeder?: () => void; // Kept for backward compatibility if needed, though now handled via messaging
+  onContactNewOwner?: () => void; // Kept for backward compatibility
 }
 
 interface TimelineStep {
@@ -73,153 +70,39 @@ interface TimelineStep {
     colorScheme: string;
     icon: any;
     disabled?: boolean;
+    variant?: 'solid' | 'outline' | 'ghost'; // Added variant support
   }[];
   info?: string[];
 }
 
-export const AdoptionTimeline = React.forwardRef<{
-  getCurrentStepButtons: () => any[];
-}, AdoptionTimelineProps>(({
+// Logic to determine steps and status
+export const useAdoptionTimelineLogic = ({
   adoption,
   userProfile,
   transactions = [],
   statusHistory = [],
-  onPayReservation,
-  onSignContract,
-  onCompletePayment,
-  onMarkCompleted,
-  onWithdrawAdoption,
-  onApproveAdoption,
-  onRejectAdoption,
-  onCheckPaymentStatus,
-  onLeaveReview,
-  onContactBreeder,
-  onContactNewOwner,
-}, ref) => {
-  const { data: currentUser } = useCurrentUser();
-  const { conversation: existingAdoptionConversation, createConversation: createAdoptionConversation, isLoading: isCreatingConversation } = useAdoptionConversation(adoption.id);
-  const { conversation: existingSupportConversation, createConversation: createSupportConversation, isLoading: isCreatingSupportConversation } = useSupportConversation();
-  const toast = useToast();
-  const router = useRouter();
-
-  const isOwner = userProfile?.id === adoption.listings.owner_id;
+  actions
+}: {
+  adoption: AdoptionWithListing;
+  userProfile: any;
+  transactions?: any[];
+  statusHistory?: AdoptionStatusHistory[];
+  actions: {
+    onPayReservation?: () => void;
+    onSignContract?: () => void;
+    onCompletePayment?: () => void;
+    onMarkCompleted?: () => void;
+    onWithdrawAdoption?: () => void;
+    onApproveAdoption?: () => void;
+    onRejectAdoption?: () => void;
+    onCheckPaymentStatus?: (reference: string, type: 'reservation' | 'final') => void;
+    onLeaveReview?: () => void;
+    onContactBreeder?: () => void;
+    onContactSupport?: () => void;
+    onContactNewOwner?: () => void;
+  }
+}) => {
   const isApplicant = userProfile?.id === adoption.seeker_id;
-
-  // Handle contact breeder (for seekers)
-  const handleContactBreeder = async () => {
-    if (!currentUser?.id) return;
-
-    try {
-      if (existingAdoptionConversation) {
-        // Navigate to existing conversation
-        router.push(`/dashboard/inbox/${existingAdoptionConversation.id}`);
-        return;
-      }
-
-      // Create new conversation
-      const conversation = await createAdoptionConversation(
-        {
-          id: adoption.listings.id,
-          title: adoption.listings.title,
-          owner_id: adoption.listings.owner_id
-        },
-        [currentUser.id, adoption.listings.owner_id]
-      );
-
-      toast({
-        title: "Conversation started",
-        description: "You can now message the breeder directly.",
-        status: "success",
-        duration: 3000,
-      });
-
-      // Navigate to the new conversation
-      router.push(`/dashboard/inbox/${conversation.id}`);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to start conversation. Please try again.",
-        status: "error",
-        duration: 3000,
-      });
-    }
-  };
-
-  // Handle contact new owner (for breeders)
-  const handleContactNewOwner = async () => {
-    if (!currentUser?.id) return;
-
-    try {
-      if (existingAdoptionConversation) {
-        // Navigate to existing conversation
-        router.push(`/dashboard/inbox/${existingAdoptionConversation.id}`);
-        return;
-      }
-
-      // Create new conversation
-      const conversation = await createAdoptionConversation(
-        {
-          id: adoption.listings.id,
-          title: adoption.listings.title,
-          owner_id: adoption.listings.owner_id
-        },
-        [currentUser.id, adoption.seeker_id]
-      );
-
-      toast({
-        title: "Conversation started",
-        description: "You can now coordinate pickup/delivery with the new owner.",
-        status: "success",
-        duration: 3000,
-      });
-
-      // Navigate to the new conversation
-      router.push(`/dashboard/inbox/${conversation.id}`);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to start conversation. Please try again.",
-        status: "error",
-        duration: 3000,
-      });
-    }
-  };
-
-  // Handle contact support
-  const handleContactSupport = async () => {
-    if (!currentUser?.id) return;
-
-    try {
-      if (existingSupportConversation) {
-        // Navigate to existing conversation
-        router.push(`/dashboard/inbox/${existingSupportConversation.id}`);
-        return;
-      }
-
-      // Create new support conversation
-      const conversation = await createSupportConversation(
-        `Adoption Support - ${adoption.listings.title}`,
-        adoption.id
-      );
-
-      toast({
-        title: "Support conversation started",
-        description: "A support agent will assist you shortly.",
-        status: "success",
-        duration: 3000,
-      });
-
-      // Navigate to the new conversation
-      router.push(`/dashboard/inbox/${conversation.id}`);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to start support conversation. Please try again.",
-        status: "error",
-        duration: 3000,
-      });
-    }
-  };
 
   // Helper to get date from history
   const getStatusDate = (statusKey: string) => {
@@ -227,12 +110,13 @@ export const AdoptionTimeline = React.forwardRef<{
     return entry ? new Date(entry.created_at).toLocaleDateString() : undefined;
   };
 
-  // Check for pending transactions from props
+  // Check for pending transactions
   const pendingTransactions = transactions?.filter(tx => tx.status === 'pending') || [];
   const hasPendingReservationPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'reservation');
   const hasPendingFinalPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'final');
 
-  const contractRequired = adoption.listings.requirements?.contract_required;
+  const contractRequired = adoption.listings?.requirements?.contract_required;
+
   const getTimelineSteps = (): TimelineStep[] => {
     if (isApplicant) {
       // Steps for seekers (applicants)
@@ -247,11 +131,12 @@ export const AdoptionTimeline = React.forwardRef<{
             'Application includes your personal details and preferences',
             'Breeder will review your suitability for adoption',
           ],
-          actionButtons: adoption.status === 'submitted' && onWithdrawAdoption ? [{
+          actionButtons: adoption.status === 'submitted' && actions.onWithdrawAdoption ? [{
             label: 'Withdraw Adoption',
-            onClick: onWithdrawAdoption,
+            onClick: actions.onWithdrawAdoption,
             colorScheme: 'red',
             icon: WarningIcon,
+            variant: 'outline'
           }] : undefined,
         },
         {
@@ -292,12 +177,13 @@ export const AdoptionTimeline = React.forwardRef<{
               'Breeder will notify you of their decision',
               'This may take 1-3 business days',
             ],
-            actionButtons: adoption.status === 'rejected' ? [{
+            // Only show contact support if rejected
+            actionButtons: adoption.status === 'rejected' && actions.onContactSupport ? [{
               label: 'Contact Support',
-              onClick: handleContactSupport,
+              onClick: actions.onContactSupport,
               colorScheme: 'red',
               icon: InfoIcon,
-              disabled: isCreatingSupportConversation,
+              variant: 'ghost'
             }] : undefined,
 
           }
@@ -311,40 +197,44 @@ export const AdoptionTimeline = React.forwardRef<{
             title: 'Reserve Listing',
             description: adoption.reservation_paid ? 'The listing has been reserved for you' : 'Pay reservation fee to secure your adoption',
             status: adoption.reservation_paid ? 'completed' : 'current',
-            date: getStatusDate('reserved'), // Assumes 'reserved' status update happens on payment success
+            date: getStatusDate('reserved'),
             info: [
               'Reservation fee is deducted from final payment',
               'If payment is not received within 24 hours, listing will be released',
             ],
             actionButtons: (() => {
-              const buttons = [];
-              if (adoption.status === 'approved' && !adoption.reservation_paid) {
+              const buttons: any[] = [];
+              if (adoption.status === 'approved' && !adoption.reservation_paid && actions.onPayReservation) {
                 buttons.push({
                   label: 'Pay Reservation Fee',
-                  onClick: onPayReservation || (() => { }),
+                  onClick: actions.onPayReservation,
                   colorScheme: 'green',
                   icon: StarIcon,
+                  variant: 'solid'
                 });
               }
-              if (hasPendingReservationPayment && onCheckPaymentStatus) {
+              if (hasPendingReservationPayment && actions.onCheckPaymentStatus) {
                 buttons.push({
                   label: 'Check Payment Status',
                   onClick: () => {
                     const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'reservation');
                     if (transaction) {
-                      onCheckPaymentStatus((transaction.meta as any).paystack_reference, 'reservation');
+                      actions.onCheckPaymentStatus?.((transaction.meta as any).paystack_reference, 'reservation');
                     }
                   },
                   colorScheme: 'blue',
                   icon: InfoIcon,
+                  variant: 'outline'
                 });
-                buttons.push({
-                  label: 'Contact Support',
-                  onClick: handleContactSupport,
-                  colorScheme: 'orange',
-                  icon: InfoIcon,
-                  disabled: isCreatingSupportConversation,
-                });
+                if (actions.onContactSupport) {
+                  buttons.push({
+                    label: 'Contact Support',
+                    onClick: actions.onContactSupport,
+                    colorScheme: 'orange',
+                    icon: InfoIcon,
+                    variant: 'ghost'
+                  });
+                }
               }
               return buttons.length > 0 ? buttons : undefined;
             })(),
@@ -365,11 +255,12 @@ export const AdoptionTimeline = React.forwardRef<{
               'Includes responsibilities of both parties',
               'Required by breeder before final payment',
             ],
-            actionButtons: adoption.reservation_paid && !adoption.contract_signed ? [{
+            actionButtons: adoption.reservation_paid && !adoption.contract_signed && actions.onSignContract ? [{
               label: 'Sign Contract',
-              onClick: onSignContract || (() => { }),
+              onClick: actions.onSignContract,
               colorScheme: 'blue',
               icon: EditIcon,
+              variant: 'solid'
             }] : undefined,
           }
         )
@@ -388,34 +279,38 @@ export const AdoptionTimeline = React.forwardRef<{
               'Payment secures ownership transfer',
             ],
             actionButtons: (() => {
-              const buttons = [];
-              if ((adoption.contract_signed || adoption.reservation_paid && !contractRequired) && !adoption.payment_completed) {
+              const buttons: any[] = [];
+              if ((adoption.contract_signed || adoption.reservation_paid && !contractRequired) && !adoption.payment_completed && actions.onCompletePayment) {
                 buttons.push({
                   label: 'Complete Payment',
-                  onClick: onCompletePayment || (() => { }),
+                  onClick: actions.onCompletePayment,
                   colorScheme: 'green',
                   icon: StarIcon,
+                  variant: 'solid'
                 });
               }
-              if (hasPendingFinalPayment && onCheckPaymentStatus) {
+              if (hasPendingFinalPayment && actions.onCheckPaymentStatus) {
                 buttons.push({
                   label: 'Check Payment Status',
                   onClick: () => {
                     const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'final');
                     if (transaction) {
-                      onCheckPaymentStatus((transaction.meta as any).paystack_reference, 'final');
+                      actions.onCheckPaymentStatus?.((transaction.meta as any).paystack_reference, 'final');
                     }
                   },
                   colorScheme: 'blue',
                   icon: InfoIcon,
+                  variant: 'outline'
                 });
-                buttons.push({
-                  label: 'Contact Support',
-                  onClick: handleContactSupport,
-                  colorScheme: 'orange',
-                  icon: InfoIcon,
-                  disabled: isCreatingSupportConversation,
-                });
+                if (actions.onContactSupport) {
+                  buttons.push({
+                    label: 'Contact Support',
+                    onClick: actions.onContactSupport,
+                    colorScheme: 'orange',
+                    icon: InfoIcon,
+                    variant: 'ghost'
+                  });
+                }
               }
               return buttons.length > 0 ? buttons : undefined;
             })(),
@@ -431,26 +326,15 @@ export const AdoptionTimeline = React.forwardRef<{
             description: adoption.status === 'completed' ? 'Congratulations! Adoption process is complete. If you enjoyed your experiece, please leave us a review.' : 'Contact the breeder for pickup/delivery arrangements',
             status: adoption.status === 'completed' ? 'completed' : 'current',
             date: getStatusDate('completed'),
-            // info: adoption.status === 'completed' ? [
-            //   'Ownership transfer is complete',
-            // ] : ['You will receive pickup/delivery arrangements'],
             actionButtons: adoption.status === 'completed' ? [
               {
                 label: 'Leave Review',
-                onClick: onLeaveReview || (() => { }),
+                onClick: actions.onLeaveReview || (() => { }),
                 colorScheme: 'blue',
                 icon: StarIcon,
+                variant: 'solid'
               }
-            ] : [
-              {
-                // contact breeder
-                label: 'Contact Breeder',
-                onClick: handleContactBreeder,
-                colorScheme: 'blue',
-                icon: PhoneIcon,
-                disabled: isCreatingConversation,
-              }
-            ],
+            ] : [], // Use messaging for contact, no specific button needed here if in conversation view
           }
         )
       }
@@ -480,18 +364,20 @@ export const AdoptionTimeline = React.forwardRef<{
             'Evaluate applicant against your requirements',
             'Consider phone/video calls or home visits if needed',
           ],
-          actionButtons: adoption.status === 'submitted' && onApproveAdoption && onRejectAdoption ? [
+          actionButtons: adoption.status === 'submitted' && actions.onApproveAdoption && actions.onRejectAdoption ? [
             {
               label: 'Approve',
-              onClick: onApproveAdoption,
+              onClick: actions.onApproveAdoption,
               colorScheme: 'green',
               icon: CheckCircleIcon,
+              variant: 'solid'
             },
             {
               label: 'Reject',
-              onClick: onRejectAdoption,
+              onClick: actions.onRejectAdoption,
               colorScheme: 'red',
               icon: WarningIcon,
+              variant: 'outline'
             },
           ] : undefined,
         },
@@ -582,24 +468,20 @@ export const AdoptionTimeline = React.forwardRef<{
               'Mark adoption as completed',
               'Arrange pickup/delivery with new owner',
             ],
-            actionButtons: adoption.payment_completed && adoption.status !== 'completed' ? [{
+            // Only show button if not yet marked as completed
+            actionButtons: adoption.payment_completed && adoption.status !== 'completed' && actions.onMarkCompleted ? [{
               label: 'Mark as Completed',
-              onClick: onMarkCompleted || (() => { }),
+              onClick: actions.onMarkCompleted,
               colorScheme: 'green',
               icon: CheckIcon,
-            },
-            {
-              // contact new owner
-              label: 'Contact New Owner',
-              onClick: onContactNewOwner || (() => { }),
-              colorScheme: 'purple',
-              icon: PhoneIcon,
-            }] : [{
+              variant: 'solid'
+            }] : adoption.status === 'completed' ? [{
               label: 'Leave Review',
-              onClick: onLeaveReview || (() => { }),
+              onClick: actions.onLeaveReview || (() => { }),
               colorScheme: 'purple',
               icon: StarIcon,
-            }],
+              variant: 'solid'
+            }] : [],
           }
         )
       }
@@ -617,14 +499,53 @@ export const AdoptionTimeline = React.forwardRef<{
     return idx === -1 ? steps.findIndex(step => step.status === 'locked') : idx;
   };
 
-  const { activeStep } = useSteps({
-    index: getCurrentStepIndex(),
-    count: steps.length,
+  const currentStep = steps.find(step => step.status === 'current');
+
+  return {
+    steps,
+    currentStepIndex: getCurrentStepIndex(),
+    currentStep,
+    getStatusBannerProps: () => {
+      if (!currentStep) return null;
+      // We only want to show banner if there is an actionable step or it's a critical status
+      // For now, always return the current step info
+      return {
+        title: currentStep.title,
+        description: currentStep.description,
+        buttons: currentStep.actionButtons || []
+      }
+    }
+  };
+};
+
+export const AdoptionTimeline = React.forwardRef<{
+  getCurrentStepButtons: () => any[];
+}, AdoptionTimelineProps>((props, ref) => {
+  // Use the logic hook
+  const { steps, currentStepIndex, currentStep } = useAdoptionTimelineLogic({
+    adoption: props.adoption,
+    userProfile: props.userProfile,
+    transactions: props.transactions,
+    statusHistory: props.statusHistory,
+    actions: {
+      onPayReservation: props.onPayReservation,
+      onSignContract: props.onSignContract,
+      onCompletePayment: props.onCompletePayment,
+      onMarkCompleted: props.onMarkCompleted,
+      onWithdrawAdoption: props.onWithdrawAdoption,
+      onApproveAdoption: props.onApproveAdoption,
+      onRejectAdoption: props.onRejectAdoption,
+      onCheckPaymentStatus: props.onCheckPaymentStatus,
+      onLeaveReview: props.onLeaveReview,
+      onContactBreeder: props.onContactBreeder,
+      onContactNewOwner: props.onContactNewOwner,
+      // Add support contact logic or mock for now
+      onContactSupport: () => console.log('Contact support')
+    }
   });
 
   // Export function to get current step buttons for use in parent components
   const getCurrentStepButtons = () => {
-    const currentStep = steps.find(step => step.status === 'current');
     return currentStep?.actionButtons || [];
   };
 
@@ -632,6 +553,11 @@ export const AdoptionTimeline = React.forwardRef<{
   React.useImperativeHandle(ref, () => ({
     getCurrentStepButtons,
   }));
+
+  const { activeStep } = useSteps({
+    index: currentStepIndex,
+    count: steps.length,
+  });
 
   return (
     <Stepper index={activeStep} orientation="vertical" gap="0" colorScheme="brand">
@@ -671,11 +597,11 @@ export const AdoptionTimeline = React.forwardRef<{
 
               <StepDescription pt={2} pb={4}>{step.description}</StepDescription>
 
-              {adoption.status === 'approved' || adoption.status === 'rejected' || adoption.status === 'withdrawn' && (
+              {(props.adoption.status === 'approved' || props.adoption.status === 'rejected' || props.adoption.status === 'withdrawn') && (
                 <Text fontSize="xs" color="red.500">
                   {
                     //@ts-ignore
-                    adoption.application_data?.response_message
+                    props.adoption.application_data?.response_message
                   }
                 </Text>
               )}
@@ -691,7 +617,7 @@ export const AdoptionTimeline = React.forwardRef<{
                 </VStack>
               )}
 
-              {/* Action buttons */}
+              {/* Action buttons - Rendered in timeline if passed down and not just for banner */}
               {step.actionButtons && step.actionButtons.length > 0 && (
                 <Box py={2} mb={4}>
                   <HStack spacing={2} wrap="wrap">
@@ -703,6 +629,7 @@ export const AdoptionTimeline = React.forwardRef<{
                         leftIcon={<Icon as={button.icon} />}
                         onClick={button.onClick}
                         isDisabled={button.disabled}
+                        variant={button.variant || 'solid'}
                       >
                         {button.label}
                       </Button>

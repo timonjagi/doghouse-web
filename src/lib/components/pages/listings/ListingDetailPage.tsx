@@ -34,7 +34,6 @@ import { EditIcon, ChatIcon, DeleteIcon, ArrowForwardIcon } from '@chakra-ui/ico
 import { useRouter } from 'next/router';
 import { useUserBreedsFromUser, useCurrentUser } from 'lib/hooks/queries';
 import { useDeleteListing, useIncrementListingViews, useListing } from 'lib/hooks/queries/useListings';
-import { useListingConversation } from '../../../hooks/queries/useContextConversations';
 import { NextSeo } from 'next-seo';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { Loader } from 'lib/components/ui/Loader';
@@ -71,7 +70,6 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
   const { isOpen: isListingFormOpen, onOpen: onListingFormOpen, onClose: onListingFormClose } = useDisclosure();
 
   const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id as string);
-  const { conversation: existingListingConversation, createConversation: createListingConversation, isLoading: isCreatingConversation } = useListingConversation(listing?.id);
 
   const deleteListingMutation = useDeleteListing();
   const incrementViewsMutation = useIncrementListingViews();
@@ -98,42 +96,6 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
       case 'reserved': return 'yellow';
       case 'sold': return 'red';
       default: return 'gray';
-    }
-  };
-
-  // Handle message seller (create listing conversation)
-  const handleMessageSeller = async () => {
-    if (!user?.id || !listing) return;
-
-    try {
-      if (existingListingConversation) {
-        // Navigate to existing conversation
-        router.push(`/dashboard/inbox/${existingListingConversation.id}`);
-        return;
-      }
-
-      // Create new conversation
-      const conversation = await createListingConversation(
-        listing,
-        [user.id, listing.owner_id]
-      );
-
-      toast({
-        title: "Conversation started",
-        description: "You can now message the seller directly.",
-        status: "success",
-        duration: 3000,
-      });
-
-      // Navigate to the new conversation
-      router.push(`/dashboard/inbox/${conversation.id}`);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to start conversation. Please try again.",
-        status: "error",
-        duration: 3000,
-      });
     }
   };
 
@@ -169,6 +131,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
         isClosable: true,
       });
       onDeleteClose();
+      router.push('/dashboard/listings'); // Added redirect after delete
     } catch (error) {
       toast({
         title: "Error",
@@ -192,7 +155,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
       <Alert status="error">
         <AlertIcon />
         Error loading breed listing. Please try again later.
-        {listingError.message}
+        {listingError?.message}
       </Alert>
     );
   }
@@ -277,19 +240,12 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 colorScheme: "red",
                 isLoading: deleteListingMutation.isPending,
                 isDisabled: listing.status !== 'available',
-              } : !isOwner && canApply ? {
-                label: "Apply Now",
-                onClick: onApplicationOpen,
-                icon: <ArrowForwardIcon />, // Or a more suitable icon for application
-                colorScheme: "brand",
-                variant: "primary"
-              } : !isOwner && !canApply ? {
+              } : !isOwner ? { // Show for non-owners (available or sold)
                 label: "Message Seller",
-                onClick: handleMessageSeller,
+                onClick: onApplicationOpen,
                 icon: <ChatIcon />,
                 colorScheme: "brand",
-                variant: "primary",
-                isLoading: isCreatingConversation
+                variant: "primary"
               } : undefined}
 
             />
@@ -388,8 +344,8 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
           {!isOwner && (
             <WhatsIncluded
-              buttonText={listing.status === 'available' ? 'Apply Now' : 'Not Available'}
-              buttonSubtext={listing.status === 'available' ? 'Apply now to express your interest in this listing' : `This listing has been ${listing.status} and is no longer available. Please contact the seller for more information or subscribe to be notified when the listing is available again.`}
+              buttonText="Message Seller"
+              buttonSubtext={listing.status === 'available' ? 'Contact the seller to express your interest' : `This listing has been ${listing.status}. You may still contact the seller for inquiries.`}
               onButtonClick={() => onApplicationOpen()}
             />
           )}
@@ -434,7 +390,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           />
         )}
 
-        {/* Adoption Form Modal */}
+        {/* Adoption Form Modal (Unified Message Seller Flow) */}
         {!isOwner && listing && (
           <AdoptionForm
             isOpen={isApplicationOpen}

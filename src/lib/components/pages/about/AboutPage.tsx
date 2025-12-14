@@ -7,6 +7,7 @@ import {
   Divider,
   useColorModeValue,
   useBreakpointValue,
+  Img,
 } from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
 import Footer from "lib/components/layout/Footer";
@@ -27,6 +28,17 @@ const AboutPage = () => {
             {/* Header */}
             <VStack spacing={4} textAlign="center">
 
+              <Box position="relative" mx="auto">
+                <Img
+                  src={useColorModeValue('images/pethouse-logo-icon-light.png', 'images/pethouse-logo-icon-dark.png')}
+                  alt="Main Image"
+                  w="150"
+                  h="150"
+                  borderRadius="0.5rem 0.5rem 0 0"
+                  objectFit="cover"
+                  objectPosition="90% center"
+                />
+              </Box>
               <Heading
                 as="h1"
                 size={{ base: "md", md: "lg" }}
