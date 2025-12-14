@@ -8,15 +8,10 @@ import {
   Badge,
   Box,
   SimpleGrid,
-  useColorModeValue,
   Center,
   useToast,
   useDisclosure,
   Stack,
-  useBreakpointValue,
-  // Divider,
-  AlertIcon,
-  Alert,
   Avatar,
   Tabs,
   TabList,
@@ -24,20 +19,25 @@ import {
   TabPanels,
   TabPanel,
   Icon,
+  Alert,
+  AlertIcon,
 } from '@chakra-ui/react';
 import {
-  // ArrowBackIcon,
   CheckCircleIcon,
   WarningIcon,
   PhoneIcon,
   ChatIcon,
-  // TimeIcon
 } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useUserProfile } from '../../../hooks/queries/useUserProfile';
-import { useUserBreedsFromUser } from 'lib/hooks/queries/useUserBreeds';
-import { useCurrentUser } from 'lib/hooks/queries/useAuth';
-import { useAdoption, useUpdateAdoption, AdoptionWithListing } from '../../../hooks/queries/useAdoptions';
+import {
+  useAdoption,
+  useAdoptionActions,
+  useAdoptionTimelineLogic,
+  AdoptionWithListing,
+  AdoptionStatusHistory,
+} from '../../../hooks/queries/useAdoptions';
+import { ADOPTION_ACTION_CONFIGS } from '../../../hooks/queries/useAdoptions';
 import { useTransactionsByApplication } from '../../../hooks/queries/useTransactions';
 import { NextSeo } from 'next-seo';
 import { Loader } from '../../ui/Loader';
@@ -45,7 +45,7 @@ import { AdoptionTimeline } from './AdoptionTimeline';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
 import { PaymentModal } from '../payments/PaymentModal';
 import { PaymentStatusModal } from '../payments/PaymentStatusModal';
-import AdoptionStatusDialog from './AdoptionStatusDialog';
+import AdoptionActionDialog from './AdoptionActionDialog';
 import { formatPrice } from 'lib/components/ui/PriceTag';
 import { PageHeaderWithTwoButtons } from 'lib/components/ui/PageHeaderWithTwoButtons';
 import { FiInfo, FiUser } from 'react-icons/fi';
@@ -61,13 +61,13 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
   const toast = useToast();
   const timelineRef = React.useRef<{ getCurrentStepButtons: () => any[] }>(null);
-  // const bgColor = useColorModeValue('white', 'gray.800');
-  // const isMobile = useBreakpointValue({ base: true, lg: false });
   const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onClose: onUpdateClose } = useDisclosure();
 
   const { data: adoption, isLoading: adoptionLoading, error: adoptionError } = useAdoption(id as string);
   const { data: transactions, isLoading: transactionsLoading, error: transactionsError } = useTransactionsByApplication(id as string);
-  const updateAdoptionMutation = useUpdateAdoption();
+
+  // Use shared actions hook
+
 
   const [updateForm, setUpdateForm] = useState({
     status: '',
@@ -118,6 +118,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
       default: return 'gray';
     }
   };
+
   const formatStatus = (status: string) => {
     return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
   };
@@ -130,13 +131,49 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
     });
   };
 
+  const handleActionClick = (action: any) => {
+    if (['withdraw', 'approve', 'reject', 'complete'].includes(action.type)) {
+      // Enrich dialogBody with current step information
+      const enrichedAction = { ...action };
+      if (timelineLogic.currentStep?.info && timelineLogic.currentStep.info.length > 0) {
+        enrichedAction.dialogBody = `${action.dialogBody}\n\n${timelineLogic.currentStep.info.map(info => `• ${info}`).join('\n')}`;
+      }
+      setPendingAction(enrichedAction);
+      setUpdateForm({ status: action.status, response_message: '' });
+      onUpdateOpen();
+      return;
+    }
+
+    const startUrl = `/dashboard/adoptions/${adoption?.id}`;
+
+    switch (action.type) {
+      case 'pay_reservation':
+        router.push(`${startUrl}?payment=reservation`);
+        break;
+      case 'sign_contract':
+        router.push(`${startUrl}?action=contract`);
+        break;
+      case 'complete_payment':
+        router.push(`${startUrl}?payment=final`);
+        break;
+      case 'leave_review':
+        console.log('Leave review');
+        break;
+      case 'contact_support':
+      case 'contact_breeder':
+        // Handle contact logic
+        break;
+      default:
+        console.warn('Unknown action:', action.type);
+    }
+  };
+
   const handleStatusUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!pendingAction) return;
+    if (!pendingAction || !adoption) return;
 
     try {
-      await updateAdoptionMutation.mutateAsync({
+      await updateAdoption({
         id: adoption.id,
         updates: {
           status: pendingAction.status,
@@ -165,7 +202,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
       }
     } catch (error) {
       toast({
-        title: `Error ${pendingAction.type === 'withdraw' ? 'withdrawing' : pendingAction.type === 'approve' ? 'approving' : 'rejecting'} adoption`,
+        title: `Error processing request`,
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -174,61 +211,8 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
     }
   };
 
-  const initiateAction = (action: 'withdraw' | 'approve' | 'reject' | 'complete') => {
-    let actionConfig;
 
-    switch (action) {
-      case 'withdraw':
-        actionConfig = {
-          type: 'withdraw' as const,
-          status: 'rejected',
-          title: 'Adoption Withdrawn',
-          message: 'Your adoption application has been successfully withdrawn',
-          confirmText: 'Withdraw Adoption',
-          colorScheme: 'red',
-        };
-        break;
-      case 'approve':
-        actionConfig = {
-          type: 'approve' as const,
-          status: 'approved',
-          title: 'Approve Adoption',
-          message: 'The adoption application has been approved successfully',
-          confirmText: 'Approve Adoption',
-          colorScheme: 'green',
-        };
-        break;
-      case 'reject':
-        actionConfig = {
-          type: 'reject' as const,
-          status: 'rejected',
-          title: 'Reject Adoption',
-          message: 'The adoption application has been rejected',
-          confirmText: 'Reject Adoption',
-          colorScheme: 'red',
-        };
-        break;
-      case 'complete':
-        actionConfig = {
-          type: 'complete' as const,
-          status: 'completed',
-          title: 'Complete Adoption',
-          message: 'The adoption process has been marked as completed',
-          confirmText: 'Mark as Completed',
-          colorScheme: 'purple',
-        };
-        break;
-    }
 
-    setPendingAction(actionConfig);
-    setUpdateForm({ status: actionConfig.status, response_message: '' });
-    onUpdateOpen();
-  };
-
-  const handleWithdrawAdoption = () => initiateAction('withdraw');
-  const handleApproveAdoption = () => initiateAction('approve');
-  const handleRejectAdoption = () => initiateAction('reject');
-  const handleMarkCompleted = () => initiateAction('complete');
 
   // Payment handlers
   const handlePayReservation = () => {
@@ -241,27 +225,20 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   };
 
   const handleSignContract = async () => {
-    // In the future, this could integrate with a digital signature service
     try {
-      await updateAdoptionMutation.mutateAsync({
+      await updateAdoption({
         id: adoption.id,
         updates: { contract_signed: true }
       });
 
       toast({
         title: 'Contract Signed',
-        description: 'You have successfully signed the adoption contract',
         status: 'success',
-        duration: 3000,
-        isClosable: true,
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to sign contract',
+        title: 'Error signing contract',
         status: 'error',
-        duration: 5000,
-        isClosable: true,
       });
     }
   };
@@ -288,7 +265,6 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   // Handle payment success callback from Paystack
   useEffect(() => {
     if (payment === 'success' && adoption && !statusModal.isOpen && transactions) {
-      // Determine payment type based on adoption state
       let paymentType: 'reservation' | 'final' = 'reservation';
       let expectedAmount = Number(adoption.listings.reservation_fee) || 0;
 
@@ -297,19 +273,68 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
         expectedAmount = Number(adoption.listings.price) - Number(adoption.listings.reservation_fee);
       }
       const transaction = transactions?.find(tx => tx.status === 'pending');
-      // Show payment status modal
-      setStatusModal({
-        isOpen: true,
-        paymentReference: (transaction.meta as any).paystack_reference,
-        paymentType,
-        expectedAmount,
-      });
+
+      if (transaction) {
+        setStatusModal({
+          isOpen: true,
+          paymentReference: (transaction.meta as any).paystack_reference,
+          paymentType,
+          expectedAmount,
+        });
+      }
 
       // Clean up URL by removing the payment parameter
       const newUrl = router.pathname.replace('[id]', id as string);
       router.replace(newUrl, undefined, { shallow: true });
     }
   }, [payment, adoption, transactions, statusModal.isOpen, router, id]);
+
+  // Initialize timeline logic for enriched dialog bodies
+  const timelineLogic = useAdoptionTimelineLogic({
+    adoption,
+    userProfile,
+    transactions
+  });
+
+  const { updateAdoption, isLoading: isUpdating, availableActions } = useAdoptionActions({
+    adoption,
+    userProfile,
+    transactions,
+    actions: {
+      onPayReservation: handlePayReservation,
+      onSignContract: handleSignContract,
+      onCompletePayment: handleCompletePayment,
+      onMarkCompleted: () => {
+        const action = ADOPTION_ACTION_CONFIGS.complete;
+        handleActionClick(action);
+      },
+      onWithdrawAdoption: () => {
+        const action = ADOPTION_ACTION_CONFIGS.withdraw;
+        handleActionClick(action);
+      },
+      onApproveAdoption: () => {
+        const action = ADOPTION_ACTION_CONFIGS.approve;
+        handleActionClick(action);
+      },
+      onRejectAdoption: () => {
+        const action = ADOPTION_ACTION_CONFIGS.reject;
+        handleActionClick(action);
+      },
+      onCheckPaymentStatus: (reference, type) => {
+        setStatusModal({
+          isOpen: true,
+          paymentReference: reference,
+          paymentType: type as 'reservation' | 'final',
+          expectedAmount: type === 'reservation'
+            ? Number(adoption?.listings.reservation_fee)
+            : Number(adoption?.listings.price) - Number(adoption?.listings.reservation_fee),
+        });
+      },
+      onLeaveReview: () => console.log('Leave review'),
+      onContactBreeder: () => router.push(`/inbox?userId=${adoption?.listings.owner_id}`),
+      onContactSupport: () => console.log('Contact support')
+    }
+  });
 
   if (profileLoading || adoptionLoading || transactionsLoading) {
     return <Loader />;
@@ -341,7 +366,6 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   }
 
   const isOwner = userProfile?.id === adoption.listings.owner_id;
-  // const isApplicant = userProfile?.id === adoption.seeker_id;
   const canUpdateStatus = isOwner && ['submitted', 'pending'].includes(adoption.status);
   const canWithdraw = !isOwner && adoption.status === 'submitted';
 
@@ -372,37 +396,21 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                   {formatStatus(adoption.status)}
                 </Badge>
               }
-              buttonPrimary={timelineRef.current?.getCurrentStepButtons()?.[0] ? {
-                label: timelineRef.current.getCurrentStepButtons()[0].label,
-                onClick: timelineRef.current.getCurrentStepButtons()[0].onClick,
-                icon: timelineRef.current.getCurrentStepButtons()[0].icon,
-                colorScheme: timelineRef.current.getCurrentStepButtons()[0].colorScheme,
-                isDisabled: timelineRef.current.getCurrentStepButtons()[0].disabled,
-              } : canUpdateStatus ? {
-                label: "Approve",
-                onClick: handleApproveAdoption,
-                icon: <CheckCircleIcon />,
-                colorScheme: "green",
+              buttonPrimary={availableActions && availableActions.length > 0 ? {
+                label: availableActions[0].label,
+                onClick: availableActions[0].onClick,
+                icon: availableActions[0].icon ? <Icon as={availableActions[0].icon} /> : undefined,
+                colorScheme: availableActions[0].colorScheme,
+                isDisabled: availableActions[0].disabled,
+                variant: availableActions[0].variant
               } : undefined}
-              buttonSecondary={timelineRef.current?.getCurrentStepButtons()?.[1] ? {
-                label: timelineRef.current.getCurrentStepButtons()[1].label,
-                onClick: timelineRef.current.getCurrentStepButtons()[1].onClick,
-                icon: timelineRef.current.getCurrentStepButtons()[1].icon,
-                colorScheme: timelineRef.current.getCurrentStepButtons()[1].colorScheme,
-                variant: timelineRef.current.getCurrentStepButtons()[1].colorScheme === 'red' ? 'outline' : undefined,
-                isDisabled: timelineRef.current.getCurrentStepButtons()[1].disabled,
-              } : canUpdateStatus ? {
-                label: "Reject",
-                onClick: handleRejectAdoption,
-                icon: <WarningIcon />,
-                colorScheme: "red",
-                variant: "outline"
-              } : canWithdraw ? {
-                label: "Withdraw Adoption",
-                onClick: handleWithdrawAdoption,
-                icon: <WarningIcon />,
-                colorScheme: "red",
-                variant: "outline"
+              buttonSecondary={availableActions && availableActions.length > 1 ? {
+                label: availableActions[1].label,
+                onClick: availableActions[1].onClick,
+                icon: availableActions[1].icon ? <Icon as={availableActions[1].icon} /> : undefined,
+                colorScheme: availableActions[1].colorScheme,
+                isDisabled: availableActions[1].disabled,
+                variant: availableActions[1].variant
               } : undefined}
             />
 
@@ -460,23 +468,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                       adoption={adoption}
                       userProfile={userProfile}
                       transactions={transactions}
-                      onPayReservation={handlePayReservation}
-                      onSignContract={handleSignContract}
-                      onCompletePayment={handleCompletePayment}
-                      onMarkCompleted={handleMarkCompleted}
-                      onWithdrawAdoption={handleWithdrawAdoption}
-                      onApproveAdoption={handleApproveAdoption}
-                      onRejectAdoption={handleRejectAdoption}
-                      onCheckPaymentStatus={(reference, type) => {
-                        setStatusModal({
-                          isOpen: true,
-                          paymentReference: reference,
-                          paymentType: type,
-                          expectedAmount: type === 'reservation'
-                            ? Number(adoption.listings.reservation_fee)
-                            : Number(adoption.listings.price) - Number(adoption.listings.reservation_fee),
-                        });
-                      }}
+                      availableActions={availableActions}
                     />
                   </TabPanel>
                   <TabPanel px={0}>
@@ -498,7 +490,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
 
 
       {/* Status Update Modal */}
-      <AdoptionStatusDialog
+      < AdoptionActionDialog
         form={updateForm}
         setForm={setUpdateForm}
         isOpen={isUpdateOpen}
@@ -506,7 +498,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
         pendingAction={pendingAction}
         setPendingAction={setPendingAction}
         onSubmit={handleStatusUpdate}
-        isLoading={updateAdoptionMutation.isPending}
+        isLoading={isUpdating}
       />
 
       {/* Payment Modal */}

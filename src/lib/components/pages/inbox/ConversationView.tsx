@@ -17,6 +17,7 @@ import {
   Image,
   Progress,
   SimpleGrid,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { ArrowBackIcon, TimeIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import { IoSend } from 'react-icons/io5';
@@ -26,10 +27,10 @@ import { useConversationWithContext } from '../../../hooks/queries/useContextCon
 import { useRealtimeMessaging } from '../../../hooks/queries/useRealtimeMessaging';
 import { useCurrentUser } from '../../../hooks/queries/useAuth';
 import { useTypingIndicator, useTypingUsers, useTypingSubscription } from '../../../hooks/queries/useTypingIndicator';
-import { useUpdateAdoption } from '../../../hooks/queries/useAdoptions';
+import { useAdoptionActions, useAdoptionTimelineLogic, AdoptionWithListing } from '../../../hooks/queries/useAdoptions';
 import FileAttachmentComponent from '../../ui/FileAttachment';
 import { Banner } from '../../ui/Banner';
-import { useAdoptionTimelineLogic } from '../adoptions/AdoptionTimeline';
+import AdoptionActionDialog from '../adoptions/AdoptionActionDialog';
 
 interface ConversationViewProps {
   conversationId: string;
@@ -41,7 +42,25 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   const { data: contextData } = useConversationWithContext(conversationId);
   const sendMessageMutation = useSendMessage();
   const markAsReadMutation = useMarkConversationAsRead();
-  const updateAdoptionMutation = useUpdateAdoption();
+
+
+  const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onClose: onUpdateClose } = useDisclosure();
+
+  // Adoption Action State
+  const [updateForm, setUpdateForm] = useState({
+    status: '',
+    response_message: '',
+  });
+
+  const [pendingAction, setPendingAction] = useState<{
+    type: 'withdraw' | 'approve' | 'reject' | 'complete' | null;
+    status: string;
+    title: string;
+    message: string;
+    confirmText: string;
+    colorScheme: string;
+  } | null>(null);
+
 
   const [messageText, setMessageText] = useState('');
   const [attachments, setAttachments] = useState<any[]>([]);
@@ -108,22 +127,111 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
     }
   };
 
-  // Logic for Adoption Actions
-  const handleApproveAdoption = async (adoptionId: string) => {
-    try {
-      await updateAdoptionMutation.mutateAsync({ id: adoptionId, updates: { status: 'approved' } });
-      toast({ title: 'Adoption Approved', status: 'success' });
-    } catch (e) {
-      toast({ title: 'Error approving adoption', status: 'error' });
+  // Helper to open confirmation dialog
+  // Initialize timeline logic for enriched dialog bodies
+  const timelineLogic = useAdoptionTimelineLogic({
+    adoption: contextData?.contextData?.adoption,
+    userProfile: user,
+    transactions: contextData?.contextData?.transactions || []
+  });
+
+  const { updateAdoption, isLoading: isUpdatingAdoption, availableActions } = useAdoptionActions({
+    adoption: contextData?.contextData?.adoption,
+    userProfile: user,
+    transactions: contextData?.contextData?.transactions || [],
+    actions: {
+      onPayReservation: () => router.push(`/dashboard/adoptions/${contextData?.contextData?.adoption?.id}?payment=reservation`),
+      onSignContract: () => router.push(`/dashboard/adoptions/${contextData?.contextData?.adoption?.id}?action=contract`),
+      onCompletePayment: () => router.push(`/dashboard/adoptions/${contextData?.contextData?.adoption?.id}?payment=final`),
+      onLeaveReview: () => console.log('Leave review'),
+      onContactSupport: () => console.log('Contact support'),
+      onContactBreeder: () => router.push(`/inbox?userId=${contextData?.contextData?.adoption?.listings?.owner_id}`),
+      onCheckPaymentStatus: (reference, type) => {
+        console.log('Check payment status:', reference, type);
+      },
+    }
+  });
+
+  const handleActionClick = (action: any) => {
+    if (['withdraw', 'approve', 'reject', 'complete'].includes(action.type)) {
+      // Enrich dialogBody with current step information
+      const enrichedAction = { ...action };
+      if (timelineLogic.currentStep?.info && timelineLogic.currentStep.info.length > 0) {
+        enrichedAction.dialogBody = `${action.dialogBody}\n\n${timelineLogic.currentStep.info.map(info => `• ${info}`).join('\n')}`;
+      }
+      setPendingAction(enrichedAction);
+      setUpdateForm({ status: action.status, response_message: '' });
+      onUpdateOpen();
+      return;
+    }
+
+    const startUrl = `/dashboard/adoptions/${contextData?.contextData?.adoption?.id}`;
+
+    switch (action.type) {
+      case 'pay_reservation':
+        router.push(`${startUrl}?payment=reservation`);
+        break;
+      case 'sign_contract':
+        router.push(`${startUrl}?action=contract`);
+        break;
+      case 'complete_payment':
+        router.push(`${startUrl}?payment=final`);
+        break;
+      case 'leave_review':
+        console.log('Leave review');
+        break;
+      case 'contact_support':
+      case 'contact_breeder':
+        // Handle contact logic
+        break;
+      default:
+        console.warn('Unknown action:', action.type);
     }
   };
 
-  const handleRejectAdoption = async (adoptionId: string) => {
+  const hydratedActions = availableActions.map((action: any) => ({
+    ...action,
+    onClick: () => handleActionClick(action)
+  }));
+
+  // Handle the actual update from the dialog
+  const handleStatusUpdate = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const adoptionId = contextData?.contextData?.adoption?.id;
+    if (!pendingAction || !adoptionId) return;
+
     try {
-      await updateAdoptionMutation.mutateAsync({ id: adoptionId, updates: { status: 'rejected' } });
-      toast({ title: 'Adoption Rejected', status: 'info' });
-    } catch (e) {
-      toast({ title: 'Error rejecting adoption', status: 'error' });
+      await updateAdoption({
+        id: adoptionId,
+        updates: {
+          status: pendingAction.status,
+          application_data: {
+            ...contextData.contextData.adoption.application_data,
+            response_message: updateForm.response_message || pendingAction.message,
+          }
+        }
+      });
+
+      toast({
+        title: pendingAction.title,
+        description: pendingAction.message,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+
+      setUpdateForm({ status: '', response_message: '' });
+      setPendingAction(null);
+      onUpdateClose();
+
+    } catch (error) {
+      toast({
+        title: `Error processing request`,
+        description: error.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -170,19 +278,15 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
     // Re-use logic from timeline
     const { getStatusBannerProps } = useAdoptionTimelineLogic({
       adoption,
-      userProfile: user, // Simplified user profile match
-      actions: {
-        onApproveAdoption: () => handleApproveAdoption(adoption.id),
-        onRejectAdoption: () => handleRejectAdoption(adoption.id),
-        // Placeholder for other actions
-        onPayReservation: () => toast({ title: "Redirecting to payment...", status: "info" }),
-        onSignContract: () => toast({ title: "Opening contract...", status: "info" }),
-        onCompletePayment: () => toast({ title: "Redirecting to payment...", status: "info" }),
-        onMarkCompleted: () => updateAdoptionMutation.mutate({ id: adoption.id, updates: { status: 'completed' } }),
-        onWithdrawAdoption: () => updateAdoptionMutation.mutate({ id: adoption.id, updates: { status: 'withdrawn' } }),
-      }
+      userProfile: user
     });
-    adoptionBannerProps = getStatusBannerProps();
+    const banner = getStatusBannerProps();
+    if (banner) {
+      adoptionBannerProps = {
+        ...banner,
+        buttons: hydratedActions || []
+      };
+    }
   }
 
 
@@ -213,232 +317,246 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   const showBanner = adoptionBannerProps && conversation.context_type === 'adoption';
 
   return (
-    <VStack h="100vh" spacing={0} bg={useColorModeValue('gray.50', 'gray.900')}>
-      {/* Header */}
-      <Box
-        w="full"
-        bg={useColorModeValue('white', 'gray.800')}
-        borderBottom="1px"
-        borderColor={useColorModeValue('gray.200', 'gray.600')}
-        p={4}
-        position="sticky"
-        top={0}
-        zIndex={10}
-      >
-        <HStack spacing={3}>
-          <IconButton
-            aria-label="Back to inbox"
-            icon={<ArrowBackIcon />}
-            variant="ghost"
-            onClick={() => router.push('/dashboard/inbox')}
-          />
-
-          <Avatar
-            size="sm"
-            name={conversation.title || 'Conversation'}
-            bg={`${getContextColor(conversation.context_type)}.500`}
-          >
-            {getContextIcon(conversation.context_type)}
-          </Avatar>
-
-          <VStack align="start" spacing={0} flex={1}>
-            <HStack>
-              <Text fontWeight="semibold" fontSize="md">
-                {conversation.title || 'Conversation'}
-              </Text>
-              {conversation.context_type && (
-                <Badge
-                  size="sm"
-                  colorScheme={getContextColor(conversation.context_type)}
-                  variant="subtle"
-                >
-                  {conversation.context_type}
-                </Badge>
-              )}
-            </HStack>
-            <Text fontSize="xs" color="gray.500">
-              {participants.length} participants
-            </Text>
-          </VStack>
-        </HStack>
-
-        {/* Helper Banner for Adoptions */}
-        {showBanner && (
-          <Box mt={4}>
-            <Banner
-              title={adoptionBannerProps.title}
-              description={adoptionBannerProps.description}
-              buttons={adoptionBannerProps.buttons}
-            />
-          </Box>
-        )}
-      </Box>
-
-      {/* Contextual Information */}
-      {contextData?.contextData && (
+    <>
+      <VStack h="100vh" spacing={0} bg={useColorModeValue('gray.50', 'gray.900')}>
+        {/* Header */}
         <Box
           w="full"
-          bg={useColorModeValue('gray.50', 'gray.700')}
+          bg={useColorModeValue('white', 'gray.800')}
           borderBottom="1px"
           borderColor={useColorModeValue('gray.200', 'gray.600')}
           p={4}
+          position="sticky"
+          top={0}
+          zIndex={10}
         >
-          <ContextualInfo contextData={contextData.contextData} />
+          <HStack spacing={3}>
+            <IconButton
+              aria-label="Back to inbox"
+              icon={<ArrowBackIcon />}
+              variant="ghost"
+              onClick={() => router.push('/dashboard/inbox')}
+            />
+
+            <Avatar
+              size="sm"
+              name={conversation.title || 'Conversation'}
+              bg={`${getContextColor(conversation.context_type)}.500`}
+            >
+              {getContextIcon(conversation.context_type)}
+            </Avatar>
+
+            <VStack align="start" spacing={0} flex={1}>
+              <HStack>
+                <Text fontWeight="semibold" fontSize="md">
+                  {conversation.title || 'Conversation'}
+                </Text>
+                {conversation.context_type && (
+                  <Badge
+                    size="sm"
+                    colorScheme={getContextColor(conversation.context_type)}
+                    variant="subtle"
+                  >
+                    {conversation.context_type}
+                  </Badge>
+                )}
+              </HStack>
+              <Text fontSize="xs" color="gray.500">
+                {participants.length} participants
+              </Text>
+            </VStack>
+          </HStack>
+
+          {/* Helper Banner for Adoptions */}
+          {showBanner && (
+            <Box mt={4}>
+              <Banner
+                title={adoptionBannerProps.title}
+                description={adoptionBannerProps.description}
+                buttons={adoptionBannerProps.buttons}
+              />
+            </Box>
+          )}
         </Box>
-      )}
 
-      {/* Messages */}
-      <Box flex={1} overflowY="auto" w="full" p={4}>
-        <VStack spacing={4} align="stretch" maxW="4xl" mx="auto">
-          {conversation.messages?.map((message: any, index: number) => {
-            const isOwnMessage = message.sender_id === user?.id;
-            const showAvatar = !isOwnMessage && (
-              index === 0 ||
-              conversation.messages[index - 1].sender_id !== message.sender_id
-            );
+        {/* Contextual Information */}
+        {contextData?.contextData && (
+          <Box
+            w="full"
+            bg={useColorModeValue('gray.50', 'gray.700')}
+            borderBottom="1px"
+            borderColor={useColorModeValue('gray.200', 'gray.600')}
+            p={4}
+          >
+            <ContextualInfo contextData={contextData.contextData} />
+          </Box>
+        )}
 
-            return (
-              <Box
-                key={message.id}
-                alignSelf={isOwnMessage ? 'flex-end' : 'flex-start'}
-                maxW="70%"
-              >
-                <HStack
-                  spacing={2}
-                  align="start"
-                  flexDirection={isOwnMessage ? 'row-reverse' : 'row'}
+        {/* Messages */}
+        <Box flex={1} overflowY="auto" w="full" p={4}>
+          <VStack spacing={4} align="stretch" maxW="4xl" mx="auto">
+            {conversation.messages?.map((message: any, index: number) => {
+              const isOwnMessage = message.sender_id === user?.id;
+              const showAvatar = !isOwnMessage && (
+                index === 0 ||
+                conversation.messages[index - 1].sender_id !== message.sender_id
+              );
+
+              return (
+                <Box
+                  key={message.id}
+                  alignSelf={isOwnMessage ? 'flex-end' : 'flex-start'}
+                  maxW="70%"
                 >
-                  {showAvatar && (
-                    <Avatar
-                      size="sm"
-                      name={message.users?.display_name || 'User'}
-                      src={message.users?.profile_photo_url}
-                    />
-                  )}
-                  {!showAvatar && !isOwnMessage && <Box w="32px" />}
+                  <HStack
+                    spacing={2}
+                    align="start"
+                    flexDirection={isOwnMessage ? 'row-reverse' : 'row'}
+                  >
+                    {showAvatar && (
+                      <Avatar
+                        size="sm"
+                        name={message.users?.display_name || 'User'}
+                        src={message.users?.profile_photo_url}
+                      />
+                    )}
+                    {!showAvatar && !isOwnMessage && <Box w="32px" />}
 
-                  <VStack align={isOwnMessage ? 'flex-end' : 'flex-start'} spacing={1}>
+                    <VStack align={isOwnMessage ? 'flex-end' : 'flex-start'} spacing={1}>
+                      <Box
+                        bg={isOwnMessage
+                          ? useColorModeValue('blue.500', 'blue.600')
+                          : useColorModeValue('white', 'gray.700')
+                        }
+                        color={isOwnMessage ? 'white' : 'inherit'}
+                        px={4}
+                        py={2}
+                        borderRadius="lg"
+                        border={isOwnMessage ? 'none' : '1px solid'}
+                        borderColor={useColorModeValue('gray.200', 'gray.600')}
+                        shadow="sm"
+                      >
+                        {!isOwnMessage && showAvatar && (
+                          <Text fontSize="xs" fontWeight="semibold" mb={1}>
+                            {message.users?.display_name || 'User'}
+                          </Text>
+                        )}
+                        <Text whiteSpace="pre-wrap">{message.content}</Text>
+                      </Box>
+                      <Text fontSize="xs" color="gray.500" px={2}>
+                        {formatMessageTime(message.created_at)}
+                      </Text>
+                    </VStack>
+                  </HStack>
+                </Box>
+              );
+            })}
+
+            {(!conversation.messages || conversation.messages.length === 0) && (
+              <Box textAlign="center" py={12}>
+                <Text color="gray.500">
+                  No messages yet. Start the conversation!
+                </Text>
+              </Box>
+            )}
+
+            {/* Typing Indicators */}
+            {typingUsers && typingUsers.length > 0 && (
+              <Box alignSelf="flex-start" maxW="70%">
+                <HStack spacing={2} align="start">
+                  <Box w="32px" />
+                  <VStack align="flex-start" spacing={1}>
                     <Box
-                      bg={isOwnMessage
-                        ? useColorModeValue('blue.500', 'blue.600')
-                        : useColorModeValue('white', 'gray.700')
-                      }
-                      color={isOwnMessage ? 'white' : 'inherit'}
+                      bg={useColorModeValue('gray.100', 'gray.600')}
                       px={4}
                       py={2}
                       borderRadius="lg"
-                      border={isOwnMessage ? 'none' : '1px solid'}
-                      borderColor={useColorModeValue('gray.200', 'gray.600')}
                       shadow="sm"
                     >
-                      {!isOwnMessage && showAvatar && (
-                        <Text fontSize="xs" fontWeight="semibold" mb={1}>
-                          {message.users?.display_name || 'User'}
-                        </Text>
-                      )}
-                      <Text whiteSpace="pre-wrap">{message.content}</Text>
+                      <Text fontSize="sm" color="gray.600">
+                        {typingUsers.length === 1
+                          ? `${typingUsers[0].displayName} is typing...`
+                          : `${typingUsers.length} people are typing...`
+                        }
+                      </Text>
                     </Box>
-                    <Text fontSize="xs" color="gray.500" px={2}>
-                      {formatMessageTime(message.created_at)}
-                    </Text>
                   </VStack>
                 </HStack>
               </Box>
-            );
-          })}
+            )}
 
-          {(!conversation.messages || conversation.messages.length === 0) && (
-            <Box textAlign="center" py={12}>
-              <Text color="gray.500">
-                No messages yet. Start the conversation!
-              </Text>
-            </Box>
-          )}
+            <div ref={messagesEndRef} />
+          </VStack>
+        </Box>
 
-          {/* Typing Indicators */}
-          {typingUsers && typingUsers.length > 0 && (
-            <Box alignSelf="flex-start" maxW="70%">
-              <HStack spacing={2} align="start">
-                <Box w="32px" />
-                <VStack align="flex-start" spacing={1}>
-                  <Box
-                    bg={useColorModeValue('gray.100', 'gray.600')}
-                    px={4}
-                    py={2}
-                    borderRadius="lg"
-                    shadow="sm"
-                  >
-                    <Text fontSize="sm" color="gray.600">
-                      {typingUsers.length === 1
-                        ? `${typingUsers[0].displayName} is typing...`
-                        : `${typingUsers.length} people are typing...`
-                      }
-                    </Text>
-                  </Box>
-                </VStack>
-              </HStack>
-            </Box>
-          )}
-
-          <div ref={messagesEndRef} />
-        </VStack>
-      </Box>
-
-      {/* Message Input */}
-      <Box
-        w="full"
-        bg={useColorModeValue('white', 'gray.800')}
-        borderTop="1px"
-        borderColor={useColorModeValue('gray.200', 'gray.600')}
-        p={4}
-        position="sticky"
-        bottom={0}
-        zIndex={10}
-      >
-        <VStack spacing={3} maxW="4xl" mx="auto">
-          {/* File Attachments */}
-          <FileAttachmentComponent
-            attachments={attachments}
-            onAttachmentsChange={setAttachments}
-            maxFiles={5}
-            maxSize={10}
-          />
-
-          {/* Message Input */}
-          <HStack spacing={3} w="full">
-            <Textarea
-              value={messageText}
-              onChange={(e) => {
-                setMessageText(e.target.value);
-                handleTyping();
-              }}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              resize="none"
-              rows={1}
-              maxLength={1000}
-              bg={useColorModeValue('gray.50', 'gray.700')}
-              borderColor={useColorModeValue('gray.300', 'gray.600')}
-              _focus={{
-                borderColor: 'blue.500',
-                boxShadow: '0 0 0 1px blue.500',
-              }}
+        {/* Message Input */}
+        <Box
+          w="full"
+          bg={useColorModeValue('white', 'gray.800')}
+          borderTop="1px"
+          borderColor={useColorModeValue('gray.200', 'gray.600')}
+          p={4}
+          position="sticky"
+          bottom={0}
+          zIndex={10}
+        >
+          <VStack spacing={3} maxW="4xl" mx="auto">
+            {/* File Attachments */}
+            <FileAttachmentComponent
+              attachments={attachments}
+              onAttachmentsChange={setAttachments}
+              maxFiles={5}
+              maxSize={10}
             />
-            <Button
-              colorScheme="blue"
-              onClick={handleSendMessage}
-              isLoading={sendMessageMutation.isPending}
-              disabled={!messageText.trim() && attachments.length === 0}
-              size="md"
-              px={6}
-            >
-              <IoSend style={{ marginRight: '8px' }} />
-              Send
-            </Button>
-          </HStack>
-        </VStack>
-      </Box>
-    </VStack>
+
+            {/* Message Input */}
+            <HStack spacing={3} w="full">
+              <Textarea
+                value={messageText}
+                onChange={(e) => {
+                  setMessageText(e.target.value);
+                  handleTyping();
+                }}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                resize="none"
+                rows={1}
+                maxLength={1000}
+                bg={useColorModeValue('gray.50', 'gray.700')}
+                borderColor={useColorModeValue('gray.300', 'gray.600')}
+                _focus={{
+                  borderColor: 'blue.500',
+                  boxShadow: '0 0 0 1px blue.500',
+                }}
+              />
+              <Button
+                colorScheme="blue"
+                onClick={handleSendMessage}
+                isLoading={sendMessageMutation.isPending}
+                disabled={!messageText.trim() && attachments.length === 0}
+                size="md"
+                px={6}
+              >
+                <IoSend style={{ marginRight: '8px' }} />
+                Send
+              </Button>
+            </HStack>
+          </VStack>
+        </Box>
+      </VStack>
+
+      {/* Status Update Modal */}
+      <AdoptionActionDialog
+        form={updateForm}
+        setForm={setUpdateForm}
+        isOpen={isUpdateOpen}
+        onClose={onUpdateClose}
+        pendingAction={pendingAction}
+        setPendingAction={setPendingAction}
+        onSubmit={handleStatusUpdate}
+        isLoading={isUpdatingAdoption}
+      />
+    </>
   );
 };
 
