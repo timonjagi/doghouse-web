@@ -153,17 +153,17 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   });
 
   const handleActionClick = (action: any) => {
-    if (['withdraw', 'approve', 'reject', 'complete'].includes(action.type)) {
-      // Enrich dialogBody with current step information
-      const enrichedAction = { ...action };
-      if (timelineLogic.currentStep?.info && timelineLogic.currentStep.info.length > 0) {
-        enrichedAction.dialogBody = `${action.dialogBody}\n\n${timelineLogic.currentStep.info.map(info => `• ${info}`).join('\n')}`;
-      }
-      setPendingAction(enrichedAction);
-      setUpdateForm({ status: action.status, response_message: '' });
-      onUpdateOpen();
-      return;
+    // if (['withdraw', 'approve', 'reject', 'complete'].includes(action.type)) {
+    // Enrich dialogBody with current step information
+    const enrichedAction = { ...action };
+    if (timelineLogic.currentStep?.info && timelineLogic.currentStep.info.length > 0) {
+      enrichedAction.dialogBody = `${action.dialogBody}\n\n${timelineLogic.currentStep.info.map(info => `• ${info}`).join('\n')}`;
     }
+    setPendingAction(enrichedAction);
+    setUpdateForm({ status: action.status, response_message: '' });
+    onUpdateOpen();
+    // return;
+    // } 
 
     const startUrl = `/dashboard/adoptions/${contextData?.contextData?.adoption?.id}`;
 
@@ -178,10 +178,16 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
         router.push(`${startUrl}?payment=final`);
         break;
       case 'leave_review':
+        router.push(`${startUrl}?action=review`);
+
         console.log('Leave review');
         break;
       case 'contact_support':
+        router.push(`${startUrl}?action=support`);
+
       case 'contact_breeder':
+        router.push(`${startUrl}?action=contact_breeder`);
+
         // Handle contact logic
         break;
       default:
