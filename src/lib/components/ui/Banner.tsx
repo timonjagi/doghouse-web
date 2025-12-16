@@ -97,8 +97,7 @@ export const Banner: React.FC<BannerProps> = ({
                 colorScheme={btn.colorScheme || 'brand'} // Default color scheme
                 width={{ base: 'full', sm: 'auto' }}
                 as={btn.link ? Link : 'button'}
-                href={btn.link}
-                onClick={btn.onClick}
+                {...(btn.link ? { href: btn.link } : { onClick: btn.onClick })} // Use href if link is provided, otherwise use onClick
                 leftIcon={btn.icon ? <Icon as={btn.icon} /> : undefined}
               >
                 {btn.label}
