@@ -240,7 +240,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 colorScheme: "red",
                 isLoading: deleteListingMutation.isPending,
                 isDisabled: listing.status !== 'available',
-              } : !isOwner ? { // Show for non-owners (available or sold)
+              } : listing.status === 'available' ? {
                 label: "Message Seller",
                 onClick: onApplicationOpen,
                 icon: <ChatIcon />,
@@ -342,13 +342,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
           </Stack>
 
-          {!isOwner && (
-            <WhatsIncluded
-              buttonText="Message Seller"
-              buttonSubtext={listing.status === 'available' ? 'Contact the seller to express your interest' : `This listing has been ${listing.status}. You may still contact the seller for inquiries.`}
-              onButtonClick={() => onApplicationOpen()}
-            />
-          )}
+
         </Stack>
 
         <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={undefined} onClose={onDeleteClose}>
@@ -398,6 +392,8 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             listing={listing}
           />
         )}
+
+
 
       </Container >
 

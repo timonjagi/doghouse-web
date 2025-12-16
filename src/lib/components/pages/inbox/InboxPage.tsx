@@ -86,9 +86,7 @@ const InboxPage: React.FC<InboxPageProps> = ({ children, defaultSelectedConversa
       case 0: // All
         return items;
       case 1: // Adoptions
-        return items.filter(item => item.contextType === 'adoption' || item.type === 'notification'); // Assuming notifs usually related? Or filter notifs strict? User said "Notifications... treated as single conversations". 
-      // Actually, better to just filter contextType = adoption for adoptions tab.
-      // Logic check: Does notification have contextType? Yes.
+        return items.filter(item => item.contextType === 'adoption');
       case 2: // Enquiries (Listings)
         return items.filter(item => item.contextType === 'listing');
       case 3: // Support

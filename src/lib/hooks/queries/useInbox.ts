@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '../../queryKeys';
 import { useConversations, useUnreadConversationsCount } from './useConversations';
-import { useNotifications, useUnreadNotificationsCount } from './useNotifications';
 
-// Combined inbox item type
+// Conversation-only inbox item type
 export interface InboxItem {
   id: string;
-  type: 'conversation' | 'notification';
+  type: 'conversation';
   title: string;
   preview: string;
   timestamp: string;
@@ -18,22 +17,16 @@ export interface InboxItem {
   unreadCount?: number;
 }
 
-// Unified inbox hook that combines conversations and notifications
+// Unified inbox hook for conversations only
 export const useInbox = (userId?: string) => {
   const conversationsQuery = useConversations(userId);
-  const notificationsQuery = useNotifications(userId);
-  const unreadConversationsCount = useUnreadConversationsCount(userId);
-  const unreadNotificationsCount = useUnreadNotificationsCount(userId);
 
   return useQuery({
     queryKey: ['inbox', userId],
     queryFn: async (): Promise<InboxItem[]> => {
       if (!userId) return [];
 
-      const [conversations, notifications] = await Promise.all([
-        conversationsQuery.refetch().then(result => result.data || []),
-        notificationsQuery.refetch().then(result => result.data || [])
-      ]);
+      const conversations = await conversationsQuery.refetch().then(result => result.data || []);
 
       // Transform conversations to inbox items
       const conversationItems: InboxItem[] = conversations.map(conv => ({
@@ -50,39 +43,22 @@ export const useInbox = (userId?: string) => {
         unreadCount: getConversationUnreadCount(conv, userId)
       }));
 
-      // Transform notifications to inbox items
-      const notificationItems: InboxItem[] = notifications.map(notif => ({
-        id: notif.id,
-        type: 'notification' as const,
-        title: notif.title || 'Notification',
-        preview: notif.body || '',
-        timestamp: notif.created_at.toString(),
-        isRead: notif.is_read,
-        contextType: notif.target_type,
-        contextId: notif.target_id,
-        contextData: notif.meta
-      }));
-
-      // Combine and sort by timestamp (most recent first)
-      const allItems = [...conversationItems, ...notificationItems]
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-      return allItems;
+      // Sort by timestamp (most recent first)
+      return conversationItems.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     },
     enabled: !!userId,
     refetchInterval: 30000, // Refetch every 30 seconds for live updates
   });
 };
 
-// Hook for total unread count across conversations and notifications
+// Hook for total unread conversation count
 export const useUnreadInboxCount = (userId?: string) => {
   const conversationsCount = useUnreadConversationsCount(userId);
-  const notificationsCount = useUnreadNotificationsCount(userId);
 
   return useQuery({
     queryKey: ['unread-inbox-count', userId],
     queryFn: (): number => {
-      return (conversationsCount.data || 0) + (notificationsCount.data || 0);
+      return conversationsCount.data || 0;
     },
     enabled: !!userId,
     refetchInterval: 30000,
