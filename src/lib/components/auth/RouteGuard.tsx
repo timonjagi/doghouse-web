@@ -16,7 +16,7 @@ const RouteGuard = ({ children, ...rest }) => {
     if (!isLoading) {
       // If the authentication state is loaded
       if (!user && protectedRoutes.find((route) => router.pathname.includes(route))) {
-        router.replace("/signup");
+        router.replace("/login");
 
         /// fullroute with query params
         localStorage.setItem('previousRoute', router.asPath);

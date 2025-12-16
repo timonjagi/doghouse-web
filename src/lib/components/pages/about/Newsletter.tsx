@@ -21,7 +21,7 @@ export const Newsletter = () => (
         Sign up for our newsletter
       </Heading>
       <Text fontSize={{ base: 'lg', md: 'xl' }} color="muted">
-        Be the first to know when we new litters are available
+        Be the first to know when we release new features and updates
       </Text>
     </Stack>
     <Stack direction={{ base: 'column', md: 'row' }} spacing="4" width="full" maxW={{ md: 'lg' }}>

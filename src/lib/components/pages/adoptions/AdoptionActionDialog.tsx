@@ -12,7 +12,7 @@ interface AdoptionStatusDialogProps {
   setForm: (any) => void;
 }
 
-const AdoptionStatusDialog: React.FC<AdoptionStatusDialogProps> = ({
+const AdoptionActionDialog: React.FC<AdoptionStatusDialogProps> = ({
   form,
   setForm,
   isOpen,
@@ -52,21 +52,9 @@ const AdoptionStatusDialog: React.FC<AdoptionStatusDialogProps> = ({
                   </FormControl>
                 )}
 
-                {pendingAction?.type === 'withdraw' && (
+                {pendingAction?.dialogBody && (
                   <Text>
-                    Are you sure you want to withdraw this adoption request? This action cannot be undone.
-                  </Text>
-                )}
-
-                {pendingAction?.type === 'approve' && (
-                  <Text>
-                    Approving this adoption will notify the applicant and allow them to proceed with the process.
-                  </Text>
-                )}
-
-                {pendingAction?.type === 'reject' && (
-                  <Text>
-                    Rejecting this adoption will notify the applicant that their request was not approved.
+                    {pendingAction.dialogBody}
                   </Text>
                 )}
               </VStack>
@@ -94,4 +82,4 @@ const AdoptionStatusDialog: React.FC<AdoptionStatusDialogProps> = ({
   )
 }
 
-export default AdoptionStatusDialog;
+export default AdoptionActionDialog;

@@ -35,6 +35,7 @@ export const EmptyView: React.FC<EmptyViewProps> = ({ title, description, ctaTex
 
       {ctaText && ctaAction && <Button
         colorScheme='brand'
+        variant="primary"
         size='lg'
         w="full"
         onClick={ctaAction}

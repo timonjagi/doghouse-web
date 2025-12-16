@@ -36,6 +36,7 @@ import { FiEdit } from "react-icons/fi";
 import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import ListingList from "lib/components/ui/ListingList";
 import { PageHeaderWithTwoButtons } from "lib/components/ui/PageHeaderWithTwoButtons";
+import { useBreedersForBreed } from "lib/hooks/queries";
 
 interface Breed {
   id: string;
@@ -57,6 +58,7 @@ const ManageBreedDetailView = () => {
     error: userBreedError,
   } = useUserBreed(id as string);
   const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForUserBreed(userBreed?.id);
+  const { data: breeders, isLoading: isLoadingBreeders, error: breedersError } = useBreedersForBreed(userBreed?.breed_id as string);
 
 
   const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
@@ -86,13 +88,13 @@ const ManageBreedDetailView = () => {
     }
   };
 
-  if (isLoadingListings || isLoadingUserBreed) {
+  if (isLoadingListings || isLoadingUserBreed || isLoadingBreeders) {
     return (
       <Loader />
     );
   }
 
-  if (error || userBreedError) {
+  if (error || userBreedError || breedersError) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -165,8 +167,11 @@ const ManageBreedDetailView = () => {
 
                 <TabPanel px={0}>
                   <BreedersList
-                    breed={userBreed?.breeds}
-                    columns={{ base: 1, md: 2 }}
+                    breeders={breeders}
+                    emptyMessage="No Other Breeders Found"
+                    emptyDescription="No other breeders are currently offering this breed."
+                    emptyAction={undefined}
+                    columns={{ base: 1, md: 2, lg: 1 }}
                   />
                 </TabPanel>
               </TabPanels>

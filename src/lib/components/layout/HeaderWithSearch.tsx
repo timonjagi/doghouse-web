@@ -46,18 +46,35 @@ const HeaderWithSearch = ({ rightElement }) => {
   // Show search bar only on Home (/dashboard) and Search (/dashboard/search) pages
   const [showSearchBar, setShowSearchbar] = useState(true);
 
+  const [searchQuery, setSearchQuery] = useState(router.query?.q as string || '');
+
   //pathname && pathname === '/dashboard' || pathname === '/dashboard/search';
   useEffect(() => {
     const isSearchPage = pathname === '/dashboard/search';
-    const isSeeker = userProfile?.role === 'seeker';
-    setShowSearchbar(isSearchPage || isSeeker)
-    setSearchQuery(router.query?.q as string || '');
-  }, [pathname, router]);
+    const isInboxPage = pathname.includes('/dashboard/inbox');
+    const isSeeker = userProfile?.role === 'seeker'; // Seekers might see search on most pages
 
-  const [searchQuery, setSearchQuery] = useState(router.query?.q as string || '');
+    // Logic: Always show on Search and Inbox. For others, depends on role or page.
+    setShowSearchbar(isSearchPage || isInboxPage || isSeeker)
+
+    // Sync query if external change (e.g. back button)
+    setSearchQuery(router.query?.q as string || '');
+  }, [pathname, router, userProfile]);
+
+
   const currentFilters = useMemo(() => searchService.parseSearchParams(router.query), [router.query])
 
   const handleSearch = () => {
+    // Context-aware search
+    if (pathname.includes('/dashboard/inbox')) {
+      // Inbox Search - Update local query params shallowly
+      router.push({
+        pathname: router.pathname,
+        query: { ...router.query, q: searchQuery }
+      }, undefined, { shallow: true });
+      return;
+    }
+
     // Parse existing filters from URL if on search page
     const currentFilters = pathname === '/dashboard/search'
       ? searchService.parseSearchParams(router.query)
@@ -117,7 +134,7 @@ const HeaderWithSearch = ({ rightElement }) => {
       zIndex={3}
       position="sticky"
       top="0"
-      bg="g-surface"
+      bg="bg-surface"
     >
       <Flex justify="space-between" align="center">
         {/* Left side - Logo and Menu Button */}
@@ -152,7 +169,19 @@ const HeaderWithSearch = ({ rightElement }) => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyPress}
               searchQuery={searchQuery}
-              onClear={() => searchService.clearSearchParams(currentFilters)}
+              onClear={() => {
+                setSearchQuery('');
+                if (pathname.includes('/dashboard/inbox')) {
+                  // Also clear from URL for inbox immediately
+                  router.push({
+                    pathname: router.pathname,
+                    query: { ...router.query, q: '' }
+                  }, undefined, { shallow: true });
+                } else {
+                  searchService.clearSearchParams(currentFilters)
+                }
+              }}
+              placeholder={pathname.includes('/dashboard/inbox') ? "Search conversations..." : "Search..."}
             />
           </HStack>
         )}
@@ -176,9 +205,19 @@ const HeaderWithSearch = ({ rightElement }) => {
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyPress}
             searchQuery={searchQuery}
-            onClear={() => searchService.clearSearchParams(currentFilters)}
+            onClear={() => {
+              setSearchQuery('');
+              if (pathname.includes('/dashboard/inbox')) {
+                router.push({
+                  pathname: router.pathname,
+                  query: { ...router.query, q: '' }
+                }, undefined, { shallow: true });
+              } else {
+                searchService.clearSearchParams(currentFilters)
+              }
+            }}
             variant="subtle"
-            placeholder="Search for pets, breeds, or locations..."
+            placeholder={pathname.includes('/dashboard/inbox') ? "Search conversations..." : "Search for pets, breeds, or locations..."}
             colorScheme="gray"
           />
         </HStack>

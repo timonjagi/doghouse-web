@@ -88,7 +88,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const breedName = router.query.breedName;
-  const showTopBanner = profile?.role === "seeker";
+  const showTopBanner = false;
 
   // Check if current route is a detail page
   const isDetailPage = DETAIL_PAGE_PATTERNS.some(
@@ -106,9 +106,9 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <RouteGuard>
-      {isMobile && showTopBanner && (
+      {/* {isMobile && showTopBanner && (
         <TopBanner label="Welcome to Pethouse! Find your perfect furry friend today." />
-      )}
+      )} */}
 
       {isMobile && !isDetailPage && <HeaderWithSearch rightElement={
         <HeaderButtons unreadCount={unreadCount} onToggleNotifications={onToggleNotifications} />}
@@ -134,7 +134,8 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           h={{
             base: showTopBanner
               ? `calc(100dvh - ${headerHeight + bannerHeight})px`
-              : `calc(100dvh - ${headerHeight}px)`, lg: "full"
+              : `calc(100dvh - ${headerHeight}px)`,
+            lg: "full"
           }}
           width={{
             lg: "14rem",

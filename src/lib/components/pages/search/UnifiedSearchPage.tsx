@@ -339,31 +339,6 @@ const UnifiedSearchPage = () => {
                         <Heading size={{ base: 'xs', lg: 'xs' }}  >Search Results for "{filters.q}"</Heading>
                       </Box>}
 
-                      {/* Listings Section */}
-                      {listings.length > 0 && (
-                        <Box>
-                          <Flex justify="space-between" align="center" mb={4}>
-                            <Text size="lg" fontWeight="semibold">Listings ({listings.length})</Text>
-                            <Button
-                              size="xs"
-                              variant="link"
-                              colorScheme="brand"
-                              rightIcon={<FaArrowRight />}
-                              onClick={() => handleTabChange(1)}
-                            >
-                              View All Listings
-                            </Button>
-                          </Flex>
-                          <ListingList
-                            listings={listings.slice(0, isDesktop ? 4 : 2)}
-                            columns={{ base: 2, lg: 4 }}
-                            showSearch={false}
-                            showFilters={false}
-                            showResultsCount={false}
-                            onListingClick={handleListingClick}
-                          />
-                        </Box>
-                      )}
 
                       {/* Breeds Section */}
                       {availableBreeds.length > 0 && (
@@ -392,6 +367,33 @@ const UnifiedSearchPage = () => {
                         </Box>
                       )}
 
+                      {/* Listings Section */}
+                      {listings.length > 0 && (
+                        <Box>
+                          <Flex justify="space-between" align="center" mb={4}>
+                            <Text size="lg" fontWeight="semibold">Listings ({listings.length})</Text>
+                            <Button
+                              size="xs"
+                              variant="link"
+                              colorScheme="brand"
+                              rightIcon={<FaArrowRight />}
+                              onClick={() => handleTabChange(1)}
+                            >
+                              View All Listings
+                            </Button>
+                          </Flex>
+                          <ListingList
+                            listings={listings.slice(0, isDesktop ? 4 : 2)}
+                            columns={{ base: 2, lg: 4 }}
+                            showSearch={false}
+                            showFilters={false}
+                            showResultsCount={false}
+                            onListingClick={handleListingClick}
+                          />
+                        </Box>
+                      )}
+
+
                       {/* Breeders Section */}
                       {breeders.length > 0 && (
                         <Box>
@@ -414,6 +416,7 @@ const UnifiedSearchPage = () => {
                           />
                         </Box>
                       )}
+
 
                       {/* No Results Message */}
                       {listings.length === 0 && availableBreeds.length === 0 && breeders.length === 0 && (
