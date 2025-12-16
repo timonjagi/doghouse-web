@@ -16,8 +16,6 @@ export const adminBroadcast = workflow('admin-broadcast', async ({ step, payload
         actionLabel: payload.actionLabel,
       },
     };
-  }, {
-    to: { type: "Topic", topicKey: "admin-users" }
   });
 
   // Send push notification to all admin users
