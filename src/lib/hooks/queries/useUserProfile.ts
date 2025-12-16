@@ -137,4 +137,45 @@ export const useCreateUserProfile = () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile(data.id) });
     },
   });
+
+};
+
+// Mutation to upload profile photo
+export const useUploadProfilePhoto = () => {
+  const queryClient = useQueryClient();
+  const { data: user } = useCurrentUser();
+
+  return useMutation({
+    mutationFn: async (file: File): Promise<string> => {
+      if (!user) throw new Error('No authenticated user');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('profile-photos')
+        .upload(`user-${user.id}/${fileName}`, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-photos')
+        .getPublicUrl(`user-${user.id}/${fileName}`);
+
+      return publicUrl;
+    },
+    onSuccess: async (avatarUrl) => {
+      // Update user profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ profile_photo_url: avatarUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile(user?.id) });
+    },
+  });
 };
