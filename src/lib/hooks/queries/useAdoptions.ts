@@ -1084,42 +1084,9 @@ export const useUpdateAdoption = () => {
         }
       }
 
-      // Send notification to seeker when status changes using NotificationService (DB + Novu, no email)
+      // Send notifications to relevant parties using NotificationService (DB + Novu, no email)
       if (data.status === 'pending' || data.status === 'approved' || data.status === 'rejected' || data.status === 'withdrawn' || data.status === 'completed') {
         try {
-          let title = '';
-          let body = '';
-          let workflowId = '';
-          const listingTitle = data.listings?.title || 'listing';
-
-          switch (data.status) {
-            case 'pending':
-              title = 'Adoption Under Review';
-              body = `Your adoption application for ${listingTitle} is now being reviewed by the breeder`;
-              workflowId = 'adoption-status-changed';
-              break;
-            case 'approved':
-              title = 'Adoption Application Approved';
-              body = `Congratulations! Your adoption application for ${listingTitle} has been approved.`;
-              workflowId = 'adoption-status-changed';
-              break;
-            case 'rejected':
-              title = 'Adoption Application Not Approved';
-              body = `Your adoption application for ${listingTitle} was not approved at this time`;
-              workflowId = 'adoption-status-changed';
-              break;
-            case 'withdrawn':
-              title = 'Adoption Application Withdrawn';
-              body = `You have successfully withdrawn your application for ${listingTitle}`;
-              workflowId = 'adoption-status-changed';
-              break;
-            case 'completed':
-              title = 'Adoption Completed';
-              body = `Your adoption process for ${listingTitle} has been completed successfully`;
-              workflowId = 'adoption-status-changed';
-              break;
-          }
-
           await NotificationService.sendAdoptionStatusNotification(
             data.seeker_id,
             data.listings?.owner_id || '',
