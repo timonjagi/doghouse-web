@@ -1085,7 +1085,7 @@ export const useUpdateAdoption = () => {
       }
 
       // Send notification to seeker when status changes using NotificationService (DB + Novu, no email)
-      if (data.status === 'pending' || data.status === 'approved' || data.status === 'rejected' || data.status === 'completed') {
+      if (data.status === 'pending' || data.status === 'approved' || data.status === 'rejected' || data.status === 'withdrawn' || data.status === 'completed') {
         try {
           let title = '';
           let body = '';
@@ -1108,6 +1108,11 @@ export const useUpdateAdoption = () => {
               body = `Your adoption application for ${listingTitle} was not approved at this time`;
               workflowId = 'adoption-status-changed';
               break;
+            case 'withdrawn':
+              title = 'Adoption Application Withdrawn';
+              body = `You have successfully withdrawn your application for ${listingTitle}`;
+              workflowId = 'adoption-status-changed';
+              break;
             case 'completed':
               title = 'Adoption Completed';
               body = `Your adoption process for ${listingTitle} has been completed successfully`;
@@ -1117,10 +1122,11 @@ export const useUpdateAdoption = () => {
 
           await NotificationService.sendAdoptionStatusNotification(
             data.seeker_id,
+            data.listings?.owner_id || '',
             data.status,
-            listingTitle,
+            data.listings?.title || 'Listing',
             data.id,
-            data.listings?.id || ''
+            data.listing_id
           );
         } catch (notificationError) {
           console.error('Failed to send status change notification:', notificationError);

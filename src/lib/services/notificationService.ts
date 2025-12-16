@@ -139,71 +139,195 @@ export class NotificationService {
   // Convenience methods for common notification types
 
   /**
-   * Send adoption status change notification
+   * Send adoption status change notifications to relevant parties
    */
   static async sendAdoptionStatusNotification(
-    userId: string,
+    seekerId: string,
+    breederId: string,
     status: string,
     listingTitle: string,
     adoptionId: string,
     listingId: string
   ): Promise<void> {
-    const statusMessages = {
-      submitted: {
-        title: 'Adoption Under Review',
-        body: `Your adoption application for ${listingTitle} is now being reviewed by the breeder`,
-      },
-      pending: {
-        title: 'Adoption Under Review',
-        body: `Your adoption application for ${listingTitle} is now being reviewed by the breeder`,
-      },
-      approved: {
-        title: 'Adoption Application Approved',
-        body: `Congratulations! Your adoption application for ${listingTitle} has been approved.`,
-      },
-      rejected: {
-        title: 'Adoption Application Not Approved',
-        body: `Your adoption application for ${listingTitle} was not approved at this time`,
-      },
-      withdrawn: {
-        title: 'Adoption Application Withdrawn',
-        body: `You have successfully withdrawn your application for ${listingTitle}`,
-      },
-      completed: {
-        title: 'Adoption Completed',
-        body: `Your adoption process for ${listingTitle} has been completed successfully`,
-      },
-    };
+    const notifications: Array<{
+      db: NotificationPayload;
+      novu?: NovuNotificationPayload;
+    }> = [];
 
-    const message = statusMessages[status as keyof typeof statusMessages] || {
-      title: 'Adoption Status Updated',
-      body: `Your adoption status for ${listingTitle} has been updated to ${status}`,
-    };
+    switch (status) {
+      case 'pending':
+        // Notify seeker that application is under review
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: 'adoption_status_changed',
+            title: 'Adoption Under Review',
+            body: `Your adoption application for ${listingTitle} is now being reviewed by the breeder`,
+            targetType: 'application',
+            targetId: listingId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: 'adoption-status-changed',
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: 'Adoption Under Review',
+              body: `Your adoption application for ${listingTitle} is now being reviewed by the breeder`,
+            },
+          }
+        });
+        break;
 
-    await this.sendNotification(
-      {
-        userId,
-        type: 'adoption_status_changed',
-        title: message.title,
-        body: message.body,
-        targetType: 'application',
-        targetId: listingId,
-        meta: { adoptionId, listingId, status },
-      },
-      {
-        workflowId: 'adoption-status-changed',
-        to: { subscriberId: userId },
-        payload: {
-          adoptionId,
-          listingId,
-          listingTitle,
-          seekerId: userId,
-          status,
-          title: message.title,
-          body: message.body,
-        },
-      }
-    );
+      case 'approved':
+        // Notify seeker of approval
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: 'adoption_status_changed',
+            title: 'Adoption Application Approved',
+            body: `Congratulations! Your adoption application for ${listingTitle} has been approved.`,
+            targetType: 'application',
+            targetId: listingId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: 'adoption-status-changed',
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: 'Adoption Application Approved',
+              body: `Congratulations! Your adoption application for ${listingTitle} has been approved.`,
+            },
+          }
+        });
+        break;
+
+      case 'rejected':
+        // Notify seeker of rejection
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: 'adoption_status_changed',
+            title: 'Adoption Application Not Approved',
+            body: `Your adoption application for ${listingTitle} was not approved at this time`,
+            targetType: 'application',
+            targetId: listingId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: 'adoption-status-changed',
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: 'Adoption Application Not Approved',
+              body: `Your adoption application for ${listingTitle} was not approved at this time`,
+            },
+          }
+        });
+        break;
+
+      case 'withdrawn':
+        // Notify breeder that seeker withdrew
+        if (breederId) {
+          notifications.push({
+            db: {
+              userId: breederId,
+              type: 'adoption_status_changed',
+              title: 'Adoption Application Withdrawn',
+              body: `The seeker has withdrawn their application for "${listingTitle}".`,
+              targetType: 'application',
+              targetId: listingId,
+              meta: { adoptionId, listingId, status, seekerId },
+            },
+            novu: {
+              workflowId: 'adoption-status-changed',
+              to: { subscriberId: breederId },
+              payload: {
+                adoptionId,
+                listingId,
+                listingTitle,
+                seekerId,
+                breederId,
+                status,
+                title: 'Adoption Application Withdrawn',
+                body: `The seeker has withdrawn their application for "${listingTitle}".`,
+              },
+            }
+          });
+        }
+        break;
+
+      case 'completed':
+        // Notify seeker of completion
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: 'adoption_status_changed',
+            title: 'Adoption Completed',
+            body: `Your adoption process for ${listingTitle} has been completed successfully`,
+            targetType: 'application',
+            targetId: listingId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: 'adoption-status-changed',
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: 'Adoption Completed',
+              body: `Your adoption process for ${listingTitle} has been completed successfully`,
+            },
+          }
+        });
+        break;
+
+      default:
+        // Generic notification for other statuses
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: 'adoption_status_changed',
+            title: 'Adoption Status Updated',
+            body: `Your adoption status for ${listingTitle} has been updated to ${status}`,
+            targetType: 'application',
+            targetId: listingId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: 'adoption-status-changed',
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: 'Adoption Status Updated',
+              body: `Your adoption status for ${listingTitle} has been updated to ${status}`,
+            },
+          }
+        });
+    }
+
+    // Send all notifications
+    await this.sendNotifications(notifications);
   }
 
   /**
