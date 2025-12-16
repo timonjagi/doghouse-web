@@ -43,7 +43,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/search", layout: 'dashboard' },
     { path: "/dashboard/kennel", layout: 'dashboard' },
     { path: "/dashboard/inbox", layout: 'dashboard' },
-    { path: "/dashboard/inbox/[chatId]", layout: 'dashboard' },
+    { path: "/dashboard/inbox/[conversationId]", layout: 'dashboard' },
     { path: "/dashboard/breeds", layout: 'dashboard' },
     { path: "/dashboard/breeds/[id]", layout: 'dashboard' },
     { path: "/dashboard/breeders", layout: 'dashboard' },

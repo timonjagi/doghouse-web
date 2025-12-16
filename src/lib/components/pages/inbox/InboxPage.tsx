@@ -140,10 +140,10 @@ const InboxPage: React.FC<InboxPageProps> = ({ children, defaultSelectedConversa
     return (
       <Container maxW="7xl" py={{ base: 4, md: 8 }}>
         <VStack spacing={6} align="stretch">
-          <PageHeaderWithTwoButtons
+          {/* <PageHeaderWithTwoButtons
             title="Inbox"
             description={`${unreadCount || 0} unread messages`}
-          />
+          /> */}
 
           <Box
             h="calc(100vh - 200px)" // Adjusted height
