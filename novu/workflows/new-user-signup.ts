@@ -1,5 +1,6 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
+import { createNewUserSignupEmail } from '../../src/lib/emailTemplates';
 
 export const newUserSignup = workflow('new-user-signup', async ({ step, payload }) => {
   // Notify admin of new user
@@ -11,6 +12,18 @@ export const newUserSignup = workflow('new-user-signup', async ({ step, payload 
         userId: payload.userId,
         role: payload.role,
       },
+    };
+  });
+
+  // Send email to admin
+  await step.email('email-admin', async () => {
+    return {
+      subject: 'New User Registration',
+      body: createNewUserSignupEmail(
+        payload.firstName,
+        payload.email,
+        payload.role
+      ),
     };
   });
 }, {

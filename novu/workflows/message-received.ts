@@ -1,5 +1,6 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
+import { createMessageReceivedEmail } from '../../src/lib/emailTemplates';
 
 export const messageReceived = workflow('message-received', async ({ step, payload }) => {
   // Send in-app notification to recipient
@@ -28,6 +29,18 @@ export const messageReceived = workflow('message-received', async ({ step, paylo
         conversationId: payload.conversationId,
         messageId: payload.messageId,
       },
+    };
+  });
+
+  // Send email notification to recipient
+  await step.email('email-recipient', async () => {
+    return {
+      subject: `New Message from ${payload.senderName}`,
+      body: createMessageReceivedEmail(
+        payload.senderName,
+        payload.messageContent,
+        payload.conversationTitle
+      ),
     };
   });
 }, {

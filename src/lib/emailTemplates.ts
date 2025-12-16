@@ -190,3 +190,178 @@ export function createWelcomeEmail(firstName: string): string {
     },
   });
 }
+
+export function createMessageReceivedEmail(senderName: string, messageContent: string, conversationTitle: string): string {
+  return createProfessionalEmailTemplate({
+    title: `New Message from ${senderName}`,
+    greeting: `Hi,`,
+    content: `You have received a new message from ${senderName} in your conversation.`,
+    details: [
+      { label: 'Conversation', value: conversationTitle },
+      { label: 'From', value: senderName },
+      { label: 'Message Preview', value: messageContent?.substring(0, 100) + (messageContent?.length > 100 ? '...' : '') }
+    ],
+    actionButton: {
+      text: 'Reply to Message',
+      url: 'https://your-domain.com/dashboard/messages'
+    },
+  });
+}
+
+export function createPaymentReceivedEmail(breederName: string, paymentType: string, amount: string, listingTitle: string): string {
+  const isReservation = paymentType === 'reservation';
+  return createProfessionalEmailTemplate({
+    title: `${isReservation ? 'Reservation' : 'Final'} Payment Received`,
+    greeting: `Hi ${breederName},`,
+    content: `Great news! You have received a ${paymentType} payment for your listing.`,
+    details: [
+      { label: 'Listing', value: listingTitle },
+      { label: 'Payment Type', value: paymentType },
+      { label: 'Amount Received', value: `₦${amount}` }
+    ],
+    footerContent: isReservation
+      ? 'The listing is now reserved. Please proceed with the next steps.'
+      : 'The adoption process is now complete. Thank you for using Pethouse!',
+  });
+}
+
+export function createListingCreatedEmail(breederName: string, listingTitle: string, listingType: string): string {
+  return createProfessionalEmailTemplate({
+    title: 'Listing Created Successfully',
+    greeting: `Hi ${breederName},`,
+    content: `Your ${listingType} listing has been created and is now live on Pethouse.`,
+    details: [
+      { label: 'Listing Title', value: listingTitle },
+      { label: 'Type', value: listingType },
+      { label: 'Status', value: 'Active' }
+    ],
+    nextSteps: [
+      'Share your listing with potential adopters',
+      'Monitor applications as they come in',
+      'Update listing details as needed'
+    ],
+    actionButton: {
+      text: 'View Listing',
+      url: `https://your-domain.com/dashboard/listings`
+    },
+  });
+}
+
+export function createNewUserSignupEmail(firstName: string, email: string, role: string): string {
+  return createProfessionalEmailTemplate({
+    title: 'New User Registration',
+    greeting: 'Admin Notification,',
+    content: `A new user has registered on Pethouse.`,
+    details: [
+      { label: 'Name', value: firstName },
+      { label: 'Email', value: email },
+      { label: 'Role', value: role },
+      { label: 'Registration Date', value: new Date().toLocaleDateString() }
+    ],
+    footerContent: 'Please review the new user registration as needed.',
+  });
+}
+
+export function createBreedMatchEmail(seekerName: string, breedName: string, breederName: string): string {
+  return createProfessionalEmailTemplate({
+    title: 'New Breed Match Found!',
+    greeting: `Hi ${seekerName},`,
+    content: `Great news! A new litter for "${breedName}" is now available from verified breeder ${breederName}.`,
+    details: [
+      { label: 'Breed', value: breedName },
+      { label: 'Breeder', value: breederName },
+      { label: 'Match Type', value: 'New Listing Available' }
+    ],
+    actionButton: {
+      text: 'View Matching Listings',
+      url: 'https://your-domain.com/explore'
+    },
+    footerContent: 'Don\'t miss out on this perfect match for your family!',
+  });
+}
+
+export function createBreederApplicationSubmittedEmail(breederName: string, email: string): string {
+  return createProfessionalEmailTemplate({
+    title: 'Breeder Application Submitted',
+    greeting: 'Admin Notification,',
+    content: `A new breeder verification application has been submitted.`,
+    details: [
+      { label: 'Applicant Name', value: breederName },
+      { label: 'Email', value: email },
+      { label: 'Application Date', value: new Date().toLocaleDateString() }
+    ],
+    actionButton: {
+      text: 'Review Application',
+      url: 'https://your-domain.com/admin/verifications'
+    },
+    footerContent: 'Please review the application and verify the breeder\'s credentials.',
+  });
+}
+
+export function createBreederVerifiedEmail(breederName: string): string {
+  return createProfessionalEmailTemplate({
+    title: 'Breeder Verification Approved',
+    greeting: `Hi ${breederName},`,
+    content: 'Congratulations! Your breeder profile has been verified and approved.',
+    nextSteps: [
+      'Start creating listings for your litters',
+      'Manage your breeder profile and kennel information',
+      'Connect with potential adopters',
+      'Track your listing performance and applications'
+    ],
+    actionButton: {
+      text: 'Create Your First Listing',
+      url: 'https://your-domain.com/dashboard/listings/create'
+    },
+    footerContent: 'Welcome to the verified breeder community on Pethouse!',
+  });
+}
+
+export function createPasswordResetEmail(firstName: string, resetUrl: string): string {
+  return createProfessionalEmailTemplate({
+    title: 'Reset Your Password',
+    greeting: `Hi ${firstName},`,
+    content: 'You requested a password reset for your Pethouse account.',
+    nextSteps: [
+      'Click the button below to reset your password',
+      'The link will expire in 1 hour',
+      'If you didn\'t request this reset, please ignore this email'
+    ],
+    actionButton: {
+      text: 'Reset Password',
+      url: resetUrl
+    },
+    footerContent: 'For security reasons, this link will expire in 1 hour.',
+  });
+}
+
+export function createEmailVerificationEmail(firstName: string, verificationUrl: string): string {
+  return createProfessionalEmailTemplate({
+    title: 'Verify Your Email Address',
+    greeting: `Hi ${firstName},`,
+    content: 'Please verify your email address to complete your Pethouse registration.',
+    nextSteps: [
+      'Click the button below to verify your email',
+      'The link will expire in 24 hours',
+      'After verification, you can start using your account'
+    ],
+    actionButton: {
+      text: 'Verify Email',
+      url: verificationUrl
+    },
+    footerContent: 'If you didn\'t create an account, please ignore this email.',
+  });
+}
+
+export function createOTPLoginEmail(otp: string): string {
+  return createProfessionalEmailTemplate({
+    title: 'Your Login Verification Code',
+    greeting: 'Hi,',
+    content: 'Use the verification code below to complete your login.',
+    details: [
+      { label: 'Verification Code', value: `<strong style="font-size: 24px; color: #3182ce;">${otp}</strong>` },
+      { label: 'Expires In', value: '10 minutes' }
+    ],
+    footerContent: 'Enter this code on the login page to access your account.',
+  });
+}
