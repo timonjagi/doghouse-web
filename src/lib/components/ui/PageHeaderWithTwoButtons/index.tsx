@@ -1,4 +1,4 @@
-import { Box, Button, Container, Heading, Stack, Text, useBreakpointValue } from '@chakra-ui/react'
+import { Box, Button, Container, Heading, HStack, Stack, Text, useBreakpointValue } from '@chakra-ui/react'
 import * as React from 'react'
 
 interface PageHeaderWithTwoButtonsProps {
@@ -39,14 +39,19 @@ export const PageHeaderWithTwoButtons = ({
       <Heading size={useBreakpointValue({ base: 'xs', md: 'sm' })} fontWeight="medium">
         {title}
       </Heading>
-      {badge && (
-        <Box>{badge}</Box>
-      )}
-      {typeof description === 'string' ? (
-        <Text color="muted">{description}</Text>
-      ) : (
-        <Box color="muted">{description}</Box>
-      )}
+
+      <HStack spacing="2">
+
+        {typeof description === 'string' ? (
+          <Text color="muted">{description}</Text>
+        ) : (
+          <Box color="muted">{description}</Box>
+        )}
+
+        {badge && (
+          <Box>{badge}</Box>
+        )}
+      </HStack>
     </Stack>
     <Stack direction="row" spacing="3">
       {buttonPrimary && (
