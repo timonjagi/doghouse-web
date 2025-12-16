@@ -972,7 +972,7 @@ export const useCreateAdoption = () => {
             },
           },
           {
-            workflowId: 'adoption-application-received',
+            workflowId: 'adoption-submitted',
             to: { subscriberId: data.listings.owner_id },
             payload: {
               adoptionId: data.id,

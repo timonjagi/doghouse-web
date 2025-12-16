@@ -225,7 +225,7 @@ export const useSendMessage = () => {
 
           const senderName = sender?.display_name || 'Someone';
 
-          // Send notifications to all other participants using NotificationService
+          // Send notifications to all other participants using NotificationService (DB only, no Novu workflow for messages)
           const notificationPromises = otherParticipants.map(recipientId =>
             NotificationService.sendNotification(
               {
@@ -244,21 +244,8 @@ export const useSendMessage = () => {
                   messageId: message.id,
                   conversationTitle: conversation.title,
                 },
-              },
-              {
-                workflowId: 'message-received',
-                to: { subscriberId: recipientId },
-                payload: {
-                  conversationId: variables.conversationId,
-                  conversationTitle: conversation.title || 'Conversation',
-                  senderId: variables.senderId,
-                  senderName: senderName,
-                  messageContent: message.content?.substring(0, 100) || 'New message',
-                  messageId: message.id,
-                  contextType: conversation.context_type,
-                  contextId: conversation.context_id,
-                },
               }
+              // No Novu payload for messages - DB only
             )
           );
 
