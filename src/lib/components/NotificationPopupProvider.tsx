@@ -28,6 +28,18 @@ export const NotificationPopupProvider: React.FC<NotificationPopupProviderProps>
     const notificationType = data.type || data.workflowId;
 
     switch (notificationType) {
+      case 'message-received':
+      case 'message_received':
+        return {
+          component: NotificationAvatar,
+          props: {
+            name: data.senderName || 'Sender',
+            message: data.messageContent || content.body || 'New message received',
+            avatarSrc: data.senderAvatar,
+            onReply: () => handleViewConversation(notification, data.conversationId),
+          }
+        };
+
       case 'adoption-status-changed':
         return {
           component: NotificationSplitButtons,
@@ -90,6 +102,13 @@ export const NotificationPopupProvider: React.FC<NotificationPopupProviderProps>
   };
 
   // Action handlers
+  const handleViewConversation = async (notification: any, conversationId: string) => {
+    await NotificationService.markNotificationAsRead(notification);
+    toast.closeAll();
+    // Navigate to conversation
+    router.push(`/dashboard/inbox/${conversationId}`);
+  };
+
   const handleViewAdoption = async (notification: any, adoptionId: string) => {
     await NotificationService.markNotificationAsRead(notification);
     toast.closeAll();
@@ -153,7 +172,7 @@ export const NotificationPopupProvider: React.FC<NotificationPopupProviderProps>
       position: 'top-right',
       duration: 15000, // 15 seconds
       isClosable: true,
-      render: () => <Component {...props} />,
+      render: () => <Component {...(props as any)} />,
     });
   };
 
