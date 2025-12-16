@@ -235,10 +235,6 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           <NotificationsDrawer
             isOpen={isNotificationsOpen}
             onClose={onCloseNotifications}
-            notifications={notifications!}
-            isLoading={isLoading}
-            error={error}
-            unreadCount={unreadCount!}
           />
         </DrawerContent>
       </Drawer>

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { Listing } from '../../db/schema';
+import novu from '../../novu';
 
 interface CreateListingData {
   title: string;
@@ -545,10 +546,49 @@ export const useCreateListing = () => {
         .select()
         .single();
 
-      if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      // Trigger Novu workflow for listing created
+      try {
+        const { data: breeder } = await supabase
+          .from('users')
+          .select('display_name')
+          .eq('id', data.owner_id)
+          .single();
+
+        await novu.trigger({
+          workflowId: 'listing-created',
+          to: {
+            subscriberId: 'admin', // Notify admin
+          },
+          payload: {
+            listingId: data.id,
+            listingTitle: data.title,
+            listingType: data.type,
+            breederId: data.owner_id,
+            breederName: breeder?.display_name || 'Breeder',
+          },
+        });
+
+        // Also notify the breeder
+        await novu.trigger({
+          workflowId: 'listing-created',
+          to: {
+            subscriberId: data.owner_id,
+          },
+          payload: {
+            listingId: data.id,
+            listingTitle: data.title,
+            listingType: data.type,
+            breederId: data.owner_id,
+            breederName: breeder?.display_name || 'Breeder',
+          },
+        });
+      } catch (novuError) {
+        console.error('Failed to send Novu notifications:', novuError);
+      }
+
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
     },
   });

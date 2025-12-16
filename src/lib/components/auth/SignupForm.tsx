@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { supabase } from "lib/supabase/client";
 import { GoogleIcon } from "./ProviderIcons";
+import novu from "lib/novu";
 
 export const SignupForm = () => {
   const toast = useToast();
@@ -121,6 +122,37 @@ export const SignupForm = () => {
               status: "warning",
               duration: 5000,
             });
+          }
+
+          // Trigger welcome notification
+          try {
+            await novu.trigger({
+              workflowId: 'welcome-user',
+              to: {
+                subscriberId: signInData.user.id,
+              },
+              payload: {
+                userId: signInData.user.id,
+                firstName: email.split('@')[0], // Use email prefix as name
+                email: email,
+              },
+            });
+
+            // Trigger admin notification for new user
+            await novu.trigger({
+              workflowId: 'new-user-signup',
+              to: {
+                subscriberId: 'admin', // Assuming admin subscriber ID, or use specific admin ID
+              },
+              payload: {
+                userId: signInData.user.id,
+                firstName: email.split('@')[0],
+                email: email,
+                role: 'seeker', // Default role, update based on actual role assignment
+              },
+            });
+          } catch (novuError) {
+            console.error('Failed to send notifications:', novuError);
           }
 
           // Redirect to onboarding instead of login

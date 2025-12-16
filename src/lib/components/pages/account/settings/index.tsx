@@ -7,34 +7,55 @@ import {
   Switch,
   Text,
   useColorModeValue,
+  Select,
 } from "@chakra-ui/react";
 import { NextSeo } from "next-seo";
-// import * as React from "react";
+import { useState } from "react";
 
 const Settings = () => {
-  const notifications = [
+  const [notificationSettings, setNotificationSettings] = useState([
     {
       type: "Email",
-      description: "Receive email updates on comments you followed",
+      description: "Receive email updates",
       isActive: false,
+      snooze: "None",
+      snoozeOptions: ["None", "1 hour", "1 day", "1 week"],
     },
     {
-      type: "Text messages",
+      type: "SMS",
       description: "Receive updates by SMS",
       isActive: true,
+      snooze: "None",
+      snoozeOptions: ["None", "1 hour", "1 day", "1 week"],
     },
     {
-      type: "Browser",
-      description: "We'll send via our desktop or mobile app",
+      type: "Push",
+      description: "Receive push notifications",
       isActive: true,
+      snooze: "None",
+      snoozeOptions: ["None", "1 hour", "1 day", "1 week"],
     },
-  ];
+    {
+      type: "WhatsApp",
+      description: "Receive WhatsApp messages",
+      isActive: false,
+      snooze: "None",
+      snoozeOptions: ["None", "1 hour", "1 day", "1 week"],
+    },
+  ]);
 
-  const onToggleNotification = (notification) => {
-    if ((notification.type = "Email")) {
-      // open add email modal
-      // include subscribe to newsletter option/checkbox
-    }
+  const onToggleNotification = (index: number) => {
+    const updated = [...notificationSettings];
+    updated[index].isActive = !updated[index].isActive;
+    setNotificationSettings(updated);
+    // TODO: Persist to DB and sync with Novu subscriber preferences
+  };
+
+  const onSnoozeChange = (index: number, value: string) => {
+    const updated = [...notificationSettings];
+    updated[index].snooze = value;
+    setNotificationSettings(updated);
+    // TODO: Persist and apply snooze logic in workflows
   };
 
   return (
@@ -77,13 +98,14 @@ const Settings = () => {
                   Receive notifications about Pethouse updates.
                 </Text>
               </Stack>
-              {notifications.map((notification, id) => (
+              {notificationSettings.map((notification, id) => (
                 <Stack
                   // eslint-disable-next-line
                   key={id}
                   justify="space-between"
                   direction="row"
                   spacing="4"
+                  align="center"
                 >
                   <Stack spacing="0.5" fontSize="sm">
                     <Text color="emphasized" fontWeight="medium">
@@ -91,11 +113,26 @@ const Settings = () => {
                     </Text>
                     <Text color="muted">{notification.description}</Text>
                   </Stack>
-                  <Switch
-                    defaultChecked={notification.isActive}
-                    colorScheme="brand"
-                    onChange={() => onToggleNotification(notification)}
-                  />
+                  <Stack direction="row" spacing="2" align="center">
+                    <Text fontSize="sm">Snooze:</Text>
+                    <Select
+                      size="sm"
+                      value={notification.snooze}
+                      onChange={(e) => onSnoozeChange(id, e.target.value)}
+                      width="120px"
+                    >
+                      {notification.snoozeOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </Select>
+                    <Switch
+                      isChecked={notification.isActive}
+                      colorScheme="brand"
+                      onChange={() => onToggleNotification(id)}
+                    />
+                  </Stack>
                 </Stack>
               ))}
             </Stack>

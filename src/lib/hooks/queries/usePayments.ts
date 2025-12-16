@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
+import novu from '../../novu';
 
 export interface PaymentInitParams {
   amount: number;
@@ -307,6 +308,73 @@ export const useVerifyPayment = (applicationId?: string) => {
               } catch (notificationError) {
                 console.error('Failed to create payment notifications:', notificationError);
                 // Don't fail the payment if notification creation fails
+              }
+
+              // Trigger Novu notifications
+              try {
+                if (paymentType === 'reservation') {
+                  // Trigger for seeker
+                  await novu.trigger({
+                    workflowId: 'reservation-fee-paid',
+                    to: { subscriberId: app.seeker_id },
+                    payload: {
+                      applicationId: app.id,
+                      listingId: app.listing_id,
+                      listingTitle: app.listings?.title || 'Listing',
+                      seekerId: app.seeker_id,
+                      breederId: app.listings.owner_id,
+                      amount: txn.amount,
+                      paymentType,
+                    },
+                  });
+                  // Trigger for breeder
+                  await novu.trigger({
+                    workflowId: 'reservation-fee-paid',
+                    to: { subscriberId: app.listings.owner_id },
+                    payload: {
+                      applicationId: app.id,
+                      listingId: app.listing_id,
+                      listingTitle: app.listings?.title || 'Listing',
+                      seekerId: app.seeker_id,
+                      breederId: app.listings.owner_id,
+                      amount: txn.amount,
+                      earnings: txn.amount - txn.commission_fee,
+                      paymentType,
+                    },
+                  });
+                } else if (paymentType === 'final') {
+                  // Trigger for seeker
+                  await novu.trigger({
+                    workflowId: 'final-payment-completed',
+                    to: { subscriberId: app.seeker_id },
+                    payload: {
+                      applicationId: app.id,
+                      listingId: app.listing_id,
+                      listingTitle: app.listings?.title || 'Listing',
+                      seekerId: app.seeker_id,
+                      breederId: app.listings.owner_id,
+                      amount: txn.amount,
+                      paymentType,
+                    },
+                  });
+                  // Trigger for breeder
+                  await novu.trigger({
+                    workflowId: 'final-payment-completed',
+                    to: { subscriberId: app.listings.owner_id },
+                    payload: {
+                      applicationId: app.id,
+                      listingId: app.listing_id,
+                      listingTitle: app.listings?.title || 'Listing',
+                      seekerId: app.seeker_id,
+                      breederId: app.listings.owner_id,
+                      amount: txn.amount,
+                      earnings: txn.amount - txn.commission_fee,
+                      paymentType,
+                    },
+                  });
+                }
+              } catch (novuError) {
+                console.error('Failed to send Novu notifications:', novuError);
               }
             }
           }

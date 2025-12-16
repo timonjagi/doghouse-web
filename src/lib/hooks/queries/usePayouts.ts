@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PayoutService } from '../../services/payoutService';
 import { queryKeys } from '../../queryKeys';
+import { supabase } from '../../supabase/client';
+import novu from '../../novu';
 
 export interface PayoutResult {
   success: boolean;
@@ -55,6 +57,34 @@ export const useProcessBreederPayout = () => {
         queryClient.invalidateQueries({ queryKey: queryKeys.payouts.calculation(breederId) });
         queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
         queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() });
+
+        // Add notifications
+        try {
+          // Supabase insert
+          await supabase.from('notifications').insert({
+            user_id: breederId,
+            type: 'payout_processed',
+            title: 'Payout Processed',
+            body: `Your payout of ₦${result.amount} has been processed successfully.`,
+            meta: {
+              amount: result.amount,
+              transferReference: result.transferReference,
+            },
+          });
+
+          // Novu trigger
+          await novu.trigger({
+            workflowId: 'payout-processed',
+            to: { subscriberId: breederId },
+            payload: {
+              amount: result.amount,
+              transferReference: result.transferReference,
+              breederId,
+            },
+          });
+        } catch (error) {
+          console.error('Failed to send payout notifications:', error);
+        }
       }
     },
   });
@@ -74,6 +104,32 @@ export const useProcessAllPayouts = () => {
         queryClient.invalidateQueries({ queryKey: queryKeys.payouts.all() });
         queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
         queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() });
+
+        // Add notification for admin
+        try {
+          await supabase.from('notifications').insert({
+            user_id: 'admin', // Assuming admin ID
+            type: 'payout_batch_processed',
+            title: 'Payout Batch Processed',
+            body: `Processed ${result.processed} payouts successfully.`,
+            meta: {
+              processed: result.processed,
+              totalAmount: result.totalAmount,
+            },
+          });
+
+          // Novu trigger for admin
+          await novu.trigger({
+            workflowId: 'payout-batch-processed',
+            to: { subscriberId: 'admin' },
+            payload: {
+              processed: result.processed,
+              totalAmount: result.totalAmount,
+            },
+          });
+        } catch (error) {
+          console.error('Failed to send admin payout notifications:', error);
+        }
       }
     },
   });
