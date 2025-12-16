@@ -701,6 +701,217 @@ export class NotificationService {
   }
 
   /**
+   * Create a subscriber in Novu during onboarding
+   */
+  static async createSubscriber(
+    subscriberId: string,
+    userData: {
+      firstName: string;
+      lastName?: string;
+      email: string;
+      phone?: string;
+      data?: Record<string, any>;
+    }
+  ): Promise<void> {
+    try {
+      // Trigger a workflow to auto-create the subscriber
+      await novu.trigger({
+        workflowId: 'welcome-user', // Use existing workflow to create subscriber
+        to: {
+          subscriberId,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          phone: userData.phone,
+          data: userData.data,
+        },
+        payload: {
+          userId: subscriberId,
+          firstName: userData.firstName,
+          email: userData.email,
+        },
+      });
+    } catch (error) {
+      console.error('Failed to create subscriber:', error);
+      // Don't throw - subscriber creation is not critical for onboarding
+    }
+  }
+
+  /**
+   * Subscribe user to breed interest topic (wishlist)
+   * Note: Topic subscriptions will be implemented when Novu API is available
+   */
+  static async subscribeToBreedInterest(
+    subscriberId: string,
+    breedId: string,
+    breedName: string
+  ): Promise<void> {
+    // TODO: Implement when Novu topic subscription API is available
+    console.log(`TODO: Subscribe ${subscriberId} to breed interest topic: ${breedName}`);
+    // For now, just log - actual subscription will be handled later
+  }
+
+  /**
+   * Subscribe user to breeder activity topic
+   * Note: Topic subscriptions will be implemented when Novu API is available
+   */
+  static async subscribeToBreeder(
+    subscriberId: string,
+    breederId: string,
+    breederName: string
+  ): Promise<void> {
+    // TODO: Implement when Novu topic subscription API is available
+    console.log(`TODO: Subscribe ${subscriberId} to breeder: ${breederName}`);
+    // For now, just log - actual subscription will be handled later
+  }
+
+  /**
+   * Unsubscribe user from breeder activity topic
+   * Note: Topic subscriptions will be implemented when Novu API is available
+   */
+  static async unsubscribeFromBreeder(
+    subscriberId: string,
+    breederId: string
+  ): Promise<void> {
+    // TODO: Implement when Novu topic subscription API is available
+    console.log(`TODO: Unsubscribe ${subscriberId} from breeder: ${breederId}`);
+    // For now, just log - actual unsubscription will be handled later
+  }
+
+  /**
+   * Handle seeker onboarding completion with subscriber creation and subscriptions
+   */
+  static async completeSeekerOnboarding(
+    userId: string,
+    userData: {
+      firstName: string;
+      lastName?: string;
+      email: string;
+      phone?: string;
+    },
+    preferences: {
+      preferredBreedId: string;
+      preferredBreedName: string;
+      preferredAge: string;
+      preferredSex: string;
+      spayNeuterPreference: string;
+      activityLevel: string;
+    }
+  ): Promise<void> {
+    const promises: Promise<void>[] = [];
+
+    // Create subscriber in Novu
+    promises.push(this.createSubscriber(userId, userData));
+
+    // Subscribe to breed interest topic (wishlist)
+    promises.push(this.subscribeToBreedInterest(userId, preferences.preferredBreedId, preferences.preferredBreedName));
+
+    // Send welcome notification
+    promises.push(this.sendWelcomeNotification(userId, userData.firstName, userData.email));
+
+    // Wait for all operations to complete
+    await Promise.allSettled(promises);
+
+    console.log(`Completed onboarding setup for seeker: ${userId}`);
+  }
+
+  /**
+   * Handle breeder onboarding completion
+   */
+  static async completeBreederOnboarding(
+    userId: string,
+    userData: {
+      firstName: string;
+      lastName?: string;
+      email: string;
+      phone?: string;
+    }
+  ): Promise<void> {
+    const promises: Promise<void>[] = [];
+
+    // Create subscriber in Novu
+    promises.push(this.createSubscriber(userId, userData));
+
+    // Send welcome notification
+    promises.push(this.sendWelcomeNotification(userId, userData.firstName, userData.email));
+
+    // Wait for all operations to complete
+    await Promise.allSettled(promises);
+
+    console.log(`Completed onboarding setup for breeder: ${userId}`);
+  }
+
+  /**
+   * Send notification to breed interest topic (when new listings match preferences)
+   */
+  static async sendBreedMatchNotification(
+    breedId: string,
+    breedName: string,
+    listingTitle: string,
+    breederName: string,
+    listingId: string
+  ): Promise<void> {
+    try {
+      await novu.trigger({
+        workflowId: 'breed-interest-broadcast',
+        to: { type: "Topic", topicKey: `breed-${breedId}-interested` },
+        payload: {
+          breedId,
+          breedName,
+          listingTitle,
+          breederName,
+          listingId,
+          title: `New ${breedName} Available!`,
+          message: `Check out this new ${breedName} listing from ${breederName}`,
+        },
+      });
+    } catch (error) {
+      console.error('Failed to send breed match notification:', error);
+    }
+  }
+
+  /**
+   * Send notification to breeder subscribers (when breeder adds new content)
+   */
+  static async sendBreederActivityNotification(
+    breederId: string,
+    breederName: string,
+    activityType: 'listing' | 'breed',
+    activityData: {
+      title: string;
+      id: string;
+    }
+  ): Promise<void> {
+    try {
+      const activityTitles = {
+        listing: 'New Listing Added',
+        breed: 'New Breed Added',
+      };
+
+      const activityMessages = {
+        listing: `${breederName} added a new listing: "${activityData.title}"`,
+        breed: `${breederName} added a new breed: "${activityData.title}"`,
+      };
+
+      await novu.trigger({
+        workflowId: 'breeder-activity-broadcast',
+        to: { type: "Topic", topicKey: `breeder-${breederId}-subscribers` },
+        payload: {
+          breederId,
+          breederName,
+          activityType,
+          activityId: activityData.id,
+          activityTitle: activityData.title,
+          title: activityTitles[activityType],
+          message: activityMessages[activityType],
+        },
+      });
+    } catch (error) {
+      console.error('Failed to send breeder activity notification:', error);
+    }
+  }
+
+  /**
    * Mark a notification as read in both database and Novu
    */
   static async markNotificationAsRead(notification: any): Promise<void> {
