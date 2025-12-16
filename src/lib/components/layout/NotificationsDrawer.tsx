@@ -2,29 +2,11 @@ import React from 'react';
 import {
   Box,
   VStack,
-  Heading,
-  Text,
-  Button,
-  Spinner,
-  Alert,
-  AlertIcon,
-  useToast,
-  Link,
   Flex,
   useColorModeValue as mode,
 } from '@chakra-ui/react';
-import { FiBell, FiCheck } from 'react-icons/fi';
-import { useRouter } from 'next/router';
 import { Inbox } from '@novu/react';
 
-import {
-  useNotifications,
-  useMarkNotificationAsRead,
-  useMarkAllNotificationsAsRead,
-  useUnreadNotificationsCount,
-} from '../../../lib/hooks/queries/useNotifications';
-import { Notification, User } from '../../db/schema';
-import { NotificationCard } from '../ui/NotificationCard';
 interface NotificationsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
@@ -52,41 +34,9 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
         <Box flex={1} overflowY="auto">
           <Inbox
             appearance={{
-              baseTheme: {
-                light: {
-                  colors: {
-                    neutral: {
-                      0: mode('white', 'gray.800'),
-                      10: mode('gray.50', 'gray.700'),
-                      20: mode('gray.100', 'gray.600'),
-                      30: mode('gray.200', 'gray.500'),
-                      40: mode('gray.300', 'gray.400'),
-                      50: mode('gray.400', 'gray.300'),
-                      60: mode('gray.500', 'gray.200'),
-                      70: mode('gray.600', 'gray.100'),
-                      80: mode('gray.700', 'gray.50'),
-                      90: mode('gray.800', 'white'),
-                      100: mode('gray.900', 'gray.900'),
-                    },
-                  },
-                },
-                dark: {
-                  colors: {
-                    neutral: {
-                      0: 'gray.800',
-                      10: 'gray.700',
-                      20: 'gray.600',
-                      30: 'gray.500',
-                      40: 'gray.400',
-                      50: 'gray.300',
-                      60: 'gray.200',
-                      70: 'gray.100',
-                      80: 'gray.50',
-                      90: 'white',
-                      100: 'gray.900',
-                    },
-                  },
-                },
+              variables: {
+                colorBackground: mode('white', 'gray.800'),
+                colorForeground: mode('gray.900', 'white'),
               },
             }}
           />
