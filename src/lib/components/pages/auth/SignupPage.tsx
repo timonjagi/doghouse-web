@@ -122,8 +122,7 @@ const SignUp = () => {
         </Box>
         {/* end sidebar */}
 
-        <Box w="full">
-
+        <Box flex="1" overflow="auto">
           <Center flex="1" py="4">
             <Stack
               spacing={{ base: "6", md: "9" }}

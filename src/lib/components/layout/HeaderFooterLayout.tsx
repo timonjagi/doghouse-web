@@ -9,21 +9,17 @@ type LayoutProps = {
   children: ReactNode;
 };
 export const HeaderFooterLayout: React.FC<LayoutProps> = ({ children }) => {
-  const headerHeight = useBreakpointValue({ base: "56px", md: "64px" });
-
   return (
-    <>
+    <Box minH="100vh" display="flex" flexDirection="column">
       <Header />
       <Box
         as="main"
-        h={{ base: `calc(100dvh - ${headerHeight})`, md: "100%" }}
-        overflow="scroll"
+        flex="1"
+        overflow="auto"
       >
         {children}
-
       </Box>
       <Footer />
-
-    </>
+    </Box>
   );
 };

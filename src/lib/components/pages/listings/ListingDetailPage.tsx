@@ -131,6 +131,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
         isClosable: true,
       });
       onDeleteClose();
+      router.push('/dashboard/listings'); // Added redirect after delete
     } catch (error) {
       toast({
         title: "Error",
@@ -154,7 +155,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
       <Alert status="error">
         <AlertIcon />
         Error loading breed listing. Please try again later.
-        {listingError.message}
+        {listingError?.message}
       </Alert>
     );
   }
@@ -207,6 +208,19 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             <PageHeaderWithTwoButtons
               title={getTitle()}
               description={formatPrice(parseInt(listing.price))}
+              badge={
+                <HStack spacing={2}>
+                  <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
+                    {listing.type === 'litter' ? 'Litter' : 'Single Pet'}
+                  </Badge>
+                  <Badge colorScheme={getStatusColor(listing.status)}>
+                    {formatStatus(listing.status)}
+                  </Badge>
+                  {listing.is_featured && (
+                    <Badge colorScheme="purple">Featured</Badge>
+                  )}
+                </HStack>
+              }
               buttonPrimary={isOwner ? {
                 label: "Edit",
                 onClick: onListingFormOpen,
@@ -226,16 +240,12 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 colorScheme: "red",
                 isLoading: deleteListingMutation.isPending,
                 isDisabled: listing.status !== 'available',
-              } : !isOwner && canApply ? {
-                label: "Apply Now",
-                onClick: onApplicationOpen,
-                icon: <ArrowForwardIcon />, // Or a more suitable icon for application
-                colorScheme: "brand",
-              } : !isOwner && !canApply ? {
+              } : listing.status === 'available' ? {
                 label: "Message Seller",
-                onClick: () => router.push(`/chat/${listing.owner_id}`), // Assuming a chat route
+                onClick: onApplicationOpen,
                 icon: <ChatIcon />,
                 colorScheme: "brand",
+                variant: "primary"
               } : undefined}
 
             />
@@ -332,13 +342,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
           </Stack>
 
-          {!isOwner && (
-            <WhatsIncluded
-              buttonText={listing.status === 'available' ? 'Apply Now' : 'Not Available'}
-              buttonSubtext={listing.status === 'available' ? 'Apply now to express your interest in this listing' : `This listing has been ${listing.status} and is no longer available. Please contact the seller for more information or subscribe to be notified when the listing is available again.`}
-              onButtonClick={() => onApplicationOpen()}
-            />
-          )}
+
         </Stack>
 
         <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={undefined} onClose={onDeleteClose}>
@@ -380,7 +384,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           />
         )}
 
-        {/* Adoption Form Modal */}
+        {/* Adoption Form Modal (Unified Message Seller Flow) */}
         {!isOwner && listing && (
           <AdoptionForm
             isOpen={isApplicationOpen}
@@ -388,6 +392,8 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
             listing={listing}
           />
         )}
+
+
 
       </Container >
 

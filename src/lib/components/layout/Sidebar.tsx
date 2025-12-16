@@ -317,67 +317,74 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
 
   return (
     <Flex
-      flex="1"
       bg="bg-accent"
       color="on-accent"
       direction="column"
-      justify="space-between"
-      h="full"
+      h="100dvh"
       w="full"
+      overflow="auto"
+      css={{
+        scrollbarWidth: "none",
+        "::-webkit-scrollbar": {
+          display: "none",
+        },
+      }}
     >
-      <Stack spacing="8" py="6" px="4">
-        <HStack spacing="3" justify="space-between" w="full">
+      <Box flex="1" overflow="auto">
+        <Stack spacing="8" py="6" px="4">
+          <HStack spacing="3" justify="space-between" w="full">
 
-          <Logo color={mode('on-brand', 'on-accent')} />
+            <Logo color={mode('on-brand', 'on-accent')} />
 
-          <ColumnIconButton
-            onClick={onClose}
-            aria-label="Close navigation"
-            icon={<Icon as={FiX} boxSize="6" />}
-            display={{
-              base: "inline-flex",
-              lg: "none",
-            }}
-            color="on-accent"
-          />
-        </HStack>
-
-        {/* Main navigation */}
-        <Stack spacing="1">
-          {LOGGED_OUT_NAV.main.map((item) => (
-            <NavButton
-              key={item.href}
-              label={item.label}
-              icon={item.icon}
-              aria-current={router.pathname === item.href ? "page" : undefined}
-              onClick={() => handleNavClick(item.href)}
+            <ColumnIconButton
+              onClick={onClose}
+              aria-label="Close navigation"
+              icon={<Icon as={FiX} boxSize="6" />}
+              display={{
+                base: "inline-flex",
+                lg: "none",
+              }}
+              color="on-accent"
             />
+          </HStack>
+
+          {/* Main navigation */}
+          <Stack spacing="1">
+            {LOGGED_OUT_NAV.main.map((item) => (
+              <NavButton
+                key={item.href}
+                label={item.label}
+                icon={item.icon}
+                aria-current={router.pathname === item.href ? "page" : undefined}
+                onClick={() => handleNavClick(item.href)}
+              />
+            ))}
+          </Stack>
+
+          {/* Sections */}
+          {LOGGED_OUT_NAV.sections.map((section) => (
+            <Stack key={section.title} spacing="3">
+              <NavHeading variant="on-accent">{section.title}</NavHeading>
+              <Stack spacing="1">
+                {section.items.map((item) => (
+                  <NavButton
+                    key={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    isExternal={item.isExternal}
+                    aria-current={router.pathname === item.href ? "page" : undefined}
+                    onClick={() =>
+                      item.isExternal
+                        ? handleExternalClick(item.href)
+                        : handleNavClick(item.href)
+                    }
+                  />
+                ))}
+              </Stack>
+            </Stack>
           ))}
         </Stack>
-
-        {/* Sections */}
-        {LOGGED_OUT_NAV.sections.map((section) => (
-          <Stack key={section.title} spacing="3">
-            <NavHeading variant="on-accent">{section.title}</NavHeading>
-            <Stack spacing="1">
-              {section.items.map((item) => (
-                <NavButton
-                  key={item.href}
-                  label={item.label}
-                  icon={item.icon}
-                  isExternal={item.isExternal}
-                  aria-current={router.pathname === item.href ? "page" : undefined}
-                  onClick={() =>
-                    item.isExternal
-                      ? handleExternalClick(item.href)
-                      : handleNavClick(item.href)
-                  }
-                />
-              ))}
-            </Stack>
-          </Stack>
-        ))}
-      </Stack>
+      </Box>
 
       {/* Sign In button at bottom */}
       <Box borderTopWidth="1px" borderColor="bg-accent-subtle">

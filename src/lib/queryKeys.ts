@@ -108,6 +108,19 @@ export const queryKeys = {
     unread: (): readonly string[] => ['notifications', 'unread'] as const,
     unreadCount: (userId?: string): readonly string[] => ['notifications', 'unread-count', userId].filter(Boolean) as any,
   },
+
+  // Conversation related queries
+  conversations: {
+    all: (): readonly string[] => ['conversations'] as const,
+    lists: (): readonly string[] => ['conversations', 'list'] as const,
+    list: (filters?: Record<string, unknown>): readonly string[] => ['conversations', 'list', filters].filter(Boolean) as any,
+    details: (): readonly string[] => ['conversations', 'detail'] as const,
+    detail: (id: string): readonly string[] => ['conversations', 'detail', id] as const,
+    withContext: (id: string): readonly string[] => ['conversations', 'detail', 'with-context', id] as const,
+    unreadCount: (userId?: string): readonly string[] => ['conversations', 'unread-count', userId].filter(Boolean) as any,
+    typingUsers: (conversationId: string): readonly string[] => ['conversations', 'typing-users', conversationId] as const,
+    byContext: (contextType: string, contextId?: string): readonly string[] => ['conversations', 'context', contextType, contextId].filter(Boolean) as any,
+  },
 } as const;
 
 // Helper function to create custom query keys with consistent structure

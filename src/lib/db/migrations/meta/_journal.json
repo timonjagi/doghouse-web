@@ -134,6 +134,13 @@
       "when": 1765448630210,
       "tag": "0018_sleepy_slyde",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1765619523366,
+      "tag": "0019_serious_pyro",
+      "breakpoints": true
     }
   ]
 }
