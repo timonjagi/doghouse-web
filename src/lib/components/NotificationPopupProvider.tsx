@@ -29,7 +29,6 @@ export const NotificationPopupProvider: React.FC<NotificationPopupProviderProps>
 
     switch (notificationType) {
       case 'message-received':
-      case 'message_received':
         return {
           component: NotificationAvatar,
           props: {
