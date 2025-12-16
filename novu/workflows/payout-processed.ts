@@ -14,6 +14,18 @@ export const payoutProcessed = workflow('payout-processed', async ({ step, paylo
     };
   });
 
+  // Send push notification to breeder
+  await step.push('push-breeder', async () => {
+    return {
+      subject: 'Payout Processed',
+      body: `Your payout of ₦${payload.amount} has been sent to your account!`,
+      data: {
+        amount: payload.amount,
+        transferReference: payload.transferReference,
+      },
+    };
+  });
+
   // Send email to breeder
   await step.email('email-breeder', async () => {
     return {

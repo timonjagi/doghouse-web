@@ -26,6 +26,17 @@ export const listingCreated = workflow('listing-created', async ({ step, payload
     };
   });
 
+  // Send push notification to breeder
+  await step.push('push-breeder', async () => {
+    return {
+      subject: 'Listing Created Successfully',
+      body: `Your ${payload.listingType} "${payload.listingTitle}" is now live and ready for applications!`,
+      data: {
+        listingId: payload.listingId,
+      },
+    };
+  });
+
   // Send email to breeder
   await step.email('email-breeder', async () => {
     return {

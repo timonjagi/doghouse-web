@@ -19,6 +19,17 @@ export const welcomeUser = workflow('welcome-user', async ({ step, payload }) =>
       data: {},
     };
   });
+
+  // Send push welcome
+  await step.push('welcome-push', async () => {
+    return {
+      subject: 'Welcome to Pethouse!',
+      body: `Hi ${payload.firstName}, welcome to Pethouse! Start exploring amazing pets today.`,
+      data: {
+        userId: payload.userId,
+      },
+    };
+  });
 }, {
   payloadSchema: z.object({
     userId: z.string(),

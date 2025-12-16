@@ -16,6 +16,18 @@ export const adoptionStatusChanged = workflow('adoption-status-changed', async (
     };
   });
 
+  // Send push notification to seeker
+  await step.push('push-seeker', async () => {
+    return {
+      subject: payload.title,
+      body: payload.body?.substring(0, 100) || 'Your adoption status has been updated',
+      data: {
+        adoptionId: payload.adoptionId,
+        status: payload.status,
+      },
+    };
+  });
+
   // Send email to seeker
   await step.email('email-seeker', async () => {
     return {
@@ -33,7 +45,7 @@ export const adoptionStatusChanged = workflow('adoption-status-changed', async (
 
   // If approved, notify breeder
   if (payload.status === 'approved') {
-    await step.inApp('notify-breeder', async () => {
+    await step.inApp('notify-breeder-approved', async () => {
       return {
         subject: 'Adoption Approved',
         body: `The adoption application for "${payload.listingTitle}" has been approved.`,
@@ -43,14 +55,36 @@ export const adoptionStatusChanged = workflow('adoption-status-changed', async (
         },
       };
     });
+
+    await step.push('push-breeder-approved', async () => {
+      return {
+        subject: 'Adoption Approved',
+        body: `Your listing "${payload.listingTitle}" has been approved for adoption!`,
+        data: {
+          adoptionId: payload.adoptionId,
+          listingId: payload.listingId,
+        },
+      };
+    });
   }
 
-  // If completed, notify both
+  // If completed, notify breeder
   if (payload.status === 'completed') {
-    await step.inApp('notify-breeder', async () => {
+    await step.inApp('notify-breeder-completed', async () => {
       return {
         subject: 'Adoption Completed',
         body: `The adoption for "${payload.listingTitle}" has been completed successfully.`,
+        data: {
+          adoptionId: payload.adoptionId,
+          listingId: payload.listingId,
+        },
+      };
+    });
+
+    await step.push('push-breeder-completed', async () => {
+      return {
+        subject: 'Adoption Completed',
+        body: `The adoption for "${payload.listingTitle}" is now complete!`,
         data: {
           adoptionId: payload.adoptionId,
           listingId: payload.listingId,

@@ -11,6 +11,17 @@ export const breederVerified = workflow('breeder-verified', async ({ step, paylo
     };
   });
 
+  // Send push notification
+  await step.push('push-breeder', async () => {
+    return {
+      subject: 'Breeder Verification Approved!',
+      body: 'Congratulations! Your profile has been verified. Start listing your litters today!',
+      data: {
+        breederId: payload.breederId,
+      },
+    };
+  });
+
   // Send WhatsApp
   await step.chat('whatsapp-breeder', async () => {
     return {

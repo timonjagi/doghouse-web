@@ -16,6 +16,19 @@ export const adoptionSubmitted = workflow('adoption-submitted', async ({ step, p
     };
   });
 
+  // Send push notification to breeder
+  await step.push('push-breeder', async () => {
+    return {
+      subject: 'New Adoption Application',
+      body: `Someone applied for your "${payload.listingTitle}" listing!`,
+      data: {
+        listingId: payload.listingId,
+        seekerId: payload.seekerId,
+        adoptionId: payload.adoptionId,
+      },
+    };
+  });
+
   // Send email to breeder
   await step.email('email-breeder', async () => {
     return {
@@ -43,6 +56,18 @@ export const adoptionSubmitted = workflow('adoption-submitted', async ({ step, p
       body: `Your application for "${payload.listingTitle}" has been submitted successfully.`,
       data: {
         listingId: payload.listingId,
+      },
+    };
+  });
+
+  // Send push confirmation to seeker
+  await step.push('push-seeker', async () => {
+    return {
+      subject: 'Application Submitted',
+      body: `Your adoption application for "${payload.listingTitle}" has been submitted!`,
+      data: {
+        listingId: payload.listingId,
+        adoptionId: payload.adoptionId,
       },
     };
   });
