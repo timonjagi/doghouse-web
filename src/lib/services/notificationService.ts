@@ -210,15 +210,15 @@ export class NotificationService {
           {
             db: {
               userId: 'admin',
-              type: 'adoption_status_changed',
-              title: 'Adoption Status: Under Review',
-              body: `Adoption application for "${listingTitle}" is now under review`,
+              type: 'adoption-submitted',
+              title: 'Adoption Application Submitted',
+              body: `A new adoption application has been submitted for "${listingTitle}" and is now under review`,
               targetType: 'application',
               targetId: listingId,
               meta: { adoptionId, listingId, status, seekerId, breederId },
             },
             novu: {
-              workflowId: 'adoption-status-changed',
+              workflowId: 'adoption-submitted',
               to: { subscriberId: 'admin' },
               payload: {
                 adoptionId,
@@ -227,8 +227,8 @@ export class NotificationService {
                 seekerId,
                 breederId,
                 status,
-                title: 'Adoption Status: Under Review',
-                body: `Adoption application for "${listingTitle}" is now under review`,
+                title: 'Adoption Application Submitted',
+                body: `A new adoption application has been submitted for "${listingTitle}" and is now under review`,
               },
             }
           }
@@ -495,10 +495,11 @@ export class NotificationService {
   }
 
   /**
-   * Send payment confirmation notification
+   * Send payment confirmation notifications to all relevant parties
    */
   static async sendPaymentNotification(
-    userId: string,
+    seekerId: string,
+    breederId: string,
     paymentType: 'reservation' | 'final',
     listingTitle: string,
     amount: number,
@@ -506,35 +507,115 @@ export class NotificationService {
     listingId: string,
     transactionId: string
   ): Promise<void> {
-    const isReservation = paymentType === 'reservation';
-    const title = isReservation ? 'Reservation Payment Confirmed' : 'Final Payment Confirmed';
-    const body = isReservation
-      ? `Your reservation payment for ${listingTitle} has been confirmed. The listing is now reserved for you.`
-      : `Your final payment for ${listingTitle} has been confirmed. Your adoption is now complete!`;
+    const notifications: Array<{
+      db: NotificationPayload;
+      novu?: NovuNotificationPayload;
+    }> = [];
 
-    await this.sendNotification(
-      {
-        userId,
+    const isReservation = paymentType === 'reservation';
+    const commissionFee = amount * 0.1; // 10% commission
+    const earnings = amount - commissionFee;
+
+    // Notify seeker of payment confirmation
+    notifications.push({
+      db: {
+        userId: seekerId,
         type: 'payment_completed',
-        title,
-        body,
+        title: isReservation ? 'Reservation Payment Confirmed' : 'Final Payment Confirmed',
+        body: isReservation
+          ? `Your reservation payment for ${listingTitle} has been confirmed. The listing is now reserved for you.`
+          : `Your final payment for ${listingTitle} has been confirmed. Your adoption is now complete!`,
         targetType: 'application',
         targetId: listingId,
         meta: { applicationId, listingId, paymentType, transactionId, amount },
       },
-      {
-        workflowId: 'final-payment-completed', // Use the same workflow for both
-        to: { subscriberId: userId },
+      novu: {
+        workflowId: 'final-payment-completed', // Use the same workflow for both payment types
+        to: { subscriberId: seekerId },
         payload: {
           applicationId,
           listingId,
           listingTitle,
-          seekerId: userId,
+          seekerId,
           amount,
           paymentType,
         },
       }
-    );
+    });
+
+    // Notify breeder of payment received
+    notifications.push({
+      db: {
+        userId: breederId,
+        type: 'payment_received',
+        title: isReservation ? 'Reservation Payment Received' : 'Final Payment Received',
+        body: isReservation
+          ? `You have received a reservation payment of ₦${amount}. The listing is now reserved.`
+          : `You have received the final payment of ₦${amount}. Payout will be processed soon.`,
+        targetType: 'application',
+        targetId: applicationId,
+        meta: {
+          applicationId,
+          paymentType,
+          transactionId,
+          amount,
+          earnings,
+        },
+      },
+      novu: {
+        workflowId: isReservation ? 'reservation-fee-paid' : 'final-payment-completed',
+        to: { subscriberId: breederId },
+        payload: {
+          applicationId,
+          listingId,
+          listingTitle,
+          seekerId,
+          breederId,
+          amount,
+          earnings,
+          paymentType,
+        },
+      }
+    });
+
+    // Notify admin of payment
+    notifications.push({
+      db: {
+        userId: 'admin',
+        type: 'payment_processed',
+        title: isReservation ? 'Reservation Payment Processed' : 'Final Payment Processed',
+        body: isReservation
+          ? `Reservation payment of ₦${amount} processed for "${listingTitle}".`
+          : `Final payment of ₦${amount} processed for "${listingTitle}".`,
+        targetType: 'application',
+        targetId: applicationId,
+        meta: {
+          applicationId,
+          listingId,
+          paymentType,
+          transactionId,
+          amount,
+          seekerId,
+          breederId,
+        },
+      },
+      novu: {
+        workflowId: isReservation ? 'reservation-fee-paid' : 'final-payment-completed',
+        to: { subscriberId: 'admin' },
+        payload: {
+          applicationId,
+          listingId,
+          listingTitle,
+          seekerId,
+          breederId,
+          amount,
+          paymentType,
+        },
+      }
+    });
+
+    // Send all notifications
+    await this.sendNotifications(notifications);
   }
 
   /**

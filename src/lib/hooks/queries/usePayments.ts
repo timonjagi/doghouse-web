@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { NotificationService } from '../../services/notificationService';
+import { useUpdateAdoption } from './useAdoptions';
 
 export interface PaymentInitParams {
   amount: number;
@@ -175,6 +176,7 @@ export const useInitiatePayment = () => {
 // Mutation to verify payment
 export const useVerifyPayment = (applicationId?: string) => {
   const queryClient = useQueryClient();
+  const updateAdoptionMutation = useUpdateAdoption();
 
   return useMutation({
     mutationFn: async (reference: string): Promise<PaymentVerificationResponse> => {
@@ -216,10 +218,8 @@ export const useVerifyPayment = (applicationId?: string) => {
               .select()
               .single();
 
-            console.log('updted txn', txn)
-
             if (txError) throw txError;
-            // Update application fields based on payment type
+            // Update application fields using the useUpdateAdoption hook (which handles notifications)
             const updateData: any = {};
             if (paymentType === 'reservation') {
               updateData.reservation_paid = true;
@@ -229,69 +229,23 @@ export const useVerifyPayment = (applicationId?: string) => {
             }
 
             if (Object.keys(updateData).length > 0) {
-              console.log(updateData)
-              const { data: app, error: appError } = await supabase
-                .from('applications')
-                .update({
-                  ...updateData,
-                  updated_at: new Date().toISOString(),
-                })
-                .eq('id', applicationId)
-                .select()
-                .single();
+              // Use the updateAdoption hook which will handle status change notifications automatically
+              await updateAdoptionMutation.mutateAsync({
+                id: applicationId,
+                updates: updateData
+              });
 
-              if (appError) throw appError;
-
-              console.log('updated application', app)
-
-              // Send notifications using the service
-              await Promise.all([
-                // Notify seeker
-                NotificationService.sendPaymentNotification(
-                  app.seeker_id,
-                  paymentType,
-                  app.listings?.title || 'Listing',
-                  txn.amount,
-                  app.id,
-                  app.listing_id,
-                  txn.id
-                ),
-                // Notify breeder
-                NotificationService.sendNotification(
-                  {
-                    userId: app.listings?.owner_id,
-                    type: 'payment_received',
-                    title: paymentType === 'reservation' ? 'Reservation Payment Received' : 'Final Payment Received',
-                    body: paymentType === 'reservation'
-                      ? `You have received a reservation payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}.`
-                      : `You have received the final payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}. Payout will be processed soon.`,
-                    targetType: 'application',
-                    targetId: app.listing_id,
-                    meta: {
-                      applicationId: app.id,
-                      listingId: app.listing_id,
-                      paymentType,
-                      transactionId: txn.id,
-                      amount: txn.amount,
-                      earnings: txn.amount - txn.commission_fee,
-                    },
-                  },
-                  {
-                    workflowId: paymentType === 'reservation' ? 'reservation-fee-paid' : 'final-payment-completed',
-                    to: { subscriberId: app.listings.owner_id },
-                    payload: {
-                      applicationId: app.id,
-                      listingId: app.listing_id,
-                      listingTitle: app.listings?.title || 'Listing',
-                      seekerId: app.seeker_id,
-                      breederId: app.listings.owner_id,
-                      amount: txn.amount,
-                      earnings: txn.amount - txn.commission_fee,
-                      paymentType,
-                    },
-                  }
-                ),
-              ]);
+              // Payment-specific notifications for all parties (seeker, breeder, admin)
+              await NotificationService.sendPaymentNotification(
+                txn.seeker_id,
+                txn.breeder_id,
+                paymentType,
+                'Listing', // Will be replaced with actual title if available
+                txn.amount,
+                applicationId,
+                txn.meta?.listing_id || '',
+                txn.id
+              );
             }
           }
         } catch (error) {
