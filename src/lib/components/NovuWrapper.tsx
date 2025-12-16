@@ -16,7 +16,7 @@ const NovuWrapper: React.FC<NovuWrapperProps> = ({ children }) => {
   return (
     <NovuProvider
       subscriberId={user.id}
-      applicationIdentifier={process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER!}
+      applicationIdentifier={process.env.NOVU_APPLICATION_IDENTIFIER!}
     >
       <NotificationPopupProvider>
         {children}
