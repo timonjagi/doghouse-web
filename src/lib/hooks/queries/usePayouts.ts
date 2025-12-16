@@ -50,7 +50,7 @@ export const useProcessBreederPayout = () => {
         accountNumber?: string;
       };
     }) => PayoutService.processBreederPayout(breederId, payoutOptions),
-    onSuccess: (result, { breederId }) => {
+    onSuccess: async (result, { breederId }) => {
       if (result.success) {
         // Invalidate relevant queries
         queryClient.invalidateQueries({ queryKey: queryKeys.payouts.pending() });
@@ -77,7 +77,7 @@ export const useProcessAllPayouts = () => {
 
   return useMutation({
     mutationFn: () => PayoutService.processAllPendingPayouts(),
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       if (result.success || result.processed > 0) {
         // Invalidate all payout-related queries
         queryClient.invalidateQueries({ queryKey: queryKeys.payouts.all() });

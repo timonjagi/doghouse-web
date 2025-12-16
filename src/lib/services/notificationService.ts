@@ -19,6 +19,30 @@ export interface NovuNotificationPayload {
   payload: Record<string, any>;
 }
 
+// Notification types for better type safety
+export enum NotificationType {
+  ADOPTION_STATUS_CHANGED = 'adoption_status_changed',
+  PAYMENT_COMPLETED = 'payment_completed',
+  PAYOUT_PROCESSED = 'payout_processed',
+  WELCOME = 'welcome',
+  BREED_MATCH_FOUND = 'breed_match_found',
+  LISTING_CREATED = 'listing_created',
+  BREEDER_VERIFIED = 'breeder_verified',
+  PASSWORD_RESET = 'password_reset',
+  EMAIL_VERIFICATION = 'email_verification',
+  OTP_LOGIN = 'otp_login'
+}
+
+// Action types for notifications
+export enum NotificationAction {
+  VIEW_ADOPTION = 'view_adoption',
+  VIEW_LISTING = 'view_listing',
+  VIEW_PAYMENT = 'view_payment',
+  REPLY_MESSAGE = 'reply_message',
+  VIEW_PROFILE = 'view_profile',
+  MARK_READ = 'mark_read'
+}
+
 export class NotificationService {
   /**
    * Send both database notification and Novu workflow trigger
@@ -26,19 +50,30 @@ export class NotificationService {
   static async sendNotification(
     dbPayload: NotificationPayload,
     novuPayload?: NovuNotificationPayload
-  ): Promise<void> {
-    const promises: Promise<any>[] = [];
+  ): Promise<string | null> {
+    let dbNotificationId: string | null = null;
 
-    // Always insert into database
-    promises.push(this.insertDatabaseNotification(dbPayload));
-
-    // Trigger Novu workflow if provided
-    if (novuPayload) {
-      promises.push(this.triggerNovuWorkflow(novuPayload));
+    // Always insert into database first to get the ID
+    try {
+      dbNotificationId = await this.insertDatabaseNotification(dbPayload);
+    } catch (error) {
+      console.error('Failed to insert database notification:', error);
     }
 
-    // Execute both operations in parallel
-    await Promise.allSettled(promises);
+    // Trigger Novu workflow if provided, include DB ID in payload
+    if (novuPayload) {
+      if (dbNotificationId) {
+        // Store the DB notification ID in Novu payload for correlation
+        novuPayload.payload.dbNotificationId = dbNotificationId;
+      }
+      try {
+        await this.triggerNovuWorkflow(novuPayload);
+      } catch (error) {
+        console.error('Novu notification error:', error);
+      }
+    }
+
+    return dbNotificationId;
   }
 
   /**
@@ -65,9 +100,9 @@ export class NotificationService {
   /**
    * Insert notification into Supabase database
    */
-  private static async insertDatabaseNotification(payload: NotificationPayload): Promise<void> {
+  private static async insertDatabaseNotification(payload: NotificationPayload): Promise<string | null> {
     try {
-      const { error } = await supabase.from('notifications').insert({
+      const { data, error } = await supabase.from('notifications').insert({
         user_id: payload.userId,
         type: payload.type,
         title: payload.title,
@@ -75,15 +110,17 @@ export class NotificationService {
         target_type: payload.targetType,
         target_id: payload.targetId,
         meta: payload.meta,
-      });
+      }).select('id').single();
 
       if (error) {
         console.error('Failed to insert database notification:', error);
-        throw error;
+        return null;
       }
+
+      return data?.id || null;
     } catch (error) {
       console.error('Database notification error:', error);
-      // Don't throw - we don't want DB errors to break the flow
+      return null;
     }
   }
 
@@ -292,5 +329,41 @@ export class NotificationService {
         },
       }
     );
+  }
+
+  /**
+   * Mark a notification as read in both database and Novu
+   */
+  static async markNotificationAsRead(notification: any): Promise<void> {
+    const promises: Promise<any>[] = [];
+
+    // Mark as read in Novu
+    promises.push(notification.markAsRead());
+
+    // Mark as read in database using the stored DB notification ID
+    const dbNotificationId = notification.data?.dbNotificationId;
+    if (dbNotificationId) {
+      promises.push(this.updateDatabaseNotificationReadStatus(dbNotificationId, true));
+    }
+
+    await Promise.allSettled(promises);
+  }
+
+  /**
+   * Update notification read status in database
+   */
+  private static async updateDatabaseNotificationReadStatus(notificationId: string, read: boolean): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: read })
+        .eq('id', notificationId);
+
+      if (error) {
+        console.error('Database notification read status update error:', error);
+      }
+    } catch (error) {
+      console.error('Database notification read status update error:', error);
+    }
   }
 }
