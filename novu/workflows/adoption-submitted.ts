@@ -1,5 +1,6 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
+import { createAdoptionSubmittedEmail, createNewApplicationEmail } from '../../src/lib/emailTemplates';
 
 export const adoptionSubmitted = workflow('adoption-submitted', async ({ step, payload }) => {
   // Send in-app notification to breeder
@@ -12,6 +13,19 @@ export const adoptionSubmitted = workflow('adoption-submitted', async ({ step, p
         listingId: payload.listingId,
         seekerId: payload.seekerId,
       },
+    };
+  });
+
+  // Send email to breeder
+  await step.email('email-breeder', async () => {
+    return {
+      subject: 'New Adoption Application Received',
+      body: createNewApplicationEmail(
+        payload.breederName,
+        payload.listingTitle,
+        payload.seekerName,
+        payload.adoptionId
+      ),
     };
   });
 
@@ -30,6 +44,18 @@ export const adoptionSubmitted = workflow('adoption-submitted', async ({ step, p
       data: {
         listingId: payload.listingId,
       },
+    };
+  });
+
+  // Send email confirmation to seeker
+  await step.email('email-seeker', async () => {
+    return {
+      subject: 'Adoption Application Submitted',
+      body: createAdoptionSubmittedEmail(
+        payload.seekerName,
+        payload.listingTitle,
+        payload.adoptionId
+      ),
     };
   });
 

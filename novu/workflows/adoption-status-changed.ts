@@ -1,5 +1,6 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
+import { createAdoptionStatusEmail } from '../../src/lib/emailTemplates';
 
 export const adoptionStatusChanged = workflow('adoption-status-changed', async ({ step, payload }) => {
   // Notify seeker of status change
@@ -19,7 +20,14 @@ export const adoptionStatusChanged = workflow('adoption-status-changed', async (
   await step.email('email-seeker', async () => {
     return {
       subject: payload.title,
-      body: `Hi ${payload.seekerName},\n\n${payload.body}\n\nView details: [link to adoption]\n\nBest regards,\nPethouse Team`,
+      body: createAdoptionStatusEmail(
+        payload.seekerName,
+        payload.title,
+        payload.body,
+        payload.adoptionId,
+        payload.listingTitle,
+        payload.status
+      ),
     };
   });
 
@@ -28,7 +36,7 @@ export const adoptionStatusChanged = workflow('adoption-status-changed', async (
     await step.inApp('notify-breeder', async () => {
       return {
         subject: 'Adoption Approved',
-        body: `The adoption for "${payload.listingTitle}" has been approved.`,
+        body: `The adoption application for "${payload.listingTitle}" has been approved.`,
         data: {
           adoptionId: payload.adoptionId,
           listingId: payload.listingId,
