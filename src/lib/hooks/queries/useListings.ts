@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { Listing } from '../../db/schema';
-import novu from '../../novu';
+import { NotificationService } from '../../services/notificationService';
 
 interface CreateListingData {
   title: string;
@@ -549,45 +549,71 @@ export const useCreateListing = () => {
       return data;
     },
     onSuccess: async (data) => {
-      // Trigger Novu workflow for listing created
-      try {
-        const { data: breeder } = await supabase
-          .from('users')
-          .select('display_name')
-          .eq('id', data.owner_id)
-          .single();
+      // Send notifications using the service
+      const { data: breeder } = await supabase
+        .from('users')
+        .select('display_name')
+        .eq('id', data.owner_id)
+        .single();
 
-        await novu.trigger({
-          workflowId: 'listing-created',
-          to: {
-            subscriberId: 'admin', // Notify admin
+      await Promise.all([
+        // Notify admin
+        NotificationService.sendNotification(
+          {
+            userId: 'admin',
+            type: 'listing_created',
+            title: 'New Listing Created',
+            body: `${breeder?.display_name || 'A breeder'} created a new ${data.type} listing: ${data.title}`,
+            targetType: 'listing',
+            targetId: data.id,
+            meta: {
+              listingId: data.id,
+              listingTitle: data.title,
+              listingType: data.type,
+              breederId: data.owner_id,
+              breederName: breeder?.display_name,
+            },
           },
-          payload: {
-            listingId: data.id,
-            listingTitle: data.title,
-            listingType: data.type,
-            breederId: data.owner_id,
-            breederName: breeder?.display_name || 'Breeder',
+          {
+            workflowId: 'listing-created',
+            to: { subscriberId: 'admin' },
+            payload: {
+              listingId: data.id,
+              listingTitle: data.title,
+              listingType: data.type,
+              breederId: data.owner_id,
+              breederName: breeder?.display_name || 'Breeder',
+            },
+          }
+        ),
+        // Notify breeder
+        NotificationService.sendNotification(
+          {
+            userId: data.owner_id,
+            type: 'listing_created',
+            title: 'Listing Created Successfully',
+            body: `Your ${data.type} listing "${data.title}" has been created and is now live.`,
+            targetType: 'listing',
+            targetId: data.id,
+            meta: {
+              listingId: data.id,
+              listingTitle: data.title,
+              listingType: data.type,
+            },
           },
-        });
-
-        // Also notify the breeder
-        await novu.trigger({
-          workflowId: 'listing-created',
-          to: {
-            subscriberId: data.owner_id,
-          },
-          payload: {
-            listingId: data.id,
-            listingTitle: data.title,
-            listingType: data.type,
-            breederId: data.owner_id,
-            breederName: breeder?.display_name || 'Breeder',
-          },
-        });
-      } catch (novuError) {
-        console.error('Failed to send Novu notifications:', novuError);
-      }
+          {
+            workflowId: 'listing-created',
+            to: { subscriberId: data.owner_id },
+            payload: {
+              listingId: data.id,
+              listingTitle: data.title,
+              listingType: data.type,
+              breederId: data.owner_id,
+              breederName: breeder?.display_name || 'Breeder',
+            },
+          }
+        ),
+      ]);
 
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
     },

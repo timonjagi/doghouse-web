@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
-import novu from '../../novu';
+import { NotificationService } from '../../services/notificationService';
 
 export interface PaymentInitParams {
   amount: number;
@@ -244,92 +244,40 @@ export const useVerifyPayment = (applicationId?: string) => {
 
               console.log('updated application', app)
 
-              // Create notifications for payment completion
-              try {
-                let seekerTitle = '';
-                let seekerBody = '';
-                let breederTitle = '';
-                let breederBody = '';
-
-                if (paymentType === 'reservation') {
-                  seekerTitle = 'Reservation Payment Confirmed';
-                  seekerBody = `Your reservation payment for ${app.listings?.title || 'the listing'} has been confirmed. The listing is now reserved for you.`;
-                  breederTitle = 'Reservation Payment Received';
-                  breederBody = `You have received a reservation payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}.`;
-                } else if (paymentType === 'final') {
-                  seekerTitle = 'Final Payment Confirmed';
-                  seekerBody = `Your final payment for ${app.listings?.title || 'the listing'} has been confirmed. Your adoption is now complete!`;
-                  breederTitle = 'Final Payment Received';
-                  breederBody = `You have received the final payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}. Payout will be processed soon.`;
-                }
-
+              // Send notifications using the service
+              await Promise.all([
                 // Notify seeker
-                if (seekerTitle && seekerBody) {
-                  await supabase
-                    .from('notifications')
-                    .insert({
-                      user_id: app.seeker_id,
-                      type: 'payment_completed',
-                      title: seekerTitle,
-                      body: seekerBody,
-                      target_type: 'application',
-                      target_id: app.listing_id,
-                      meta: {
-                        applicationId: app.id,
-                        listingId: app.listing_id,
-                        paymentType,
-                        transactionId: txn.id,
-                        amount: txn.amount,
-                      },
-                    });
-                }
-
+                NotificationService.sendPaymentNotification(
+                  app.seeker_id,
+                  paymentType,
+                  app.listings?.title || 'Listing',
+                  txn.amount,
+                  app.id,
+                  app.listing_id,
+                  txn.id
+                ),
                 // Notify breeder
-                if (breederTitle && breederBody) {
-                  await supabase
-                    .from('notifications')
-                    .insert({
-                      user_id: app.listings?.owner_id,
-                      type: 'payment_received',
-                      title: breederTitle,
-                      body: breederBody,
-                      target_type: 'application',
-                      target_id: app.listing_id,
-                      meta: {
-                        applicationId: app.id,
-                        listingId: app.listing_id,
-                        paymentType,
-                        transactionId: txn.id,
-                        amount: txn.amount,
-                        earnings: txn.amount - txn.commission_fee,
-                      },
-                    });
-                }
-              } catch (notificationError) {
-                console.error('Failed to create payment notifications:', notificationError);
-                // Don't fail the payment if notification creation fails
-              }
-
-              // Trigger Novu notifications
-              try {
-                if (paymentType === 'reservation') {
-                  // Trigger for seeker
-                  await novu.trigger({
-                    workflowId: 'reservation-fee-paid',
-                    to: { subscriberId: app.seeker_id },
-                    payload: {
+                NotificationService.sendNotification(
+                  {
+                    userId: app.listings?.owner_id,
+                    type: 'payment_received',
+                    title: paymentType === 'reservation' ? 'Reservation Payment Received' : 'Final Payment Received',
+                    body: paymentType === 'reservation'
+                      ? `You have received a reservation payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}.`
+                      : `You have received the final payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}. Payout will be processed soon.`,
+                    targetType: 'application',
+                    targetId: app.listing_id,
+                    meta: {
                       applicationId: app.id,
                       listingId: app.listing_id,
-                      listingTitle: app.listings?.title || 'Listing',
-                      seekerId: app.seeker_id,
-                      breederId: app.listings.owner_id,
-                      amount: txn.amount,
                       paymentType,
+                      transactionId: txn.id,
+                      amount: txn.amount,
+                      earnings: txn.amount - txn.commission_fee,
                     },
-                  });
-                  // Trigger for breeder
-                  await novu.trigger({
-                    workflowId: 'reservation-fee-paid',
+                  },
+                  {
+                    workflowId: paymentType === 'reservation' ? 'reservation-fee-paid' : 'final-payment-completed',
                     to: { subscriberId: app.listings.owner_id },
                     payload: {
                       applicationId: app.id,
@@ -341,41 +289,9 @@ export const useVerifyPayment = (applicationId?: string) => {
                       earnings: txn.amount - txn.commission_fee,
                       paymentType,
                     },
-                  });
-                } else if (paymentType === 'final') {
-                  // Trigger for seeker
-                  await novu.trigger({
-                    workflowId: 'final-payment-completed',
-                    to: { subscriberId: app.seeker_id },
-                    payload: {
-                      applicationId: app.id,
-                      listingId: app.listing_id,
-                      listingTitle: app.listings?.title || 'Listing',
-                      seekerId: app.seeker_id,
-                      breederId: app.listings.owner_id,
-                      amount: txn.amount,
-                      paymentType,
-                    },
-                  });
-                  // Trigger for breeder
-                  await novu.trigger({
-                    workflowId: 'final-payment-completed',
-                    to: { subscriberId: app.listings.owner_id },
-                    payload: {
-                      applicationId: app.id,
-                      listingId: app.listing_id,
-                      listingTitle: app.listings?.title || 'Listing',
-                      seekerId: app.seeker_id,
-                      breederId: app.listings.owner_id,
-                      amount: txn.amount,
-                      earnings: txn.amount - txn.commission_fee,
-                      paymentType,
-                    },
-                  });
-                }
-              } catch (novuError) {
-                console.error('Failed to send Novu notifications:', novuError);
-              }
+                  }
+                ),
+              ]);
             }
           }
         } catch (error) {

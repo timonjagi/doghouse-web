@@ -3,7 +3,7 @@ import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { User } from '../../db/schema';
 import { useCurrentUser } from './useAuth';
-import novu from '../../novu';
+import { NotificationService } from '../../services/notificationService';
 
 interface UpdateProfileData {
   display_name?: string;
@@ -117,36 +117,20 @@ export const useCreateUserProfile = () => {
       return data;
     },
     onSuccess: async (data) => {
-      // Trigger welcome notification
-      try {
-        await novu.trigger({
-          workflowId: 'welcome-user',
-          to: {
-            subscriberId: data.id,
-          },
-          payload: {
-            userId: data.id,
-            firstName: data.display_name || data.email.split('@')[0],
-            email: data.email,
-          },
-        });
-
-        // Trigger admin notification for new user
-        await novu.trigger({
-          workflowId: 'new-user-signup',
-          to: {
-            subscriberId: 'admin', // Assuming admin subscriber ID, or use specific admin ID
-          },
-          payload: {
-            userId: data.id,
-            firstName: data.display_name || data.email.split('@')[0],
-            email: data.email,
-            role: data.role || 'seeker',
-          },
-        });
-      } catch (novuError) {
-        console.error('Failed to send notifications:', novuError);
-      }
+      // Send welcome and admin notifications using the service
+      await Promise.all([
+        NotificationService.sendWelcomeNotification(
+          data.id,
+          data.display_name || data.email.split('@')[0],
+          data.email
+        ),
+        NotificationService.sendNewUserSignupNotification(
+          data.id,
+          data.display_name || data.email.split('@')[0],
+          data.email,
+          data.role || 'seeker'
+        ),
+      ]);
 
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all() });

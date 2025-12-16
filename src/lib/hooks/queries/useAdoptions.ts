@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { Adoption } from '../../db/schema';
-import novu from '../../novu';
+import { NotificationService } from '../../services/notificationService';
 
 // Extended Adoption type with related data
 export interface AdoptionWithListing extends Adoption {
@@ -315,76 +315,112 @@ export const useCreateAdoption = () => {
       return data;
     },
     onSuccess: async (data) => {
-      // Trigger Novu workflow for adoption submitted
-      try {
-        // Get additional data for payload
-        const { data: seeker } = await supabase
-          .from('users')
-          .select('display_name, profile_photo_url')
-          .eq('id', data.seeker_id)
-          .single();
+      // Send adoption submitted notifications using the service
+      const { data: seeker } = await supabase
+        .from('users')
+        .select('display_name, profile_photo_url')
+        .eq('id', data.seeker_id)
+        .single();
 
-        const { data: breeder } = await supabase
-          .from('users')
-          .select('display_name')
-          .eq('id', data.listings.owner_id)
-          .single();
+      const { data: breeder } = await supabase
+        .from('users')
+        .select('display_name')
+        .eq('id', data.listings.owner_id)
+        .single();
 
-        await novu.trigger({
-          workflowId: 'adoption-submitted',
-          to: {
-            subscriberId: data.listings.owner_id, // breeder
+      await Promise.all([
+        // Notify breeder
+        NotificationService.sendNotification(
+          {
+            userId: data.listings.owner_id,
+            type: 'adoption_submitted',
+            title: 'New Adoption Application',
+            body: `${seeker?.display_name || 'A seeker'} has submitted an adoption application for your listing "${data.listings.title}".`,
+            targetType: 'application',
+            targetId: data.listing_id,
+            meta: {
+              adoptionId: data.id,
+              listingId: data.listing_id,
+              seekerId: data.seeker_id,
+              seekerName: seeker?.display_name,
+            },
           },
-          payload: {
-            listingId: data.listing_id,
-            listingTitle: data.listings.title,
-            breederId: data.listings.owner_id,
-            breederName: breeder?.display_name || 'Breeder',
-            seekerId: data.seeker_id,
-            seekerName: seeker?.display_name || 'Seeker',
-            seekerAvatar: seeker?.profile_photo_url,
-            adoptionId: data.id,
+          {
+            workflowId: 'adoption-submitted',
+            to: { subscriberId: data.listings.owner_id },
+            payload: {
+              listingId: data.listing_id,
+              listingTitle: data.listings.title,
+              breederId: data.listings.owner_id,
+              breederName: breeder?.display_name || 'Breeder',
+              seekerId: data.seeker_id,
+              seekerName: seeker?.display_name || 'Seeker',
+              seekerAvatar: seeker?.profile_photo_url,
+              adoptionId: data.id,
+            },
+          }
+        ),
+        // Notify seeker
+        NotificationService.sendNotification(
+          {
+            userId: data.seeker_id,
+            type: 'adoption_submitted',
+            title: 'Adoption Application Submitted',
+            body: `Your adoption application for "${data.listings.title}" has been submitted successfully.`,
+            targetType: 'application',
+            targetId: data.listing_id,
+            meta: {
+              adoptionId: data.id,
+              listingId: data.listing_id,
+            },
           },
-        });
-
-        // Also trigger for seeker confirmation
-        await novu.trigger({
-          workflowId: 'adoption-submitted',
-          to: {
-            subscriberId: data.seeker_id,
+          {
+            workflowId: 'adoption-submitted',
+            to: { subscriberId: data.seeker_id },
+            payload: {
+              listingId: data.listing_id,
+              listingTitle: data.listings.title,
+              breederId: data.listings.owner_id,
+              breederName: breeder?.display_name || 'Breeder',
+              seekerId: data.seeker_id,
+              seekerName: seeker?.display_name || 'Seeker',
+              seekerAvatar: seeker?.profile_photo_url,
+              adoptionId: data.id,
+            },
+          }
+        ),
+        // Notify admin
+        NotificationService.sendNotification(
+          {
+            userId: 'admin',
+            type: 'adoption_submitted',
+            title: 'New Adoption Application',
+            body: `${seeker?.display_name || 'A seeker'} submitted an application for "${data.listings.title}" by ${breeder?.display_name || 'a breeder'}.`,
+            targetType: 'application',
+            targetId: data.listing_id,
+            meta: {
+              adoptionId: data.id,
+              listingId: data.listing_id,
+              seekerId: data.seeker_id,
+              breederId: data.listings.owner_id,
+            },
           },
-          payload: {
-            listingId: data.listing_id,
-            listingTitle: data.listings.title,
-            breederId: data.listings.owner_id,
-            breederName: breeder?.display_name || 'Breeder',
-            seekerId: data.seeker_id,
-            seekerName: seeker?.display_name || 'Seeker',
-            seekerAvatar: seeker?.profile_photo_url,
-            adoptionId: data.id,
-          },
-        });
-
-        // Trigger for admin
-        await novu.trigger({
-          workflowId: 'adoption-submitted',
-          to: {
-            subscriberId: 'admin', // Use actual admin ID
-          },
-          payload: {
-            listingId: data.listing_id,
-            listingTitle: data.listings.title,
-            breederId: data.listings.owner_id,
-            breederName: breeder?.display_name || 'Breeder',
-            seekerId: data.seeker_id,
-            seekerName: seeker?.display_name || 'Seeker',
-            seekerAvatar: seeker?.profile_photo_url,
-            adoptionId: data.id,
-          },
-        });
-      } catch (novuError) {
-        console.error('Failed to send Novu notifications:', novuError);
-      }
+          {
+            workflowId: 'adoption-submitted',
+            to: { subscriberId: 'admin' },
+            payload: {
+              listingId: data.listing_id,
+              listingTitle: data.listings.title,
+              breederId: data.listings.owner_id,
+              breederName: breeder?.display_name || 'Breeder',
+              seekerId: data.seeker_id,
+              seekerName: seeker?.display_name || 'Seeker',
+              seekerAvatar: seeker?.profile_photo_url,
+              adoptionId: data.id,
+            },
+          }
+        ),
+      ]);
 
       queryClient.invalidateQueries({ queryKey: queryKeys.adoptions.byUser() });
       queryClient.invalidateQueries({ queryKey: queryKeys.adoptions.received() });
@@ -484,105 +520,47 @@ export const useUpdateAdoption = () => {
 
       // Create notification for seeker when status changes
       if (data.status === 'pending' || data.status === 'rejected' || data.status === 'withdrawn') {
-        try {
-          let title = '';
-          let body = '';
-          const listingTitle = data.listings?.title || 'listing';
+        // Send notification to seeker
+        await NotificationService.sendAdoptionStatusNotification(
+          data.seeker_id,
+          data.status,
+          data.listings?.title || 'Listing',
+          data.id,
+          data.listing_id
+        );
 
-          switch (data.status) {
-            case 'pending':
-              title = 'Adoption Under Review';
-              body = `Your adoption application for ${listingTitle} is now being reviewed by the breeder`;
-              break;
-            case 'rejected':
-              title = 'Adoption Application Not Approved';
-              body = `Your adoption application for ${listingTitle} was not approved at this time`;
-              break;
-            case 'withdrawn':
-              title = 'Adoption Application Withdrawn';
-              body = `You have successfully withdrawn your application for ${listingTitle}`;
-              break;
-          }
-
-          // Insert Supabase notification for seeker
-          await supabase.from('notifications').insert({
-            user_id: data.seeker_id,
-            type: 'adoption_status_changed',
-            title,
-            body,
-            target_type: 'application',
-            target_id: data.listing_id,
-            meta: {
-              adoptionId: data.id,
-              listingId: data.listing_id,
-              status: data.status,
-            },
-          });
-
-          // For breeder if withdrawn
-          if (data.status === 'withdrawn') {
-            await supabase.from('notifications').insert({
-              user_id: data.listings.owner_id,
+        // If withdrawn, also notify breeder
+        if (data.status === 'withdrawn') {
+          await NotificationService.sendNotification(
+            {
+              userId: data.listings.owner_id,
               type: 'adoption_status_changed',
               title: 'Adoption Application Withdrawn',
-              body: `The seeker has withdrawn their application for "${listingTitle}".`,
-              target_type: 'application',
-              target_id: data.listing_id,
+              body: `The seeker has withdrawn their application for "${data.listings?.title || 'Listing'}".`,
+              targetType: 'application',
+              targetId: data.listing_id,
               meta: {
                 adoptionId: data.id,
                 listingId: data.listing_id,
                 status: data.status,
               },
-            });
-          }
-
-          // Get seeker name
-          const { data: seeker } = await supabase
-            .from('users')
-            .select('display_name')
-            .eq('id', data.seeker_id)
-            .single();
-
-          await novu.trigger({
-            workflowId: 'adoption-status-changed',
-            to: {
-              subscriberId: data.seeker_id,
             },
-            payload: {
-              adoptionId: data.id,
-              listingId: data.listing_id,
-              listingTitle: data.listings?.title || 'Listing',
-              seekerId: data.seeker_id,
-              seekerName: seeker?.display_name || 'Seeker',
-              breederId: data.listings?.owner_id || '',
-              status: data.status,
-              title,
-              body,
-            },
-          });
-
-          // If withdrawn, also notify breeder
-          if (data.status === 'withdrawn') {
-            await novu.trigger({
+            {
               workflowId: 'adoption-status-changed',
-              to: {
-                subscriberId: data.listings.owner_id,
-              },
+              to: { subscriberId: data.listings.owner_id },
               payload: {
                 adoptionId: data.id,
                 listingId: data.listing_id,
                 listingTitle: data.listings?.title || 'Listing',
                 seekerId: data.seeker_id,
-                seekerName: seeker?.display_name || 'Seeker',
+                seekerName: 'Seeker', // Could fetch name if needed
                 breederId: data.listings?.owner_id || '',
                 status: data.status,
                 title: 'Adoption Withdrawn',
                 body: `The seeker has withdrawn their application for "${data.listings?.title}".`,
               },
-            });
-          }
-        } catch (novuError) {
-          console.error('Failed to send Novu notifications:', novuError);
+            }
+          );
         }
       }
 
