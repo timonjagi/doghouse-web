@@ -156,7 +156,7 @@ export class NotificationService {
 
     switch (status) {
       case 'submitted':
-        // Notify breeder of new application and seeker of confirmation
+        // Notify breeder of new application
         notifications.push(
           {
             db: {
@@ -181,68 +181,11 @@ export class NotificationService {
               },
             }
           },
-          // Notify seeker of confirmation
+          // Notify seeker that application is under review
           {
             db: {
               userId: seekerId,
-              type: 'application_submitted',
-              title: 'Adoption Application Submitted',
-              body: `Your application for "${listingTitle}" has been submitted successfully.`,
-              targetType: 'adoption',
-              targetId: listingId,
-              meta: { adoptionId, listingId },
-            },
-            novu: {
-              workflowId: 'adoption-submitted',
-              to: { subscriberId: seekerId },
-              payload: {
-                adoptionId,
-                listingId,
-                listingTitle,
-                breederId,
-                breederName: 'Breeder', // Will be overridden by hook
-                seekerId,
-                seekerName: 'Seeker', // Will be overridden by hook
-                seekerAvatar: null,
-              },
-            }
-          },
-          // Notify admin
-          {
-            db: {
-              userId: 'admin',
-              type: 'adoption_submitted',
-              title: 'New Adoption Application',
-              body: `A new adoption application submitted for "${listingTitle}".`,
-              targetType: 'application',
-              targetId: listingId,
-              meta: { adoptionId, listingId, seekerId, breederId },
-            },
-            novu: {
-              workflowId: 'adoption-submitted',
-              to: { subscriberId: 'admin' },
-              payload: {
-                listingId,
-                listingTitle,
-                breederId,
-                breederName: 'Breeder', // Will be overridden by hook
-                seekerId,
-                seekerName: 'Seeker', // Will be overridden by hook
-                seekerAvatar: null,
-                adoptionId,
-              },
-            }
-          }
-        );
-        break;
-
-      case 'pending':
-        // Notify seeker that application is under review
-        notifications.push(
-          {
-            db: {
-              userId: seekerId,
-              type: 'adoption_status_changed',
+              type: 'application_received',
               title: 'Adoption Under Review',
               body: `Your adoption application for ${listingTitle} is now being reviewed by the breeder`,
               targetType: 'application',
@@ -250,7 +193,7 @@ export class NotificationService {
               meta: { adoptionId, listingId, status },
             },
             novu: {
-              workflowId: 'adoption-status-changed',
+              workflowId: 'adoption-submitted',
               to: { subscriberId: seekerId },
               payload: {
                 adoptionId,
