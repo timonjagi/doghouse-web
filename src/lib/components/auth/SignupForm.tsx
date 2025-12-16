@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { supabase } from "lib/supabase/client";
 import { GoogleIcon } from "./ProviderIcons";
-import novu from "lib/novu";
+import { useCreateUserProfile } from "lib/hooks/queries/useUserProfile";
 
 export const SignupForm = () => {
   const toast = useToast();
@@ -23,6 +23,8 @@ export const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const createUserProfileMutation = useCreateUserProfile();
 
   const handleEmailSignup = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -103,18 +105,14 @@ export const SignupForm = () => {
         }
 
         if (signInData.user) {
-          // Create basic user profile in the users table while authenticated
-          const { error: profileError } = await supabase
-            .from('users')
-            .insert([
-              {
-                id: signInData.user.id,
-                email: email,
-                is_verified: false,
-              },
-            ]);
-
-          if (profileError) {
+          // Create basic user profile using the hook
+          try {
+            await createUserProfileMutation.mutateAsync({
+              id: signInData.user.id,
+              email: email,
+              role: 'seeker', // Default role
+            });
+          } catch (profileError) {
             console.error('Error creating user profile:', profileError);
             toast({
               title: "Profile creation warning",
@@ -122,37 +120,6 @@ export const SignupForm = () => {
               status: "warning",
               duration: 5000,
             });
-          }
-
-          // Trigger welcome notification
-          try {
-            await novu.trigger({
-              workflowId: 'welcome-user',
-              to: {
-                subscriberId: signInData.user.id,
-              },
-              payload: {
-                userId: signInData.user.id,
-                firstName: email.split('@')[0], // Use email prefix as name
-                email: email,
-              },
-            });
-
-            // Trigger admin notification for new user
-            await novu.trigger({
-              workflowId: 'new-user-signup',
-              to: {
-                subscriberId: 'admin', // Assuming admin subscriber ID, or use specific admin ID
-              },
-              payload: {
-                userId: signInData.user.id,
-                firstName: email.split('@')[0],
-                email: email,
-                role: 'seeker', // Default role, update based on actual role assignment
-              },
-            });
-          } catch (novuError) {
-            console.error('Failed to send notifications:', novuError);
           }
 
           // Redirect to onboarding instead of login

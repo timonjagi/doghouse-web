@@ -3,6 +3,7 @@ import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { User } from '../../db/schema';
 import { useCurrentUser } from './useAuth';
+import novu from '../../novu';
 
 interface UpdateProfileData {
   display_name?: string;
@@ -86,42 +87,70 @@ export const useUpdateUserProfile = () => {
   });
 };
 
-// Mutation to upload profile photo
-export const useUploadProfilePhoto = () => {
+// Mutation to create basic user profile (used during signup)
+export const useCreateUserProfile = () => {
   const queryClient = useQueryClient();
-  const { data: user } = useCurrentUser();
 
   return useMutation({
-    mutationFn: async (file: File): Promise<string> => {
-      if (!user) throw new Error('No authenticated user');
-
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('profile-photos')
-        .upload(`user-${user.id}/${fileName}`, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('profile-photos')
-        .getPublicUrl(`user-${user.id}/${fileName}`);
-
-      // Update user profile with new avatar URL
-      const { error: updateError } = await supabase
+    mutationFn: async (userData: {
+      id: string;
+      email: string;
+      display_name?: string;
+      role?: string;
+    }) => {
+      const { data, error } = await supabase
         .from('users')
-        .update({ profile_photo_url: publicUrl })
-        .eq('id', user.id);
+        .insert([
+          {
+            id: userData.id,
+            email: userData.email,
+            display_name: userData.display_name || userData.email.split('@')[0],
+            role: userData.role || 'seeker',
+            is_verified: false,
+            onboarding_completed: false,
+          },
+        ])
+        .select()
+        .single();
 
-      if (updateError) throw updateError;
-
-      return publicUrl;
+      if (error) throw error;
+      return data;
     },
-    onSuccess: (avatarUrl) => {
+    onSuccess: async (data) => {
+      // Trigger welcome notification
+      try {
+        await novu.trigger({
+          workflowId: 'welcome-user',
+          to: {
+            subscriberId: data.id,
+          },
+          payload: {
+            userId: data.id,
+            firstName: data.display_name || data.email.split('@')[0],
+            email: data.email,
+          },
+        });
+
+        // Trigger admin notification for new user
+        await novu.trigger({
+          workflowId: 'new-user-signup',
+          to: {
+            subscriberId: 'admin', // Assuming admin subscriber ID, or use specific admin ID
+          },
+          payload: {
+            userId: data.id,
+            firstName: data.display_name || data.email.split('@')[0],
+            email: data.email,
+            role: data.role || 'seeker',
+          },
+        });
+      } catch (novuError) {
+        console.error('Failed to send notifications:', novuError);
+      }
+
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile(user?.id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile(data.id) });
     },
   });
 };
