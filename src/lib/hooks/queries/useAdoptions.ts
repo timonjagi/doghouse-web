@@ -947,45 +947,18 @@ export const useCreateAdoption = () => {
       return data;
     },
     onSuccess: async (data) => {
-      // Send notification to breeder using NotificationService (DB + Novu, no email)
+      // Send notifications using NotificationService (DB + Novu, no email)
       try {
-        // Get seeker info for the notification
-        const { data: seeker } = await supabase
-          .from('users')
-          .select('display_name, profile_photo_url')
-          .eq('id', data.seeker_id)
-          .single();
-
-        await NotificationService.sendNotification(
-          {
-            userId: data.listings.owner_id,
-            type: 'application_received',
-            title: 'New Adoption Application Received',
-            body: `${seeker?.display_name || 'A seeker'} has submitted an adoption application for your listing "${data.listings.title}".`,
-            targetType: 'adoption',
-            targetId: data.listing_id,
-            meta: {
-              adoptionId: data.id,
-              listingId: data.listing_id,
-              seekerId: data.seeker_id,
-              seekerName: seeker?.display_name,
-            },
-          },
-          {
-            workflowId: 'adoption-submitted',
-            to: { subscriberId: data.listings.owner_id },
-            payload: {
-              adoptionId: data.id,
-              listingId: data.listing_id,
-              listingTitle: data.listings.title,
-              seekerId: data.seeker_id,
-              seekerName: seeker?.display_name || 'A seeker',
-              seekerAvatar: seeker?.profile_photo_url,
-            },
-          }
+        await NotificationService.sendAdoptionStatusNotification(
+          data.seeker_id,
+          data.listings.owner_id,
+          'submitted', // Initial status
+          data.listings.title,
+          data.id,
+          data.listing_id
         );
       } catch (notificationError) {
-        console.error('Failed to send adoption application notification:', notificationError);
+        console.error('Failed to send adoption application notifications:', notificationError);
       }
 
       queryClient.invalidateQueries({ queryKey: queryKeys.adoptions.byUser() });
