@@ -205,144 +205,107 @@ export class NotificationService {
                 body: `Your adoption application for ${listingTitle} is now being reviewed by the breeder`,
               },
             }
-          },
-          // Notify admin
+          }
+        );
+
+        // Notify admin via broadcast (separate from the array)
+        await this.sendBroadcastMessage(
+          'Adoption Application Submitted',
+          `A new adoption application has been submitted for "${listingTitle}" and is now under review`,
           {
-            db: {
-              userId: 'admin',
-              type: 'adoption-submitted',
-              title: 'Adoption Application Submitted',
-              body: `A new adoption application has been submitted for "${listingTitle}" and is now under review`,
-              targetType: 'application',
-              targetId: listingId,
-              meta: { adoptionId, listingId, status, seekerId, breederId },
-            },
-            novu: {
-              workflowId: 'adoption-submitted',
-              to: { subscriberId: 'admin' },
-              payload: {
-                adoptionId,
-                listingId,
-                listingTitle,
-                seekerId,
-                breederId,
-                status,
-                title: 'Adoption Application Submitted',
-                body: `A new adoption application has been submitted for "${listingTitle}" and is now under review`,
-              },
-            }
+            category: 'user',
+            details: [
+              { label: 'Listing', value: listingTitle },
+              { label: 'Application ID', value: adoptionId },
+              { label: 'Seeker ID', value: seekerId },
+              { label: 'Breeder ID', value: breederId },
+            ],
           }
         );
         break;
 
       case 'approved':
         // Notify seeker of approval
-        notifications.push(
-          {
-            db: {
-              userId: seekerId,
-              type: 'adoption_status_changed',
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: 'adoption_status_changed',
+            title: 'Adoption Application Approved',
+            body: `Congratulations! Your adoption application for ${listingTitle} has been approved.`,
+            targetType: 'application',
+            targetId: listingId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: 'adoption-status-changed',
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
               title: 'Adoption Application Approved',
               body: `Congratulations! Your adoption application for ${listingTitle} has been approved.`,
-              targetType: 'application',
-              targetId: listingId,
-              meta: { adoptionId, listingId, status },
             },
-            novu: {
-              workflowId: 'adoption-status-changed',
-              to: { subscriberId: seekerId },
-              payload: {
-                adoptionId,
-                listingId,
-                listingTitle,
-                seekerId,
-                status,
-                title: 'Adoption Application Approved',
-                body: `Congratulations! Your adoption application for ${listingTitle} has been approved.`,
-              },
-            }
-          },
-          // Notify admin
+          }
+        });
+
+        // Notify admin via broadcast (separate from the array)
+        await this.sendBroadcastMessage(
+          'Adoption Status: Approved',
+          `Adoption application for "${listingTitle}" has been approved`,
           {
-            db: {
-              userId: 'admin',
-              type: 'adoption_status_changed',
-              title: 'Adoption Status: Approved',
-              body: `Adoption application for "${listingTitle}" has been approved`,
-              targetType: 'application',
-              targetId: listingId,
-              meta: { adoptionId, listingId, status, seekerId, breederId },
-            },
-            novu: {
-              workflowId: 'adoption-status-changed',
-              to: { subscriberId: 'admin' },
-              payload: {
-                adoptionId,
-                listingId,
-                listingTitle,
-                seekerId,
-                breederId,
-                status,
-                title: 'Adoption Status: Approved',
-                body: `Adoption application for "${listingTitle}" has been approved`,
-              },
-            }
+            category: 'user',
+            details: [
+              { label: 'Listing', value: listingTitle },
+              { label: 'Application ID', value: adoptionId },
+              { label: 'Seeker ID', value: seekerId },
+              { label: 'Breeder ID', value: breederId },
+            ],
           }
         );
         break;
 
       case 'rejected':
         // Notify seeker of rejection
-        notifications.push(
-          {
-            db: {
-              userId: seekerId,
-              type: 'adoption_status_changed',
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: 'adoption_status_changed',
+            title: 'Adoption Application Not Approved',
+            body: `Your adoption application for ${listingTitle} was not approved at this time`,
+            targetType: 'application',
+            targetId: listingId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: 'adoption-status-changed',
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
               title: 'Adoption Application Not Approved',
               body: `Your adoption application for ${listingTitle} was not approved at this time`,
-              targetType: 'application',
-              targetId: listingId,
-              meta: { adoptionId, listingId, status },
             },
-            novu: {
-              workflowId: 'adoption-status-changed',
-              to: { subscriberId: seekerId },
-              payload: {
-                adoptionId,
-                listingId,
-                listingTitle,
-                seekerId,
-                status,
-                title: 'Adoption Application Not Approved',
-                body: `Your adoption application for ${listingTitle} was not approved at this time`,
-              },
-            }
-          },
-          // Notify admin
+          }
+        });
+
+        // Notify admin via broadcast (separate from the array)
+        await this.sendBroadcastMessage(
+          'Adoption Status: Rejected',
+          `Adoption application for "${listingTitle}" has been rejected`,
           {
-            db: {
-              userId: 'admin',
-              type: 'adoption_status_changed',
-              title: 'Adoption Status: Rejected',
-              body: `Adoption application for "${listingTitle}" has been rejected`,
-              targetType: 'application',
-              targetId: listingId,
-              meta: { adoptionId, listingId, status, seekerId, breederId },
-            },
-            novu: {
-              workflowId: 'adoption-status-changed',
-              to: { subscriberId: 'admin' },
-              payload: {
-                adoptionId,
-                listingId,
-                listingTitle,
-                seekerId,
-                breederId,
-                status,
-                title: 'Adoption Status: Rejected',
-                body: `Adoption application for "${listingTitle}" has been rejected`,
-              },
-            }
+            category: 'user',
+            details: [
+              { label: 'Listing', value: listingTitle },
+              { label: 'Application ID', value: adoptionId },
+              { label: 'Seeker ID', value: seekerId },
+              { label: 'Breeder ID', value: breederId },
+            ],
           }
         );
         break;
@@ -350,103 +313,19 @@ export class NotificationService {
       case 'withdrawn':
         // Notify breeder that seeker withdrew
         if (breederId) {
-          notifications.push(
-            {
-              db: {
-                userId: breederId,
-                type: 'adoption_status_changed',
-                title: 'Adoption Application Withdrawn',
-                body: `The seeker has withdrawn their application for "${listingTitle}".`,
-                targetType: 'application',
-                targetId: listingId,
-                meta: { adoptionId, listingId, status, seekerId },
-              },
-              novu: {
-                workflowId: 'adoption-status-changed',
-                to: { subscriberId: breederId },
-                payload: {
-                  adoptionId,
-                  listingId,
-                  listingTitle,
-                  seekerId,
-                  breederId,
-                  status,
-                  title: 'Adoption Application Withdrawn',
-                  body: `The seeker has withdrawn their application for "${listingTitle}".`,
-                },
-              }
-            },
-            // Notify admin
-            {
-              db: {
-                userId: 'admin',
-                type: 'adoption_status_changed',
-                title: 'Adoption Status: Withdrawn',
-                body: `Adoption application for "${listingTitle}" has been withdrawn by seeker`,
-                targetType: 'application',
-                targetId: listingId,
-                meta: { adoptionId, listingId, status, seekerId, breederId },
-              },
-              novu: {
-                workflowId: 'adoption-status-changed',
-                to: { subscriberId: 'admin' },
-                payload: {
-                  adoptionId,
-                  listingId,
-                  listingTitle,
-                  seekerId,
-                  breederId,
-                  status,
-                  title: 'Adoption Status: Withdrawn',
-                  body: `Adoption application for "${listingTitle}" has been withdrawn by seeker`,
-                },
-              }
-            }
-          );
-        }
-        break;
-
-      case 'completed':
-        // Notify seeker of completion
-        notifications.push(
-          {
+          notifications.push({
             db: {
-              userId: seekerId,
+              userId: breederId,
               type: 'adoption_status_changed',
-              title: 'Adoption Completed',
-              body: `Your adoption process for ${listingTitle} has been completed successfully`,
+              title: 'Adoption Application Withdrawn',
+              body: `The seeker has withdrawn their application for "${listingTitle}".`,
               targetType: 'application',
               targetId: listingId,
-              meta: { adoptionId, listingId, status },
+              meta: { adoptionId, listingId, status, seekerId },
             },
             novu: {
               workflowId: 'adoption-status-changed',
-              to: { subscriberId: seekerId },
-              payload: {
-                adoptionId,
-                listingId,
-                listingTitle,
-                seekerId,
-                status,
-                title: 'Adoption Completed',
-                body: `Your adoption process for ${listingTitle} has been completed successfully`,
-              },
-            }
-          },
-          // Notify admin
-          {
-            db: {
-              userId: 'admin',
-              type: 'adoption_status_changed',
-              title: 'Adoption Status: Completed',
-              body: `Adoption process for "${listingTitle}" has been completed`,
-              targetType: 'application',
-              targetId: listingId,
-              meta: { adoptionId, listingId, status, seekerId, breederId },
-            },
-            novu: {
-              workflowId: 'adoption-status-changed',
-              to: { subscriberId: 'admin' },
+              to: { subscriberId: breederId },
               payload: {
                 adoptionId,
                 listingId,
@@ -454,10 +333,68 @@ export class NotificationService {
                 seekerId,
                 breederId,
                 status,
-                title: 'Adoption Status: Completed',
-                body: `Adoption process for "${listingTitle}" has been completed`,
+                title: 'Adoption Application Withdrawn',
+                body: `The seeker has withdrawn their application for "${listingTitle}".`,
               },
             }
+          });
+
+          // Notify admin via broadcast (separate from the array)
+          await this.sendBroadcastMessage(
+            'Adoption Status: Withdrawn',
+            `Adoption application for "${listingTitle}" has been withdrawn by seeker`,
+            {
+              category: 'user',
+              details: [
+                { label: 'Listing', value: listingTitle },
+                { label: 'Application ID', value: adoptionId },
+                { label: 'Seeker ID', value: seekerId },
+                { label: 'Breeder ID', value: breederId },
+              ],
+            }
+          );
+        }
+        break;
+
+      case 'completed':
+        // Notify seeker of completion
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: 'adoption_status_changed',
+            title: 'Adoption Completed',
+            body: `Your adoption process for ${listingTitle} has been completed successfully`,
+            targetType: 'application',
+            targetId: listingId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: 'adoption-status-changed',
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: 'Adoption Completed',
+              body: `Your adoption process for ${listingTitle} has been completed successfully`,
+            },
+          }
+        });
+
+        // Notify admin via broadcast (separate from the array)
+        await this.sendBroadcastMessage(
+          'Adoption Status: Completed',
+          `Adoption process for "${listingTitle}" has been completed`,
+          {
+            category: 'user',
+            details: [
+              { label: 'Listing', value: listingTitle },
+              { label: 'Application ID', value: adoptionId },
+              { label: 'Seeker ID', value: seekerId },
+              { label: 'Breeder ID', value: breederId },
+            ],
           }
         );
         break;
@@ -578,41 +515,23 @@ export class NotificationService {
       }
     });
 
-    // Notify admin of payment
-    notifications.push({
-      db: {
-        userId: 'admin',
-        type: 'payment_processed',
-        title: isReservation ? 'Reservation Payment Processed' : 'Final Payment Processed',
-        body: isReservation
-          ? `Reservation payment of ₦${amount} processed for "${listingTitle}".`
-          : `Final payment of ₦${amount} processed for "${listingTitle}".`,
-        targetType: 'application',
-        targetId: applicationId,
-        meta: {
-          applicationId,
-          listingId,
-          paymentType,
-          transactionId,
-          amount,
-          seekerId,
-          breederId,
-        },
-      },
-      novu: {
-        workflowId: isReservation ? 'reservation-fee-paid' : 'final-payment-completed',
-        to: { subscriberId: 'admin' },
-        payload: {
-          applicationId,
-          listingId,
-          listingTitle,
-          seekerId,
-          breederId,
-          amount,
-          paymentType,
-        },
+    // Notify admin of payment via broadcast (separate from the array)
+    await this.sendBroadcastMessage(
+      isReservation ? 'Reservation Payment Processed' : 'Final Payment Processed',
+      isReservation
+        ? `Reservation payment of ₦${amount} processed for "${listingTitle}".`
+        : `Final payment of ₦${amount} processed for "${listingTitle}".`,
+      {
+        category: 'user',
+        details: [
+          { label: 'Application ID', value: applicationId },
+          { label: 'Listing', value: listingTitle },
+          { label: 'Amount', value: `₦${amount}` },
+          { label: 'Seeker ID', value: seekerId },
+          { label: 'Breeder ID', value: breederId },
+        ],
       }
-    });
+    );
 
     // Send all notifications
     await this.sendNotifications(notifications);
@@ -679,23 +598,18 @@ export class NotificationService {
     email: string,
     role: string
   ): Promise<void> {
-    await this.sendNotification(
+    // Send broadcast message to all admin users
+    await this.sendBroadcastMessage(
+      'New User Signup',
+      `${firstName} (${email}) has signed up as a ${role}.`,
       {
-        userId: 'admin', // Send to admin
-        type: 'new_user_signup',
-        title: 'New User Signup',
-        body: `${firstName} (${email}) has signed up as a ${role}.`,
-        meta: { userId, firstName, email, role },
-      },
-      {
-        workflowId: 'new-user-signup',
-        to: { subscriberId: 'admin' },
-        payload: {
-          userId,
-          firstName,
-          email,
-          role,
-        },
+        category: 'user',
+        details: [
+          { label: 'User ID', value: userId },
+          { label: 'Name', value: firstName },
+          { label: 'Email', value: email },
+          { label: 'Role', value: role },
+        ],
       }
     );
   }
@@ -867,6 +781,41 @@ export class NotificationService {
       });
     } catch (error) {
       console.error('Failed to send breed match notification:', error);
+    }
+  }
+
+  /**
+   * Send broadcast message to admin users using topics
+   */
+  static async sendBroadcastMessage(
+    title: string,
+    message: string,
+    options?: {
+      priority?: 'low' | 'normal' | 'high' | 'urgent';
+      category?: 'general' | 'user' | 'breeder' | 'system' | 'security';
+      actionUrl?: string;
+      actionLabel?: string;
+      details?: Array<{ label: string; value: string }>;
+      footerContent?: string;
+    }
+  ): Promise<void> {
+    try {
+      await novu.trigger({
+        workflowId: 'admin-broadcast',
+        to: { type: "Topic", topicKey: "admin-users" },
+        payload: {
+          title,
+          message,
+          priority: options?.priority || 'normal',
+          category: options?.category || 'general',
+          actionUrl: options?.actionUrl,
+          actionLabel: options?.actionLabel,
+          details: options?.details,
+          footerContent: options?.footerContent,
+        },
+      });
+    } catch (error) {
+      console.error('Failed to send broadcast message:', error);
     }
   }
 

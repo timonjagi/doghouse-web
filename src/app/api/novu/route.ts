@@ -16,6 +16,7 @@ import { payoutProcessed } from '../../../../novu/workflows/payout-processed';
 import { verifyEmail } from '../../../../novu/workflows/verify-email';
 import { welcomeUser } from '../../../../novu/workflows/welcome-user';
 import { adminBroadcast } from '../../../../novu/workflows/admin-broadcast';
+import { breederActivityBroadcast } from '../../../../novu/workflows/breeder-activity-broadcast';
 
 export const { GET, POST } = serve({
   workflows: [
@@ -36,5 +37,6 @@ export const { GET, POST } = serve({
     verifyEmail,
     welcomeUser,
     adminBroadcast,
+    breederActivityBroadcast,
   ],
 });
