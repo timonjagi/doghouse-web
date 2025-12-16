@@ -63,12 +63,73 @@ export const NotificationPopupProvider: React.FC<NotificationPopupProviderProps>
         };
 
       case 'welcome-user':
+      case 'welcome-notification':
         return {
           component: NotificationTwoLinksIcon,
           props: {
             title: content.subject || data.title || 'Welcome!',
             description: content.body || data.body || '',
             onUpdate: () => handleViewProfile(notification),
+            onSkip: () => handleDismissNotification(notification),
+            onClose: () => handleDismissNotification(notification),
+          }
+        };
+
+      case 'notify-seeker':
+        return {
+          component: NotificationSplitButtons,
+          props: {
+            title: content.subject || data.title || 'Application Update',
+            description: content.body || data.body || '',
+            onUpdate: () => handleViewAdoption(notification, data.adoptionId),
+            onClose: () => handleDismissNotification(notification),
+          }
+        };
+
+      case 'notify-breeder':
+      case 'notify-breeder-approved':
+      case 'notify-breeder-completed':
+        return {
+          component: NotificationSplitButtons,
+          props: {
+            title: content.subject || data.title || 'Breeder Notification',
+            description: content.body || data.body || '',
+            onUpdate: () => handleViewListing(notification, data.listingId),
+            onClose: () => handleDismissNotification(notification),
+          }
+        };
+
+      case 'confirm-seeker':
+        return {
+          component: NotificationTwoLinksIcon,
+          props: {
+            title: content.subject || data.title || 'Application Submitted',
+            description: content.body || data.body || '',
+            onUpdate: () => handleViewAdoption(notification, data.adoptionId),
+            onSkip: () => handleDismissNotification(notification),
+            onClose: () => handleDismissNotification(notification),
+          }
+        };
+
+      case 'confirm-breeder':
+        return {
+          component: NotificationTwoLinksIcon,
+          props: {
+            title: content.subject || data.title || 'Listing Created',
+            description: content.body || data.body || '',
+            onUpdate: () => handleViewListing(notification, data.listingId),
+            onSkip: () => handleDismissNotification(notification),
+            onClose: () => handleDismissNotification(notification),
+          }
+        };
+
+      case 'notify-admin':
+        return {
+          component: NotificationTwoLinksIcon,
+          props: {
+            title: content.subject || data.title || 'Admin Notification',
+            description: content.body || data.body || '',
+            onUpdate: () => handleViewAdmin(notification),
             onSkip: () => handleDismissNotification(notification),
             onClose: () => handleDismissNotification(notification),
           }
@@ -134,6 +195,13 @@ export const NotificationPopupProvider: React.FC<NotificationPopupProviderProps>
     toast.closeAll();
     // Navigate to profile/dashboard
     router.push('/dashboard');
+  };
+
+  const handleViewAdmin = async (notification: any) => {
+    await NotificationService.markNotificationAsRead(notification);
+    toast.closeAll();
+    // Navigate to admin dashboard
+    router.push('/admin/dashboard');
   };
 
   const handleGenericAction = async (notification: any) => {
