@@ -15,6 +15,7 @@ import { payoutBatchProcessed } from '../../../../novu/workflows/payout-batch-pr
 import { payoutProcessed } from '../../../../novu/workflows/payout-processed';
 import { verifyEmail } from '../../../../novu/workflows/verify-email';
 import { welcomeUser } from '../../../../novu/workflows/welcome-user';
+import { adminBroadcast } from '../../../../novu/workflows/admin-broadcast';
 
 export const { GET, POST } = serve({
   workflows: [
@@ -34,5 +35,6 @@ export const { GET, POST } = serve({
     payoutProcessed,
     verifyEmail,
     welcomeUser,
+    adminBroadcast,
   ],
 });

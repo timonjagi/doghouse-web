@@ -123,17 +123,7 @@ export const NotificationPopupProvider: React.FC<NotificationPopupProviderProps>
           }
         };
 
-      case 'notify-admin':
-        return {
-          component: NotificationTwoLinksIcon,
-          props: {
-            title: content.subject || data.title || 'Admin Notification',
-            description: content.body || data.body || '',
-            onUpdate: () => handleViewAdmin(notification),
-            onSkip: () => handleDismissNotification(notification),
-            onClose: () => handleDismissNotification(notification),
-          }
-        };
+
 
       case 'breed-match-found':
         return {
@@ -195,13 +185,6 @@ export const NotificationPopupProvider: React.FC<NotificationPopupProviderProps>
     toast.closeAll();
     // Navigate to profile/dashboard
     router.push('/dashboard');
-  };
-
-  const handleViewAdmin = async (notification: any) => {
-    await NotificationService.markNotificationAsRead(notification);
-    toast.closeAll();
-    // Navigate to admin dashboard
-    router.push('/admin/dashboard');
   };
 
   const handleGenericAction = async (notification: any) => {
