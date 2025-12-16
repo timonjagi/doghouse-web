@@ -947,24 +947,45 @@ export const useCreateAdoption = () => {
       return data;
     },
     onSuccess: async (data) => {
-      // Create notification for breeder
+      // Send notification to breeder using NotificationService (DB + Novu, no email)
       try {
-        await supabase
-          .from('notifications')
-          .insert({
-            user_id: data.listings.owner_id,
+        // Get seeker info for the notification
+        const { data: seeker } = await supabase
+          .from('users')
+          .select('display_name, profile_photo_url')
+          .eq('id', data.seeker_id)
+          .single();
+
+        await NotificationService.sendNotification(
+          {
+            userId: data.listings.owner_id,
             type: 'application_received',
             title: 'New Adoption Application Received',
-            body: `${data.users?.display_name || 'Someone'} applied for ${data.listings.title}`,
-            target_type: 'adoption',
-            target_id: data.listings.id,
+            body: `${seeker?.display_name || 'A seeker'} has submitted an adoption application for your listing "${data.listings.title}".`,
+            targetType: 'adoption',
+            targetId: data.listing_id,
             meta: {
               adoptionId: data.id,
-              listingId: data.listings.id,
+              listingId: data.listing_id,
+              seekerId: data.seeker_id,
+              seekerName: seeker?.display_name,
             },
-          });
+          },
+          {
+            workflowId: 'adoption-application-received',
+            to: { subscriberId: data.listings.owner_id },
+            payload: {
+              adoptionId: data.id,
+              listingId: data.listing_id,
+              listingTitle: data.listings.title,
+              seekerId: data.seeker_id,
+              seekerName: seeker?.display_name || 'A seeker',
+              seekerAvatar: seeker?.profile_photo_url,
+            },
+          }
+        );
       } catch (notificationError) {
-        console.error('Failed to create notification:', notificationError);
+        console.error('Failed to send adoption application notification:', notificationError);
       }
 
       queryClient.invalidateQueries({ queryKey: queryKeys.adoptions.byUser() });
@@ -1063,49 +1084,46 @@ export const useUpdateAdoption = () => {
         }
       }
 
-      // Create notification for seeker when status changes
+      // Send notification to seeker when status changes using NotificationService (DB + Novu, no email)
       if (data.status === 'pending' || data.status === 'approved' || data.status === 'rejected' || data.status === 'completed') {
         try {
           let title = '';
           let body = '';
+          let workflowId = '';
           const listingTitle = data.listings?.title || 'listing';
 
           switch (data.status) {
             case 'pending':
               title = 'Adoption Under Review';
               body = `Your adoption application for ${listingTitle} is now being reviewed by the breeder`;
+              workflowId = 'adoption-status-changed';
               break;
             case 'approved':
               title = 'Adoption Application Approved';
               body = `Congratulations! Your adoption application for ${listingTitle} has been approved.`;
+              workflowId = 'adoption-status-changed';
               break;
             case 'rejected':
               title = 'Adoption Application Not Approved';
               body = `Your adoption application for ${listingTitle} was not approved at this time`;
+              workflowId = 'adoption-status-changed';
               break;
             case 'completed':
               title = 'Adoption Completed';
               body = `Your adoption process for ${listingTitle} has been completed successfully`;
+              workflowId = 'adoption-status-changed';
               break;
           }
 
-          await supabase
-            .from('notifications')
-            .insert({
-              user_id: data.seeker_id,
-              type: 'adoption_status_changed',
-              title,
-              body,
-              target_type: 'adoption',
-              target_id: data.listings?.id,
-              meta: {
-                adoptionId: data.id,
-                listingId: data.listings?.id,
-                status: data.status,
-              },
-            });
+          await NotificationService.sendAdoptionStatusNotification(
+            data.seeker_id,
+            data.status,
+            listingTitle,
+            data.id,
+            data.listings?.id || ''
+          );
         } catch (notificationError) {
-          console.error('Failed to create status change notification:', notificationError);
+          console.error('Failed to send status change notification:', notificationError);
         }
       }
 
