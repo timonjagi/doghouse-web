@@ -6,35 +6,60 @@ import {
   ButtonGroup,
   Spacer,
   useToast,
+  Box,
+  Alert,
+  AlertIcon,
+  VStack,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCurrentUser } from "../../../hooks/queries";
 import { useUpdateUserProfile } from "../../../hooks/queries";
 import { supabase } from "../../../supabase/client";
 import { RadioCardGroup } from "lib/components/ui/RadioCardGroup";
 import { RadioCard } from "lib/components/ui/RadioCard";
+import { useRouter } from "next/router";
 
 // eslint-disable-next-line
 const RoleSelectionStep = () => {
+  const router = useRouter();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
+  const [skipSelection, setSkipSelection] = useState(false);
 
   // Get current user and update profile mutation
   const updateUserProfile = useUpdateUserProfile();
 
   const options = [
     {
-      label: "Dog Seeker",
-      description: "I'm looking to adopt a dog",
-      slug: "dog_seeker",
+      label: "Pet Seeker",
+      description: "I'm looking to adopt a pet",
+      slug: "seeker",
     },
     {
-      label: "Dog Owner",
-      description: "I'm looking to rehome my dogs",
-      slug: "dog_owner",
+      label: "Breeder/Shelter",
+      description: "I'm looking to offer pets for adoption",
+      slug: "breeder",
     },
   ];
+
+  // Check if we should skip role selection based on query params
+  useEffect(() => {
+    const roleParam = router.query.role as string;
+    if (roleParam && (roleParam === 'breeder' || roleParam === 'seeker')) {
+      setSkipSelection(true);
+      setSelectedRole(roleParam);
+    }
+  }, [router.query.role]);
+
+  // Auto-submit if role is pre-selected
+  useEffect(() => {
+    if (skipSelection && selectedRole) {
+      // Create a synthetic event for the form submission
+      const syntheticEvent = { preventDefault: () => { } } as React.FormEvent;
+      onSubmit(syntheticEvent);
+    }
+  }, [skipSelection, selectedRole]);
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

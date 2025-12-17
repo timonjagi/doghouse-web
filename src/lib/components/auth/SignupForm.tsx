@@ -102,6 +102,10 @@ export const SignupForm = () => {
         }
 
         if (signInData.user) {
+          // Get role from query parameters if available
+          const roleParam = router.query.role as string;
+          const userRole = roleParam === 'breeder' ? 'breeder' : roleParam === 'seeker' ? 'seeker' : null;
+
           // Create basic user profile in the users table while authenticated
           const { error: profileError } = await supabase
             .from('users')
@@ -110,6 +114,7 @@ export const SignupForm = () => {
                 id: signInData.user.id,
                 email: email,
                 is_verified: false,
+                role: userRole, // Include role if specified
               },
             ]);
 

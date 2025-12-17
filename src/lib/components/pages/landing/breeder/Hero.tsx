@@ -29,7 +29,7 @@ export default function Hero() {
         >
           <Box maxW="xl">
             <Heading as="h1" size="3xl" fontWeight="bold">
-              Find Your Perfect Furry Friend
+              Find Your Perfect Pet Companion
             </Heading>
             <Text
               fontSize={{
