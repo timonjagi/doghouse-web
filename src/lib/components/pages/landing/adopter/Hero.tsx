@@ -26,7 +26,7 @@ export const Hero = () => {
             lineHeight="1.2"
             letterSpacing="tight"
           >
-            Find Your Perfect Furry Friend
+            Find Your Perfect Pet Companion
           </Heading>
           <Text fontSize="xl" mt="4" maxW="xl" mx="auto">
             Discover your ideal furry companion and start a journey of love and

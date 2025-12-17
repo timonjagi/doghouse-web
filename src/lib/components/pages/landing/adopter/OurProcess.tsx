@@ -6,13 +6,14 @@ import {
   Text,
   Icon,
   Center,
-  Image,
   useBreakpointValue,
 } from "@chakra-ui/react";
-// import * as React from "react";
+import * as React from "react";
+import { useState, useEffect } from "react";
 import { BsBookmarkHeartFill, BsCheckCircleFill } from "react-icons/bs";
 import { ImProfile } from "react-icons/im";
 import { FaSearch } from "react-icons/fa";
+import { GalleryWithVerticalCarousel } from "../../../ui/GalleryWithVerticalCarousel/GalleryWithVerticalCarousel";
 
 export const steps = [
   {
@@ -27,28 +28,36 @@ export const steps = [
       "Discover a curated selection of pets from trusted breeders and shelters that align with your unique lifestyle and preferences. We'll help you find the perfect companion for you and your family",
     icon: FaSearch,
   },
-  // {
-  //   name: "Submit your application",
-  //   description: "Once you find the perfect match, submit your application to start the adoption process",
-  //   icon: ImProfile,
-  // },
   {
     name: "Reserve your pet",
     description:
       "Secure your pet with a reservation fee to ensure both your commitment and the breeder's dedication to providing a loving home",
     icon: BsBookmarkHeartFill,
   },
-  // {
-  //   name: "Finalize the Adoption",
-  //   description:
-  //     "Schedule a visit to meet your new pet and sign the adoption contract to complete the adoption process",
-  //   icon: BsCheckCircleFill,
-  // },
+];
+
+// Process step images for carousel
+const processImages = [
+  {
+    id: "01",
+    src: "images/mockup.png",
+    alt: "Profile creation interface",
+  },
+  {
+    id: "02",
+    src: "images/mockup.png",
+    alt: "Pet matching results",
+  },
+  {
+    id: "03",
+    src: "images/mockup.png",
+    alt: "Pet reservation process",
+  },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ProcessStep = (props: any) => {
-  const { step, ...stackProps } = props;
+  const { step, isActive, onClick, ...stackProps } = props;
   return (
     <Stack
       direction="row"
@@ -56,21 +65,26 @@ const ProcessStep = (props: any) => {
         base: 4,
         lg: 4,
       }}
+      cursor="pointer"
+      onClick={onClick}
+      transition="all 0.2s"
+      _hover={{ opacity: 0.8 }}
       {...stackProps}
     >
       <Center
-        color="inverted"
+        color="ierted"
         flexShrink={0}
         boxSize={{
           base: 8,
           lg: 12,
         }}
-        bg="accent"
+        bg={isActive ? "brand.600" : "accent"}
         borderRadius="lg"
         fontSize={{
           base: "xl",
           lg: "2xl",
         }}
+        transition="background-color 0.2s"
       >
         <Icon as={step.icon} fontSize="1.25rem" color="on-accent" />
       </Center>
@@ -95,94 +109,105 @@ const ProcessStep = (props: any) => {
   );
 };
 
+export const Process = () => {
+  const [activeStep, setActiveStep] = useState(0);
 
+  // Auto-advance carousel every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % steps.length);
+    }, 4000);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return () => clearInterval(interval);
+  }, []);
 
-
-export const Process = () => (
-  <Box as="section" maxW="6xl">
-    <Container
-      pt="16"
-      pb={{
-        base: "16",
-        md: "32",
-      }}
-    >
-      <Stack
-        spacing={{
-          base: "8",
-          md: "16",
+  return (
+    <Box as="section" maxW="6xl">
+      <Container
+        pt="16"
+        pb={{
+          base: "16",
+          md: "32",
         }}
       >
         <Stack
           spacing={{
-            base: "4",
-            md: "6",
+            base: "8",
+            md: "16",
           }}
-        >
-          <Stack spacing="3">
-            <Text color="accent" fontWeight="semibold">
-              Process
-            </Text>
-            <Heading
-              size={useBreakpointValue({
-                base: "md",
-                md: "lg",
-              })}
-            >
-              How it works
-            </Heading>
-          </Stack>
-          <Text
-            fontSize={{
-              base: "lg",
-              md: "xl",
-            }}
-            color="muted"
-            maxW="3xl"
-          >
-            From personalized recommendations to secure reservations, we've got
-            you covered at every step.
-          </Text>
-        </Stack>
-
-        <Stack
-          direction={{
-            base: "column",
-            lg: "row",
-          }}
-          spacing={{
-            base: "12",
-            lg: "24",
-          }}
-          w="full"
         >
           <Stack
             spacing={{
               base: "4",
-              md: "8",
+              md: "6",
             }}
-            justify="center"
           >
-            {steps.map((step, id) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <ProcessStep key={id} step={step} />
-            ))}
+            <Stack spacing="3">
+              <Text color="accent" fontWeight="semibold">
+                Process
+              </Text>
+              <Heading
+                size={useBreakpointValue({
+                  base: "md",
+                  md: "lg",
+                })}
+              >
+                How it works
+              </Heading>
+            </Stack>
+            <Text
+              fontSize={{
+                base: "lg",
+                md: "xl",
+              }}
+              color="muted"
+              maxW="3xl"
+            >
+              From personalized recommendations to secure reservations, we've got
+              you covered at every step.
+            </Text>
           </Stack>
 
+          <Stack
+            direction={{
+              base: "column",
+              lg: "row",
+            }}
+            spacing={{
+              base: "12",
+              lg: "24",
+            }}
+            w="full"
+          >
+            <Stack
+              spacing={{
+                base: "4",
+                md: "8",
+              }}
+              justify="center"
+            >
+              {steps.map((step, id) => (
+                <ProcessStep
+                  key={id}
+                  step={step}
+                  isActive={activeStep === id}
+                  onClick={() => setActiveStep(id)}
+                />
+              ))}
+            </Stack>
 
-          <Box width="full" overflow="hidden">
-            <Image
-              maxW={{ base: 'full', lg: 'md' }}
-              minH={{ base: '100%', lg: '200px' }}
-              objectFit="cover"
-              src="images/mockup.png"
-              alt="Pethouse"
-            />
-          </Box>
+            <Box width="full" overflow="hidden">
+              <GalleryWithVerticalCarousel
+                images={processImages}
+                rootProps={{
+                  spacing: { base: "4", md: "6" },
+                  direction: { base: "column-reverse", md: "row" },
+                }}
+              />
+            </Box>
+          </Stack>
         </Stack>
-      </Stack>
-    </Container>
-  </Box>
-);
+      </Container>
+    </Box>
+  );
+};

@@ -180,7 +180,7 @@
               1
             ],
             "details": "In `src/lib/components/layout/DashboardLayout.tsx`, call the `useUserProfile` hook to get the user's role. Pass the retrieved role as a prop to the `<Sidebar />` component. Handle loading states by displaying a layout-level skeleton or spinner.",
-            "status": "pending",
+            "status": "in_progress",
             "testStrategy": "Add a `console.log` in `DashboardLayout.tsx` to print the role received from the hook. Log in as a Seeker and verify that 'Seeker' is logged. Check that the layout shows a loading state while the profile is being fetched."
           },
           {
@@ -1063,6 +1063,89 @@
             "details": "Update breeder card components (BreederCard, BreederCard2, etc.): (1) Add wishlist icon button to save all of breeder's breeds, (2) On click, show modal to select which breeds to wishlist, or add all with single action, (3) Indicate wishlisted status on breeder cards, (4) Link to breeder detail page for more granular selection.",
             "status": "pending",
             "testStrategy": "Browse breeders as seeker, use quick wishlist action on breeder card, verify selected breeds appear in wishlist."
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Redesign Landing Page to be Pet-Inclusive and Enhance User Experience",
+        "description": "Transform the dog-themed landing page to cover all pets (dogs, cats, rabbits, hamsters, guinea pigs, parrots, squirrels) with enhanced 'How it works' carousel and role-specific auth flows.",
+        "details": "Complete redesign of the landing page to be pet-inclusive while maintaining adopter-focused approach with clear breeder pathways. Key deliverables: 1) Update hero and content to be pet-inclusive, 2) Redesign breed traits for all pet types, 3) Create enhanced 'How it works' with automatic carousel sync using GalleryWithVerticalCarousel, 4) Update auth sidebar with role-specific content based on query parameters, 5) Enhance role selection to skip when coming from role-specific CTAs, 6) Update SignupPage to include role during profile creation, 7) Update breeder landing page for consistency. Use existing pet types from useCategories.ts: Dogs, Cats, Rabbits, Hamsters, Guinea Pigs, Parrots, Squirrels.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Update main landing page hero to be pet-inclusive",
+            "description": "Change hero section from 'Find Your Perfect Furry Friend' to 'Find Your Perfect Pet Companion' and update content to be inclusive of all pet types",
+            "details": "Update src/lib/components/pages/landing/adopter/Hero.tsx to use pet-inclusive messaging and imagery",
+            "status": "completed",
+            "testStrategy": "Verify hero section displays pet-inclusive content and maintains responsive design"
+          },
+          {
+            "id": 2,
+            "title": "Redesign breed traits to cover all pet types",
+            "description": "Update BreedTraits.tsx to include traits that work for all pet types (Dogs, Cats, Rabbits, Hamsters, Guinea Pigs, Parrots, Squirrels)",
+            "details": "Replace dog-specific traits with universal pet traits like 'Apartment-friendly', 'Family pets', 'Low-maintenance', 'Hypoallergenic', etc.",
+            "status": "completed",
+            "testStrategy": "Verify all pet types are represented in trait descriptions and icons are appropriate"
+          },
+          {
+            "id": 3,
+            "title": "Update 'Our Breeds' section to 'Our Pets'",
+            "description": "Change Breeds.tsx to showcase all pet types from useCategories.ts instead of just dog breeds",
+            "details": "Update component to display mixed pet types with appropriate images and links",
+            "status": "completed",
+            "testStrategy": "Verify section shows diverse pet types and links work correctly"
+          },
+          {
+            "id": 4,
+            "title": "Create enhanced 'How it works' with automatic carousel sync",
+            "description": "Refactor OurProcess.tsx to integrate with GalleryWithVerticalCarousel for automatic step progression",
+            "details": "Update process steps to be pet-adoption focused and integrate carousel functionality for interactive experience",
+            "status": "completed",
+            "testStrategy": "Verify carousel automatically advances through steps and syncs with content"
+          },
+          {
+            "id": 5,
+            "title": "Update auth sidebar with role-specific query parameter handling",
+            "description": "Enhance Sidebar.tsx to show different content based on role context from signup flow",
+            "details": "Add query parameter detection for role-specific signup flows and update sidebar content accordingly",
+            "status": "in_progress",
+            "testStrategy": "Test signup flows from different role CTAs and verify sidebar shows appropriate content"
+          },
+          {
+            "id": 6,
+            "title": "Enhance role selection to skip when coming from role-specific CTAs",
+            "description": "Update role-selection.tsx to detect query parameters and skip selection when role is pre-determined",
+            "details": "Add logic to bypass role selection step when coming from breeder-specific or seeker-specific entry points",
+            "status": "pending",
+            "testStrategy": "Verify role selection is skipped when using role-specific signup links"
+          },
+          {
+            "id": 7,
+            "title": "Update SignupPage to include role during profile creation",
+            "description": "Modify SignupPage.tsx to handle role parameter from query string and include it in user profile creation",
+            "details": "Add role handling in signup form and ensure role is set during user creation process",
+            "status": "pending",
+            "testStrategy": "Verify signup with role parameters correctly sets user role in database"
+          },
+          {
+            "id": 8,
+            "title": "Update breeder landing page for consistency",
+            "description": "Review and update breeder landing page to maintain brand consistency while keeping breeder-specific focus",
+            "details": "Ensure breeder landing page messaging aligns with updated pet-inclusive brand while maintaining breeder value propositions",
+            "status": "pending",
+            "testStrategy": "Verify breeder landing page maintains effectiveness while being consistent with updated brand messaging"
+          },
+          {
+            "id": 9,
+            "title": "Test responsive design and accessibility",
+            "description": "Ensure all changes work across different screen sizes and maintain accessibility standards",
+            "details": "Test all updated components on mobile, tablet, and desktop; verify keyboard navigation and screen reader compatibility",
+            "status": "pending",
+            "testStrategy": "Verify responsive behavior and accessibility compliance across all updated components"
           }
         ]
       }

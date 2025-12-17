@@ -14,24 +14,23 @@ import { MdApartment, MdSick } from "react-icons/md";
 
 const features = [
   {
-    name: "Apartment Dogs",
-    description: "Breeds well-suited for apartment living due to their calm nature and low exercise needs.",
+    name: "Apartment Pets",
+    description: "Perfect for apartment living with calm temperaments and low space requirements.",
     icon: MdApartment,
   },
   {
-    name: "Family Dogs",
-    description: "Breeds perfect for families with children as they are gentle, loving, and patient.",
+    name: "Family Pets",
+    description: "Gentle and patient companions ideal for households with children.",
     icon: GiFamilyHouse,
   },
   {
-    name: "Guard Dogs",
-    description: "Breeds naturally protective of their family and territory, making them great watchdogs.",
+    name: "Protective Pets",
+    description: "Naturally vigilant and protective, great for security and companionship.",
     icon: BsShieldShaded,
   },
-
   {
-    name: "Hypoallergenic Dogs",
-    description: "Breeds with low-shedding or single-layered coats, making them ideal for people with allergies.",
+    name: "Hypoallergenic Pets",
+    description: "Low-shedding or hairless breeds perfect for people with allergies.",
     icon: MdSick,
   },
 ];
@@ -68,10 +67,10 @@ export default function BreedTraits() {
                 fontWeight="semibold"
                 color="accent"
               >
-                Breeds
+                Pet Traits
               </Text>
               <Heading size={{ base: "sm", md: "md" }}>
-                Choose From 100+ Dog Breeds
+                Find Your Perfect Pet Match
               </Heading>
             </Stack>
             <Text
@@ -83,7 +82,7 @@ export default function BreedTraits() {
               maxW="3xl"
             >
               We are passionate about matching you with the right pet, whether
-              you&apos;re looking for an obedient family pet or a guard dog.
+              you're looking for a calm apartment companion or an energetic family friend.
             </Text>
           </Stack>
           <SimpleGrid
