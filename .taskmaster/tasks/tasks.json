@@ -919,14 +919,14 @@
           },
           {
             "id": 11,
-            "title": "Implement Support Ticket Management",
-            "description": "Create comprehensive support ticket system for handling user inquiries and technical issues.",
+            "title": "Implement Content Management System",
+            "description": "Create CMS for managing platform content including blog posts, static pages, and promotional content.",
             "dependencies": [
               1
             ],
-            "details": "Build support ticket management interface with ticket creation, assignment, status tracking, priority management, and resolution workflows. Include canned responses, ticket categories, and escalation procedures.",
+            "details": "Build content management interface for creating, editing, and publishing blog posts, managing static pages, and controlling promotional content. Include rich text editor, image management, SEO optimization, and content scheduling.",
             "status": "pending",
-            "testStrategy": "As admin, manage support tickets, assign tickets to team members, track resolution progress, and verify ticket management workflows function correctly."
+            "testStrategy": "As admin, create and publish blog posts, edit static pages, manage promotional content, and verify content appears correctly on the public site."
           },
           {
             "id": 12,
@@ -1063,6 +1063,381 @@
             "details": "Update breeder card components (BreederCard, BreederCard2, etc.): (1) Add wishlist icon button to save all of breeder's breeds, (2) On click, show modal to select which breeds to wishlist, or add all with single action, (3) Indicate wishlisted status on breeder cards, (4) Link to breeder detail page for more granular selection.",
             "status": "pending",
             "testStrategy": "Browse breeders as seeker, use quick wishlist action on breeder card, verify selected breeds appear in wishlist."
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Create Help and Support Page System with FAQs and Tickets",
+        "description": "Build comprehensive help and support system accessible from both @pages/support and @pages/dashboard/support with dynamic FAQ management and ticket creation functionality.",
+        "details": "Create a complete support ecosystem with: (1) Database schema for support_faqs, support_tickets, support_categories, support_ticket_comments, and support_ticket_attachments tables with proper RLS policies, (2) Reusable components for FAQ display, ticket forms, and support interfaces using Chakra UI and PageHeaderWithSearch, (3) Public support page at /pages/support with searchable FAQs for all users, (4) Dashboard support page at /pages/dashboard/support with ticket creation for logged-in users, (5) Role-based access (seekers can create tickets, breeders can view FAQs, admins can manage both), (6) Ticket status tracking with notifications, (7) File upload support for tickets, (8) Integration with existing notification system.",
+        "testStrategy": "Test complete support flows: public FAQ search and browsing, authenticated ticket creation, admin FAQ management, ticket status updates and notifications, role-based access controls, file uploads in tickets. Verify all functionality works across different user roles and both public and dashboard access points.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Database Schema for Support System",
+            "description": "Add support_faqs, support_tickets, support_categories, support_ticket_comments, and support_ticket_attachments tables to schema.ts with proper RLS policies",
+            "dependencies": [],
+            "details": "Extend db/schema.ts with: support_faqs (dynamic FAQ storage with categories, search fields, view counts, helpful votes), support_tickets (user tickets with status, priority, category), support_categories (ticket and FAQ categories), support_ticket_comments (admin/user conversation threads), support_ticket_attachments (file uploads for tickets). Include proper RLS policies, indexes, and type exports.",
+            "status": "pending",
+            "testStrategy": "Run database migrations and verify all new tables are created with correct relationships, indexes, and RLS policies in Supabase."
+          },
+          {
+            "id": 2,
+            "title": "Create React Query Hooks for Support System",
+            "description": "Build comprehensive hooks for FAQ management, ticket creation/management, and search functionality",
+            "dependencies": [
+              1
+            ],
+            "details": "Create useSupportFAQ.ts (CRUD operations, search, categories, view tracking, helpful votes), useSupportTickets.ts (ticket creation, status updates, comment threads, file attachments), useFAQSearch.ts (real-time search with debouncing), and useTicketCategories.ts. Follow existing hook patterns with proper error handling and query invalidation.",
+            "status": "pending",
+            "testStrategy": "Test each hook individually: FAQ CRUD operations, ticket creation and updates, search functionality, category filtering. Verify proper caching and error states."
+          },
+          {
+            "id": 3,
+            "title": "Build Reusable Support Components",
+            "description": "Create reusable components for FAQs, ticket forms, and support interfaces",
+            "dependencies": [
+              2
+            ],
+            "details": "Build SupportFAQ.tsx (searchable FAQ display with categories), SupportTicketForm.tsx (comprehensive ticket creation with file upload), SupportTicketList.tsx (ticket management for dashboard), SupportTicketDetail.tsx (ticket conversation view), SupportFAQAdmin.tsx (admin FAQ management interface). Use existing Chakra UI patterns and PageHeaderWithSearch component.",
+            "status": "pending",
+            "testStrategy": "Test each component in isolation: FAQ display and search, ticket form validation and submission, ticket list filtering, admin FAQ management interface."
+          },
+          {
+            "id": 4,
+            "title": "Implement Public Support Page",
+            "description": "Create /pages/support/index.tsx with searchable FAQ interface for all users",
+            "dependencies": [
+              3
+            ],
+            "details": "Build public support page with: PageHeaderWithSearch for FAQ search, category filtering, popular FAQs, view count tracking, helpful/unhelpful voting for logged-in users, contact information, and clear call-to-action for ticket creation (redirects to dashboard if not logged in).",
+            "status": "pending",
+            "testStrategy": "Navigate to /support as public user, test FAQ search and filtering, verify category organization, test view tracking, and check login prompts for voting/ticket creation."
+          },
+          {
+            "id": 5,
+            "title": "Implement Dashboard Support Page",
+            "description": "Create /pages/dashboard/support/index.tsx with ticket creation and management",
+            "dependencies": [
+              3
+            ],
+            "details": "Build dashboard support page with: ticket creation form (for seekers), ticket list and status tracking, ticket detail view with admin comments, file attachment viewing, notification integration for status updates, and role-based content (seekers see ticket creation, breeders see FAQ access, admins see full management).",
+            "status": "pending",
+            "testStrategy": "Test as different user roles: seekers can create tickets, view their tickets, all roles can access FAQs. Verify ticket status updates trigger notifications."
+          },
+          {
+            "id": 6,
+            "title": "Add Support Navigation and Routing",
+            "description": "Update navigation configurations to include support sections",
+            "dependencies": [
+              4,
+              5
+            ],
+            "details": "Add support navigation links to: public header/footer (link to /support), dashboard sidebar (seekers get 'Support Tickets', all roles get 'Help & FAQs'), admin sidebar (add support ticket management). Ensure proper role-based visibility and navigation states.",
+            "status": "pending",
+            "testStrategy": "Test navigation as different roles: public users see support link, seekers see ticket creation, breeders/admins see appropriate support sections, verify all routes work correctly."
+          },
+          {
+            "id": 7,
+            "title": "Implement Support Ticket Status Tracking",
+            "description": "Build comprehensive ticket status management with timeline and notifications",
+            "dependencies": [
+              5
+            ],
+            "details": "Implement ticket status workflow (submitted → in_review → responded → resolved), admin comment system with timestamps, automatic notifications for status changes, ticket priority levels, and escalation procedures. Integrate with existing notification system.",
+            "status": "pending",
+            "testStrategy": "Test complete ticket lifecycle: creation, admin review, status updates, user notifications, comment threading, and resolution tracking."
+          },
+          {
+            "id": 8,
+            "title": "Add File Upload Support for Tickets",
+            "description": "Implement secure file upload functionality for support tickets",
+            "dependencies": [
+              1,
+              7
+            ],
+            "details": "Create support-ticket-attachments Supabase storage bucket with RLS policies, build file upload component with drag-and-drop, file type validation, size limits, and progress indicators. Store file metadata in support_ticket_attachments table.",
+            "status": "pending",
+            "testStrategy": "Test file upload in ticket creation: drag-and-drop functionality, file type/size validation, upload progress, attachment display in ticket detail view."
+          },
+          {
+            "id": 9,
+            "title": "Create Admin Support Management Interface",
+            "description": "Build admin interface for managing support tickets and FAQs",
+            "dependencies": [
+              5
+            ],
+            "details": "Extend admin dashboard with: FAQ management (create/edit/delete FAQs, category management, view analytics), ticket management (view all tickets, assign priorities, add admin comments, close tickets), support analytics (ticket volume, resolution times, common issues), and canned response system.",
+            "status": "pending",
+            "testStrategy": "Test admin support management: FAQ CRUD operations, ticket assignment and responses, analytics dashboard, canned responses, and bulk operations."
+          },
+          {
+            "id": 10,
+            "title": "Add Search and Analytics for Support System",
+            "description": "Implement advanced search and analytics for support content",
+            "dependencies": [
+              9
+            ],
+            "details": "Add full-text search across FAQs and tickets, FAQ popularity tracking, ticket resolution analytics, user satisfaction ratings, and automated FAQ suggestions based on ticket content. Include admin analytics dashboard with charts and export functionality.",
+            "status": "pending",
+            "testStrategy": "Test search functionality across FAQs and tickets, verify analytics data accuracy, test FAQ suggestion system, and validate admin reporting features."
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Implement Terms of Service and Privacy Policy Pages",
+        "description": "Create comprehensive legal pages with Terms of Service and Privacy Policy for the Pethouse platform, accessible from both public and dashboard areas.",
+        "details": "Build dedicated legal compliance pages that are essential for platform operations. Include comprehensive terms covering user agreements, platform rules, liability disclaimers, and privacy policy explaining data collection, usage, cookies, and user rights. Make pages accessible from public footer and dashboard settings with proper SEO optimization and mobile responsiveness.",
+        "testStrategy": "Verify pages load correctly from public footer and dashboard settings, content is comprehensive and legally appropriate, pages are mobile-responsive, and proper navigation works. Test that pages are indexed properly for SEO.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Terms of Service Page",
+            "description": "Build comprehensive Terms of Service page covering user agreements, platform rules, liability, and service terms",
+            "dependencies": [],
+            "details": "Create src/pages/terms/index.tsx with detailed terms covering: user eligibility, account responsibilities, prohibited activities, content ownership, payment terms, dispute resolution, liability limitations, and service termination policies. Use existing page structure and SEO optimization.",
+            "status": "pending",
+            "testStrategy": "Verify page loads, content is comprehensive, mobile responsive, and properly formatted."
+          },
+          {
+            "id": 2,
+            "title": "Create Privacy Policy Page",
+            "description": "Build detailed Privacy Policy explaining data collection, usage, and user rights",
+            "dependencies": [],
+            "details": "Create src/pages/privacy/index.tsx covering: data collection practices, cookie usage, information sharing, user rights, data security measures, children's privacy, and contact information for privacy inquiries. Include compliance with Kenyan data protection laws.",
+            "status": "pending",
+            "testStrategy": "Verify privacy policy covers all required data practices, is compliant with regulations, and user rights are clearly explained."
+          },
+          {
+            "id": 3,
+            "title": "Add Legal Page Navigation",
+            "description": "Integrate legal pages into public footer and dashboard navigation",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Add Terms of Service and Privacy Policy links to public footer navigation and dashboard settings/legal section. Ensure proper routing and accessibility for all user roles.",
+            "status": "pending",
+            "testStrategy": "Test navigation from public footer and dashboard settings, verify links work for all user states (logged in/out)."
+          },
+          {
+            "id": 4,
+            "title": "Implement SEO and Accessibility",
+            "description": "Optimize legal pages for search engines and ensure accessibility compliance",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Add proper meta tags, structured data, and accessibility features (ARIA labels, keyboard navigation, screen reader support). Ensure pages are crawlable and properly indexed.",
+            "status": "pending",
+            "testStrategy": "Verify pages have proper SEO meta tags, accessibility compliance, and mobile responsiveness."
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Enhance Contact System with Multi-Channel Support",
+        "description": "Upgrade the existing contact system to support multiple communication channels and improve user experience based on PRD requirements.",
+        "details": "Expand the contact page to include WhatsApp integration, phone support, location information, and business hours. Add contact preferences to user profiles and integrate with the notification system for consistent communication preferences across the platform.",
+        "testStrategy": "Test all contact methods work correctly, WhatsApp integration functions properly, contact preferences are saved and respected, and the contact page is mobile-optimized.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add WhatsApp Integration to Contact System",
+            "description": "Integrate WhatsApp Business API or deep links for direct communication",
+            "dependencies": [],
+            "details": "Add WhatsApp contact options throughout the platform, including direct links from breeder profiles, contact page, and dashboard. Implement WhatsApp Business API integration for automated responses and business messaging.",
+            "status": "pending",
+            "testStrategy": "Test WhatsApp links work correctly, business messaging integration functions, and automated responses are sent appropriately."
+          },
+          {
+            "id": 2,
+            "title": "Enhance Contact Page with Business Information",
+            "description": "Add comprehensive business contact information, hours, and location details",
+            "dependencies": [],
+            "details": "Expand contact page with business hours, physical address, phone numbers, email contacts, and interactive map integration. Include contact form improvements and response time expectations.",
+            "status": "pending",
+            "testStrategy": "Verify all contact information is accurate and displayed properly, interactive map works, and contact form functions correctly."
+          },
+          {
+            "id": 3,
+            "title": "Implement User Contact Preferences",
+            "description": "Add contact preference management to user profiles",
+            "dependencies": [],
+            "details": "Extend user profile settings to include preferred contact methods (email, WhatsApp, phone, SMS). Integrate these preferences with notification system to respect user communication choices.",
+            "status": "pending",
+            "testStrategy": "Test contact preference settings save correctly, preferences are respected in notifications, and users can update preferences easily."
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "title": "Create About Page with Platform Story and Mission",
+        "description": "Build comprehensive About page showcasing Pethouse mission, team, and platform evolution from Doghouse to multi-pet adoption platform.",
+        "details": "Create engaging About page that tells the Pethouse story, explains the mission of connecting verified breeders with responsible pet seekers, showcases the team, and highlights the platform's growth from dog-focused to multi-pet adoption. Include compelling visuals, statistics, and call-to-actions.",
+        "testStrategy": "Verify page loads correctly, content is engaging and informative, visuals display properly, statistics are accurate, and page performs well on mobile devices.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design About Page Structure and Content",
+            "description": "Create comprehensive About page layout with mission, story, and platform information",
+            "dependencies": [],
+            "details": "Build src/pages/about/index.tsx with sections for: platform mission and values, evolution from Doghouse to Pethouse, team introduction, impact statistics, and call-to-action for user registration.",
+            "status": "pending",
+            "testStrategy": "Verify page structure is logical, content is compelling, and all sections load correctly."
+          },
+          {
+            "id": 2,
+            "title": "Add Platform Statistics and Impact Metrics",
+            "description": "Include key platform statistics and success metrics on About page",
+            "dependencies": [
+              1
+            ],
+            "details": "Add dynamic statistics section showing: number of verified breeders, successful adoptions, pets rehomed, platform growth metrics. Connect to database queries for real-time statistics display.",
+            "status": "pending",
+            "testStrategy": "Verify statistics display correctly, numbers are accurate, and section updates with real data."
+          },
+          {
+            "id": 3,
+            "title": "Create Team Section with Member Profiles",
+            "description": "Add team member profiles and company information",
+            "dependencies": [
+              1
+            ],
+            "details": "Include team member profiles with photos, roles, and backgrounds. Add company information, mission statement, and contact details for potential partners or team members.",
+            "status": "pending",
+            "testStrategy": "Verify team profiles display correctly, photos load properly, and information is up-to-date."
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "title": "Implement Reviews and Testimonials System",
+        "description": "Create comprehensive review system for breeders and testimonials for platform credibility, including post-adoption reviews, breeder profile reviews, and admin-managed testimonials.",
+        "details": "Build a complete reviews ecosystem with: (1) Database schema for reviews and testimonials tables, (2) Review collection after successful adoption in AdoptionTimeline, (3) Review display on breeder profiles (BreederDetailPage), (4) Admin management of testimonials for landing page (Testimonials component), (5) Rating system with stars, (6) Review moderation and analytics, (7) Integration with notification system for review requests.",
+        "testStrategy": "Test complete review flows: post-adoption review collection, breeder profile review display, admin testimonial management, rating calculations, review moderation, and notification integration. Verify all components work across different user roles and scenarios.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Database Schema for Reviews and Testimonials",
+            "description": "Add reviews and testimonials tables to schema.ts with proper relationships and RLS policies",
+            "dependencies": [],
+            "details": "Extend db/schema.ts with: reviews table (adoption-based reviews with ratings, comments, for breeders), testimonials table (admin-managed featured testimonials for landing page), proper RLS policies allowing users to create reviews for completed adoptions, admins to manage testimonials, and public read access.",
+            "status": "pending",
+            "testStrategy": "Run database migrations and verify all new tables are created with correct relationships, indexes, and RLS policies in Supabase."
+          },
+          {
+            "id": 2,
+            "title": "Create React Query Hooks for Reviews System",
+            "description": "Build comprehensive hooks for review and testimonial management",
+            "dependencies": [
+              1
+            ],
+            "details": "Create useReviews.ts (CRUD operations for adoption reviews, breeder rating calculations), useTestimonials.ts (admin management of landing page testimonials), useCreateReview.ts (post-adoption review submission), useBreederReviews.ts (display reviews on breeder profiles). Follow existing hook patterns with proper caching and invalidation.",
+            "status": "pending",
+            "testStrategy": "Test each hook individually: review CRUD operations, testimonial management, rating calculations, and breeder review aggregation. Verify proper caching and error states."
+          },
+          {
+            "id": 3,
+            "title": "Implement Post-Adoption Review Collection",
+            "description": "Add review collection to AdoptionTimeline component after successful adoption",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Extend AdoptionTimeline.tsx to include review collection step after 'completed' status. Add star rating component, review text input, and submission logic. Trigger review request notification when adoption reaches completed status. Include conditional rendering based on whether review has been submitted.",
+            "status": "pending",
+            "testStrategy": "Complete adoption flow and verify review collection appears, test rating submission, review text input, and notification triggers. Verify review only shows once and is properly saved."
+          },
+          {
+            "id": 4,
+            "title": "Add Review Display to Breeder Profiles",
+            "description": "Integrate review display into BreederDetailPage component",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Update BreederDetailPage.tsx Reviews tab to show actual reviews instead of empty state. Add review cards with ratings, comments, reviewer info, and dates. Include average rating calculation and display. Add pagination for multiple reviews and filtering options.",
+            "status": "pending",
+            "testStrategy": "Navigate to breeder profile reviews tab, verify reviews display correctly with ratings and comments, test pagination, and verify average rating calculations."
+          },
+          {
+            "id": 5,
+            "title": "Implement Rating Component and System",
+            "description": "Create reusable star rating component and rating calculation logic",
+            "dependencies": [],
+            "details": "Build Rating.tsx component with star display, rating input for reviews, and read-only display for profiles. Implement rating aggregation logic for breeder average ratings. Add rating validation and display formatting.",
+            "status": "pending",
+            "testStrategy": "Test rating component in different contexts: input mode for reviews, display mode for profiles. Verify star calculations, validation, and visual consistency."
+          },
+          {
+            "id": 6,
+            "title": "Create Admin Testimonials Management",
+            "description": "Build admin interface for managing landing page testimonials",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create admin testimonials management page with: add/edit/delete testimonials, featured testimonial selection, testimonial ordering, approval workflow. Integrate with existing Testimonials.tsx component to display admin-managed content.",
+            "status": "pending",
+            "testStrategy": "Test admin testimonial CRUD operations, featured selection, ordering changes, and verify testimonials appear correctly on landing page."
+          },
+          {
+            "id": 7,
+            "title": "Add Review Notification System",
+            "description": "Implement automated review request notifications",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Create notification triggers when adoptions complete successfully, requesting reviews from seekers. Add review reminder emails/notifications if reviews aren't submitted within timeframe. Integrate with existing notification system.",
+            "status": "pending",
+            "testStrategy": "Complete adoption and verify review request notification is sent, test reminder notifications, and verify notification links navigate to review interface."
+          },
+          {
+            "id": 8,
+            "title": "Implement Review Moderation and Analytics",
+            "description": "Add admin review moderation and review analytics dashboard",
+            "dependencies": [
+              1,
+              4
+            ],
+            "details": "Create admin interface for reviewing/moderating user-submitted reviews, hiding inappropriate content. Add review analytics showing average ratings, review volume trends, and response rates. Include bulk operations and reporting functionality.",
+            "status": "pending",
+            "testStrategy": "Test review moderation workflow, analytics data accuracy, bulk operations, and reporting functionality. Verify moderated reviews are properly hidden/displayed."
           }
         ]
       }

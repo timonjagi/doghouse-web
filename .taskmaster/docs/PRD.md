@@ -1,32 +1,29 @@
-Excellent — let’s refine the **Pethouse PRD** to make the dashboard features much more robust and actionable.
-We’ll expand the **Dashboard** section into three role-specific views (Breeder, Seeker, Admin) with detailed modules, user interactions, and notification logic — while polishing the rest for clarity and alignment with the new product direction.
 
----
 
 ## 🐾 **Refined Product Requirements Document (PRD) — Pethouse Platform**
 
 ### **1. Overview**
 
-Pethouse is a digital platform connecting verified breeders with responsible dog seekers in Kenya.
-It streamlines the discovery, matching, and adoption workflow through an intelligent dashboard system and seamless WhatsApp integration — making dog ownership more ethical, transparent, and human-centered.
+Pethouse is a digital platform connecting verified breeders with responsible pet seekers in Kenya.
+It streamlines the discovery, matching, and adoption workflow through an intelligent dashboard system and seamless WhatsApp integration — making pet ownership more ethical, transparent, and human-centered for all pet types including dogs, cats, birds, and other companion animals.
 
 ---
 
 ### **2. Objectives**
 
-* Empower breeders to manage their operations (breeds, litters, and applicants) efficiently.
-* Help seekers discover verified breeders and litters based on lifestyle, location, and breed preference.
+* Empower breeders to manage their operations (breeds, litters, and applicants) efficiently across all pet types.
+* Help seekers discover verified breeders and available pets based on lifestyle, location, and breed preference.
 * Ensure transparent, guided communication between breeders and seekers.
 * Leverage WhatsApp automation for lead management, notifications, and adoption updates.
-* Build trust in the breeding ecosystem via verification, accountability, and storytelling.
+* Build trust in the companion animal ecosystem via verification, accountability, and storytelling.
 
 ---
 
 ### **3. User Personas**
 
-1. **Breeders** – Manage their kennels, litters, and inquiries.
-2. **Seekers (Clients)** – Apply for adoption or express interest in specific breeds.
-3. **Admins** – Verify breeder profiles, monitor platform activity, and ensure compliance.
+1. **Breeders** – Manage their kennels/catteries/aviaries, litters/clutches/fledglings, and inquiries across all pet types.
+2. **Seekers (Pet Parents)** – Apply for adoption or express interest in specific breeds/types of companion animals.
+3. **Admins** – Verify breeder profiles, monitor platform activity, and ensure compliance across all pet categories.
 
 ---
 
@@ -45,36 +42,37 @@ It streamlines the discovery, matching, and adoption workflow through an intelli
 
 * **Breed Manager**
 
-  * Add/edit breeds they offer.
+  * Add/edit breeds they offer across all pet types (dogs, cats, birds, etc.).
   * Tag breeds with attributes (size, temperament, use case, health info).
   * View total inquiries per breed.
-* **Litter Tracker**
+* **Litter/Clutch/Fledgling Tracker**
 
-  * Add new litter → name, DOB, number of puppies, availability date, reservation fee.
-  * Auto-update litter status (Available / Reserved / Adopted).
-  * Upload litter images/videos.
+  * Add new litter → name, DOB, number of offspring, availability date, reservation fee.
+  * Auto-update status (Available / Reserved / Adopted) across all pet types.
+  * Upload images/videos of litters, clutches, or fledglings.
+  * Support different terminology per pet type (puppies/kittens/chicks).
 * **Inquiry Log**
 
   * View list of seekers who’ve expressed interest.
-  * Filter by breed, location, or inquiry stage.
+  * Filter by pet type, breed, location, or inquiry stage.
   * Click to open WhatsApp conversation via deep link.
 
 ---
 
-#### **C. Seeker Experience (Client Dashboard Module)**
+#### **C. Seeker Experience (Pet Parent Dashboard Module)**
 
-* **Breed Discovery**
+* **Pet Type & Breed Discovery**
 
-  * Explore available breeds filtered by size, age, or breeder location.
-  * “Wanted Listing” option → seekers can post a breed request with preferences.
+  * Explore available pet types (dogs, cats, birds, etc.) and breeds filtered by size, age, or breeder location.
+  * "Wanted Listing" option → pet parents can post specific pet/breed requests with preferences.
 * **Matching & Notifications**
 
-  * Instant alerts when a breeder with a matching breed becomes available.
+  * Instant alerts when a breeder with matching pet type/breed becomes available.
   * WhatsApp message & in-app notification sent automatically.
 * **My Applications**
 
   * Track applications by status: Submitted / Approved / Pending Visit / Completed.
-  * Option to schedule a visit (integration with breeder’s calendar).
+  * Option to schedule a visit (integration with breeder's calendar).
 * **Profile Settings**
 
   * Manage personal details, living environment info, and contact preferences.
@@ -111,11 +109,11 @@ It streamlines the discovery, matching, and adoption workflow through an intelli
 
 ### **5. MVP Dashboard Summary**
 
-| Role        | Core Dashboard Components           | Primary Actions                                | Notifications                             |
-| ----------- | ----------------------------------- | ---------------------------------------------- | ----------------------------------------- |
-| **Breeder** | Breeds, Litters, Inquiries, Profile | Add/Edit breed, View seekers, Approve interest | WhatsApp + In-App when new seeker matches |
-| **Seeker**  | Matches, My Applications, Profile   | Submit application, Track progress, Chat       | Alerts for matching breeders & updates    |
-| **Admin**   | Verification, Analytics, Broadcasts | Approve breeders, Remove listings              | Weekly activity summary                   |
+| Role        | Core Dashboard Components                      | Primary Actions                                | Notifications                             |
+| ----------- | ---------------------------------------------- | ---------------------------------------------- | ----------------------------------------- |
+| **Breeder** | Breeds, Litters/Clutches, Inquiries, Profile   | Add/Edit breed, View seekers, Approve interest | WhatsApp + In-App when new pet parent matches |
+| **Pet Parent** | Matches, My Applications, Profile            | Submit application, Track progress, Chat       | Alerts for matching breeders & updates    |
+| **Admin**   | Verification, Analytics, Broadcasts            | Approve breeders, Remove listings              | Weekly activity summary                   |
 
 ---
 
