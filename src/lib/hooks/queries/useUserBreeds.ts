@@ -4,6 +4,7 @@ import { queryKeys } from '../../queryKeys';
 import { UserBreed } from '../../db/schema';
 import { useToast } from '@chakra-ui/react';
 import { useState } from 'react';
+import { NotificationService } from '../../services/notificationService';
 
 interface CreateUserBreedData {
   breed_id: string;
@@ -289,28 +290,21 @@ export const useCreateUserBreed = () => {
 
       // Notify users who wishlisted the breed
       if (data.breed_id) {
-        const { data: wishlists } = await supabase
-          .from('wishlists')
-          .select('user_id')
-          .eq('breed_id', data.breed_id);
+        const { data: breed } = await supabase
+          .from('breeds')
+          .select('name')
+          .eq('id', data.breed_id)
+          .single();
 
-        if (wishlists?.length) {
-          // Fetch breed name
-          const { data: breed } = await supabase.from('breeds').select('name').eq('id', data.breed_id).single();
-          const breedName = breed?.name || 'Unknown Breed';
+        const breedName = breed?.name || 'Unknown Breed';
 
-          const notifications = wishlists.map(w => ({
-            user_id: w.user_id,
-            type: 'new_breeder',
-            title: 'New Breeder Alert!',
-            body: `A new breeder for ${breedName} has joined!`,
-            target_type: 'user_breed',
-            target_id: data.id,
-            is_read: false,
-          }));
-
-          await supabase.from('notifications').insert(notifications);
-        }
+        // Send topic-based notification to breed interest subscribers
+        await NotificationService.sendNewBreederNotification(
+          data.breed_id,
+          breedName,
+          'Unknown Breeder', // We don't have breeder name here, will be updated when available
+          data.id
+        );
       }
     },
   });

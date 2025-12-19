@@ -51,29 +51,19 @@ export class NotificationService {
     dbPayload: NotificationPayload,
     novuPayload?: NovuNotificationPayload
   ): Promise<string | null> {
-    let dbNotificationId: string | null = null;
-
-    // Always insert into database first to get the ID
     try {
-      dbNotificationId = await this.insertDatabaseNotification(dbPayload);
+      const response = await fetch('/api/novu/send-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dbPayload, novuPayload }),
+      });
+
+      const result = await response.json();
+      return result.success ? result.notificationId : null;
     } catch (error) {
-      console.error('Failed to insert database notification:', error);
+      console.error('Failed to send notification:', error);
+      return null;
     }
-
-    // Trigger Novu workflow if provided, include DB ID in payload
-    if (novuPayload) {
-      if (dbNotificationId) {
-        // Store the DB notification ID in Novu payload for correlation
-        novuPayload.payload.dbNotificationId = dbNotificationId;
-      }
-      try {
-        await this.triggerNovuWorkflow(novuPayload);
-      } catch (error) {
-        console.error('Novu notification error:', error);
-      }
-    }
-
-    return dbNotificationId;
   }
 
   /**
@@ -85,16 +75,20 @@ export class NotificationService {
       novu?: NovuNotificationPayload;
     }>
   ): Promise<void> {
-    const promises: Promise<any>[] = [];
+    try {
+      const response = await fetch('/api/novu/send-notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notifications }),
+      });
 
-    notifications.forEach(({ db, novu }) => {
-      promises.push(this.insertDatabaseNotification(db));
-      if (novu) {
-        promises.push(this.triggerNovuWorkflow(novu));
+      const result = await response.json();
+      if (!result.success) {
+        console.error('Failed to send notifications:', result.error);
       }
-    });
-
-    await Promise.allSettled(promises);
+    } catch (error) {
+      console.error('Failed to send notifications:', error);
+    }
   }
 
   /**
@@ -628,23 +622,22 @@ export class NotificationService {
     }
   ): Promise<void> {
     try {
-      // Trigger a workflow to auto-create the subscriber
-      await novu.trigger({
-        workflowId: 'welcome-user', // Use existing workflow to create subscriber
-        to: {
+      const response = await fetch('/api/novu/ensure-subscriber', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           subscriberId,
           firstName: userData.firstName,
           lastName: userData.lastName,
           email: userData.email,
           phone: userData.phone,
           data: userData.data,
-        },
-        payload: {
-          userId: subscriberId,
-          firstName: userData.firstName,
-          email: userData.email,
-        },
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Subscriber creation failed');
+      }
     } catch (error) {
       console.error('Failed to create subscriber:', error);
       // Don't throw - subscriber creation is not critical for onboarding
@@ -652,44 +645,210 @@ export class NotificationService {
   }
 
   /**
+   * Send admin notification for listing creation
+   */
+  static async sendListingCreatedNotification(
+    listingId: string,
+    listingTitle: string,
+    listingType: string,
+    breederId: string,
+    breederName: string
+  ): Promise<void> {
+    await this.sendNotification(
+      {
+        userId: 'admin',
+        type: 'listing_created',
+        title: 'New Listing Created',
+        body: `${breederName} created a new ${listingType} listing: ${listingTitle}`,
+        targetType: 'listing',
+        targetId: listingId,
+        meta: {
+          listingId,
+          listingTitle,
+          listingType,
+          breederId,
+          breederName,
+        },
+      },
+      {
+        workflowId: 'listing-created',
+        to: { subscriberId: 'admin' },
+        payload: {
+          listingId,
+          listingTitle,
+          listingType,
+          breederId,
+          breederName,
+        },
+      }
+    );
+  }
+
+  /**
+   * Send breeder notification for listing creation
+   */
+  static async sendListingCreatedToBreederNotification(
+    listingId: string,
+    listingTitle: string,
+    listingType: string,
+    breederId: string,
+    breederName: string
+  ): Promise<void> {
+    await this.sendNotification(
+      {
+        userId: breederId,
+        type: 'listing_created',
+        title: 'Listing Created Successfully',
+        body: `Your ${listingType} listing "${listingTitle}" has been created and is now live.`,
+        targetType: 'listing',
+        targetId: listingId,
+        meta: {
+          listingId,
+          listingTitle,
+          listingType,
+          breederId,
+          breederName,
+        },
+      },
+      {
+        workflowId: 'listing-created',
+        to: { subscriberId: breederId },
+        payload: {
+          listingId,
+          listingTitle,
+          listingType,
+          breederId,
+          breederName,
+        },
+      }
+    );
+  }
+
+  /**
    * Subscribe user to breed interest topic (wishlist)
-   * Note: Topic subscriptions will be implemented when Novu API is available
+   * Uses server-side API route for topic subscription
    */
   static async subscribeToBreedInterest(
     subscriberId: string,
     breedId: string,
     breedName: string
   ): Promise<void> {
-    // TODO: Implement when Novu topic subscription API is available
-    console.log(`TODO: Subscribe ${subscriberId} to breed interest topic: ${breedName}`);
-    // For now, just log - actual subscription will be handled later
+    try {
+      const response = await fetch('/api/novu/subscribe-topic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscriberId,
+          topicKey: `breed-${breedId}-interested`,
+          topicName: `breed-${breedId}-interested`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Breed interest subscription failed');
+      }
+
+      console.log(`Successfully subscribed ${subscriberId} to breed interest: ${breedName}`);
+    } catch (error) {
+      console.error(`Failed to subscribe ${subscriberId} to breed interest ${breedName}:`, error);
+      // Don't throw - topic subscription is not critical for core functionality
+    }
   }
 
   /**
    * Subscribe user to breeder activity topic
-   * Note: Topic subscriptions will be implemented when Novu API is available
+   * Uses server-side API route for topic subscription
    */
   static async subscribeToBreeder(
     subscriberId: string,
     breederId: string,
     breederName: string
   ): Promise<void> {
-    // TODO: Implement when Novu topic subscription API is available
-    console.log(`TODO: Subscribe ${subscriberId} to breeder: ${breederName}`);
-    // For now, just log - actual subscription will be handled later
+    try {
+      const response = await fetch('/api/novu/subscribe-topic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscriberId,
+          topicKey: `breeder-${breederId}-subscribers`,
+          topicName: `breeder-${breederId}-subscribers`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Breeder subscription failed');
+      }
+
+      console.log(`Successfully subscribed ${subscriberId} to breeder: ${breederName}`);
+    } catch (error) {
+      console.error(`Failed to subscribe ${subscriberId} to breeder ${breederName}:`, error);
+      // Don't throw - topic subscription is not critical for core functionality
+    }
   }
 
   /**
    * Unsubscribe user from breeder activity topic
-   * Note: Topic subscriptions will be implemented when Novu API is available
+   * Uses server-side API route for topic unsubscription
    */
   static async unsubscribeFromBreeder(
     subscriberId: string,
     breederId: string
   ): Promise<void> {
-    // TODO: Implement when Novu topic subscription API is available
-    console.log(`TODO: Unsubscribe ${subscriberId} from breeder: ${breederId}`);
-    // For now, just log - actual unsubscription will be handled later
+    try {
+      const response = await fetch('/api/novu/unsubscribe-topic', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscriberId,
+          topicKey: `breeder-${breederId}-subscribers`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Breeder unsubscription failed');
+      }
+
+      console.log(`Successfully unsubscribed ${subscriberId} from breeder: ${breederId}`);
+    } catch (error) {
+      console.error(`Failed to unsubscribe ${subscriberId} from breeder ${breederId}:`, error);
+      // Don't throw - topic unsubscription is not critical for core functionality
+    }
+  }
+
+  /**
+   * Ensure subscriber exists in Novu before topic subscription
+   * Uses server-side API route for subscriber creation
+   */
+  private static async ensureSubscriberExists(
+    subscriberId: string,
+    userData?: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      phone?: string;
+      data?: Record<string, any>;
+    }
+  ): Promise<void> {
+    try {
+      const response = await fetch('/api/novu/ensure-subscriber', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscriberId,
+          firstName: userData?.firstName,
+          lastName: userData?.lastName,
+          email: userData?.email || `${subscriberId}@placeholder.com`,
+          phone: userData?.phone,
+          data: userData?.data,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Subscriber creation failed');
+      }
+    } catch (error) {
+      console.error(`Failed to ensure subscriber exists: ${subscriberId}`, error);
+    }
   }
 
   /**
@@ -766,21 +925,64 @@ export class NotificationService {
     listingId: string
   ): Promise<void> {
     try {
-      await novu.trigger({
-        workflowId: 'breed-interest-broadcast',
-        to: { type: "Topic", topicKey: `breed-${breedId}-interested` },
-        payload: {
-          breedId,
-          breedName,
-          listingTitle,
-          breederName,
-          listingId,
-          title: `New ${breedName} Available!`,
-          message: `Check out this new ${breedName} listing from ${breederName}`,
-        },
+      const response = await fetch('/api/novu/send-topic-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workflowId: 'breed-interest-broadcast',
+          topicKey: `breed-${breedId}-interested`,
+          payload: {
+            breedId,
+            breedName,
+            listingTitle,
+            breederName,
+            listingId,
+            title: `New ${breedName} Available!`,
+            message: `Check out this new ${breedName} listing from ${breederName}`,
+          },
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Breed match notification failed');
+      }
     } catch (error) {
       console.error('Failed to send breed match notification:', error);
+    }
+  }
+
+  /**
+   * Send notification to breed interest topic for new breeder
+   */
+  static async sendNewBreederNotification(
+    breedId: string,
+    breedName: string,
+    breederName: string,
+    userBreedId: string
+  ): Promise<void> {
+    try {
+      const response = await fetch('/api/novu/send-topic-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workflowId: 'breed-interest-broadcast',
+          topicKey: `breed-${breedId}-interested`,
+          payload: {
+            breedId,
+            breedName,
+            breederName,
+            userBreedId,
+            title: `New ${breedName} Breeder!`,
+            message: `A new breeder for ${breedName} has joined: ${breederName}`,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('New breeder notification failed');
+      }
+    } catch (error) {
+      console.error('Failed to send new breeder notification:', error);
     }
   }
 
@@ -800,20 +1002,20 @@ export class NotificationService {
     }
   ): Promise<void> {
     try {
-      await novu.trigger({
-        workflowId: 'admin-broadcast',
-        to: { type: "Topic", topicKey: "admin-users" },
-        payload: {
+      const response = await fetch('/api/novu/send-topic-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topicKey: 'admin-users',
           title,
           message,
-          priority: options?.priority || 'normal',
-          category: options?.category || 'general',
-          actionUrl: options?.actionUrl,
-          actionLabel: options?.actionLabel,
-          details: options?.details,
-          footerContent: options?.footerContent,
-        },
+          options,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Broadcast failed');
+      }
     } catch (error) {
       console.error('Failed to send broadcast message:', error);
     }
@@ -842,19 +1044,27 @@ export class NotificationService {
         breed: `${breederName} added a new breed: "${activityData.title}"`,
       };
 
-      await novu.trigger({
-        workflowId: 'breeder-activity-broadcast',
-        to: { type: "Topic", topicKey: `breeder-${breederId}-subscribers` },
-        payload: {
-          breederId,
-          breederName,
-          activityType,
-          activityId: activityData.id,
-          activityTitle: activityData.title,
-          title: activityTitles[activityType],
-          message: activityMessages[activityType],
-        },
+      const response = await fetch('/api/novu/send-topic-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workflowId: 'breeder-activity-broadcast',
+          topicKey: `breeder-${breederId}-subscribers`,
+          payload: {
+            breederId,
+            breederName,
+            activityType,
+            activityId: activityData.id,
+            activityTitle: activityData.title,
+            title: activityTitles[activityType],
+            message: activityMessages[activityType],
+          },
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Breeder activity notification failed');
+      }
     } catch (error) {
       console.error('Failed to send breeder activity notification:', error);
     }

@@ -1,9 +1,12 @@
-import { Card, CardBody, Stack, HStack, Avatar, VStack, Badge, Button, Text, Icon, ButtonGroup, useColorModeValue } from "@chakra-ui/react";
+import { Card, CardBody, Stack, HStack, Avatar, VStack, Badge, Button, Text, Icon, ButtonGroup, useColorModeValue, Tooltip } from "@chakra-ui/react";
 import Link from "next/link";
 import { FiArrowRight, FiBell, FiShield } from "react-icons/fi";
 import { LuDog } from "react-icons/lu";
 import { MdLocationOn, MdStar, MdVerifiedUser } from "react-icons/md";
 import { useToast } from "@chakra-ui/react";
+import { AddToWishlistButton } from "lib/components/ui/AddToWishlistButton";
+import { useCurrentUser } from "lib/hooks/queries/useAuth";
+import { NotificationService } from "lib/services/notificationService";
 
 interface BreederCardProps {
   breeder: any;
@@ -14,6 +17,7 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
   const user = breeder;
   const breederProfile = user?.breeder_profiles ? user.breeder_profiles[0] : user;
   const toast = useToast();
+  const { data: currentUser } = useCurrentUser();
 
   // Try to get userBreedId from breeder object (assuming first breed if multiple)
   const userBreedId = breeder.user_breeds?.[0]?.id;
@@ -22,7 +26,6 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
   const textColor = useColorModeValue("gray.600", "gray.400");
   const starColor = useColorModeValue("gold", "yellow.400");
   const mutedTextColor = useColorModeValue("gray.500", "gray.400");
-  //if (!user) return null;
 
   return (
     <Card variant="outline" _hover={{ shadow: "md", transform: "translateY(-2px)" }} transition="all 0.2s">
@@ -40,14 +43,12 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
               size="lg"
             />
 
-            <VStack align="start" spacing={1}>
+            <VStack align="start" spacing={1} flex="1">
 
               <HStack w="full" justifyContent="space-between">
                 <Text fontWeight="semibold" fontSize="lg" noOfLines={2}>
                   {breederProfile?.kennel_name || user?.display_name}
                 </Text>
-
-
 
                 <Badge colorScheme="yellow" size="sm">
                   <HStack>
@@ -66,8 +67,6 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
                 </HStack>
               )}
             </VStack>
-
-
           </Stack>
 
           <HStack spacing={2} flexWrap="wrap">
@@ -86,10 +85,6 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
                 <Text fontSize="sm">{breederProfile?.verified_at ? 'Verified' : 'Not verified'}</Text>
               </HStack>
             </Badge>
-
-
-
-
           </HStack>
 
           <HStack wrap="nowrap" overflowY="scroll" css={{ scrollbarWidth: 'none' }}>
@@ -102,6 +97,58 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
 
           {showActions && (
             <ButtonGroup>
+              <Tooltip label="Save all breeds from this breeder to wishlist">
+                <AddToWishlistButton
+                  userBreedId={userBreedId}
+                  notifyWhenAvailable={true}
+                  size="sm"
+                  variant="outline"
+                  withText={true}
+                  textAdded="Wishlisted"
+                  textNotAdded="Wishlist All"
+                  isDisabled={!userBreedId || !currentUser}
+                  title={!userBreedId ? "No breeds available to wishlist" : !currentUser ? "Sign in to wishlist" : "Wishlist all breeds from this breeder"}
+                />
+              </Tooltip>
+
+              <Tooltip label="Get notified when this breeder posts new content">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  leftIcon={<FiBell />}
+                  isDisabled={!currentUser}
+                  title={!currentUser ? "Sign in to subscribe" : "Subscribe to breeder updates"}
+                  onClick={async () => {
+                    if (!currentUser) return;
+
+                    try {
+                      await NotificationService.subscribeToBreeder(
+                        currentUser.id,
+                        breeder.id,
+                        breederProfile?.kennel_name || user?.display_name
+                      );
+                      toast({
+                        title: "Subscribed to breeder updates",
+                        description: `You will be notified when ${breederProfile?.kennel_name || user?.display_name} posts new content.`,
+                        status: "success",
+                        duration: 3000,
+                        isClosable: true,
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Subscription failed",
+                        description: "Please try again later.",
+                        status: "error",
+                        duration: 3000,
+                        isClosable: true,
+                      });
+                    }
+                  }}
+                >
+                  Subscribe
+                </Button>
+              </Tooltip>
+
               <Button
                 size="sm"
                 variant="primary"

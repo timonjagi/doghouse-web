@@ -4,6 +4,7 @@ import { FiHeart } from 'react-icons/fi';
 import { FaHeart } from 'react-icons/fa';
 import { useIsInWishlist, useAddToWishlist, useRemoveFromWishlist } from 'lib/hooks/queries/useWishlist';
 import { useCurrentUser } from 'lib/hooks/queries/useAuth';
+import { NotificationService } from 'lib/services/notificationService';
 
 interface AddToWishlistButtonProps extends Omit<IconButtonProps & ButtonProps, 'aria-label'> {
   userBreedId?: string;
@@ -63,6 +64,16 @@ export const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
           breed_id: breedId,
           notify_when_available: notifyWhenAvailable,
         });
+
+        // Subscribe to breed interest topic for notifications
+        if (breedId && notifyWhenAvailable) {
+          await NotificationService.subscribeToBreedInterest(
+            user.id,
+            breedId,
+            'Breed Name' // TODO: Get actual breed name from props or context
+          );
+        }
+
         toast({
           title: 'Added to wishlist',
           description: notifyWhenAvailable ? 'You will be notified when this becomes available.' : undefined,

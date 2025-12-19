@@ -7,9 +7,6 @@ import {
   Text,
   Alert,
   AlertIcon,
-  Card,
-  CardBody,
-  Avatar,
   HStack,
   Badge,
   Button,
@@ -18,10 +15,8 @@ import {
   Tab,
   TabPanels,
   TabPanel,
-  SimpleGrid,
   useToast,
   Icon,
-  Stack,
   useColorModeValue,
   Modal,
   ModalBody,
@@ -31,30 +26,25 @@ import {
   ModalCloseButton,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { MdLocationOn, MdStar, MdEmail, MdPhone, MdVerifiedUser } from 'react-icons/md';
+import { MdVerifiedUser } from 'react-icons/md';
 import { Loader } from 'lib/components/ui/Loader';
 import { useUserProfileById } from 'lib/hooks/queries/useUserProfile';
 import { useBreederProfile } from 'lib/hooks/queries/useBreederProfile';
 import { useUserBreedsFromUser } from 'lib/hooks/queries/useUserBreeds';
 import { useIncrementListingViews, useListingsByOwner } from 'lib/hooks/queries/useListings';
-import ListingCard from 'lib/components/ui/ListingCard';
-import { BreedCard } from 'lib/components/ui/BreedCard';
-import { ArrowBackIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
-import { BsFillBuildingFill } from 'react-icons/bs';
-import { Rating } from 'lib/components/ui/Rating';
 import { CardContent, CardWithAvatar } from 'lib/components/ui/UserCardWithBackground';
 import { UserInfo } from 'lib/components/ui/UserInfo';
-import { FiBell, FiEdit, FiEdit2, FiEdit3, FiLogOut, FiPlus, FiShield, FiShoppingBag, FiStar, FiUserPlus } from 'react-icons/fi';
+import { FiBell, FiEdit, FiPlus, FiShield, FiShoppingBag, FiStar, FiUserPlus } from 'react-icons/fi';
 import { LuDog } from 'react-icons/lu';
 import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 import { KennelForm } from '../../ui/KennelForm';
 import { BreedList, UserBreedWithBreed } from 'lib/components/ui/BreedList';
+import { NotificationService } from 'lib/services/notificationService';
 import ListingList from 'lib/components/ui/ListingList';
-import { Listing, UserBreed } from 'lib/db/schema';
+import { UserBreed } from 'lib/db/schema';
 import { EmptyView } from 'lib/components/ui/EmptyView';
 import ListingForm from '../listings/ListingForm';
-import { AddToWishlistButton } from 'lib/components/ui/AddToWishlistButton';
 
 interface BreederDetailPageProps {
 }
@@ -68,7 +58,9 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
   const { data: user } = useCurrentUser();
 
 
-  const handleSubscribeClick = () => {
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const handleSubscribeClick = async () => {
     if (!user?.id) {
       toast({
         title: "Please log in to subscribe",
@@ -78,10 +70,50 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
       });
       return;
     }
-  }
+
+    try {
+      if (isSubscribed) {
+        // Unsubscribe
+        await NotificationService.unsubscribeFromBreeder(
+          user.id,
+          breederId!
+        );
+        setIsSubscribed(false);
+        toast({
+          title: "Unsubscribed from breeder updates",
+          description: `You will no longer receive notifications from ${breederProfile?.kennel_name || breederUser?.display_name}.`,
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        // Subscribe
+        await NotificationService.subscribeToBreeder(
+          user.id,
+          breederId!,
+          breederProfile?.kennel_name || breederUser?.display_name
+        );
+        setIsSubscribed(true);
+        toast({
+          title: "Subscribed to breeder updates",
+          description: `You will be notified when ${breederProfile?.kennel_name || breederUser?.display_name} posts new content.`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Subscription failed",
+        description: "Please try again later.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   useEffect(() => {
-
     const id = router.query.id as string;
     if (id) {
       setBreederId(id);
@@ -206,13 +238,13 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                     variant="primary"
                     size="sm"
                     rightIcon={<FiBell />}
+                    isDisabled={!userBreedId}
+                    title={!userBreedId ? "No breeds available to subscribe to" : isSubscribed ? "Unsubscribe from breeder updates" : "Subscribe to breeder updates"}
                     onClick={handleSubscribeClick}
-                      isDisabled={!userBreedId}
-                      title={!userBreedId ? "No breeds available to subscribe to" : "Subscribe"}
-                    >
-                      Subscribe
-                    </Button>
-                  )
+                  >
+                    {isSubscribed ? "Unsubscribe" : "Subscribe"}
+                  </Button>
+                )
               }
             >
               <CardContent>

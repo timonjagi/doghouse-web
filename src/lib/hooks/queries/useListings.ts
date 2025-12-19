@@ -558,60 +558,20 @@ export const useCreateListing = () => {
 
       await Promise.all([
         // Notify admin
-        NotificationService.sendNotification(
-          {
-            userId: 'admin',
-            type: 'listing_created',
-            title: 'New Listing Created',
-            body: `${breeder?.display_name || 'A breeder'} created a new ${data.type} listing: ${data.title}`,
-            targetType: 'listing',
-            targetId: data.id,
-            meta: {
-              listingId: data.id,
-              listingTitle: data.title,
-              listingType: data.type,
-              breederId: data.owner_id,
-              breederName: breeder?.display_name,
-            },
-          },
-          {
-            workflowId: 'listing-created',
-            to: { subscriberId: 'admin' },
-            payload: {
-              listingId: data.id,
-              listingTitle: data.title,
-              listingType: data.type,
-              breederId: data.owner_id,
-              breederName: breeder?.display_name || 'Breeder',
-            },
-          }
+        NotificationService.sendListingCreatedNotification(
+          data.id,
+          data.title,
+          data.type,
+          data.owner_id,
+          breeder?.display_name || 'Breeder'
         ),
         // Notify breeder
-        NotificationService.sendNotification(
-          {
-            userId: data.owner_id,
-            type: 'listing_created',
-            title: 'Listing Created Successfully',
-            body: `Your ${data.type} listing "${data.title}" has been created and is now live.`,
-            targetType: 'listing',
-            targetId: data.id,
-            meta: {
-              listingId: data.id,
-              listingTitle: data.title,
-              listingType: data.type,
-            },
-          },
-          {
-            workflowId: 'listing-created',
-            to: { subscriberId: data.owner_id },
-            payload: {
-              listingId: data.id,
-              listingTitle: data.title,
-              listingType: data.type,
-              breederId: data.owner_id,
-              breederName: breeder?.display_name || 'Breeder',
-            },
-          }
+        NotificationService.sendListingCreatedToBreederNotification(
+          data.id,
+          data.title,
+          data.type,
+          data.owner_id,
+          breeder?.display_name || 'Breeder'
         ),
       ]);
 
@@ -619,24 +579,22 @@ export const useCreateListing = () => {
 
       // Notify users who wishlisted this breed about the new listing
       if (data.breed_id) {
-        const { data: wishlists } = await supabase
-          .from('wishlists')
-          .select('user_id')
-          .eq('breed_id', data.breed_id);
+        const { data: breed } = await supabase
+          .from('breeds')
+          .select('name')
+          .eq('id', data.breed_id)
+          .single();
 
-        if (wishlists?.length) {
-          const notifications = wishlists.map(w => ({
-            user_id: w.user_id,
-            type: 'new_listing',
-            title: 'New Listing Alert!',
-            body: `A new listing matching your wishlist has been posted: "${data.title}"`,
-            target_type: 'listing',
-            target_id: data.id,
-            is_read: false,
-          }));
+        const breedName = breed?.name || 'Unknown Breed';
 
-          await supabase.from('notifications').insert(notifications);
-        }
+        // Send topic-based notification to breed interest subscribers
+        await NotificationService.sendBreedMatchNotification(
+          data.breed_id,
+          breedName,
+          data.title,
+          breeder?.display_name || 'Breeder',
+          data.id
+        );
       }
     },
   });
