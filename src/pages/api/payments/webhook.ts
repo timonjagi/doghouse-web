@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from 'lib/supabase/client';
+import { supabaseServer as supabase } from 'lib/supabase/server';
 import { paystack } from 'lib/services/paystackService';
 import novu from 'lib/novu';
 

@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Novu } from '@novu/api';
-import { supabase } from '../../../lib/supabase/client';
-
-const novu = new Novu({ secretKey: process.env.NOVU_API_KEY! });
+import { supabaseServer } from '../../../lib/supabase/server';
+import novu from 'lib/novu';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -13,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // Insert into database
-    const { data, error } = await supabase.from('notifications').insert({
+    const { data, error } = await supabaseServer.from('notifications').insert({
       user_id: dbPayload.userId,
       type: dbPayload.type,
       title: dbPayload.title,
