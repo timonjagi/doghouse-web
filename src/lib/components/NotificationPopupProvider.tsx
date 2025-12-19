@@ -227,22 +227,25 @@ export const NotificationPopupProvider: React.FC<NotificationPopupProviderProps>
   };
 
   useEffect(() => {
-    // Filter unread notifications that haven't been shown
-    const unreadNotifications = notifications.filter(
-      notification => !notification.read && !shownNotificationIds.has(notification.id)
-    );
+    if (notifications && notifications.length) {
+      // Filter unread notifications that haven't been shown
+      const unreadNotifications = notifications.filter(
+        notification => !notification.read && !shownNotificationIds.has(notification.id)
+      );
 
-    if (unreadNotifications.length > 0) {
-      // Add new notifications to queue
-      setNotificationQueue(prev => [...prev, ...unreadNotifications]);
+      if (unreadNotifications.length > 0) {
+        // Add new notifications to queue
+        setNotificationQueue(prev => [...prev, ...unreadNotifications]);
 
-      // Mark these as shown
-      setShownNotificationIds(prev => {
-        const newSet = new Set(prev);
-        unreadNotifications.forEach(notification => newSet.add(notification.id));
-        return newSet;
-      });
+        // Mark these as shown
+        setShownNotificationIds(prev => {
+          const newSet = new Set(prev);
+          unreadNotifications.forEach(notification => newSet.add(notification.id));
+          return newSet;
+        });
+      }
     }
+
   }, [notifications, shownNotificationIds]);
 
   // Display notifications from queue one at a time
