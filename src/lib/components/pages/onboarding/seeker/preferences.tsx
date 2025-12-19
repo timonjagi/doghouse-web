@@ -167,6 +167,7 @@ export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep })
           firstName: user.user_metadata?.display_name || user.email?.split('@')[0] || 'User',
           email: user.email || '',
           phone: user.phone || undefined,
+          data: { role: 'seeker' },
         }, {
           preferredBreedId: dbBreed.id,
           preferredBreedName: selectedBreed.name,

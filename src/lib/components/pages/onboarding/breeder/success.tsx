@@ -27,6 +27,7 @@ export const BreederSuccess: React.FC<SuccessProps> = () => {
         firstName: user.user_metadata?.display_name || user.email?.split('@')[0] || 'Breeder',
         email: user.email || '',
         phone: user.phone || undefined,
+        data: { role: 'breeder' },
       });
 
       // Redirect to dashboard

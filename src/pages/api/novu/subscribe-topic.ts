@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Novu } from '@novu/api';
 
-const novu = new Novu(process.env.NOVU_API_KEY!);
+const novu = new Novu({ secretKey: process.env.NOVU_API_KEY! });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -11,15 +11,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { subscriberId, topicKey, topicName } = req.body;
 
   try {
-    // Ensure subscriber exists
-    await novu.subscribers.create({
-      subscriberId,
-      email: `${subscriberId}@placeholder.com`,
-    });
-
     // Subscribe to topic using correct API method
     await novu.topics.subscriptions.create({
-      subscriptions: [{ subscriberId }],
+      subscriptions: [{
+        subscriberId: subscriberId,
+        identifier: `${subscriberId}-${topicKey}`,
+      }],
       name: topicName,
     }, topicKey);
 

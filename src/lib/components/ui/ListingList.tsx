@@ -74,6 +74,7 @@ interface ListingListProps {
   emptyDescription?: string;
   showEmptyAction?: boolean;
   onEmptyAction?: () => void;
+  emptyActionComponent?: React.ReactNode;
   emptyActionLabel?: string;
   emptyActionIcon?: any;
 }
@@ -94,6 +95,7 @@ export const ListingList: React.FC<ListingListProps> = ({
   emptyDescription = "Clear your search criteria to find listings.",
   showEmptyAction = false,
   onEmptyAction,
+  emptyActionComponent = null,
   emptyActionLabel = "Clear Filters",
   emptyActionIcon = null
 }) => {

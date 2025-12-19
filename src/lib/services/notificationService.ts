@@ -1,5 +1,4 @@
 import { supabase } from '../supabase/client';
-import novu from '../novu';
 
 export interface NotificationPayload {
   userId: string;
@@ -381,7 +380,9 @@ export class NotificationService {
     }
 
     // Send all notifications
-    await this.sendNotifications(notifications);
+    for (const notification of notifications) {
+      await this.sendNotification(notification.db, notification.novu);
+    }
   }
 
   /**
@@ -581,7 +582,7 @@ export class NotificationService {
     }
   ): Promise<void> {
     try {
-      const response = await fetch('/api/novu/ensure-subscriber', {
+      const response = await fetch('/api/novu/create-subscriber', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -860,42 +861,6 @@ export class NotificationService {
   }
 
   /**
-   * Ensure subscriber exists in Novu before topic subscription
-   * Uses server-side API route for subscriber creation
-   */
-  private static async ensureSubscriberExists(
-    subscriberId: string,
-    userData?: {
-      firstName?: string;
-      lastName?: string;
-      email?: string;
-      phone?: string;
-      data?: Record<string, any>;
-    }
-  ): Promise<void> {
-    try {
-      const response = await fetch('/api/novu/ensure-subscriber', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subscriberId,
-          firstName: userData?.firstName,
-          lastName: userData?.lastName,
-          email: userData?.email || `${subscriberId}@placeholder.com`,
-          phone: userData?.phone,
-          data: userData?.data,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Subscriber creation failed');
-      }
-    } catch (error) {
-      console.error(`Failed to ensure subscriber exists: ${subscriberId}`, error);
-    }
-  }
-
-  /**
    * Handle seeker onboarding completion with subscriber creation and subscriptions
    */
   static async completeSeekerOnboarding(
@@ -905,6 +870,7 @@ export class NotificationService {
       lastName?: string;
       email: string;
       phone?: string;
+      data?: Record<string, any>;
     },
     preferences: {
       preferredBreedId: string;
@@ -942,6 +908,7 @@ export class NotificationService {
       lastName?: string;
       email: string;
       phone?: string;
+      data?: Record<string, any>;
     }
   ): Promise<void> {
     const promises: Promise<void>[] = [];
