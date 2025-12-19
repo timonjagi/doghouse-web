@@ -49,21 +49,22 @@ export const MobileBottomNav = () => {
             icon={item.icon}
             href={item.href}
             isActive={currentRoute === item.href}
-          >
-            {unreadCount > 0 && item.href.includes('inbox') && (
-              <Badge
-                rounded="full"
-                variant="subtle"
-                colorScheme="brand"
-                size="sm"
-                position="absolute"
-                top="-3"
-                right="-3"
-              >
-                {unreadCount}
-              </Badge>
-            )}
-          </NavAction.Mobile>
+            badge={
+              unreadCount > 0 && item.href.includes('inbox') ? (
+                <Badge
+                  rounded="full"
+                  variant="subtle"
+                  colorScheme="brand"
+                  size="sm"
+                  position="absolute"
+                  top="-3"
+                  right="-3"
+                >
+                  {unreadCount}
+                </Badge>
+              ) : undefined
+            }
+          />
         ))}
       </SimpleGrid>
     </Box>

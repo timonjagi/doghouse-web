@@ -8,10 +8,11 @@ type NavActionProps = {
   icon: React.ElementType
   isActive?: boolean
   children?: React.ReactNode
+  badge?: React.ReactNode
 }
 
 const MobileNavAction = (props: NavActionProps) => {
-  const { label, icon, isActive, href, children } = props
+  const { label, icon, isActive, href, children, badge } = props
   return (
     <Center
       as={Link}
@@ -27,7 +28,7 @@ const MobileNavAction = (props: NavActionProps) => {
         <Text fontSize="sm" fontWeight="medium">
           {label}
         </Text>
-        {children}
+        {badge || children}
       </Flex>
     </Center>
   )

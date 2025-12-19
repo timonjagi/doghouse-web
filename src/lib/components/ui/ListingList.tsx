@@ -189,6 +189,7 @@ export const ListingList: React.FC<ListingListProps> = ({
         ctaText={emptyActionLabel}
         ctaAction={onEmptyAction}
         ctaIcon={emptyActionIcon}
+        ctaComponent={emptyActionComponent}
       />
     );
   }

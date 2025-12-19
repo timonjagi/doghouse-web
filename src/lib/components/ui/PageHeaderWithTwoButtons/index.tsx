@@ -24,6 +24,7 @@ interface PageHeaderWithTwoButtonsProps {
     isDisabled?: boolean;
   };
   flexDir?: { base: "column" | "row", md: "column" | "row" };
+  actions?: React.ReactNode;
 }
 
 export const PageHeaderWithTwoButtons = ({
@@ -33,6 +34,7 @@ export const PageHeaderWithTwoButtons = ({
   buttonPrimary,
   buttonSecondary,
   flexDir = { base: 'column', md: 'row' },
+  actions,
 }: PageHeaderWithTwoButtonsProps) => (
   <Stack spacing="4" direction={flexDir} justify="space-between">
     <Stack spacing="1">
@@ -54,6 +56,7 @@ export const PageHeaderWithTwoButtons = ({
       </HStack>
     </Stack>
     <Stack direction="row" spacing="3">
+      {actions}
       {buttonPrimary && (
         <Button
           key={buttonPrimary.label}

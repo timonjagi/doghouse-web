@@ -54,6 +54,7 @@ import ListingList from 'lib/components/ui/ListingList';
 import { Listing, UserBreed } from 'lib/db/schema';
 import { EmptyView } from 'lib/components/ui/EmptyView';
 import ListingForm from '../listings/ListingForm';
+import { AddToWishlistButton } from 'lib/components/ui/AddToWishlistButton';
 
 interface BreederDetailPageProps {
 }
@@ -66,6 +67,18 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
   const { data: user } = useCurrentUser();
 
+
+  const handleSubscribeClick = () => {
+    if (!user?.id) {
+      toast({
+        title: "Please log in to subscribe",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+  }
 
   useEffect(() => {
 
@@ -137,21 +150,11 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
     );
   }
 
-  const handleSubscribeClick = () => {
-    // For now, just show a toast. In the future, this could open a contact form
-    toast({
-      title: 'Subscribe feature coming soon',
-      description: 'Subscribing to breeders will be available soon.',
-      status: 'info',
-      duration: 3000,
-    });
-  };
-
   const handleBreedClick = (b: UserBreedWithBreed) => {
     router.push(`/dashboard/breeders/${breederId}/breeds/${b?.id}`);
   };
 
-
+  const userBreedId = breederBreeds?.[0]?.id;
 
   const handleListingClick = async (listingId: string) => {
     // Increment view count
@@ -198,14 +201,18 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   onClick={() => onOpen()}
                 >
                   Edit
-                </Button> : <Button
-                  variant="primary"
-                  size="sm"
-                  rightIcon={<FiBell />}
-                  onClick={handleSubscribeClick}
-                >
-                  Subscribe
-                </Button>
+                </Button> : (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    rightIcon={<FiBell />}
+                    onClick={handleSubscribeClick}
+                      isDisabled={!userBreedId}
+                      title={!userBreedId ? "No breeds available to subscribe to" : "Subscribe"}
+                    >
+                      Subscribe
+                    </Button>
+                  )
               }
             >
               <CardContent>

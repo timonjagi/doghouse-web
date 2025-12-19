@@ -26,6 +26,7 @@ interface BreedersListProps {
   emptyAction?: () => void;
   props?: any;
   showCardActions?: boolean;
+  emptyActionComponent?: React.ReactNode;
 }
 
 export const BreedersList: React.FC<BreedersListProps> = ({
@@ -42,7 +43,8 @@ export const BreedersList: React.FC<BreedersListProps> = ({
   emptyActionLabel = "Clear Search",
   emptyActionIcon = null,
   props,
-  showCardActions = true
+  showCardActions = true,
+  emptyActionComponent
 }) => {
   const breeders = externalBreeders;
   const isLoading = externalIsLoading;

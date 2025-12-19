@@ -1,11 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from 'lib/supabase/client';
 import { Wishlist } from '../../db/schema';
+import { useCurrentUser } from './useAuth';
 
 // Get user's wishlist
 export const useWishlist = () => {
+  const { data: user } = useCurrentUser();
   return useQuery({
-    queryKey: ['wishlist'],
+    queryKey: ['wishlist', user?.id],
+    enabled: !!user?.id,
     queryFn: async (): Promise<any[]> => {
       const { data, error } = await supabase
         .from('wishlists')
@@ -17,9 +20,19 @@ export const useWishlist = () => {
             description,
             photos,
             price,
+            sale_price,
+            currency,
             status,
             owner_id,
-            breed_id
+            breed_id,
+            type,
+            pet_age,
+            pet_gender,
+            number_of_puppies,
+            birth_date,
+            breeds (
+              name
+            )
           ),
           user_breeds (
             id,
@@ -30,7 +43,23 @@ export const useWishlist = () => {
             breeds (
               name,
               featured_image_url
+            ),
+            users (
+               display_name,
+               profile_photo_url,
+               breeder_profiles (
+                 kennel_name,
+                 kennel_location,
+                 rating,
+                 verified_at
+               )
             )
+          ),
+          breeds (
+             id,
+             name,
+             featured_image_url,
+             group
           )
         `);
 
@@ -46,19 +75,19 @@ export const useAddToWishlist = () => {
 
   return useMutation({
     mutationFn: async ({
-      listing_id,
       user_breed_id,
+      breed_id,
       notify_when_available = false
     }: {
-      listing_id?: string;
       user_breed_id?: string;
+      breed_id?: string;
       notify_when_available?: boolean;
     }) => {
       const { data, error } = await supabase
         .from('wishlists')
         .insert({
-          listing_id,
           user_breed_id,
+          breed_id,
           notify_when_available,
         })
         .select()
@@ -115,23 +144,87 @@ export const useToggleWishlistNotification = () => {
 };
 
 // Check if item is in wishlist
-export const useIsInWishlist = (listing_id?: string, user_breed_id?: string) => {
+export const useIsInWishlist = (user_breed_id?: string, breed_id?: string) => {
+  const { data: user } = useCurrentUser();
+
   return useQuery({
-    queryKey: ['wishlist', 'check', { listing_id, user_breed_id }],
+    queryKey: ['wishlist', 'check', { user_breed_id, breed_id, userId: user?.id }],
     queryFn: async () => {
+      if (!user?.id) return { inWishlist: false, wishlistId: null };
+
       let query = supabase.from('wishlists').select('id');
 
-      if (listing_id) {
-        query = query.eq('listing_id', listing_id);
-      } else if (user_breed_id) {
+      if (user_breed_id) {
         query = query.eq('user_breed_id', user_breed_id);
+      } else if (breed_id) {
+        query = query.eq('breed_id', breed_id);
       }
 
-      const { data, error } = await query.single();
+      query = query.eq('user_id', user.id);
 
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found" error
-      return !!data;
+      const { data, error } = await query.maybeSingle();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      return { inWishlist: !!data, wishlistId: data?.id || null };
     },
-    enabled: !!listing_id || !!user_breed_id,
+    enabled: (!!user_breed_id || !!breed_id) && !!user?.id,
+  });
+};
+
+export const useWishlistCount = () => {
+  const { data: user } = useCurrentUser();
+  return useQuery({
+    queryKey: ['wishlist', 'count', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return 0;
+      const { count, error } = await supabase
+        .from('wishlists')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!user?.id,
+  });
+};
+
+// Get matches for breeder (users who wishlisted their items)
+export const useBreederMatches = () => {
+  const { data: user } = useCurrentUser();
+  return useQuery({
+    queryKey: ['breederMatches', user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      if (!user?.id) return [];
+
+      // Get user_breeds owned by user
+      const { data: userBreeds } = await supabase.from('user_breeds').select('id').eq('user_id', user.id);
+      const userBreedIds = userBreeds?.map(ub => ub.id) || [];
+
+      if (userBreedIds.length === 0) return [];
+
+      const conditions: string[] = [];
+      if (userBreedIds.length > 0) conditions.push(`user_breed_id.in.(${userBreedIds.join(',')})`);
+
+      const { data, error } = await supabase
+        .from('wishlists')
+        .select(`
+          *,
+          users (
+            id,
+            display_name,
+            profile_photo_url,
+            email
+          ),
+          user_breeds (
+            id,
+            breeds (name)
+          )
+        `)
+        .or(conditions.join(','));
+
+      if (error) throw error;
+      return data;
+    },
   });
 };

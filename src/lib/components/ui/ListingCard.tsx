@@ -70,9 +70,6 @@ function ListingCard({
           />
 
           <HStack position="absolute" top={2} right={2} spacing={2}>
-            {/* <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
-              {listing.type.replace('_', ' ')}
-            </Badge> */}
             <Badge colorScheme={getStatusColor(listing.status)}>
               {listing.status}
             </Badge>
