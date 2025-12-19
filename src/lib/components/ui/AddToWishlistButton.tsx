@@ -6,7 +6,6 @@ import { useIsInWishlist, useAddToWishlist, useRemoveFromWishlist } from 'lib/ho
 import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 
 interface AddToWishlistButtonProps extends Omit<IconButtonProps & ButtonProps, 'aria-label'> {
-  listingId?: string;
   userBreedId?: string;
   breedId?: string;
   notifyWhenAvailable?: boolean;
@@ -16,7 +15,6 @@ interface AddToWishlistButtonProps extends Omit<IconButtonProps & ButtonProps, '
 }
 
 export const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
-  listingId,
   userBreedId,
   breedId,
   notifyWhenAvailable = false,
@@ -28,7 +26,7 @@ export const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
   const { data: user } = useCurrentUser();
   const toast = useToast();
 
-  const { data: wishlistState, isLoading: isCheckLoading } = useIsInWishlist(listingId, userBreedId, breedId);
+  const { data: wishlistState, isLoading: isCheckLoading } = useIsInWishlist(userBreedId, breedId);
   const addToWishlist = useAddToWishlist();
   const removeFromWishlist = useRemoveFromWishlist();
 
@@ -61,7 +59,6 @@ export const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
         });
       } else {
         await addToWishlist.mutateAsync({
-          listing_id: listingId,
           user_breed_id: userBreedId,
           breed_id: breedId,
           notify_when_available: notifyWhenAvailable,

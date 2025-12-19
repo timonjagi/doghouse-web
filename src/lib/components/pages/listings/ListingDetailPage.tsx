@@ -225,7 +225,8 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
               actions={
                 !isOwner ? (
                   <AddToWishlistButton
-                    listingId={listing.id}
+                    userBreedId={listing.user_breed_id}
+                    breedId={listing.breed_id}
                     notifyWhenAvailable={true}
                     withText={true}
                     variant="secondary"

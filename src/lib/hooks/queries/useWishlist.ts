@@ -75,20 +75,17 @@ export const useAddToWishlist = () => {
 
   return useMutation({
     mutationFn: async ({
-      listing_id,
       user_breed_id,
       breed_id,
       notify_when_available = false
     }: {
-      listing_id?: string;
       user_breed_id?: string;
-        breed_id?: string;
+      breed_id?: string;
       notify_when_available?: boolean;
     }) => {
       const { data, error } = await supabase
         .from('wishlists')
         .insert({
-          listing_id,
           user_breed_id,
           breed_id,
           notify_when_available,
@@ -147,19 +144,17 @@ export const useToggleWishlistNotification = () => {
 };
 
 // Check if item is in wishlist
-export const useIsInWishlist = (listing_id?: string, user_breed_id?: string, breed_id?: string) => {
+export const useIsInWishlist = (user_breed_id?: string, breed_id?: string) => {
   const { data: user } = useCurrentUser();
 
   return useQuery({
-    queryKey: ['wishlist', 'check', { listing_id, user_breed_id, breed_id, userId: user?.id }],
+    queryKey: ['wishlist', 'check', { user_breed_id, breed_id, userId: user?.id }],
     queryFn: async () => {
       if (!user?.id) return { inWishlist: false, wishlistId: null };
 
       let query = supabase.from('wishlists').select('id');
 
-      if (listing_id) {
-        query = query.eq('listing_id', listing_id);
-      } else if (user_breed_id) {
+      if (user_breed_id) {
         query = query.eq('user_breed_id', user_breed_id);
       } else if (breed_id) {
         query = query.eq('breed_id', breed_id);
@@ -172,7 +167,7 @@ export const useIsInWishlist = (listing_id?: string, user_breed_id?: string, bre
       if (error && error.code !== 'PGRST116') throw error;
       return { inWishlist: !!data, wishlistId: data?.id || null };
     },
-    enabled: (!!listing_id || !!user_breed_id || !!breed_id) && !!user?.id,
+    enabled: (!!user_breed_id || !!breed_id) && !!user?.id,
   });
 };
 
@@ -202,19 +197,13 @@ export const useBreederMatches = () => {
     queryFn: async () => {
       if (!user?.id) return [];
 
-      // 1. Get listings owned by user
-      const { data: listings } = await supabase.from('listings').select('id').eq('owner_id', user.id);
-      const listingIds = listings?.map(l => l.id) || [];
-
-      // 2. Get user_breeds owned by user
+      // Get user_breeds owned by user
       const { data: userBreeds } = await supabase.from('user_breeds').select('id').eq('user_id', user.id);
       const userBreedIds = userBreeds?.map(ub => ub.id) || [];
 
-      if (listingIds.length === 0 && userBreedIds.length === 0) return [];
+      if (userBreedIds.length === 0) return [];
 
-      // 3. Build OR condition
       const conditions: string[] = [];
-      if (listingIds.length > 0) conditions.push(`listing_id.in.(${listingIds.join(',')})`);
       if (userBreedIds.length > 0) conditions.push(`user_breed_id.in.(${userBreedIds.join(',')})`);
 
       const { data, error } = await supabase
@@ -226,11 +215,6 @@ export const useBreederMatches = () => {
             display_name,
             profile_photo_url,
             email
-          ),
-          listings (
-            id,
-            title,
-            photos
           ),
           user_breeds (
             id,

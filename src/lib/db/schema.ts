@@ -334,7 +334,6 @@ export const wishlists = pgTable("wishlists", {
   id: uuid("id").primaryKey().defaultRandom(),
   user_id: uuid("user_id").notNull().references(() => users.id),
   breed_id: uuid("breed_id").references(() => breeds.id),
-  listing_id: uuid("listing_id").references(() => listings.id), // optional - for saved listings
   user_breed_id: uuid("user_breed_id").references(() => user_breeds.id), // optional - for saved breeds without listings
   notify_when_available: boolean("notify_when_available").notNull().default(false),
   created_at: timestamp("created_at").notNull().defaultNow(),
