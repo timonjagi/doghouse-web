@@ -65,15 +65,6 @@ export const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
           notify_when_available: notifyWhenAvailable,
         });
 
-        // Subscribe to breed interest topic for notifications
-        if (breedId && notifyWhenAvailable) {
-          await NotificationService.subscribeToBreedInterest(
-            user.id,
-            breedId,
-            'Breed Name' // TODO: Get actual breed name from props or context
-          );
-        }
-
         toast({
           title: 'Added to wishlist',
           description: notifyWhenAvailable ? 'You will be notified when this becomes available.' : undefined,

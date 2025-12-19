@@ -549,53 +549,26 @@ export const useCreateListing = () => {
       return data;
     },
     onSuccess: async (data) => {
-      // Send notifications using the service
+      // Send notifications using the centralized breeder activity service
       const { data: breeder } = await supabase
         .from('users')
         .select('display_name')
         .eq('id', data.owner_id)
         .single();
 
-      await Promise.all([
-        // Notify admin
-        NotificationService.sendListingCreatedNotification(
-          data.id,
-          data.title,
-          data.type,
-          data.owner_id,
-          breeder?.display_name || 'Breeder'
-        ),
-        // Notify breeder
-        NotificationService.sendListingCreatedToBreederNotification(
-          data.id,
-          data.title,
-          data.type,
-          data.owner_id,
-          breeder?.display_name || 'Breeder'
-        ),
-      ]);
+      await NotificationService.sendBreederActivityNotification(
+        data.owner_id,
+        breeder?.display_name || 'Breeder',
+        'listing',
+        {
+          title: data.title,
+          id: data.id,
+          breed_id: data.breed_id,
+          user_breed_id: data.user_breed_id,
+        }
+      );
 
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
-
-      // Notify users who wishlisted this breed about the new listing
-      if (data.breed_id) {
-        const { data: breed } = await supabase
-          .from('breeds')
-          .select('name')
-          .eq('id', data.breed_id)
-          .single();
-
-        const breedName = breed?.name || 'Unknown Breed';
-
-        // Send topic-based notification to breed interest subscribers
-        await NotificationService.sendBreedMatchNotification(
-          data.breed_id,
-          breedName,
-          data.title,
-          breeder?.display_name || 'Breeder',
-          data.id
-        );
-      }
     },
   });
 };

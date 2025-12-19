@@ -288,24 +288,24 @@ export const useCreateUserBreed = () => {
     onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.breeds.userBreeds() });
 
-      // Notify users who wishlisted the breed
-      if (data.breed_id) {
-        const { data: breed } = await supabase
-          .from('breeds')
-          .select('name')
-          .eq('id', data.breed_id)
-          .single();
+      // Send notifications using the centralized breeder activity service
+      const { data: breeder } = await supabase
+        .from('users')
+        .select('display_name')
+        .eq('id', data.user_id)
+        .single();
 
-        const breedName = breed?.name || 'Unknown Breed';
-
-        // Send topic-based notification to breed interest subscribers
-        await NotificationService.sendNewBreederNotification(
-          data.breed_id,
-          breedName,
-          'Unknown Breeder', // We don't have breeder name here, will be updated when available
-          data.id
-        );
-      }
+      await NotificationService.sendBreederActivityNotification(
+        data.user_id,
+        breeder?.display_name || 'Breeder',
+        'breed',
+        {
+          title: 'New Breed Added',
+          id: data.id,
+          breed_id: data.breed_id,
+          user_breed_id: data.id,
+        }
+      );
     },
   });
 };

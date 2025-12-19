@@ -92,47 +92,6 @@ export class NotificationService {
   }
 
   /**
-   * Insert notification into Supabase database
-   */
-  private static async insertDatabaseNotification(payload: NotificationPayload): Promise<string | null> {
-    try {
-      const { data, error } = await supabase.from('notifications').insert({
-        user_id: payload.userId,
-        type: payload.type,
-        title: payload.title,
-        body: payload.body,
-        target_type: payload.targetType,
-        target_id: payload.targetId,
-        meta: payload.meta,
-      }).select('id').single();
-
-      if (error) {
-        console.error('Failed to insert database notification:', error);
-        return null;
-      }
-
-      return data?.id || null;
-    } catch (error) {
-      console.error('Database notification error:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Trigger Novu workflow
-   */
-  private static async triggerNovuWorkflow(payload: NovuNotificationPayload): Promise<void> {
-    try {
-      await novu.trigger(payload);
-    } catch (error) {
-      console.error('Novu notification error:', error);
-      // Don't throw - we don't want Novu errors to break the flow
-    }
-  }
-
-  // Convenience methods for common notification types
-
-  /**
    * Send adoption status change notifications to relevant parties
    */
   static async sendAdoptionStatusNotification(
@@ -203,7 +162,7 @@ export class NotificationService {
         );
 
         // Notify admin via broadcast (separate from the array)
-        await this.sendBroadcastMessage(
+        await this.sendAdminBroadcastMessage(
           'Adoption Application Submitted',
           `A new adoption application has been submitted for "${listingTitle}" and is now under review`,
           {
@@ -246,7 +205,7 @@ export class NotificationService {
         });
 
         // Notify admin via broadcast (separate from the array)
-        await this.sendBroadcastMessage(
+        await this.sendAdminBroadcastMessage(
           'Adoption Status: Approved',
           `Adoption application for "${listingTitle}" has been approved`,
           {
@@ -289,7 +248,7 @@ export class NotificationService {
         });
 
         // Notify admin via broadcast (separate from the array)
-        await this.sendBroadcastMessage(
+        await this.sendAdminBroadcastMessage(
           'Adoption Status: Rejected',
           `Adoption application for "${listingTitle}" has been rejected`,
           {
@@ -334,7 +293,7 @@ export class NotificationService {
           });
 
           // Notify admin via broadcast (separate from the array)
-          await this.sendBroadcastMessage(
+          await this.sendAdminBroadcastMessage(
             'Adoption Status: Withdrawn',
             `Adoption application for "${listingTitle}" has been withdrawn by seeker`,
             {
@@ -378,7 +337,7 @@ export class NotificationService {
         });
 
         // Notify admin via broadcast (separate from the array)
-        await this.sendBroadcastMessage(
+        await this.sendAdminBroadcastMessage(
           'Adoption Status: Completed',
           `Adoption process for "${listingTitle}" has been completed`,
           {
@@ -510,7 +469,7 @@ export class NotificationService {
     });
 
     // Notify admin of payment via broadcast (separate from the array)
-    await this.sendBroadcastMessage(
+    await this.sendAdminBroadcastMessage(
       isReservation ? 'Reservation Payment Processed' : 'Final Payment Processed',
       isReservation
         ? `Reservation payment of ₦${amount} processed for "${listingTitle}".`
@@ -593,7 +552,7 @@ export class NotificationService {
     role: string
   ): Promise<void> {
     // Send broadcast message to all admin users
-    await this.sendBroadcastMessage(
+    await this.sendAdminBroadcastMessage(
       'New User Signup',
       `${firstName} (${email}) has signed up as a ${role}.`,
       {
@@ -654,32 +613,18 @@ export class NotificationService {
     breederId: string,
     breederName: string
   ): Promise<void> {
-    await this.sendNotification(
+    await this.sendAdminBroadcastMessage(
+      'New Listing Created',
+      `${breederName} created a new ${listingType} listing: ${listingTitle}`,
       {
-        userId: 'admin',
-        type: 'listing_created',
-        title: 'New Listing Created',
-        body: `${breederName} created a new ${listingType} listing: ${listingTitle}`,
-        targetType: 'listing',
-        targetId: listingId,
-        meta: {
-          listingId,
-          listingTitle,
-          listingType,
-          breederId,
-          breederName,
-        },
-      },
-      {
-        workflowId: 'listing-created',
-        to: { subscriberId: 'admin' },
-        payload: {
-          listingId,
-          listingTitle,
-          listingType,
-          breederId,
-          breederName,
-        },
+        category: 'user',
+        details: [
+          { label: 'Listing ID', value: listingId },
+          { label: 'Listing Title', value: listingTitle },
+          { label: 'Listing Type', value: listingType },
+          { label: 'Breeder ID', value: breederId },
+          { label: 'Breeder Name', value: breederName },
+        ],
       }
     );
   }
@@ -812,6 +757,105 @@ export class NotificationService {
     } catch (error) {
       console.error(`Failed to unsubscribe ${subscriberId} from breeder ${breederId}:`, error);
       // Don't throw - topic unsubscription is not critical for core functionality
+    }
+  }
+
+  /**
+   * Unsubscribe user from breed interest topic
+   * Uses server-side API route for topic unsubscription
+   */
+  static async unsubscribeFromBreedInterest(
+    subscriberId: string,
+    breedId: string
+  ): Promise<void> {
+    try {
+      const response = await fetch('/api/novu/unsubscribe-topic', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscriberId,
+          topicKey: `breed-${breedId}-interested`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Breed interest unsubscription failed');
+      }
+
+      console.log(`Successfully unsubscribed ${subscriberId} from breed interest: ${breedId}`);
+    } catch (error) {
+      console.error(`Failed to unsubscribe ${subscriberId} from breed interest ${breedId}:`, error);
+      // Don't throw - topic unsubscription is not critical for core functionality
+    }
+  }
+
+  /**
+   * Send notification to user breed interest topic (when new listings match preferences)
+   */
+  static async sendUserBreedMatchNotification(
+    userBreedId: string,
+    breedName: string,
+    listingTitle: string,
+    breederName: string,
+    listingId: string
+  ): Promise<void> {
+    try {
+      const response = await fetch('/api/novu/send-topic-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workflowId: 'breed-interest-broadcast',
+          topicKey: `user-breed-${userBreedId}-interested`,
+          payload: {
+            userBreedId,
+            breedName,
+            listingTitle,
+            breederName,
+            listingId,
+            title: `New ${breedName} Available!`,
+            message: `Check out this new ${breedName} listing from ${breederName}`,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('User breed match notification failed');
+      }
+    } catch (error) {
+      console.error('Failed to send user breed match notification:', error);
+    }
+  }
+
+  /**
+   * Send notification to user breed interest topic for new breeder
+   */
+  static async sendNewUserBreedNotification(
+    userBreedId: string,
+    breedName: string,
+    breederName: string
+  ): Promise<void> {
+    try {
+      const response = await fetch('/api/novu/send-topic-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workflowId: 'breed-interest-broadcast',
+          topicKey: `user-breed-${userBreedId}-interested`,
+          payload: {
+            userBreedId,
+            breedName,
+            breederName,
+            title: `New ${breedName} Breeder!`,
+            message: `A new breeder for ${breedName} has joined: ${breederName}`,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('New user breed notification failed');
+      }
+    } catch (error) {
+      console.error('Failed to send new user breed notification:', error);
     }
   }
 
@@ -989,7 +1033,7 @@ export class NotificationService {
   /**
    * Send broadcast message to admin users using topics
    */
-  static async sendBroadcastMessage(
+  static async sendAdminBroadcastMessage(
     title: string,
     message: string,
     options?: {
@@ -1023,6 +1067,7 @@ export class NotificationService {
 
   /**
    * Send notification to breeder subscribers (when breeder adds new content)
+   * This method orchestrates all breeder-related notifications in a clean hierarchy
    */
   static async sendBreederActivityNotification(
     breederId: string,
@@ -1031,9 +1076,134 @@ export class NotificationService {
     activityData: {
       title: string;
       id: string;
+      breed_id?: string;
+      user_breed_id?: string;
     }
   ): Promise<void> {
     try {
+      // 1. Send admin broadcast notification
+      await this.sendAdminBroadcastMessage(
+        'New Content Added',
+        `${breederName} added new ${activityType}: "${activityData.title}"`,
+        {
+          category: 'user',
+          details: [
+            { label: 'Breeder ID', value: breederId },
+            { label: 'Breeder Name', value: breederName },
+            { label: 'Activity Type', value: activityType },
+            { label: 'Content ID', value: activityData.id },
+            { label: 'Content Title', value: activityData.title },
+            { label: 'Breed ID', value: activityData.breed_id || 'N/A' },
+            { label: 'User Breed ID', value: activityData.user_breed_id || 'N/A' },
+          ],
+        }
+      );
+
+      // 2. Send breeder-specific notification
+      await this.sendNotification(
+        {
+          userId: breederId,
+          type: 'content_created',
+          title: 'Content Created Successfully',
+          body: `Your new ${activityType} "${activityData.title}" has been created and is now live.`,
+          targetType: activityType,
+          targetId: activityData.id,
+          meta: {
+            activityType,
+            activityId: activityData.id,
+            activityTitle: activityData.title,
+            breederId,
+            breederName,
+            breed_id: activityData.breed_id,
+            user_breed_id: activityData.user_breed_id,
+          },
+        },
+        {
+          workflowId: activityType === 'listing' ? 'listing-created' : 'breed-added',
+          to: { subscriberId: breederId },
+          payload: {
+            activityType,
+            activityId: activityData.id,
+            activityTitle: activityData.title,
+            breederId,
+            breederName,
+            breed_id: activityData.breed_id,
+            user_breed_id: activityData.user_breed_id,
+          },
+        }
+      );
+
+      // 3. Send breed match notifications based on activity type
+      if (activityType === 'listing') {
+        // For listings, notify both general breed and user breed subscribers
+        if (activityData.breed_id) {
+          const { data: breed } = await supabase
+            .from('breeds')
+            .select('name')
+            .eq('id', activityData.breed_id)
+            .single();
+
+          const breedName = breed?.name || 'Unknown Breed';
+
+          // Notify general breed interest subscribers
+          await this.sendBreedMatchNotification(
+            activityData.breed_id,
+            breedName,
+            activityData.title,
+            breederName,
+            activityData.id
+          );
+        }
+
+        if (activityData.user_breed_id) {
+          const { data: userBreed } = await supabase
+            .from('user_breeds')
+            .select('breeds (name)')
+            .eq('id', activityData.user_breed_id)
+            .single();
+
+          const breedName = userBreed?.breeds?.[0]?.name || 'Unknown Breed';
+
+          // Notify user breed interest subscribers
+          await this.sendUserBreedMatchNotification(
+            activityData.user_breed_id,
+            breedName,
+            activityData.title,
+            breederName,
+            activityData.id
+          );
+        }
+      } else if (activityType === 'breed') {
+        // For new breeds, notify general breed interest subscribers
+        if (activityData.breed_id) {
+          const { data: breed } = await supabase
+            .from('breeds')
+            .select('name')
+            .eq('id', activityData.breed_id)
+            .single();
+
+          const breedName = breed?.name || 'Unknown Breed';
+
+          // Notify general breed interest subscribers
+          await this.sendNewBreederNotification(
+            activityData.breed_id,
+            breedName,
+            breederName,
+            activityData.user_breed_id || ''
+          );
+
+          // Notify user breed interest subscribers
+          if (activityData.user_breed_id) {
+            await this.sendNewUserBreedNotification(
+              activityData.user_breed_id,
+              breedName,
+              breederName
+            );
+          }
+        }
+      }
+
+      // 4. Send breeder activity notifications to direct subscribers
       const activityTitles = {
         listing: 'New Listing Added',
         breed: 'New Breed Added',

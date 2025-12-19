@@ -73,11 +73,14 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
     try {
       if (isSubscribed) {
-        // Unsubscribe
-        await NotificationService.unsubscribeFromBreeder(
-          user.id,
-          breederId!
-        );
+        // Unsubscribe from all breeder-related topics
+        await Promise.all([
+          NotificationService.unsubscribeFromBreeder(user.id, breederId!),
+          // Also unsubscribe from user breed topics for this breeder's breeds
+          ...(breederBreeds?.map(b =>
+            NotificationService.unsubscribeFromBreedInterest(user.id, b.id)
+          ) || [])
+        ]);
         setIsSubscribed(false);
         toast({
           title: "Unsubscribed from breeder updates",
@@ -87,16 +90,28 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
           isClosable: true,
         });
       } else {
-        // Subscribe
+        // Subscribe to breeder activity
         await NotificationService.subscribeToBreeder(
           user.id,
           breederId!,
           breederProfile?.kennel_name || breederUser?.display_name
         );
+
+        // Also subscribe to all user breed topics for this breeder's breeds
+        const subscriptionPromises = breederBreeds?.map(async (b) => {
+          await NotificationService.subscribeToBreedInterest(
+            user.id,
+            b.id,
+            b.breeds?.name || 'Unknown Breed'
+          );
+        }) || [];
+
+        await Promise.all(subscriptionPromises);
+
         setIsSubscribed(true);
         toast({
           title: "Subscribed to breeder updates",
-          description: `You will be notified when ${breederProfile?.kennel_name || breederUser?.display_name} posts new content.`,
+          description: `You will be notified when ${breederProfile?.kennel_name || breederUser?.display_name} posts new content or adds new listings for their breeds.`,
           status: "success",
           duration: 3000,
           isClosable: true,

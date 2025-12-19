@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from 'lib/supabase/client';
 import { Wishlist } from '../../db/schema';
 import { useCurrentUser } from './useAuth';
+import { NotificationService } from '../../services/notificationService';
 
 // Get user's wishlist
 export const useWishlist = () => {
@@ -72,6 +73,7 @@ export const useWishlist = () => {
 // Add item to wishlist
 export const useAddToWishlist = () => {
   const queryClient = useQueryClient();
+  const { data: user } = useCurrentUser();
 
   return useMutation({
     mutationFn: async ({
@@ -96,8 +98,47 @@ export const useAddToWishlist = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+
+      // Subscribe to appropriate interest topic for notifications
+      if (data.notify_when_available && user?.id) {
+        try {
+          if (data.breed_id) {
+            // Subscribe to breed interest topic
+            const { data: breed } = await supabase
+              .from('breeds')
+              .select('name')
+              .eq('id', data.breed_id)
+              .single();
+
+            const breedName = breed?.name || 'Unknown Breed';
+
+            await NotificationService.subscribeToBreedInterest(
+              user.id,
+              data.breed_id,
+              breedName
+            );
+          } else if (data.user_breed_id) {
+            // Subscribe to user breed interest topic
+            const { data: userBreed } = await supabase
+              .from('user_breeds')
+              .select('breeds (name)')
+              .eq('id', data.user_breed_id)
+              .single();
+
+            const breedName = userBreed?.breeds?.[0]?.name || 'Unknown Breed';
+
+            await NotificationService.subscribeToBreedInterest(
+              user.id,
+              data.user_breed_id,
+              breedName
+            );
+          }
+        } catch (error) {
+          console.error('Failed to subscribe to breed interest:', error);
+        }
+      }
     },
   });
 };
@@ -105,18 +146,42 @@ export const useAddToWishlist = () => {
 // Remove item from wishlist
 export const useRemoveFromWishlist = () => {
   const queryClient = useQueryClient();
+  const { data: user } = useCurrentUser();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
+        .from('wishlists')
+        .select('breed_id')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+
+      // Delete from wishlist
+      const { error: deleteError } = await supabase
         .from('wishlists')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (deleteError) throw deleteError;
+
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+
+      // Unsubscribe from appropriate interest topic
+      if (data.breed_id && user?.id) {
+        try {
+          await NotificationService.unsubscribeFromBreedInterest(
+            user.id,
+            data.breed_id
+          );
+        } catch (error) {
+          console.error('Failed to unsubscribe from breed interest:', error);
+        }
+      }
     },
   });
 };
