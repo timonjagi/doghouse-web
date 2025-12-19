@@ -148,8 +148,21 @@ export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep })
         activity_level: activityLevel,
       });
 
-      // Complete onboarding setup with subscriber creation and breed wishlist
+      // Create wishlist item for the preferred breed
       if (user) {
+        const { error } = await supabase
+          .from('wishlists')
+          .insert({
+            user_id: user.id,
+            breed_id: dbBreed.id,
+            notify_when_available: true,
+          });
+
+        if (error) {
+          console.error('Failed to create wishlist item:', error);
+        }
+
+        // Create subscriber in Novu
         await NotificationService.completeSeekerOnboarding(user.id, {
           firstName: user.user_metadata?.display_name || user.email?.split('@')[0] || 'User',
           email: user.email || '',
@@ -162,6 +175,8 @@ export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep })
           spayNeuterPreference,
           activityLevel,
         });
+
+
       }
 
       setStep(currentStep + 1);
@@ -326,3 +341,4 @@ export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep })
 
   );
 };
+
