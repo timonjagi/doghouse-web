@@ -15,31 +15,14 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
   const breederProfile = user?.breeder_profiles ? user.breeder_profiles[0] : user;
   const toast = useToast();
 
+  // Try to get userBreedId from breeder object (assuming first breed if multiple)
+  const userBreedId = breeder.user_breeds?.[0]?.id;
+
   // Color mode values for dark mode support
   const textColor = useColorModeValue("gray.600", "gray.400");
   const starColor = useColorModeValue("gold", "yellow.400");
   const mutedTextColor = useColorModeValue("gray.500", "gray.400");
   //if (!user) return null;
-
-  const handleSubscribe = () => {
-    toast({
-      title: "Subscribed",
-      description: "You have successfully subscribed to this breeder.",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
-  };
-
-  const handleUnsubscribe = () => {
-    useToast({
-      title: "Unsubscribed",
-      description: "You have successfully unsubscribed from this breeder.",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
-  };
 
   return (
     <Card variant="outline" _hover={{ shadow: "md", transform: "translateY(-2px)" }} transition="all 0.2s">
@@ -119,17 +102,6 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
 
           {showActions && (
             <ButtonGroup>
-              <Button
-                variant="secondary"
-                colorScheme="gr"
-                size="sm"
-                w="full"
-                onClick={handleSubscribe}
-                rightIcon={<Icon as={FiBell} />}
-              >
-                Subscribe
-              </Button>
-
               <Button
                 size="sm"
                 variant="primary"

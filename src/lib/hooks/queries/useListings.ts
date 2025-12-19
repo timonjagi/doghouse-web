@@ -548,8 +548,30 @@ export const useCreateListing = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
+
+      // Notify users who wishlisted this breed about the new listing
+      if (data.breed_id) {
+        const { data: wishlists } = await supabase
+          .from('wishlists')
+          .select('user_id')
+          .eq('breed_id', data.breed_id);
+
+        if (wishlists?.length) {
+          const notifications = wishlists.map(w => ({
+            user_id: w.user_id,
+            type: 'new_listing',
+            title: 'New Listing Alert!',
+            body: `A new listing matching your wishlist has been posted: "${data.title}"`,
+            target_type: 'listing',
+            target_id: data.id,
+            is_read: false,
+          }));
+
+          await supabase.from('notifications').insert(notifications);
+        }
+      }
     },
   });
 };

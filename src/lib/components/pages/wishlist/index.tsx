@@ -20,12 +20,21 @@ import {
   Spinner,
   Alert,
   AlertIcon,
+  SimpleGrid,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
 } from '@chakra-ui/react';
 import { FiHeart, FiTrash2, FiMapPin, FiDollarSign } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import { useWishlist, useRemoveFromWishlist, useToggleWishlistNotification } from 'lib/hooks/queries/useWishlist';
 import { formatPrice } from 'lib/components/ui/PriceTag';
 import { Wishlist } from '../../../db/schema';
+import ListingCard from 'lib/components/ui/ListingCard';
+import { BreederCard } from 'lib/components/ui/BreederCard2';
+import { AddToWishlistButton } from 'lib/components/ui/AddToWishlistButton';
 
 const WishlistPage = () => {
   const router = useRouter();
@@ -70,15 +79,6 @@ const WishlistPage = () => {
     }
   };
 
-  const handleViewItem = (item: Wishlist) => {
-    if (item.listing_id) {
-      router.push(`/dashboard/listings/${item.listing_id}`);
-    } else if (item.user_breed_id) {
-      // Could navigate to breeder profile or breed page
-      router.push(`/dashboard/breeders`);
-    }
-  };
-
   if (isLoading) {
     return (
       <Container maxW="7xl" py={8}>
@@ -102,7 +102,10 @@ const WishlistPage = () => {
   }
 
   const listings = wishlistItems?.filter(item => item.listings) || [];
-  const userBreeds = wishlistItems?.filter(item => item.user_breeds) || [];
+  const savedBreeders = wishlistItems?.filter(item => item.user_breeds) || [];
+  const savedBreeds = wishlistItems?.filter(item => item.breed_id && !item.user_breeds && !item.listings) || [];
+
+  const hasItems = listings.length > 0 || savedBreeders.length > 0 || savedBreeds.length > 0;
 
   return (
     <Container maxW="7xl" py={8}>
@@ -116,7 +119,7 @@ const WishlistPage = () => {
           </Text>
         </Box>
 
-        {(!wishlistItems || wishlistItems.length === 0) ? (
+        {!hasItems ? (
           <Box textAlign="center" py={12}>
             <FiHeart size={64} color="gray" />
             <Heading size="md" color="gray.600" mt={4}>
@@ -135,151 +138,135 @@ const WishlistPage = () => {
             </HStack>
           </Box>
         ) : (
-          <>
-            {/* Listings Section */}
-            {listings.length > 0 && (
-              <Box>
-                <Heading size="md" mb={4}>
-                  Saved Listings ({listings.length})
-                </Heading>
-                <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} gap={6}>
-                  {listings.map((item) => {
-                    const listing = item.listings;
-                    if (!listing) return null;
+          <Tabs colorScheme="brand" variant="soft-rounded" isLazy>
+            <TabList justifyContent="center" mb={8}>
+              <Tab>Listings ({listings.length})</Tab>
+              <Tab>Breeders ({savedBreeders.length})</Tab>
+              <Tab>Breeds ({savedBreeds.length})</Tab>
+            </TabList>
 
-                    return (
-                      <Card key={item.id} overflow="hidden" _hover={{ shadow: 'lg' }}>
-                        <Box position="relative">
-                          <Image
-                            src={listing.photos?.[0] || '/images/placeholder.jpg'}
-                            alt={listing.title}
-                            height="200px"
-                            width="100%"
-                            objectFit="cover"
-                          />
-                          <IconButton
-                            icon={<FiTrash2 />}
-                            aria-label="Remove from wishlist"
-                            position="absolute"
-                            top={2}
-                            right={2}
-                            colorScheme="red"
-                            variant="solid"
-                            size="sm"
-                            onClick={() => handleRemoveFromWishlist(item.id)}
-                          />
-                        </Box>
-                        <CardBody>
-                          <VStack align="stretch" spacing={3}>
-                            <Heading size="sm" noOfLines={2}>
-                              {listing.title}
-                            </Heading>
+            <TabPanels>
+              {/* Listings Tab */}
+              <TabPanel p={0}>
+                {listings.length === 0 ? (
+                  <Text textAlign="center" color="gray.500" py={8}>No saved listings yet.</Text>
+                ) : (
+                  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+                    {listings.map((item) => (
+                      <ListingCard
+                        key={item.id}
+                        listing={item.listings}
+                        handleListingClick={(id) => router.push(`/dashboard/listings/${id}`)}
+                      />
+                    ))}
+                  </SimpleGrid>
+                )}
+              </TabPanel>
 
-                            <HStack justify="space-between">
-                              <Badge colorScheme="blue">
-                                {formatPrice(listing.price)}
-                              </Badge>
-                              <Badge colorScheme={listing.status === 'available' ? 'green' : 'gray'}>
-                                {listing.status}
-                              </Badge>
-                            </HStack>
+              {/* Breeders Tab */}
+              <TabPanel p={0}>
+                {savedBreeders.length === 0 ? (
+                  <Text textAlign="center" color="gray.500" py={8}>No saved breeders yet.</Text>
+                ) : (
+                  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+                    {savedBreeders.map((item) => {
+                      // Prepare breeder object for BreederCard
+                      // user_breeds contains users which contains breeder_profiles
+                      const user = item.user_breeds?.users;
+                      const breederData = user ? {
+                        ...user,
+                        userBreedsCount: 1, // Placeholder or we need to fetch count
+                      } : null;
 
-                            <FormControl display="flex" alignItems="center">
-                              <FormLabel htmlFor={`notify-${item.id}`} mb="0" fontSize="sm">
-                                Notify when available
-                              </FormLabel>
-                              <Switch
-                                id={`notify-${item.id}`}
-                                isChecked={item.notify_when_available}
-                                onChange={() => handleToggleNotification(item.id, item.notify_when_available)}
-                              />
-                            </FormControl>
+                      if (!breederData) return null;
 
-                            <Button
-                              size="sm"
-                              colorScheme="blue"
-                              onClick={() => handleViewItem(item)}
-                            >
-                              View Details
-                            </Button>
-                          </VStack>
-                        </CardBody>
-                      </Card>
-                    );
-                  })}
-                </Grid>
-              </Box>
-            )}
+                      return (
+                         <Box key={item.id} position="relative">
+                            <BreederCard breeder={breederData} showActions={false} />
+                            <Box position="absolute" top={2} right={2} zIndex={1}>
+                                <AddToWishlistButton 
+                                    userBreedId={item.user_breed_id}
+                                    notifyWhenAvailable={item.notify_when_available}
+                                    size="sm"
+                                    bg="white"
+                                    borderRadius="full"
+                                    boxShadow="sm"
+                                />
+                            </Box>
+                         </Box>
+                      );
+                    })}
+                  </SimpleGrid>
+                )}
+              </TabPanel>
 
-            {/* User Breeds Section */}
-            {userBreeds.length > 0 && (
-              <Box>
-                <Heading size="md" mb={4}>
-                  Interested Breeds ({userBreeds.length})
-                </Heading>
-                <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={4}>
-                  {userBreeds.map((item) => {
-                    const userBreed = item.user_breeds;
-                    const breed = userBreed?.breeds;
-                    if (!userBreed || !breed) return null;
+              {/* Breeds Tab */}
+              <TabPanel p={0}>
+                {savedBreeds.length === 0 ? (
+                  <Text textAlign="center" color="gray.500" py={8}>No saved breeds yet.</Text>
+                ) : (
+                  <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
+                    {savedBreeds.map((item) => {
+                      const breed = item.breeds;
+                      if (!breed) return null;
 
-                    return (
-                      <Card key={item.id} overflow="hidden" _hover={{ shadow: 'lg' }}>
-                        <Box position="relative">
-                          <Image
-                            src={breed.featured_image_url || userBreed.images?.[0] || '/images/placeholder.jpg'}
-                            alt={breed.name}
-                            height="150px"
-                            width="100%"
-                            objectFit="cover"
-                          />
-                          <IconButton
-                            icon={<FiTrash2 />}
-                            aria-label="Remove from wishlist"
-                            position="absolute"
-                            top={2}
-                            right={2}
-                            colorScheme="red"
-                            variant="solid"
-                            size="sm"
-                            onClick={() => handleRemoveFromWishlist(item.id)}
-                          />
-                        </Box>
-                        <CardBody p={4}>
-                          <VStack align="stretch" spacing={2}>
-                            <Heading size="sm" textAlign="center">
-                              {breed.name}
-                            </Heading>
+                      return (
+                        <Card key={item.id} overflow="hidden" _hover={{ shadow: 'lg' }}>
+                          <Box position="relative">
+                            <Image
+                              src={breed.featured_image_url || '/images/placeholder.jpg'}
+                              alt={breed.name}
+                              height="150px"
+                              width="100%"
+                              objectFit="cover"
+                            />
+                            <Box position="absolute" top={2} right={2}>
+                                <AddToWishlistButton 
+                                    breedId={item.breed_id}
+                                    notifyWhenAvailable={item.notify_when_available}
+                                    size="sm"
+                                    bg="white"
+                                    borderRadius="full"
+                                    boxShadow="sm"
+                                />
+                            </Box>
+                          </Box>
+                          <CardBody p={4}>
+                            <VStack align="stretch" spacing={2}>
+                              <Heading size="sm" textAlign="center" textTransform="capitalize">
+                                {breed.name}
+                              </Heading>
 
-                            <FormControl display="flex" alignItems="center" justifyContent="center">
-                              <FormLabel htmlFor={`breed-notify-${item.id}`} mb="0" fontSize="xs">
-                                Notify when available
-                              </FormLabel>
-                              <Switch
-                                id={`breed-notify-${item.id}`}
+                              <FormControl display="flex" alignItems="center" justifyContent="center">
+                                <FormLabel htmlFor={`breed-notify-${item.id}`} mb="0" fontSize="xs">
+                                  Notify when available
+                                </FormLabel>
+                                <Switch
+                                  id={`breed-notify-${item.id}`}
+                                  size="sm"
+                                  isChecked={item.notify_when_available}
+                                  onChange={() => handleToggleNotification(item.id, item.notify_when_available)}
+                                />
+                              </FormControl>
+
+                              <Button
                                 size="sm"
-                                isChecked={item.notify_when_available}
-                                onChange={() => handleToggleNotification(item.id, item.notify_when_available)}
-                              />
-                            </FormControl>
-
-                            <Button
-                              size="sm"
-                              colorScheme="blue"
-                              variant="outline"
-                              onClick={() => handleViewItem(item)}
-                            >
-                              View Breeders
-                            </Button>
-                          </VStack>
-                        </CardBody>
-                      </Card>
-                    );
-                  })}
-                </Grid>
-              </Box>
-            )}
-          </>
+                                colorScheme="brand"
+                                variant="outline"
+                                onClick={() => router.push(`/dashboard/breeds`)} // Ideally filter by breed
+                              >
+                                View Details
+                              </Button>
+                            </VStack>
+                          </CardBody>
+                        </Card>
+                      );
+                    })}
+                  </SimpleGrid>
+                )}
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         )}
       </VStack>
     </Container>

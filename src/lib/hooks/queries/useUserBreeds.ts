@@ -284,8 +284,34 @@ export const useCreateUserBreed = () => {
       if (error) throw error;
       return result;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.breeds.userBreeds() });
+
+      // Notify users who wishlisted the breed
+      if (data.breed_id) {
+        const { data: wishlists } = await supabase
+          .from('wishlists')
+          .select('user_id')
+          .eq('breed_id', data.breed_id);
+
+        if (wishlists?.length) {
+          // Fetch breed name
+          const { data: breed } = await supabase.from('breeds').select('name').eq('id', data.breed_id).single();
+          const breedName = breed?.name || 'Unknown Breed';
+
+          const notifications = wishlists.map(w => ({
+            user_id: w.user_id,
+            type: 'new_breeder',
+            title: 'New Breeder Alert!',
+            body: `A new breeder for ${breedName} has joined!`,
+            target_type: 'user_breed',
+            target_id: data.id,
+            is_read: false,
+          }));
+
+          await supabase.from('notifications').insert(notifications);
+        }
+      }
     },
   });
 };

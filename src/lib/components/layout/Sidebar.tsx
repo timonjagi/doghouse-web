@@ -11,6 +11,7 @@ import {
   useColorModeValue as mode,
   Progress,
   Divider,
+  Badge,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -21,6 +22,7 @@ import { NavButton } from "./NavButton";
 import { NavSection, getNavigationForRole } from "./navLinks";
 import { User } from "@supabase/supabase-js";
 import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
+import { useWishlistCount } from "lib/hooks/queries/useWishlist";
 import { UserProfile } from "../auth/UserProfileCard";
 import NextLink from "next/link";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
@@ -98,9 +100,10 @@ interface NavLinkProps {
   isExternal?: boolean;
   isActive?: boolean;
   onClick?: () => void;
+  badge?: React.ReactNode;
 }
 
-const NavLink = ({ children, href, icon, isExternal, isActive, onClick }: NavLinkProps) => (
+const NavLink = ({ children, href, icon, isExternal, isActive, onClick, badge }: NavLinkProps) => (
   <Link
     as={NextLink}
     href={href}
@@ -124,6 +127,7 @@ const NavLink = ({ children, href, icon, isExternal, isActive, onClick }: NavLin
           {children}
         </Text>
       </HStack>
+      {badge}
       {isExternal && (
         <Icon as={FiArrowUpRight} boxSize="4" color={mode("brand.600", "brand.400")} />
       )}
@@ -178,6 +182,7 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const { data: user, isLoading: userLoading } = useCurrentUser();
   const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const { data: wishlistCount } = useWishlistCount();
 
   // Wait for auth check to complete before deciding which sidebar to show
   const isAuthLoading = userLoading || (user && profileLoading);
@@ -242,6 +247,11 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
                     icon={item.icon}
                     isActive={router.pathname === item.href}
                     onClick={() => handleNavClick(item.href)}
+                    badge={item.label === "Wishlist" && wishlistCount ? (
+                      <Badge colorScheme="red" borderRadius="full" variant="solid" fontSize="xs">
+                        {wishlistCount}
+                      </Badge>
+                    ) : undefined}
                   >
                     {item.label}
                   </NavLink>

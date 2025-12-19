@@ -2,6 +2,7 @@ import { Skeleton, VStack, Box, HStack, Badge, Image, Text, useColorModeValue, I
 import { PriceTag } from 'lib/components/ui/PriceTag';
 import React from 'react'
 import { MdLocationOn } from 'react-icons/md';
+import { AddToWishlistButton } from 'lib/components/ui/AddToWishlistButton';
 
 interface ListingCardProps {
   listing: any;
@@ -70,6 +71,13 @@ function ListingCard({
           />
 
           <HStack position="absolute" top={2} right={2} spacing={2}>
+            <AddToWishlistButton
+              listingId={listing.id}
+              size="sm"
+              borderRadius="full"
+              bg="whiteAlpha.700"
+              _hover={{ bg: "white" }}
+            />
             {/* <Badge colorScheme={listing.type === 'litter' ? 'blue' : 'green'}>
               {listing.type.replace('_', ' ')}
             </Badge> */}

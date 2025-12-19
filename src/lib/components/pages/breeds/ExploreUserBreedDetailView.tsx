@@ -43,6 +43,7 @@ import { BreederCard } from "lib/components/ui/BreederCard";
 import { BreederCard as BreederCard2 } from "lib/components/ui/BreederCard2";
 import { useBreedersForBreed } from "lib/hooks/queries/useBreeders";
 import { PageHeaderWithTwoButtons } from "lib/components/ui/PageHeaderWithTwoButtons";
+import { AddToWishlistButton } from "lib/components/ui/AddToWishlistButton";
 
 interface Breed {
   id: string;
@@ -179,9 +180,15 @@ const ExploreUserBreedDetailView = () => {
                       emptyMessage={`No past listings found for this breed`}
                       emptyDescription={`To get notified when new ${userBreed?.breeds.name}s become available, add ${breederProfile?.kennel_name}'s ${userBreed?.breeds.name} to wishlist.`}
                       showEmptyAction={true}
-                      onEmptyAction={onAddToWishlist}
-                      emptyActionLabel="Add to Wishlist"
-                      emptyActionIcon={<FiHeart />}
+                      emptyActionComponent={
+                        <AddToWishlistButton
+                          userBreedId={userBreed?.id}
+                          notifyWhenAvailable={true}
+                          withText={true}
+                          variant="primary"
+                          colorScheme="brand"
+                        />
+                      }
                     />
                   </TabPanel>
                   <TabPanel px={0}>

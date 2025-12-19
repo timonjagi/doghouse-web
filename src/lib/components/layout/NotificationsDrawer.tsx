@@ -56,6 +56,10 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
     if (notification.type === 'payment_completed' || notification.type === 'payment_received') {
       // For payment notifications, navigate to transactions page
       router.push('/dashboard/account/billing');
+    } else if (notification.target_type === 'listing' && notification.target_id) {
+      router.push(`/dashboard/listings/${notification.target_id}`);
+    } else if (notification.target_type === 'user_breed' && notification.target_id) {
+      router.push(`/dashboard/breeders/${notification.target_id}`);
     } else if ((notification.meta as any)?.applicationId) {
       // For application status changes, navigate to applications page
       router.push(`/dashboard/adoptions/${(notification.meta as any).applicationId}`);

@@ -41,6 +41,7 @@ import { supabase } from 'lib/supabase/client';
 import ListingForm from './ListingForm';
 import WhatsIncluded from 'lib/components/ui/WhatsIncluded2';
 import { PageHeaderWithTwoButtons } from 'lib/components/ui/PageHeaderWithTwoButtons';
+import { AddToWishlistButton } from 'lib/components/ui/AddToWishlistButton';
 import { FiHeart, FiInfo, FiList } from 'react-icons/fi';
 import { MdOutlineMedicalInformation } from 'react-icons/md';
 import { GiDogHouse } from 'react-icons/gi';
@@ -221,24 +222,22 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                   )}
                 </HStack>
               }
+              actions={
+                !isOwner ? (
+                  <AddToWishlistButton
+                    listingId={listing.id}
+                    notifyWhenAvailable={true}
+                    withText={true}
+                    variant="secondary"
+                    colorScheme="gray"
+                  />
+                ) : undefined
+              }
               buttonPrimary={isOwner ? {
                 label: "Edit",
                 onClick: onListingFormOpen,
                 icon: <EditIcon />,
                 colorScheme: "brand",
-                isDisabled: listing.status !== 'available',
-              } : {
-                label: "Add to Wishlist",
-                onClick: () => { /* Handle add to wishlist logic */ },
-                icon: <FiHeart />,
-                colorScheme: "gray",
-              }}
-              buttonSecondary={isOwner ? {
-                label: "Delete",
-                onClick: onDeleteOpen,
-                icon: <DeleteIcon />,
-                colorScheme: "red",
-                isLoading: deleteListingMutation.isPending,
                 isDisabled: listing.status !== 'available',
               } : listing.status === 'available' ? {
                 label: "Message Seller",
@@ -246,6 +245,14 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 icon: <ChatIcon />,
                 colorScheme: "brand",
                 variant: "primary"
+              } : undefined}
+              buttonSecondary={isOwner ? {
+                label: "Delete",
+                onClick: onDeleteOpen,
+                icon: <DeleteIcon />,
+                colorScheme: "red",
+                isLoading: deleteListingMutation.isPending,
+                isDisabled: listing.status !== 'available',
               } : undefined}
 
             />
