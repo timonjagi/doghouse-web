@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Novu } from '@novu/api';
-
-const novu = new Novu({ secretKey: process.env.NOVU_API_KEY! });
+import novu from 'lib/novu/client';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

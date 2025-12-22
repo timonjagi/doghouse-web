@@ -37,11 +37,6 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
       overflowY="auto"
     >
       <VStack spacing={0} align="stretch" height="100%">
-        {/* Header */}
-        <Box p={4} borderBottom="1px" borderColor={mode('gray.200', 'gray.600')}>
-          <Text fontSize="lg" fontWeight="bold">Notifications</Text>
-        </Box>
-
         {/* Content */}
         <Box flex={1} overflowY="auto">
           {notifications?.length === 0 ? (

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseServer } from '../../../lib/supabase/server';
-import novu from 'lib/novu';
+import novu from 'lib/novu/client';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
