@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -169,6 +169,10 @@ interface ConversationViewProps {
 }
 
 const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) => {
+  // All hooks must be called before any conditional returns
+  const router = useRouter();
+  const toast = useToast();
+
   const { data: user } = useCurrentUser();
   const { data: conversation, isLoading, error } = useConversation(conversationId);
   const { data: contextData } = useConversationWithContext(conversationId);
@@ -178,10 +182,6 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   const [messageText, setMessageText] = useState('');
   const [attachments, setAttachments] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-  const toast = useToast();
-
-  useRealtimeMessaging({ userId: user?.id, conversationId });
 
   const {
     isOpen: isAttachmentOpen,
@@ -189,17 +189,19 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
     onClose: onAttachmentClose
   } = useDisclosure();
 
+  useRealtimeMessaging({ userId: user?.id, conversationId });
+
   const { handleTyping } = useTypingIndicator(conversationId, user?.id);
   const { data: typingUsers } = useTypingUsers(conversationId);
   useTypingSubscription(conversationId);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [conversation?.messages]);
+  }, [conversation?.messages, scrollToBottom]);
 
   useEffect(() => {
     if (conversation && user?.id) {
@@ -207,7 +209,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
     }
   }, [conversation, user?.id, conversationId]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if ((!messageText.trim() && attachments.length === 0) || !user?.id) return;
 
     try {
@@ -233,16 +235,16 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
         duration: 3000,
       });
     }
-  };
+  }, [messageText, attachments, user?.id, conversationId, sendMessageMutation, toast]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
-  };
+  }, [handleSendMessage]);
 
-  const formatMessageTime = (timestamp: string) => {
+  const formatMessageTime = useCallback((timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
@@ -257,8 +259,29 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
     if (diffInDays < 7) return `${diffInDays}d ago`;
 
     return date.toLocaleDateString();
-  };
+  }, []);
 
+  // Memoize computed values
+  const showContextualInfo = useMemo(() => {
+    if (!contextData?.contextData?.adoption || !user) return false;
+    const { adoption } = contextData.contextData;
+    return ['submitted', 'pending', 'approved', 'reserved'].includes(adoption.status);
+  }, [contextData?.contextData?.adoption, user]);
+
+  const showAdoptionActions = useMemo(() => {
+    return showContextualInfo && conversation?.context_type === 'adoption';
+  }, [showContextualInfo, conversation?.context_type]);
+
+  const priorityAction = useMemo(() => {
+    if (!contextData?.contextData?.adoption) return null;
+    return getPriorityAdoptionAction({
+      adoption: contextData.contextData.adoption,
+      userProfile: user,
+      transactions: contextData.contextData.transactions || [],
+    });
+  }, [contextData?.contextData?.adoption, user, contextData?.contextData?.transactions]);
+
+  // Now handle loading and error states after all hooks
   if (isLoading) {
     return (
       <Box p={8} textAlign="center">
@@ -281,23 +304,6 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
       </Box>
     );
   }
-
-  let showContextualInfo = false;
-
-  if (contextData?.contextData?.adoption && user) {
-    const { adoption } = contextData.contextData;
-    if (['submitted', 'pending', 'approved', 'reserved'].includes(adoption.status)) {
-      showContextualInfo = true;
-    }
-  }
-
-  const showAdoptionActions = showContextualInfo && conversation.context_type === 'adoption';
-
-  const priorityAction = contextData?.contextData?.adoption ? getPriorityAdoptionAction({
-    adoption: contextData.contextData.adoption,
-    userProfile: user,
-    transactions: contextData.contextData.transactions || [],
-  }) : null;
 
   return (
     <Flex direction="column" flex="1" w="full" h="full" overflow="hidden">
