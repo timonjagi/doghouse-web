@@ -32,7 +32,7 @@ import { useRouter } from 'next/router';
 import { useUserProfile } from '../../../hooks/queries/useUserProfile';
 import {
   useAdoption,
-  useAdoptionActions,
+  getAvailableAdoptionActions,
   useAdoptionTimelineLogic,
   AdoptionWithListing,
   AdoptionStatusHistory,
@@ -43,9 +43,11 @@ import { NextSeo } from 'next-seo';
 import { Loader } from '../../ui/Loader';
 import { AdoptionTimeline } from './AdoptionTimeline';
 import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
-import { PaymentModal } from '../payments/PaymentModal';
 import { PaymentStatusModal } from '../payments/PaymentStatusModal';
 import AdoptionActionDialog from './AdoptionActionDialog';
+import { AdoptionActionList } from './AdoptionActionList';
+import { AdoptionActionModal } from './AdoptionActionModal';
+import { getPriorityAdoptionAction } from '../../../hooks/queries/useAdoptions';
 import { formatPrice } from 'lib/components/ui/PriceTag';
 import { PageHeaderWithTwoButtons } from 'lib/components/ui/PageHeaderWithTwoButtons';
 import { FiInfo, FiUser } from 'react-icons/fi';
@@ -61,18 +63,10 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
   const toast = useToast();
   const timelineRef = React.useRef<{ getCurrentStepButtons: () => any[] }>(null);
-  const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onClose: onUpdateClose } = useDisclosure();
+  const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
 
   const { data: adoption, isLoading: adoptionLoading, error: adoptionError } = useAdoption(id as string);
   const { data: transactions, isLoading: transactionsLoading, error: transactionsError } = useTransactionsByApplication(id as string);
-
-  // Use shared actions hook
-
-
-  const [updateForm, setUpdateForm] = useState({
-    status: '',
-    response_message: '',
-  });
 
   const [pendingAction, setPendingAction] = useState<{
     type: 'withdraw' | 'approve' | 'reject' | 'complete' | null;
@@ -132,131 +126,88 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   };
 
   const handleActionClick = (action: any) => {
-    if (['withdraw', 'approve', 'reject', 'complete'].includes(action.type)) {
-      // Enrich dialogBody with current step information
-      const enrichedAction = { ...action };
-      if (timelineLogic.currentStep?.info && timelineLogic.currentStep.info.length > 0) {
-        enrichedAction.dialogBody = `${action.dialogBody}\n\n${timelineLogic.currentStep.info.map(info => `• ${info}`).join('\n')}`;
-      }
-      setPendingAction(enrichedAction);
-      setUpdateForm({ status: action.status, response_message: '' });
-      onUpdateOpen();
+    if (action.type.startsWith('check_payment_status')) {
+      const type = action.type === 'check_payment_status_reservation' ? 'reservation' : 'final';
+      setStatusModal({
+        isOpen: true,
+        paymentReference: action.payload?.reference,
+        paymentType: type,
+        expectedAmount: type === 'reservation'
+          ? Number(adoption.listings.reservation_fee)
+          : Number(adoption.listings.price) - Number(adoption.listings.reservation_fee),
+      });
       return;
     }
-
-    const startUrl = `/dashboard/adoptions/${adoption?.id}`;
-
-    switch (action.type) {
-      case 'pay_reservation':
-        router.push(`${startUrl}?payment=reservation`);
-        break;
-      case 'sign_contract':
-        router.push(`${startUrl}?action=contract`);
-        break;
-      case 'complete_payment':
-        router.push(`${startUrl}?payment=final`);
-        break;
-      case 'leave_review':
-        console.log('Leave review');
-        break;
-      case 'contact_support':
-      case 'contact_breeder':
-        // Handle contact logic
-        break;
-      default:
-        console.warn('Unknown action:', action.type);
-    }
+    setPendingAction(action);
+    onModalOpen();
   };
 
-  const handleStatusUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pendingAction || !adoption) return;
 
-    try {
-      await updateAdoption({
-        id: adoption.id,
-        updates: {
-          status: pendingAction.status,
-          application_data: {
-            ...adoption.application_data as any,
-            response_message: updateForm.response_message || pendingAction.message,
-          }
-        }
+
+
+  // Handle action triggers from query params (e.g. redirected from inbox)
+  useEffect(() => {
+    if (!adoption) return;
+
+    if (payment === 'reservation') {
+      setPaymentModal({
+        isOpen: true,
+        type: 'reservation',
+        amount: Number(adoption.listings.reservation_fee) || 0,
+        description: `Reservation fee for ${adoption.listings.title}`,
       });
-
-      toast({
-        title: pendingAction.title,
-        description: pendingAction.message,
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
+      // Clean up URL
+      const newUrl = router.pathname.replace('[id]', id as string);
+      router.replace(newUrl, undefined, { shallow: true });
+    } else if (payment === 'final') {
+      const finalAmount = Number(adoption.listings.price) - Number(adoption.listings.reservation_fee);
+      setPaymentModal({
+        isOpen: true,
+        type: 'final',
+        amount: finalAmount,
+        description: `Final payment for ${adoption.listings.title}`,
       });
+      // Clean up URL
+      const newUrl = router.pathname.replace('[id]', id as string);
+      router.replace(newUrl, undefined, { shallow: true });
+    } else if (router.query.payment_status && router.query.type) {
+      const type = router.query.type as 'reservation' | 'final';
+      setStatusModal({
+        isOpen: true,
+        paymentReference: router.query.payment_status as string,
+        paymentType: type,
+        expectedAmount: type === 'reservation'
+          ? Number(adoption.listings.reservation_fee)
+          : Number(adoption.listings.price) - Number(adoption.listings.reservation_fee),
+      });
+      // Clean up URL
+      const newUrl = router.pathname.replace('[id]', id as string);
+      router.replace(newUrl, undefined, { shallow: true });
+    } else if (router.query.action === 'review') {
+      // Handle review flow trigger
+      console.log('Should open review flow');
+      // Clean up URL
+      const newUrl = router.pathname.replace('[id]', id as string);
+      router.replace(newUrl, undefined, { shallow: true });
+    }
+  }, [payment, adoption, id, router, router.query]);
 
-      setUpdateForm({ status: '', response_message: '' });
-      setPendingAction(null);
-      onUpdateClose();
-
-      // Redirect for withdrawal
-      if (pendingAction.type === 'withdraw') {
-        router.push('/dashboard/adoptions');
+  // Handle priority action modal trigger
+  useEffect(() => {
+    if (adoption && userProfile) {
+      const priorityAction = getPriorityAdoptionAction({
+        adoption: adoption as AdoptionWithListing,
+        userProfile,
+        transactions
+      });
+      if (priorityAction) {
+        // Open modal after a short delay to ensure components are ready
+        const timer = setTimeout(() => onModalOpen(), 1000);
+        return () => clearTimeout(timer);
       }
-    } catch (error) {
-      toast({
-        title: `Error processing request`,
-        description: error.message,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
     }
-  };
+  }, [adoption?.id, userProfile?.id]);
 
-
-
-
-  // Payment handlers
-  const handlePayReservation = () => {
-    setPaymentModal({
-      isOpen: true,
-      type: 'reservation',
-      amount: Number(adoption.listings.reservation_fee) || 0,
-      description: `Reservation fee for ${adoption.listings.title}`,
-    });
-  };
-
-  const handleSignContract = async () => {
-    try {
-      await updateAdoption({
-        id: adoption.id,
-        updates: { contract_signed: true }
-      });
-
-      toast({
-        title: 'Contract Signed',
-        status: 'success',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error signing contract',
-        status: 'error',
-      });
-    }
-  };
-
-  const handleCompletePayment = () => {
-    const finalAmount = Number(adoption.listings.price) - Number(adoption.listings.reservation_fee);
-    setPaymentModal({
-      isOpen: true,
-      type: 'final',
-      amount: finalAmount,
-      description: `Final payment for ${adoption.listings.title}`,
-    });
-  };
-
-  // Modal handlers
-  const handlePaymentModalClose = () => {
-    setPaymentModal(prev => ({ ...prev, isOpen: false }));
-  };
 
   const handleStatusModalClose = () => {
     setStatusModal(prev => ({ ...prev, isOpen: false }));
@@ -287,58 +238,19 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
       const newUrl = router.pathname.replace('[id]', id as string);
       router.replace(newUrl, undefined, { shallow: true });
     }
-  }, [payment, adoption, transactions, statusModal.isOpen, router, id]);
+  }, [payment, adoption, transactions, statusModal, router, id]);
 
-  // Initialize timeline logic for enriched dialog bodies
-  const timelineLogic = useAdoptionTimelineLogic({
-    adoption,
-    userProfile,
-    transactions
-  });
 
-  const { updateAdoption, isLoading: isUpdating, availableActions } = useAdoptionActions({
-    adoption,
-    userProfile,
-    transactions,
-    actions: {
-      onPayReservation: handlePayReservation,
-      onSignContract: handleSignContract,
-      onCompletePayment: handleCompletePayment,
-      onMarkCompleted: () => {
-        const action = ADOPTION_ACTION_CONFIGS.complete;
-        handleActionClick(action);
-      },
-      onWithdrawAdoption: () => {
-        const action = ADOPTION_ACTION_CONFIGS.withdraw;
-        handleActionClick(action);
-      },
-      onApproveAdoption: () => {
-        const action = ADOPTION_ACTION_CONFIGS.approve;
-        handleActionClick(action);
-      },
-      onRejectAdoption: () => {
-        const action = ADOPTION_ACTION_CONFIGS.reject;
-        handleActionClick(action);
-      },
-      onCheckPaymentStatus: (reference, type) => {
-        setStatusModal({
-          isOpen: true,
-          paymentReference: reference,
-          paymentType: type as 'reservation' | 'final',
-          expectedAmount: type === 'reservation'
-            ? Number(adoption?.listings.reservation_fee)
-            : Number(adoption?.listings.price) - Number(adoption?.listings.reservation_fee),
-        });
-      },
-      onLeaveReview: () => console.log('Leave review'),
-      onContactBreeder: () => router.push(`/inbox?userId=${adoption?.listings.owner_id}`),
-      onContactSupport: () => console.log('Contact support')
-    }
-  });
 
   if (profileLoading || adoptionLoading || transactionsLoading) {
     return <Loader />;
   }
+
+  const availableActions = adoption ? getAvailableAdoptionActions({
+    adoption,
+    userProfile,
+    transactions,
+  }) : [];
 
   if (adoptionError || transactionsError) {
     return (
@@ -366,8 +278,6 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   }
 
   const isOwner = userProfile?.id === adoption.listings.owner_id;
-  const canUpdateStatus = isOwner && ['submitted', 'pending'].includes(adoption.status);
-  const canWithdraw = !isOwner && adoption.status === 'submitted';
 
   const getTitle = () => {
     if (adoption.listings.title) return adoption.listings.title;
@@ -397,16 +307,16 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                 </Badge>
               }
               buttonPrimary={availableActions && availableActions.length > 0 ? {
-                label: availableActions[0].label,
-                onClick: availableActions[0].onClick,
+                label: availableActions[0].label || availableActions[0].buttonLabel,
+                onClick: () => handleActionClick(availableActions[0]),
                 icon: availableActions[0].icon ? <Icon as={availableActions[0].icon} /> : undefined,
                 colorScheme: availableActions[0].colorScheme,
                 isDisabled: availableActions[0].disabled,
                 variant: availableActions[0].variant
               } : undefined}
               buttonSecondary={availableActions && availableActions.length > 1 ? {
-                label: availableActions[1].label,
-                onClick: availableActions[1].onClick,
+                label: availableActions[1].label || availableActions[1].buttonLabel,
+                onClick: () => handleActionClick(availableActions[1]),
                 icon: availableActions[1].icon ? <Icon as={availableActions[1].icon} /> : undefined,
                 colorScheme: availableActions[1].colorScheme,
                 isDisabled: availableActions[1].disabled,
@@ -465,10 +375,9 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                   <TabPanel px={0}>
                     <AdoptionTimeline
                       ref={timelineRef}
-                      adoption={adoption}
+                      adoption={adoption as AdoptionWithListing}
                       userProfile={userProfile}
                       transactions={transactions}
-                      availableActions={availableActions}
                     />
                   </TabPanel>
                   <TabPanel px={0}>
@@ -488,27 +397,6 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
         </Stack>
       </Container>
 
-
-      {/* Status Update Modal */}
-      < AdoptionActionDialog
-        form={updateForm}
-        setForm={setUpdateForm}
-        isOpen={isUpdateOpen}
-        onClose={onUpdateClose}
-        pendingAction={pendingAction}
-        setPendingAction={setPendingAction}
-        onSubmit={handleStatusUpdate}
-        isLoading={isUpdating}
-      />
-
-      {/* Payment Modal */}
-      <PaymentModal
-        isOpen={paymentModal.isOpen}
-        onClose={handlePaymentModalClose}
-        adoption={adoption}
-        paymentType={paymentModal.type}
-      />
-
       {/* Payment Status Modal */}
       <PaymentStatusModal
         isOpen={statusModal.isOpen}
@@ -517,6 +405,15 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
         paymentType={statusModal.paymentType}
         expectedAmount={statusModal.expectedAmount}
         adoptionId={id as string}
+      />
+
+      {/* Adoption Action Modal (Initial Reward/Action) */}
+      <AdoptionActionModal
+        isOpen={isModalOpen}
+        onClose={onModalClose}
+        adoption={adoption as AdoptionWithListing}
+        userProfile={userProfile}
+        transactions={transactions}
       />
     </>
   );

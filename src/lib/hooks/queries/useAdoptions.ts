@@ -10,6 +10,7 @@ import {
   InfoIcon,
   CheckIcon,
   EditIcon,
+  ChatIcon,
 } from '@chakra-ui/icons';
 
 // Extended Adoption type with related data
@@ -75,7 +76,8 @@ interface UpdateAdoptionData {
   reservation_paid?: boolean;
   contract_signed?: boolean;
   payment_completed?: boolean;
-  application_data?: any
+  application_data?: any;
+  response_message?: string;
 }
 
 interface TimelineStep {
@@ -88,19 +90,7 @@ interface TimelineStep {
   info?: string[];
 }
 
-interface AdoptionTimelineActions {
-  onPayReservation?: () => void;
-  onSignContract?: () => void;
-  onCompletePayment?: () => void;
-  onMarkCompleted?: () => void;
-  onWithdrawAdoption?: () => void;
-  onApproveAdoption?: () => void;
-  onRejectAdoption?: () => void;
-  onCheckPaymentStatus?: (reference: string, type: string) => void;
-  onLeaveReview?: () => void;
-  onContactBreeder?: () => void;
-  onContactSupport?: () => void;
-}
+
 
 
 
@@ -111,11 +101,19 @@ export const useAdoptionTimelineLogic = ({
   transactions = [],
   statusHistory = []
 }: {
-  adoption: AdoptionWithListing;
+  adoption?: AdoptionWithListing;
   userProfile: any;
   transactions?: any[];
   statusHistory?: AdoptionStatusHistory[];
 }) => {
+  if (!adoption) {
+    return {
+      steps: [],
+      currentStepIndex: 0,
+      currentStep: null,
+      getStatusBannerProps: () => null
+    };
+  }
   const isApplicant = userProfile?.id === adoption.seeker_id;
 
   // Helper to get date from history
@@ -422,7 +420,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Approve Adoption',
     colorScheme: 'green',
     icon: CheckCircleIcon,
-    buttonLabel: 'Approve'
+    buttonLabel: 'Approve',
+    isPriority: true
   },
   reject: {
     type: 'reject',
@@ -433,7 +432,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Reject Adoption',
     colorScheme: 'red',
     icon: WarningIcon,
-    buttonLabel: 'Reject'
+    buttonLabel: 'Reject',
+    isPriority: true
   },
   complete: {
     type: 'complete',
@@ -453,7 +453,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Proceed to Payment',
     colorScheme: 'green',
     icon: StarIcon,
-    buttonLabel: 'Pay Reservation Fee'
+    buttonLabel: 'Pay Reservation Fee',
+    isPriority: true
   },
   sign_contract: {
     type: 'sign_contract',
@@ -462,7 +463,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Sign Contract',
     colorScheme: 'blue',
     icon: EditIcon,
-    buttonLabel: 'Sign Contract'
+    buttonLabel: 'Sign Contract',
+    isPriority: true
   },
   complete_payment: {
     type: 'complete_payment',
@@ -471,7 +473,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Proceed to Payment',
     colorScheme: 'green',
     icon: StarIcon,
-    buttonLabel: 'Complete Payment'
+    buttonLabel: 'Complete Payment',
+    isPriority: true
   },
   contact_support: {
     type: 'contact_support',
@@ -499,196 +502,202 @@ export const ADOPTION_ACTION_CONFIGS = {
     colorScheme: 'blue',
     icon: InfoIcon,
     buttonLabel: 'Check Payment Status'
+  },
+  contact_breeder: {
+    type: 'contact_breeder',
+    title: 'Contact Breeder',
+    dialogBody: 'Redirecting to your conversation with the breeder...',
+    confirmText: 'Go to Chat',
+    colorScheme: 'blue',
+    icon: ChatIcon,
+    buttonLabel: 'Contact Breeder'
+  },
+  contact_applicant: {
+    type: 'contact_applicant',
+    title: 'Contact Applicant',
+    dialogBody: 'Redirecting to your conversation with the applicant...',
+    confirmText: 'Go to Chat',
+    colorScheme: 'blue',
+    icon: ChatIcon,
+    buttonLabel: 'Contact Applicant'
   }
 };
 
-export const useAdoptionActions = ({
+export const getAvailableAdoptionActions = ({
   adoption,
   userProfile,
-  transactions = [],
-  actions
+  transactions = []
 }: {
-  adoption?: AdoptionWithListing;
+  adoption: AdoptionWithListing;
   userProfile: any;
   transactions?: any[];
-  actions: AdoptionTimelineActions;
 }) => {
-  const updateAdoptionMutation = useUpdateAdoption();
-
-  if (!adoption) {
-    return {
-      updateAdoption: updateAdoptionMutation.mutateAsync,
-      isLoading: updateAdoptionMutation.isPending,
-      availableActions: []
-    };
-  }
-
   const isApplicant = userProfile?.id === adoption.seeker_id;
   const pendingTransactions = transactions?.filter(tx => tx.status === 'pending') || [];
   const hasPendingReservationPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'reservation');
   const hasPendingFinalPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'final');
   const contractRequired = adoption.listings?.requirements?.contract_required;
 
-  const getAvailableActions = () => {
-    const buttons: any[] = [];
+  const buttons: any[] = [];
 
-    // Seeker Actions
-    if (isApplicant) {
-      if (adoption.status === 'submitted') {
-        const config = ADOPTION_ACTION_CONFIGS.withdraw;
-        buttons.push({
-          ...config,
-          label: config.buttonLabel,
-          variant: 'outline'
-        });
-      }
-
-      if (adoption.status === 'approved' && !adoption.reservation_paid && actions.onPayReservation) {
-        buttons.push({
-          label: 'Pay Reservation Fee',
-          onClick: actions.onPayReservation,
-          colorScheme: 'green',
-          icon: StarIcon,
-          variant: 'solid'
-        });
-      }
-
-      if (['approved', 'reserved'].includes(adoption.status) && hasPendingReservationPayment && actions.onCheckPaymentStatus) {
-        buttons.push({
-          label: 'Check Payment Status',
-          onClick: () => {
-            const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'reservation');
-            if (transaction) {
-              actions.onCheckPaymentStatus?.((transaction.meta as any).paystack_reference, 'reservation');
-            }
-          },
-          colorScheme: 'blue',
-          icon: InfoIcon,
-          variant: 'outline'
-        });
-
-        if (actions.onContactSupport) {
-          buttons.push({
-            label: 'Contact Support',
-            onClick: actions.onContactSupport,
-            colorScheme: 'orange',
-            icon: InfoIcon,
-            variant: 'ghost'
-          });
-        }
-      }
-
-      if (adoption.status === 'rejected' && actions.onContactSupport) {
-        buttons.push({
-          label: 'Contact Support',
-          onClick: actions.onContactSupport,
-          colorScheme: 'red',
-          icon: InfoIcon,
-          variant: 'ghost'
-        });
-      }
-
-      if (adoption.reservation_paid && !adoption.contract_signed && contractRequired && actions.onSignContract) {
-        buttons.push({
-          label: 'Sign Contract',
-          onClick: actions.onSignContract,
-          colorScheme: 'blue',
-          icon: EditIcon,
-          variant: 'solid'
-        });
-      }
-
-      if ((adoption.contract_signed || (adoption.reservation_paid && !contractRequired)) && !adoption.payment_completed && actions.onCompletePayment) {
-        buttons.push({
-          label: 'Complete Payment',
-          onClick: actions.onCompletePayment,
-          colorScheme: 'green',
-          icon: StarIcon,
-          variant: 'solid'
-        });
-      }
-
-      if (hasPendingFinalPayment && actions.onCheckPaymentStatus) {
-        buttons.push({
-          label: 'Check Payment Status',
-          onClick: () => {
-            const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'final');
-            if (transaction) {
-              actions.onCheckPaymentStatus?.((transaction.meta as any).paystack_reference, 'final');
-            }
-          },
-          colorScheme: 'blue',
-          icon: InfoIcon,
-          variant: 'outline'
-        });
-        if (actions.onContactSupport) {
-          buttons.push({
-            label: 'Contact Support',
-            onClick: actions.onContactSupport,
-            colorScheme: 'orange',
-            icon: InfoIcon,
-            variant: 'ghost'
-          });
-        }
-      }
-
-      if (adoption.status === 'completed' && actions.onLeaveReview) {
-        buttons.push({
-          label: 'Leave Review',
-          onClick: actions.onLeaveReview,
-          colorScheme: 'blue',
-          icon: StarIcon,
-          variant: 'solid'
-        });
-      }
-
-    } else {
-      // Breeder Actions
-      if (adoption.status === 'submitted') {
-        const approveConfig = ADOPTION_ACTION_CONFIGS.approve;
-        const rejectConfig = ADOPTION_ACTION_CONFIGS.reject;
-
-        buttons.push({
-          ...approveConfig,
-          label: approveConfig.buttonLabel,
-          variant: 'solid'
-        });
-
-        buttons.push({
-          ...rejectConfig,
-          label: rejectConfig.buttonLabel,
-          variant: 'outline'
-        });
-      }
-
-      if (adoption.payment_completed && adoption.status !== 'completed') {
-        const config = ADOPTION_ACTION_CONFIGS.complete;
-        buttons.push({
-          ...config,
-          label: config.buttonLabel,
-          variant: 'solid'
-        });
-      }
-
-      if (adoption.status === 'completed' && actions.onLeaveReview) {
-        buttons.push({
-          label: 'Leave Review',
-          onClick: actions.onLeaveReview,
-          colorScheme: 'purple',
-          icon: StarIcon,
-          variant: 'solid'
-        });
-      }
+  // Seeker Actions
+  if (isApplicant) {
+    if (adoption.status === 'submitted') {
+      const config = ADOPTION_ACTION_CONFIGS.withdraw;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'outline'
+      });
     }
 
-    return buttons;
-  };
+    if (adoption.status === 'approved' && !adoption.reservation_paid) {
+      const config = ADOPTION_ACTION_CONFIGS.pay_reservation;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
 
-  return {
-    updateAdoption: updateAdoptionMutation.mutateAsync,
-    isLoading: updateAdoptionMutation.isPending,
-    availableActions: getAvailableActions()
-  };
+    if (['approved', 'reserved'].includes(adoption.status) && hasPendingReservationPayment) {
+      const config = ADOPTION_ACTION_CONFIGS.check_payment_status;
+      const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'reservation');
+
+      buttons.push({
+        ...config,
+        type: 'check_payment_status_reservation',
+        label: config.buttonLabel,
+        variant: 'outline',
+        payload: { reference: (transaction?.meta as any)?.paystack_reference, type: 'reservation' }
+      });
+
+      const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
+      buttons.push({
+        ...supportConfig,
+        label: supportConfig.buttonLabel,
+        variant: 'ghost'
+      });
+    }
+
+    if (adoption.status === 'rejected') {
+      const config = ADOPTION_ACTION_CONFIGS.contact_support;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'ghost'
+      });
+    }
+
+    if (adoption.reservation_paid && !adoption.contract_signed && contractRequired) {
+      const config = ADOPTION_ACTION_CONFIGS.sign_contract;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    if ((adoption.contract_signed || (adoption.reservation_paid && !contractRequired)) && !adoption.payment_completed) {
+      const config = ADOPTION_ACTION_CONFIGS.complete_payment;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    if (hasPendingFinalPayment) {
+      const config = ADOPTION_ACTION_CONFIGS.check_payment_status;
+      const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'final');
+
+      buttons.push({
+        ...config,
+        type: 'check_payment_status_final',
+        label: config.buttonLabel,
+        variant: 'outline',
+        payload: { reference: (transaction?.meta as any)?.paystack_reference, type: 'final' }
+      });
+
+      const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
+      buttons.push({
+        ...supportConfig,
+        label: supportConfig.buttonLabel,
+        variant: 'ghost'
+      });
+    }
+
+    if (adoption.status === 'completed') {
+      const config = ADOPTION_ACTION_CONFIGS.leave_review;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    const contactConfig = ADOPTION_ACTION_CONFIGS.contact_breeder;
+    buttons.push({
+      ...contactConfig,
+      label: contactConfig.buttonLabel,
+      variant: 'outline'
+    });
+
+  } else {
+    // Breeder Actions
+    if (adoption.status === 'submitted') {
+      const approveConfig = ADOPTION_ACTION_CONFIGS.approve;
+      const rejectConfig = ADOPTION_ACTION_CONFIGS.reject;
+
+      buttons.push({
+        ...approveConfig,
+        label: approveConfig.buttonLabel,
+        variant: 'solid'
+      });
+
+      buttons.push({
+        ...rejectConfig,
+        label: rejectConfig.buttonLabel,
+        variant: 'outline'
+      });
+    }
+
+    if (adoption.payment_completed && adoption.status !== 'completed') {
+      const config = ADOPTION_ACTION_CONFIGS.complete;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    if (adoption.status === 'completed') {
+      const config = ADOPTION_ACTION_CONFIGS.leave_review;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    const contactConfig = ADOPTION_ACTION_CONFIGS.contact_applicant;
+    buttons.push({
+      ...contactConfig,
+      label: contactConfig.buttonLabel,
+      variant: 'outline'
+    });
+  }
+
+  return buttons;
+};
+
+export const getPriorityAdoptionAction = (params: {
+  adoption: AdoptionWithListing;
+  userProfile: any;
+  transactions?: any[];
+}) => {
+  const actions = getAvailableAdoptionActions(params);
+  return actions.find(a => a.isPriority) || null;
 };
 
 

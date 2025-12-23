@@ -18,7 +18,7 @@ export const useAdoptionConversation = (adoptionId: string) => {
     conv => conv.context_type === 'adoption' && conv.context_id === adoptionId
   );
 
-  const createAdoptionConversation = async (listingData: any, participants: string[]) => {
+  const createAdoptionConversation = async (listingData: any, participants: string[], initialMessage?: string) => {
     if (!user?.id) return null;
 
     const contextData = {
@@ -38,6 +38,15 @@ export const useAdoptionConversation = (adoptionId: string) => {
       contextData,
       createdBy: user.id
     });
+
+    if (conversation && initialMessage) {
+      // Send initial message if provided
+      await supabase.from('messages').insert({
+        conversation_id: conversation.id,
+        sender_id: user.id,
+        content: initialMessage,
+      });
+    }
 
     return conversation;
   };
