@@ -1,6 +1,6 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createWelcomeEmail } from '../../src/lib/emailTemplates';
+import { createWelcomeEmail } from '../../emailTemplates';
 
 export const welcomeUser = workflow('welcome-user', async ({ step, payload }) => {
   // Send welcome email

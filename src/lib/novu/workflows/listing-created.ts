@@ -1,6 +1,6 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createListingCreatedEmail } from '../../src/lib/emailTemplates';
+import { createListingCreatedEmail } from '../../emailTemplates';
 
 export const listingCreated = workflow('listing-created', async ({ step, payload }) => {
   // Notify admin of new listing

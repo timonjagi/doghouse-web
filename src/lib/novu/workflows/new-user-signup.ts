@@ -1,6 +1,6 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createNewUserSignupEmail } from '../../src/lib/emailTemplates';
+import { createNewUserSignupEmail } from '../../emailTemplates';
 
 export const newUserSignup = workflow('new-user-signup', async ({ step, payload }) => {
   // Notify admin of new user

@@ -1,6 +1,6 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createAdoptionStatusEmail } from '../../src/lib/emailTemplates';
+import { createProfessionalEmailTemplate } from '../../emailTemplates';
 
 export const adoptionStatusChanged = workflow('adoption-status-changed', async ({ step, payload }) => {
   // Notify seeker of status change

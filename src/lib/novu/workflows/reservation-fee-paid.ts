@@ -1,6 +1,6 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createPaymentReceivedEmail } from '../../src/lib/emailTemplates';
+import { createPaymentReceivedEmail } from '../../emailTemplates';
 
 export const reservationFeePaid = workflow('reservation-fee-paid', async ({ step, payload }) => {
   // Send in-app to breeder
