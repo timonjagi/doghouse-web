@@ -111,7 +111,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                       bg={`${getContextColor(conversation.contextType)}.500`}
                       color="white"
                     >
-                      {getContextIcon(conversation.contextType)}
+                      {/* {getContextIcon(conversation.contextType)} */}
                     </Avatar>
                     {!conversation.isRead && (
                       <Box

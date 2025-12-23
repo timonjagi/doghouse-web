@@ -41,43 +41,10 @@ export const HeaderWithTitle = ({ title, rightElement, isScrolled = false }: Hea
           </HStack>
           <HStack spacing={2}>
             {rightElement}
-            <Box position="relative">
-              <IconButton
-                icon={<FiBell />}
-                aria-label="Notifications"
-                variant="ghost"
-                size="sm"
-                onClick={onOpen}
-              />
-              {unreadCount > 0 && (
-                <Badge
-                  position="absolute"
-                  top="-1"
-                  right="-1"
-                  colorScheme="red"
-                  borderRadius="full"
-                  fontSize="xs"
-                >
-                  {unreadCount}
-                </Badge>
-              )}
-            </Box>
+
           </HStack>
         </HStack>
       </ColumnHeader>
-
-      {/* Notifications Drawer */}
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        size="md"
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <NotificationsDrawer isOpen={isOpen} onClose={onClose} />
-        </DrawerContent>
-      </Drawer>
     </>
   );
 };
@@ -114,7 +81,7 @@ export const DetailPageContainer = ({
       overflowY="auto"
       onScroll={(e) => setIsScrolled(e.currentTarget.scrollTop > 32)}
     >
-      <ColumnHeader shadow={isScrolled ? "base" : "none"}>
+      {/* <ColumnHeader shadow={isScrolled ? "base" : "none"}>
         <HStack justify="space-between" width="full">
           <HStack spacing="3">
             <ColumnIconButton
@@ -149,20 +116,7 @@ export const DetailPageContainer = ({
             </Box>
           </HStack>
         </HStack>
-      </ColumnHeader>
-
-      {/* Notifications Drawer */}
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        size="md"
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <NotificationsDrawer isOpen={isOpen} onClose={onClose} />
-        </DrawerContent>
-      </Drawer>
+      </ColumnHeader> */}
 
       {children}
     </Box>

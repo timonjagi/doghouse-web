@@ -122,6 +122,8 @@ export const SignupForm = () => {
             });
           }
 
+
+
           // Redirect to onboarding instead of login
           router.push("/onboarding");
         }

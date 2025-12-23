@@ -29,7 +29,7 @@ import { useState, useMemo } from "react";
 import { SortbySelect } from "lib/components/ui/SortBySelect";
 import { MdFilterList } from "react-icons/md";
 import { useRouter } from "next/router";
-import { BreedCard } from "lib/components/ui/BreedCard";
+import { BreedCard } from "lib/components/ui/BreedCard2";
 import { EmptyView } from "./EmptyView";
 import * as searchService from "lib/services/searchService";
 import { UserBreed, Breed } from "lib/db/schema";

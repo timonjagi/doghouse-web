@@ -27,6 +27,32 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
   const starColor = useColorModeValue("gold", "yellow.400");
   const mutedTextColor = useColorModeValue("gray.500", "gray.400");
 
+  const onSubscribe = async () => {
+    if (!currentUser) return;
+
+    try {
+      await NotificationService.subscribeToBreeder(
+        currentUser.id,
+        breeder.id,
+        breederProfile?.kennel_name || user?.display_name
+      );
+      toast({
+        title: "Subscribed to breeder updates",
+        description: `You will be notified when ${breederProfile?.kennel_name || user?.display_name} posts new content.`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Subscription failed",
+        description: "Please try again later.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  }
   return (
     <Card variant="outline" _hover={{ shadow: "md", transform: "translateY(-2px)" }} transition="all 0.2s">
       <CardBody>
@@ -97,19 +123,6 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
 
           {showActions && (
             <ButtonGroup>
-              <Tooltip label="Save all breeds from this breeder to wishlist">
-                <AddToWishlistButton
-                  userBreedId={userBreedId}
-                  notifyWhenAvailable={true}
-                  size="sm"
-                  variant="outline"
-                  withText={true}
-                  textAdded="Wishlisted"
-                  textNotAdded="Wishlist All"
-                  isDisabled={!userBreedId || !currentUser}
-                  title={!userBreedId ? "No breeds available to wishlist" : !currentUser ? "Sign in to wishlist" : "Wishlist all breeds from this breeder"}
-                />
-              </Tooltip>
 
               <Tooltip label="Get notified when this breeder posts new content">
                 <Button
@@ -118,32 +131,7 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
                   leftIcon={<FiBell />}
                   isDisabled={!currentUser}
                   title={!currentUser ? "Sign in to subscribe" : "Subscribe to breeder updates"}
-                  onClick={async () => {
-                    if (!currentUser) return;
-
-                    try {
-                      await NotificationService.subscribeToBreeder(
-                        currentUser.id,
-                        breeder.id,
-                        breederProfile?.kennel_name || user?.display_name
-                      );
-                      toast({
-                        title: "Subscribed to breeder updates",
-                        description: `You will be notified when ${breederProfile?.kennel_name || user?.display_name} posts new content.`,
-                        status: "success",
-                        duration: 3000,
-                        isClosable: true,
-                      });
-                    } catch (error) {
-                      toast({
-                        title: "Subscription failed",
-                        description: "Please try again later.",
-                        status: "error",
-                        duration: 3000,
-                        isClosable: true,
-                      });
-                    }
-                  }}
+                  onClick={onSubscribe}
                 >
                   Subscribe
                 </Button>

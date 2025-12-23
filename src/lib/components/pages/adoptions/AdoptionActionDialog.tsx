@@ -24,6 +24,7 @@ import {
   ListItem,
   ListIcon,
   Badge,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import { useAdoptionConversation } from '../../../hooks/queries/useContextConversations';
@@ -215,7 +216,7 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
 
   const isLoading = updateAdoptionMutation.isPending || initiatePaymentMutation.isPending;
   const isPaymentAction = ['pay_reservation', 'complete_payment'].includes(pendingAction?.type);
-  const isContactAction = ['contact_breeder', 'contact_applicant'].includes(pendingAction?.type);
+  const isContactAction = ['contact_breeder', 'contact_applicant', 'contact_support'].includes(pendingAction?.type);
   const { amount, description: paymentDesc } = getPaymentDetails();
 
   return (
@@ -229,12 +230,12 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
             <VStack spacing={4} align="stretch">
               {/* Payment Summary */}
               {isPaymentAction && (
-                <Box p={4} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.100">
+                <Box p={4} bg={useColorModeValue('gray.50', 'gray.800')} borderRadius="md" border="1px solid" borderColor="gray.100">
                   <VStack spacing={2} align="start">
-                    <Text fontSize="md" fontWeight="semibold" color="gray.700">
+                    <Text fontSize="md" fontWeight="semibold" color={useColorModeValue('gray.700', 'gray.200')}>
                       {paymentDesc}
                     </Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="brand.600">
+                    <Text fontSize="2xl" fontWeight="bold" color={useColorModeValue('brand.600', 'brand.500')}>
                       Ksh. {amount.toLocaleString()}
                     </Text>
                     <Alert status="info" borderRadius="md" variant="subtle" py={2}>
@@ -272,16 +273,18 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
                 </FormControl>
               )}
 
+              {pendingAction?.dialogBody && <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')}>{pendingAction.dialogBody}</Text>}
+
               {/* Action Body & Info */}
-              {!isPaymentAction && (pendingAction?.dialogBody || timelineLogic.currentStep?.info) && (
+              {!isPaymentAction && !isContactAction && !['withdraw', 'approve', 'reject', 'complete'].includes(pendingAction?.type) && (pendingAction?.dialogBody || timelineLogic.currentStep?.info) && (
                 <VStack align="stretch" spacing={3}>
-                  {pendingAction?.dialogBody && <Text fontSize="sm" color="gray.600">{pendingAction.dialogBody}</Text>}
+
                   {timelineLogic.currentStep?.info && timelineLogic.currentStep.info.length > 0 && (
-                    <Box bg="blue.50" p={3} borderRadius="md">
+                    <Box bg={useColorModeValue('blue.50', 'blue.800')} p={3} borderRadius="md">
                       <List spacing={2}>
                         {timelineLogic.currentStep.info.map((info, i) => (
-                          <ListItem key={i} fontSize="xs" color="blue.700" display="flex" alignItems="start">
-                            <ListIcon as={ChevronRightIcon} color="blue.400" mt={1} />
+                          <ListItem key={i} fontSize="xs" color={useColorModeValue('blue.700', 'blue.500')} display="flex" alignItems="start">
+                            <ListIcon as={ChevronRightIcon} color={useColorModeValue('blue.400', 'blue.500')} mt={1} />
                             {info}
                           </ListItem>
                         ))}

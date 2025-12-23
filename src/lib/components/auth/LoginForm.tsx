@@ -65,9 +65,11 @@ export const LoginForm = ({ setProfileNotCreated }: PageProps) => {
 
         const previousRoute = localStorage.getItem('previousRoute');
 
-        if (previousRoute) {
+        if (previousRoute && !['/', '/login', '/signup'].includes(previousRoute)) {
           localStorage.removeItem('previousRoute');
           router.push(previousRoute);
+        } else {
+          router.push('/dashboard');
         }
         toast({
           title: "Login successful",

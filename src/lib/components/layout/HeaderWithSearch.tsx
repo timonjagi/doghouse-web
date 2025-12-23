@@ -8,27 +8,20 @@ import {
   HStack,
   useBreakpointValue,
   IconButton,
-  Button,
-  Circle,
   Badge,
-  DrawerCloseButton,
-  DrawerHeader,
   useToast,
   Spacer,
 } from "@chakra-ui/react";
-import { MdDarkMode, MdLightMode } from "react-icons/md";
-import { useColorMode } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { FiBell, FiCheck, FiMenu } from "react-icons/fi";
+import { FiMenu } from "react-icons/fi";
 
 import { Logo } from "./Logo";
-import { NotificationsDrawer } from "./NotificationsDrawer";
 import { SearchInput } from "./SearchInput";
 import { Sidebar } from "./Sidebar";
 import { useEffect, useMemo, useState } from "react";
 import * as searchService from "lib/services/searchService";
 import { useCurrentUser, useUserProfileById } from "lib/hooks/queries";
-import { useCounts } from '@novu/react';
+
 
 const HeaderWithSearch = ({ rightElement }) => {
   const isDesktop = useBreakpointValue({
@@ -103,10 +96,6 @@ const HeaderWithSearch = ({ rightElement }) => {
     }
   };
 
-  const { counts } = useCounts({ filters: [{ read: false }] });
-  const unreadCount = counts?.[0]?.count ?? 0;
-  const { isOpen: isNotificationsOpen, onOpen: onOpenNotifications, onClose: onCloseNotifications } = useDisclosure();
-
 
   return (
     <Box
@@ -170,26 +159,6 @@ const HeaderWithSearch = ({ rightElement }) => {
 
         <HStack spacing={2}>
           {rightElement}
-          <Box position="relative">
-            <IconButton
-              icon={<FiBell />}
-              aria-label="Notifications"
-              variant="ghost"
-              onClick={onOpenNotifications}
-            />
-            {unreadCount > 0 && (
-              <Badge
-                position="absolute"
-                top="-1"
-                right="-1"
-                colorScheme="red"
-                borderRadius="full"
-                fontSize="xs"
-              >
-                {unreadCount}
-              </Badge>
-            )}
-          </Box>
         </HStack>
       </Flex>
 
@@ -238,19 +207,6 @@ const HeaderWithSearch = ({ rightElement }) => {
         <DrawerContent>
           {/* Sidebar content would go here */}
           <Sidebar onClose={onCloseSidebar} />
-        </DrawerContent>
-      </Drawer>
-
-      {/* Notifications Drawer */}
-      <Drawer
-        isOpen={isNotificationsOpen}
-        placement="right"
-        onClose={onCloseNotifications}
-        size="md"
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <NotificationsDrawer isOpen={isNotificationsOpen} onClose={onCloseNotifications} />
         </DrawerContent>
       </Drawer>
 

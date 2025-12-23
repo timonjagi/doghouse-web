@@ -57,7 +57,7 @@ const DesktopNavCategorySubmenu = ({ data }: { data: any }) => {
 const MobileNavCategorySubmenu = ({ data }: { data: any }) => (
   <Box p="5" width="full" height="100%" overflowY="auto">
     <Text fontWeight="bold" mb="4">
-      {data.category.label}
+      {data.featured.label}
     </Text>
     <NavFeaturedImage
       height="32"

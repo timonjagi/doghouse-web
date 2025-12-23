@@ -96,7 +96,7 @@ const MobileNavMenu = ({ data }: MobileNavMenuProps) => (
     w="full"
 
   >
-    <Stack width="full">
+    <Stack width="full" >
       {data.products.map((product) => (
         <NavAccordionItem label={[product.label]} width="full"
         >
@@ -110,7 +110,11 @@ const MobileNavMenu = ({ data }: MobileNavMenuProps) => (
             </HStack>
           </HStack>
 
-          <Stack direction="row" pt="5" width="full"
+          <Stack
+            direction="row"
+            pt="5"
+            width="full"
+            spacing="6"
           >
             {/* {data.products.slice(0, 3).map((product) => (
             <NavProductItem key={product.id} href="#" {...product} />
@@ -137,7 +141,7 @@ const MobileNavMenu = ({ data }: MobileNavMenuProps) => (
 
 
           <SimpleGrid
-            spacing="6"
+            pt="6"
             columns={2}
             alignContent="flex-start"
             width="full"

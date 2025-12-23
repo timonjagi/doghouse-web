@@ -102,7 +102,7 @@ const LoginPage = () => {
         <Box flex="1" overflow="auto">
           <Center py="4" h="full">
             <Stack
-              spacing={{ base: "6", md: "9" }}
+              spacing={{ base: "4", md: "9" }}
               textAlign="center"
               px={{ base: "8", lg: "16", xl: "32" }}
             >

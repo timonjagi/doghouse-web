@@ -571,22 +571,6 @@ export const getAvailableAdoptionActions = ({
         variant: 'outline',
         payload: { reference: (transaction?.meta as any)?.paystack_reference, type: 'reservation' }
       });
-
-      const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
-      buttons.push({
-        ...supportConfig,
-        label: supportConfig.buttonLabel,
-        variant: 'ghost'
-      });
-    }
-
-    if (adoption.status === 'rejected') {
-      const config = ADOPTION_ACTION_CONFIGS.contact_support;
-      buttons.push({
-        ...config,
-        label: config.buttonLabel,
-        variant: 'ghost'
-      });
     }
 
     if (adoption.reservation_paid && !adoption.contract_signed && contractRequired) {
@@ -618,13 +602,6 @@ export const getAvailableAdoptionActions = ({
         variant: 'outline',
         payload: { reference: (transaction?.meta as any)?.paystack_reference, type: 'final' }
       });
-
-      const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
-      buttons.push({
-        ...supportConfig,
-        label: supportConfig.buttonLabel,
-        variant: 'ghost'
-      });
     }
 
     if (adoption.status === 'completed') {
@@ -636,11 +613,11 @@ export const getAvailableAdoptionActions = ({
       });
     }
 
-    const contactConfig = ADOPTION_ACTION_CONFIGS.contact_breeder;
+    const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
     buttons.push({
-      ...contactConfig,
-      label: contactConfig.buttonLabel,
-      variant: 'outline'
+      ...supportConfig,
+      label: supportConfig.buttonLabel,
+      variant: 'ghost'
     });
 
   } else {
@@ -680,11 +657,11 @@ export const getAvailableAdoptionActions = ({
       });
     }
 
-    const contactConfig = ADOPTION_ACTION_CONFIGS.contact_applicant;
+    const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
     buttons.push({
-      ...contactConfig,
-      label: contactConfig.buttonLabel,
-      variant: 'outline'
+      ...supportConfig,
+      label: supportConfig.buttonLabel,
+      variant: 'ghost'
     });
   }
 

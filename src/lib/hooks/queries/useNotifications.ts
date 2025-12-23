@@ -70,7 +70,7 @@ export const useMarkAllNotificationsAsRead = () => {
     mutationFn: async (userId: string) => {
       const { error } = await supabase
         .from('notifications')
-        .update({ read: true })
+        .update({ is_read: true })
         .eq('user_id', userId)
         .eq('is_read', false);
 

@@ -15,6 +15,7 @@ import {
   ListIcon,
   useDisclosure,
   Divider,
+  useColorModeValue
 } from '@chakra-ui/react';
 import {
   AdoptionWithListing,
@@ -84,7 +85,7 @@ export const AdoptionActionList: React.FC<AdoptionActionListProps> = ({
   const info = currentStep.info || [];
 
   const renderButtons = (size: string = 'md') => (
-    <HStack spacing={2} wrap="wrap" w="full" pt={2}>
+    <HStack spacing={2} justifyContent="flex-end" w="full" pt={2}>
       {availableActions.map((action, index) => (
         <Button
           key={index}
@@ -113,9 +114,9 @@ export const AdoptionActionList: React.FC<AdoptionActionListProps> = ({
           borderRadius="lg"
           py={4}
           px={6}
-          bg="blue.50"
+          bg={useColorModeValue('blue.50', 'blue.900')}
           borderWidth="1px"
-          borderColor="blue.100"
+          borderColor={useColorModeValue('blue.100', 'blue.600')}
         >
           <HStack spacing={4} align="start" flex={1}>
             <AlertIcon mt={1} />
@@ -129,8 +130,8 @@ export const AdoptionActionList: React.FC<AdoptionActionListProps> = ({
               {info.length > 0 && (
                 <List spacing={1} mt={3}>
                   {info.map((item, idx) => (
-                    <ListItem key={idx} fontSize="xs" color="gray.600" display="flex" alignItems="start">
-                      <ListIcon as={InfoIcon} color="blue.400" mt={1} />
+                    <ListItem key={idx} fontSize="xs" color={useColorModeValue('gray.600', 'gray.400')} display="flex" alignItems="start">
+                      <ListIcon as={InfoIcon} color={useColorModeValue('blue.400', 'blue.600')} mt={1} />
                       {item}
                     </ListItem>
                   ))}

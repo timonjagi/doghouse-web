@@ -16,8 +16,18 @@ import {
   SimpleGrid,
   Alert,
   AlertIcon,
+  Flex,
+  useDisclosure,
+  IconButton,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
 } from '@chakra-ui/react';
-import { CheckCircleIcon, ChatIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon, ChatIcon, AttachmentIcon, CloseIcon } from '@chakra-ui/icons';
 import { IoSend } from 'react-icons/io5';
 import { useConversation, useSendMessage, useMarkConversationAsRead } from '../../../hooks/queries/useConversations';
 import { useConversationWithContext } from '../../../hooks/queries/useContextConversations';
@@ -25,6 +35,7 @@ import { useRealtimeMessaging } from '../../../hooks/queries/useRealtimeMessagin
 import { useCurrentUser } from '../../../hooks/queries/useAuth';
 import { useTypingIndicator, useTypingUsers, useTypingSubscription } from '../../../hooks/queries/useTypingIndicator';
 import { AdoptionActionList } from '../adoptions/AdoptionActionList';
+import { getPriorityAdoptionAction } from '../../../hooks/queries/useAdoptions';
 import FileAttachmentComponent from '../../ui/FileAttachment';
 
 interface ContextualInfoProps {
@@ -32,32 +43,35 @@ interface ContextualInfoProps {
 }
 
 const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
+  const router = useRouter();
+  const hoverBg = useColorModeValue('gray.50', 'gray.700');
+
   if (contextData.type === 'adoption') {
-    const { status, timeline, pet, seeker, breeder, price, reservation_fee } = contextData;
+    const { status, timeline, pet, seeker, breeder, price, reservation_fee, adoption } = contextData;
 
     return (
       <VStack spacing={3} align="stretch">
         <HStack justify="space-between" align="start">
           <VStack align="start" spacing={1}>
             <HStack>
-              <Text fontWeight="semibold" fontSize="lg">
+              <Text fontWeight="semibold" fontSize="lg" >
                 {pet.name || 'Pet'}
               </Text>
               <Badge colorScheme={status === 'completed' ? 'green' : status === 'approved' ? 'blue' : 'yellow'}>
                 {status}
               </Badge>
             </HStack>
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')}>
               {pet.breed} • {pet.age} • {pet.gender}
             </Text>
           </VStack>
 
           <VStack align="end" spacing={1}>
-            <Text fontWeight="semibold" fontSize="lg">
+            <Text fontWeight="semibold" fontSize="lg" color={useColorModeValue('gray.600', 'gray.400')}>
               KES {price?.toLocaleString()}
             </Text>
             {reservation_fee && (
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')}>
                 Reservation: KES {reservation_fee.toLocaleString()}
               </Text>
             )}
@@ -86,7 +100,7 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
           />
         </Box>
 
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+        {/* <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
           <HStack>
             <Avatar size="sm" name={seeker?.display_name} src={seeker?.profile_photo_url} />
             <VStack align="start" spacing={0}>
@@ -104,7 +118,7 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
               </Text>
             </VStack>
           </HStack>
-        </SimpleGrid>
+        </SimpleGrid> */}
       </VStack>
     );
   }
@@ -168,6 +182,12 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   const toast = useToast();
 
   useRealtimeMessaging({ userId: user?.id, conversationId });
+
+  const {
+    isOpen: isAttachmentOpen,
+    onOpen: onAttachmentOpen,
+    onClose: onAttachmentClose
+  } = useDisclosure();
 
   const { handleTyping } = useTypingIndicator(conversationId, user?.id);
   const { data: typingUsers } = useTypingUsers(conversationId);
@@ -273,12 +293,32 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
 
   const showAdoptionActions = showContextualInfo && conversation.context_type === 'adoption';
 
+  const priorityAction = contextData?.contextData?.adoption ? getPriorityAdoptionAction({
+    adoption: contextData.contextData.adoption,
+    userProfile: user,
+    transactions: contextData.contextData.transactions || [],
+  }) : null;
+
   return (
-    <>
-      <VStack h="100vh" spacing={0} bg={useColorModeValue('gray.50', 'gray.900')}>
-        {/* Messages Container */}
-        <Box flex={1} overflowY="auto" w="full" p={4}>
-          <VStack spacing={4} align="stretch" maxW="4xl" mx="auto">
+    <Flex direction="column" flex="1" w="full" h="full" overflow="hidden" >
+      <VStack spacing={0} bg={useColorModeValue('gray.50', 'gray.900')} flex="1" w="full" h="full" justifyContent="flex-start">
+        {/* Contextual Info - Rendered at the top of the chat area if present */}
+        {showContextualInfo && contextData?.contextData && (
+          <Box
+            w="full"
+            bg={useColorModeValue('white', 'gray.800')}
+            borderBottom="1px"
+            borderColor={useColorModeValue('gray.200', 'gray.600')}
+            p={4}
+          >
+            <Box maxW="6xl" mx="auto">
+              <ContextualInfo contextData={contextData.contextData} />
+            </Box>
+          </Box>
+        )}
+
+        <Box flex={1} w="full" p={4}>
+          <VStack spacing={4} align="stretch" maxW="6xl" mx="auto">
             {conversation.messages?.map((message: any, index: number) => {
               const isOwnMessage = message.sender_id === user?.id;
               const showAvatar = !isOwnMessage && (
@@ -336,14 +376,6 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
               );
             })}
 
-            {(!conversation.messages || conversation.messages.length === 0) && (
-              <Box textAlign="center" py={12}>
-                <Text color="gray.500">
-                  No messages yet. Start the conversation!
-                </Text>
-              </Box>
-            )}
-
             {typingUsers && typingUsers.length > 0 && (
               <Box alignSelf="flex-start" maxW="70%">
                 <HStack spacing={2} align="start">
@@ -372,32 +404,20 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
           </VStack>
         </Box>
 
-        {/* Contextual Sidebar / Info */}
-        {showContextualInfo && contextData?.contextData && (
-          <Box
-            w="full"
-            bg={useColorModeValue('gray.50', 'gray.700')}
-            borderBottom="1px"
-            borderColor={useColorModeValue('gray.200', 'gray.600')}
-            p={4}
-            maxH="300px"
-            overflowY="auto"
-          >
-            <ContextualInfo contextData={contextData.contextData} />
-            {showAdoptionActions && contextData?.contextData?.adoption && (
-              <Box mt={4}>
-                <AdoptionActionList
-                  adoption={contextData.contextData.adoption}
-                  userProfile={user}
-                  transactions={contextData.contextData.transactions || []}
-                  variant="banner"
-                />
-              </Box>
-            )}
+        {showAdoptionActions && contextData?.contextData?.adoption && (
+          <Box w="full" px={4} py={2}>
+            <Box maxW="6xl" mx="auto">
+              <AdoptionActionList
+                adoption={contextData.contextData.adoption}
+                userProfile={user}
+                transactions={contextData.contextData.transactions || []}
+                variant="banner"
+              />
+            </Box>
           </Box>
         )}
+        {/* Message Input - Always show at the bottom */}
 
-        {/* Message Input */}
         <Box
           w="full"
           bg={useColorModeValue('white', 'gray.800')}
@@ -405,14 +425,63 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
           borderColor={useColorModeValue('gray.200', 'gray.600')}
           p={4}
         >
-          <VStack spacing={3} maxW="4xl" mx="auto">
-            <FileAttachmentComponent
-              attachments={attachments}
-              onAttachmentsChange={setAttachments}
-              maxFiles={5}
-              maxSize={10}
-            />
+          <VStack spacing={3} maxW="6xl" mx="auto">
+            {attachments.length > 0 && (
+              <HStack w="full" spacing={2} overflowX="auto" py={2}>
+                {attachments.map((att) => (
+                  <Badge
+                    key={att.id}
+                    colorScheme="blue"
+                    variant="subtle"
+                    px={2}
+                    py={1}
+                    borderRadius="md"
+                    display="flex"
+                    alignItems="center"
+                  >
+                    <Text maxW="100px" isTruncated fontSize="xs">
+                      {att.name}
+                    </Text>
+                    <IconButton
+                      aria-label="Remove"
+                      icon={<CloseIcon fontSize="8px" />}
+                      size="xs"
+                      variant="ghost"
+                      ml={1}
+                      onClick={() => setAttachments(prev => prev.filter(a => a.id !== att.id))}
+                    />
+                  </Badge>
+                ))}
+              </HStack>
+            )}
             <HStack spacing={3} w="full">
+              <Box position="relative">
+                <IconButton
+                  aria-label="Attach files"
+                  icon={<AttachmentIcon />}
+                  onClick={onAttachmentOpen}
+                  variant="ghost"
+                  color={attachments.length > 0 ? 'blue.500' : 'gray.500'}
+                />
+                {attachments.length > 0 && (
+                  <Badge
+                    position="absolute"
+                    top="-1"
+                    right="-1"
+                    colorScheme="red"
+                    variant="solid"
+                    borderRadius="full"
+                    fontSize="2xs"
+                    minW="16px"
+                    h="16px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    {attachments.length}
+                  </Badge>
+                )}
+              </Box>
               <Textarea
                 value={messageText}
                 onChange={(e) => {
@@ -420,18 +489,19 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
                   handleTyping();
                 }}
                 onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
+                placeholder={priorityAction ? "Please complete the pending action above..." : "Type your message..."}
                 resize="none"
                 rows={1}
                 maxLength={1000}
                 bg={useColorModeValue('gray.50', 'gray.700')}
                 borderColor={useColorModeValue('gray.300', 'gray.600')}
+                isDisabled={!!priorityAction}
               />
               <Button
                 colorScheme="blue"
                 onClick={handleSendMessage}
                 isLoading={sendMessageMutation.isPending}
-                isDisabled={!messageText.trim() && attachments.length === 0}
+                isDisabled={!!priorityAction || (!messageText.trim() && attachments.length === 0)}
                 size="md"
                 px={6}
               >
@@ -441,8 +511,41 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
             </HStack>
           </VStack>
         </Box>
+
+        {/* File Attachment Drawer */}
+        <Drawer
+          isOpen={isAttachmentOpen}
+          placement="right"
+          onClose={onAttachmentClose}
+          size="sm"
+        >
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader borderBottomWidth="1px">
+              Attach Files
+            </DrawerHeader>
+
+            <DrawerBody>
+              <Box py={4}>
+                <FileAttachmentComponent
+                  attachments={attachments}
+                  onAttachmentsChange={setAttachments}
+                  maxFiles={5}
+                  maxSize={10}
+                />
+              </Box>
+            </DrawerBody>
+
+            <DrawerFooter borderTopWidth="1px">
+              <Button variant="outline" mr={3} onClick={onAttachmentClose}>
+                Done
+              </Button>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
       </VStack>
-    </>
+    </Flex>
   );
 };
 
