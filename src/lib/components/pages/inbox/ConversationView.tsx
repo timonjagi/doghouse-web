@@ -300,251 +300,263 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   }) : null;
 
   return (
-    <Flex direction="column" flex="1" w="full" h="full" overflow="hidden" >
-      <VStack spacing={0} bg={useColorModeValue('gray.50', 'gray.900')} flex="1" w="full" h="full" justifyContent="flex-start">
-        {/* Contextual Info - Rendered at the top of the chat area if present */}
-        {showContextualInfo && contextData?.contextData && (
-          <Box
-            w="full"
-            bg={useColorModeValue('white', 'gray.800')}
-            borderBottom="1px"
-            borderColor={useColorModeValue('gray.200', 'gray.600')}
-            p={4}
-          >
-            <Box maxW="6xl" mx="auto">
-              <ContextualInfo contextData={contextData.contextData} />
-            </Box>
-          </Box>
-        )}
-
-        <Box flex={1} w="full" p={4}>
-          <VStack spacing={4} align="stretch" maxW="6xl" mx="auto">
-            {conversation.messages?.map((message: any, index: number) => {
-              const isOwnMessage = message.sender_id === user?.id;
-              const showAvatar = !isOwnMessage && (
-                index === 0 ||
-                conversation.messages[index - 1].sender_id !== message.sender_id
-              );
-
-              return (
-                <Box
-                  key={message.id}
-                  alignSelf={isOwnMessage ? 'flex-end' : 'flex-start'}
-                  maxW="70%"
-                >
-                  <HStack
-                    spacing={2}
-                    align="start"
-                    flexDirection={isOwnMessage ? 'row-reverse' : 'row'}
-                  >
-                    {showAvatar && (
-                      <Avatar
-                        size="sm"
-                        name={message.users?.display_name || 'User'}
-                        src={message.users?.profile_photo_url}
-                      />
-                    )}
-                    {!showAvatar && !isOwnMessage && <Box w="32px" />}
-
-                    <VStack align={isOwnMessage ? 'flex-end' : 'flex-start'} spacing={1}>
-                      <Box
-                        bg={isOwnMessage
-                          ? useColorModeValue('blue.500', 'blue.600')
-                          : useColorModeValue('white', 'gray.700')
-                        }
-                        color={isOwnMessage ? 'white' : 'inherit'}
-                        px={4}
-                        py={2}
-                        borderRadius="lg"
-                        border={isOwnMessage ? 'none' : '1px solid'}
-                        borderColor={useColorModeValue('gray.200', 'gray.600')}
-                        shadow="sm"
-                      >
-                        {!isOwnMessage && showAvatar && (
-                          <Text fontSize="xs" fontWeight="semibold" mb={1}>
-                            {message.users?.display_name || 'User'}
-                          </Text>
-                        )}
-                        <Text whiteSpace="pre-wrap">{message.content}</Text>
-                      </Box>
-                      <Text fontSize="xs" color="gray.500" px={2}>
-                        {formatMessageTime(message.created_at)}
-                      </Text>
-                    </VStack>
-                  </HStack>
-                </Box>
-              );
-            })}
-
-            {typingUsers && typingUsers.length > 0 && (
-              <Box alignSelf="flex-start" maxW="70%">
-                <HStack spacing={2} align="start">
-                  <Box w="32px" />
-                  <VStack align="flex-start" spacing={1}>
-                    <Box
-                      bg={useColorModeValue('gray.100', 'gray.600')}
-                      px={4}
-                      py={2}
-                      borderRadius="lg"
-                      shadow="sm"
-                    >
-                      <Text fontSize="sm" color="gray.600">
-                        {typingUsers.length === 1
-                          ? `${typingUsers[0].displayName} is typing...`
-                          : `${typingUsers.length} people are typing...`
-                        }
-                      </Text>
-                    </Box>
-                  </VStack>
-                </HStack>
-              </Box>
-            )}
-
-            <div ref={messagesEndRef} />
-          </VStack>
-        </Box>
-
-        {showAdoptionActions && contextData?.contextData?.adoption && (
-          <Box w="full" px={4} py={2}>
-            <Box maxW="6xl" mx="auto">
-              <AdoptionActionList
-                adoption={contextData.contextData.adoption}
-                userProfile={user}
-                transactions={contextData.contextData.transactions || []}
-                variant="banner"
-              />
-            </Box>
-          </Box>
-        )}
-        {/* Message Input - Always show at the bottom */}
-
+    <Flex direction="column" flex="1" w="full" h="full" overflow="hidden">
+      {/* Contextual Info - Fixed at top */}
+      {showContextualInfo && contextData?.contextData && (
         <Box
           w="full"
           bg={useColorModeValue('white', 'gray.800')}
-          borderTop="1px"
+          borderBottom="1px"
           borderColor={useColorModeValue('gray.200', 'gray.600')}
           p={4}
         >
-          <VStack spacing={3} maxW="6xl" mx="auto">
-            {attachments.length > 0 && (
-              <HStack w="full" spacing={2} overflowX="auto" py={2}>
-                {attachments.map((att) => (
-                  <Badge
-                    key={att.id}
-                    colorScheme="blue"
-                    variant="subtle"
-                    px={2}
-                    py={1}
-                    borderRadius="md"
-                    display="flex"
-                    alignItems="center"
-                  >
-                    <Text maxW="100px" isTruncated fontSize="xs">
-                      {att.name}
-                    </Text>
-                    <IconButton
-                      aria-label="Remove"
-                      icon={<CloseIcon fontSize="8px" />}
-                      size="xs"
-                      variant="ghost"
-                      ml={1}
-                      onClick={() => setAttachments(prev => prev.filter(a => a.id !== att.id))}
-                    />
-                  </Badge>
-                ))}
-              </HStack>
-            )}
-            <HStack spacing={3} w="full">
-              <Box position="relative">
-                <IconButton
-                  aria-label="Attach files"
-                  icon={<AttachmentIcon />}
-                  onClick={onAttachmentOpen}
-                  variant="ghost"
-                  color={attachments.length > 0 ? 'blue.500' : 'gray.500'}
-                />
-                {attachments.length > 0 && (
-                  <Badge
-                    position="absolute"
-                    top="-1"
-                    right="-1"
-                    colorScheme="red"
-                    variant="solid"
-                    borderRadius="full"
-                    fontSize="2xs"
-                    minW="16px"
-                    h="16px"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    {attachments.length}
-                  </Badge>
-                )}
-              </Box>
-              <Textarea
-                value={messageText}
-                onChange={(e) => {
-                  setMessageText(e.target.value);
-                  handleTyping();
-                }}
-                onKeyPress={handleKeyPress}
-                placeholder={priorityAction ? "Please complete the pending action above..." : "Type your message..."}
-                resize="none"
-                rows={1}
-                maxLength={1000}
-                bg={useColorModeValue('gray.50', 'gray.700')}
-                borderColor={useColorModeValue('gray.300', 'gray.600')}
-                isDisabled={!!priorityAction}
-              />
-              <Button
-                colorScheme="blue"
-                onClick={handleSendMessage}
-                isLoading={sendMessageMutation.isPending}
-                isDisabled={!!priorityAction || (!messageText.trim() && attachments.length === 0)}
-                size="md"
-                px={6}
-              >
-                <IoSend style={{ marginRight: '8px' }} />
-                Send
-              </Button>
-            </HStack>
-          </VStack>
+          <Box maxW="6xl" mx="auto">
+            <ContextualInfo contextData={contextData.contextData} />
+          </Box>
         </Box>
+      )}
 
-        {/* File Attachment Drawer */}
-        <Drawer
-          isOpen={isAttachmentOpen}
-          placement="right"
-          onClose={onAttachmentClose}
-          size="sm"
-        >
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader borderBottomWidth="1px">
-              Attach Files
-            </DrawerHeader>
+      {/* Scrollable Messages Area */}
+      <Box
+        flex={1}
+        w="full"
+        overflowY="auto"
+        bg={useColorModeValue('gray.50', 'gray.900')}
+        p={4}
+      >
+        <VStack spacing={4} align="stretch" maxW="6xl" mx="auto">
+          {conversation.messages?.map((message: any, index: number) => {
+            const isOwnMessage = message.sender_id === user?.id;
+            const showAvatar = !isOwnMessage && (
+              index === 0 ||
+              conversation.messages[index - 1].sender_id !== message.sender_id
+            );
 
-            <DrawerBody>
-              <Box py={4}>
-                <FileAttachmentComponent
-                  attachments={attachments}
-                  onAttachmentsChange={setAttachments}
-                  maxFiles={5}
-                  maxSize={10}
-                />
+            return (
+              <Box
+                key={message.id}
+                alignSelf={isOwnMessage ? 'flex-end' : 'flex-start'}
+                maxW="70%"
+              >
+                <HStack
+                  spacing={2}
+                  align="start"
+                  flexDirection={isOwnMessage ? 'row-reverse' : 'row'}
+                >
+                  {showAvatar && (
+                    <Avatar
+                      size="sm"
+                      name={message.users?.display_name || 'User'}
+                      src={message.users?.profile_photo_url}
+                    />
+                  )}
+                  {!showAvatar && !isOwnMessage && <Box w="32px" />}
+
+                  <VStack align={isOwnMessage ? 'flex-end' : 'flex-start'} spacing={1}>
+                    <Box
+                      bg={isOwnMessage
+                        ? useColorModeValue('blue.500', 'blue.600')
+                        : useColorModeValue('white', 'gray.700')
+                      }
+                      color={isOwnMessage ? 'white' : 'inherit'}
+                      px={4}
+                      py={2}
+                      borderRadius="lg"
+                      border={isOwnMessage ? 'none' : '1px solid'}
+                      borderColor={useColorModeValue('gray.200', 'gray.600')}
+                      shadow="sm"
+                    >
+                      {!isOwnMessage && showAvatar && (
+                        <Text fontSize="xs" fontWeight="semibold" mb={1}>
+                          {message.users?.display_name || 'User'}
+                        </Text>
+                      )}
+                      <Text whiteSpace="pre-wrap">{message.content}</Text>
+                    </Box>
+                    <Text fontSize="xs" color="gray.500" px={2}>
+                      {formatMessageTime(message.created_at)}
+                    </Text>
+                  </VStack>
+                </HStack>
               </Box>
-            </DrawerBody>
+            );
+          })}
 
-            <DrawerFooter borderTopWidth="1px">
-              <Button variant="outline" mr={3} onClick={onAttachmentClose}>
-                Done
-              </Button>
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-      </VStack>
+          {typingUsers && typingUsers.length > 0 && (
+            <Box alignSelf="flex-start" maxW="70%">
+              <HStack spacing={2} align="start">
+                <Box w="32px" />
+                <VStack align="flex-start" spacing={1}>
+                  <Box
+                    bg={useColorModeValue('gray.100', 'gray.600')}
+                    px={4}
+                    py={2}
+                    borderRadius="lg"
+                    shadow="sm"
+                  >
+                    <Text fontSize="sm" color="gray.600">
+                      {typingUsers.length === 1
+                        ? `${typingUsers[0].displayName} is typing...`
+                        : `${typingUsers.length} people are typing...`
+                      }
+                    </Text>
+                  </Box>
+                </VStack>
+              </HStack>
+            </Box>
+          )}
+
+          <div ref={messagesEndRef} />
+        </VStack>
+      </Box>
+
+      {/* Adoption Actions - Fixed above input */}
+      {showAdoptionActions && contextData?.contextData?.adoption && (
+        <Box
+          w="full"
+          px={4}
+          py={2}
+          bg={useColorModeValue('white', 'gray.800')}
+          borderTop="1px"
+          borderColor={useColorModeValue('gray.200', 'gray.600')}
+        >
+          <Box maxW="6xl" mx="auto">
+            <AdoptionActionList
+              adoption={contextData.contextData.adoption}
+              userProfile={user}
+              transactions={contextData.contextData.transactions || []}
+              variant="banner"
+            />
+          </Box>
+        </Box>
+      )}
+
+      {/* Message Input - Fixed at bottom */}
+      <Box
+        w="full"
+        bg={useColorModeValue('white', 'gray.800')}
+        borderTop="1px"
+        borderColor={useColorModeValue('gray.200', 'gray.600')}
+        p={4}
+      >
+        <VStack spacing={3} maxW="6xl" mx="auto">
+          {attachments.length > 0 && (
+            <HStack w="full" spacing={2} overflowX="auto" py={2}>
+              {attachments.map((att) => (
+                <Badge
+                  key={att.id}
+                  colorScheme="blue"
+                  variant="subtle"
+                  px={2}
+                  py={1}
+                  borderRadius="md"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <Text maxW="100px" isTruncated fontSize="xs">
+                    {att.name}
+                  </Text>
+                  <IconButton
+                    aria-label="Remove"
+                    icon={<CloseIcon fontSize="8px" />}
+                    size="xs"
+                    variant="ghost"
+                    ml={1}
+                    onClick={() => setAttachments(prev => prev.filter(a => a.id !== att.id))}
+                  />
+                </Badge>
+              ))}
+            </HStack>
+          )}
+          <HStack spacing={3} w="full">
+            <Box position="relative">
+              <IconButton
+                aria-label="Attach files"
+                icon={<AttachmentIcon />}
+                onClick={onAttachmentOpen}
+                variant="ghost"
+                color={attachments.length > 0 ? 'blue.500' : 'gray.500'}
+              />
+              {attachments.length > 0 && (
+                <Badge
+                  position="absolute"
+                  top="-1"
+                  right="-1"
+                  colorScheme="red"
+                  variant="solid"
+                  borderRadius="full"
+                  fontSize="2xs"
+                  minW="16px"
+                  h="16px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  {attachments.length}
+                </Badge>
+              )}
+            </Box>
+            <Textarea
+              value={messageText}
+              onChange={(e) => {
+                setMessageText(e.target.value);
+              }}
+              onKeyUp={handleKeyPress}
+              placeholder={priorityAction ? "Please complete the pending action above..." : "Type your message..."}
+              resize="none"
+              rows={1}
+              maxLength={1000}
+              bg={useColorModeValue('gray.50', 'gray.700')}
+              borderColor={useColorModeValue('gray.300', 'gray.600')}
+              isDisabled={!!priorityAction}
+            />
+            <Button
+              colorScheme="blue"
+              onClick={handleSendMessage}
+              isLoading={sendMessageMutation.isPending}
+              isDisabled={!!priorityAction || (!messageText.trim() && attachments.length === 0)}
+              size="md"
+              px={6}
+            >
+              <IoSend style={{ marginRight: '8px' }} />
+              Send
+            </Button>
+          </HStack>
+        </VStack>
+      </Box>
+
+      {/* File Attachment Drawer */}
+      <Drawer
+        isOpen={isAttachmentOpen}
+        placement="bottom"
+        onClose={onAttachmentClose}
+        size="sm"
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader borderBottomWidth="1px">
+            Attach Files
+          </DrawerHeader>
+
+          <DrawerBody>
+            <Box py={4}>
+              <FileAttachmentComponent
+                attachments={attachments}
+                onAttachmentsChange={setAttachments}
+                maxFiles={5}
+                maxSize={10}
+              />
+            </Box>
+          </DrawerBody>
+
+          <DrawerFooter borderTopWidth="1px">
+            <Button variant="outline" mr={3} onClick={onAttachmentClose}>
+              Done
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </Flex>
   );
 };

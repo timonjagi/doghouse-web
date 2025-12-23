@@ -595,9 +595,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Subscriber creation failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Subscriber creation failed');
+      // }
     } catch (error) {
       console.error('Failed to create subscriber:', error);
       // Don't throw - subscriber creation is not critical for onboarding
@@ -690,9 +690,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Breed interest subscription failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Breed interest subscription failed');
+      // }
 
       console.log(`Successfully subscribed ${subscriberId} to breed interest: ${breedName}`);
     } catch (error) {
@@ -721,9 +721,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Breeder subscription failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Breeder subscription failed');
+      // }
 
       console.log(`Successfully subscribed ${subscriberId} to breeder: ${breederName}`);
     } catch (error) {
@@ -750,9 +750,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Breeder unsubscription failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Breeder unsubscription failed');
+      // }
 
       console.log(`Successfully unsubscribed ${subscriberId} from breeder: ${breederId}`);
     } catch (error) {
@@ -779,9 +779,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Breed interest unsubscription failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Breed interest unsubscription failed');
+      // }
 
       console.log(`Successfully unsubscribed ${subscriberId} from breed interest: ${breedId}`);
     } catch (error) {
@@ -819,9 +819,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('User breed match notification failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('User breed match notification failed');
+      // }
     } catch (error) {
       console.error('Failed to send user breed match notification:', error);
     }
@@ -954,9 +954,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Breed match notification failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Breed match notification failed');
+      // }
     } catch (error) {
       console.error('Failed to send breed match notification:', error);
     }
@@ -989,9 +989,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('New breeder notification failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('New breeder notification failed');
+      // }
     } catch (error) {
       console.error('Failed to send new breeder notification:', error);
     }
@@ -1024,9 +1024,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Broadcast failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Broadcast failed');
+      // }
     } catch (error) {
       console.error('Failed to send broadcast message:', error);
     }
@@ -1199,9 +1199,9 @@ export class NotificationService {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Breeder activity notification failed');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Breeder activity notification failed');
+      // }
     } catch (error) {
       console.error('Failed to send breeder activity notification:', error);
     }

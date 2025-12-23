@@ -33,34 +33,35 @@ export const useConversation = (conversationId: string) => {
   return useQuery({
     queryKey: queryKeys.conversations.detail(conversationId),
     queryFn: async (): Promise<Conversation & { messages: Message[] }> => {
-      // Get conversation
-      const { data: conversation, error: convError } = await supabase
+      const { data, error } = await supabase
         .from('conversations')
-        .select('*')
-        .eq('id', conversationId)
-        .single();
-
-      if (convError) throw convError;
-
-      // Get messages
-      const { data: messages, error: msgError } = await supabase
-        .from('messages')
         .select(`
           *,
-          users:sender_id (
+          messages (
             id,
-            display_name,
-            profile_photo_url
+            conversation_id,
+            sender_id,
+            content,
+            attachments,
+            read_by,
+            created_at,
+            updated_at,
+            users:sender_id (
+              id,
+              display_name,
+              profile_photo_url
+            )
           )
         `)
-        .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true });
+        .eq('id', conversationId)
+        .order('created_at', { foreignTable: 'messages', ascending: true })
+        .single();
 
-      if (msgError) throw msgError;
+      if (error) throw error;
 
       return {
-        ...conversation,
-        messages: messages || []
+        ...data,
+        messages: data.messages || []
       };
     },
     enabled: !!conversationId,
