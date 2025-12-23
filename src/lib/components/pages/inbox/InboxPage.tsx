@@ -228,12 +228,12 @@ const InboxPage: React.FC<InboxPageProps> = ({ children, defaultSelectedConversa
 
   // Mobile List View
   return (
-    <Container maxW="7xl" py={{ base: 4, md: 8 }}>
+    <Container maxW="7xl">
       <VStack spacing={4} align="stretch">
-        <PageHeaderWithTwoButtons
+        {/* <PageHeaderWithTwoButtons
           title="Inbox"
           description={`${unreadCount || 0} unread messages`}
-        />
+        /> */}
 
         <Tabs
           index={activeTab}
