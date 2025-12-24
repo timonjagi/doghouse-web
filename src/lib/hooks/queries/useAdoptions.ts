@@ -768,7 +768,17 @@ export const useAdoption = (adoptionId: string) => {
       const { data, error } = await supabase
         .from('adoptions')
         .select(`
-          *,
+          id,
+          listing_id,
+          seeker_id,
+          status,
+          application_data,
+          contract_url,
+          reservation_paid,
+          contract_signed,
+          payment_completed,
+          created_at,
+          updated_at,
           listings (
             id,
             title,

@@ -204,7 +204,16 @@ export const useConversationWithContext = (conversationId: string) => {
         const { data: adoption, error: adoptionError } = await supabase
           .from('adoptions')
           .select(`
-            *,
+            id,
+            listing_id,
+            seeker_id,
+            status,
+            application_data,
+            reservation_paid,
+            contract_signed,
+            payment_completed,
+            created_at,
+            updated_at,
             listings:listing_id (
               id,
               title,
@@ -212,12 +221,18 @@ export const useConversationWithContext = (conversationId: string) => {
               pet_age,
               pet_gender,
               price,
+              reservation_fee,
               photos,
               breeds:breed_id (name),
               user_breeds:user_breed_id (notes, images),
-              users:owner_id (display_name, profile_photo_url, breeder_profiles:breeder_profiles(kennel_name))
+              users:owner_id (
+                id, 
+                display_name, 
+                profile_photo_url, 
+                breeder_profiles (kennel_name)
+              )
             ),
-            users:seeker_id (display_name, profile_photo_url)
+            users:seeker_id (id, display_name, profile_photo_url)
           `)
           .eq('id', conversation.context_id)
           .single();
@@ -231,7 +246,7 @@ export const useConversationWithContext = (conversationId: string) => {
               submitted: adoption.created_at,
               reserved: adoption.reservation_paid,
               paid: adoption.payment_completed,
-              completed: adoption.contract_signed
+              completed: adoption.status === 'completed'
             },
             pet: {
               name: adoption.listings?.pet_name || 'Pet',
