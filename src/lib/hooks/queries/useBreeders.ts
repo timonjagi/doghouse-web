@@ -9,6 +9,7 @@ export const useAllBreeders = (
     location?: string;
     page?: number;
     pageSize?: number;
+    petType?: string;
   }
 ) => {
   return useQuery({
@@ -18,7 +19,7 @@ export const useAllBreeders = (
       const searchTerm = options?.search?.toLowerCase();
 
       // Get verified breeders with active listings, ordered by rating and activity
-      const { data, error } = await supabase
+      let query = supabase
         .from('users')
         .select(`
           id,
@@ -34,7 +35,7 @@ export const useAllBreeders = (
             rating,
             review_count,
             kennel_avatar_url,
-            pet_type
+            pet_types
           ),
           user_breeds!inner (
             id,
@@ -46,8 +47,16 @@ export const useAllBreeders = (
             )
           )
         `)
-        .eq('role', 'breeder')
-        .order('created_at', { ascending: false });
+        .eq('role', 'breeder');
+
+      if (options?.petType) {
+        // Since pet_types is a jsonb array, use contains
+        query = query.contains('breeder_profiles.pet_types', [options.petType]);
+      }
+
+      const { data, error } = await query.order('created_at', { ascending: false });
+
+
 
       if (error) throw error;
 
@@ -118,12 +127,12 @@ export const useAllBreeders = (
   });
 };
 
-export const useFeaturedBreeders = (limit: number = 4) => {
+export const useFeaturedBreeders = (limit: number = 4, petType?: string) => {
   return useQuery({
-    queryKey: queryKeys.users.featured(limit),
+    queryKey: queryKeys.users.featured(limit, petType),
     queryFn: async (): Promise<any[]> => {
       // Get verified breeders with active listings, ordered by rating and activity
-      const { data, error } = await supabase
+      let query = supabase
         .from('users')
         .select(`
           id,
@@ -137,7 +146,7 @@ export const useFeaturedBreeders = (limit: number = 4) => {
             rating,
             review_count,
             kennel_avatar_url,
-            pet_type
+            pet_types
           ),
           user_breeds!inner (
             id,
@@ -149,12 +158,19 @@ export const useFeaturedBreeders = (limit: number = 4) => {
             )
           )
         `)
-        .eq('role', 'breeder')
+        .eq('role', 'breeder');
+
+      if (petType) {
+        query = query.contains('breeder_profiles.pet_types', [petType]);
+      }
+
+      const { data, error } = await query
         // .not('breeder_profiles.verified_at', 'is', null)
         //.eq('listings.status', 'available')
         //.order('breeder_profiles.rating', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(limit);
+
 
       if (error) throw error;
 

@@ -18,8 +18,10 @@ const ExploreOverview: React.FC = () => {
   const router = useRouter();
   const isDesktop = useBreakpointValue({ base: false, md: true })
 
+  const filters = React.useMemo(() => searchService.parseSearchParams(router.query), [router.query])
+
   // Use the unified dashboard hook to fetch data for dynamic navigation
-  const { data: dashboardData, isLoading: dashboardLoading, error: dashboardError } = useSeekerDashboard();
+  const { data: dashboardData, isLoading: dashboardLoading, error: dashboardError } = useSeekerDashboard(filters.category);
 
   const popularListings = dashboardData?.popularListings || [];
   const newListings = dashboardData?.newListings || [];
@@ -27,7 +29,6 @@ const ExploreOverview: React.FC = () => {
   const popularBreeds = dashboardData?.popularBreeds || [];
   const featuredBreeders = dashboardData?.featuredBreeders || [];
 
-  const filters = React.useMemo(() => searchService.parseSearchParams(router.query), [router.query])
 
   const [activeTab, setActiveTab] = useState(filters.tab)
 
@@ -55,7 +56,7 @@ const ExploreOverview: React.FC = () => {
     setActiveTab(router.query.tab as string)
     setActiveTabIndex(getTabIndex(router.query.tab as string))
     handleTabChange(getTabIndex(router.query.tab as string))
-  }, [router.query.tab])
+  }, [router.query.tab, router.query.category])
 
   const handleTabChange = (tabIndex: number) => {
     setActiveTabIndex(tabIndex)

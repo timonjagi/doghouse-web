@@ -1498,7 +1498,7 @@
           1,
           2
         ],
-        "status": "pending",
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
@@ -1506,7 +1506,7 @@
             "description": "Update breed-details.tsx to include pet type picker above breed selection",
             "dependencies": [],
             "details": "Add PetTypePicker component to src/lib/components/pages/onboarding/breeder/breed-details.tsx. Filter breed options based on selected pet type. Update form validation to require pet type selection. Modify breed lookup logic to include pet type context.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Navigate through breeder onboarding, verify pet type picker appears and filters breed options correctly, ensure form validation requires pet type."
           },
           {
@@ -1515,7 +1515,7 @@
             "description": "Add pet type support to BreedForm.tsx for new and existing breed management",
             "dependencies": [],
             "details": "Integrate PetTypePicker into src/lib/components/ui/BreedForm.tsx. Add pet type selection for new breeds. Update existing breed editing to display and modify pet types. Ensure pet type context is maintained throughout the form.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Test breed creation with pet type selection, verify editing existing breeds shows correct pet type, ensure all CRUD operations maintain pet type information."
           },
           {
@@ -1524,7 +1524,7 @@
             "description": "Add cross-breed handling to breed forms with secondary breed selection",
             "dependencies": [],
             "details": "Add 'is_cross_breed' toggle and secondary breed picker to breed forms. Update schema if needed (add secondary_breed_id to user_breeds table). Implement display logic for cross-breed names (e.g., 'Golden Retriever Mix').",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Create cross-breed entries, verify secondary breed selection works, test display formatting for cross-breed names."
           },
           {
@@ -1533,7 +1533,7 @@
             "description": "Add pet type context to all ListingForm step components",
             "dependencies": [],
             "details": "Update ListingForm components (basic-info.tsx, pet-details.tsx, parent-info.tsx, media.tsx, review.tsx) to maintain pet type context. Ensure pet type filters breed selections appropriately. Update review step to display pet type information.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Create listings through all steps, verify pet type context is maintained, test breed filtering by pet type works correctly."
           },
           {
@@ -1542,7 +1542,7 @@
             "description": "Fix the broken PetTypePicker.tsx and integrate it with Filter.tsx",
             "dependencies": [],
             "details": "Fix src/lib/components/ui/PetTypePicker.tsx with proper props interface and functionality. Integrate with src/lib/components/ui/Filter.tsx to enable pet type filtering for breeds, user_breeds, and listings. Ensure mobile and desktop filter implementations work.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Test PetTypePicker component isolation, verify Filter.tsx integration works for all pet types, test mobile and desktop filtering functionality."
           },
           {
@@ -1551,7 +1551,7 @@
             "description": "Create system to automatically update breed catalog images when user_breed images are approved",
             "dependencies": [],
             "details": "Add logic to update breeds.featured_image_url when user_breeds images are approved. Create useBreedImageSync hook or edge function. Ensure approved user_breed images populate the main breed catalog for better discoverability.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Upload user_breed images, approve them, verify breed catalog automatically receives the images, test that breed catalog displays improved with real breeder photos."
           },
           {
@@ -1560,7 +1560,7 @@
             "description": "Add pet type specialization fields to breeder_profile table and forms",
             "dependencies": [],
             "details": "Add pet_types array field to breeder_profiles table schema. Update breeder profile forms to allow selection of specialized pet types (dogs, cats, birds, etc.). Ensure this information is used in breeder search and matching algorithms.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Update breeder profile schema, test pet type selection in profile forms, verify specialization data is stored and used in search filtering."
           },
           {
@@ -1572,7 +1572,7 @@
               7
             ],
             "details": "Update searchService.ts and related components to support pet type filtering based on breeder profile specialization. Ensure breeder search pages properly filter by pet type and show relevant breeders. Update navigation and routing to maintain pet type context.",
-            "status": "pending",
+            "status": "completed",
             "testStrategy": "Test breeder search with pet type filters based on profile specialization, verify navigation maintains context, ensure search results are filtered correctly by pet type and show appropriate breeders."
           }
         ]

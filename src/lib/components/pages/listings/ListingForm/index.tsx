@@ -51,6 +51,7 @@ export interface ListingFormData {
   breed_id?: string;
   user_breed_id?: string;
   owner_type?: 'breeder' | 'seeker';
+  pet_type?: string;
 
   // Pet Details (conditional based on type)
   birth_date?: string;
@@ -191,6 +192,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
     description: listing?.description || '',
     type: listing?.type as 'litter' | 'single_pet' || 'litter',
     owner_type: listing?.owner_type as 'breeder' | 'seeker' || 'breeder',
+    pet_type: listing?.pet_type || '',
     user_breed_id: listing?.user_breed_id || '',
     breed_id: listing?.breed_id || '',
     birth_date: listing?.birth_date ? listing?.birth_date.toString().split('T')[0] : '',
@@ -278,6 +280,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
         description: data.description,
         type: data.type,
         owner_type: data.owner_type,
+        pet_type: data.pet_type,
         user_breed_id: data.user_breed_id,
         breed_id: userBreeds.find(breed => breed.id === data.user_breed_id)?.breed_id,
         ...(data.type === 'litter' && { birth_date: data.birth_date }),
@@ -404,6 +407,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
         title: '',
         description: '',
         type: 'litter',
+        pet_type: '',
         photos: [],
         birth_date: undefined,
         available_date: undefined,
@@ -544,6 +548,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
         title: formData.title,
         description: formData.description,
         type: formData.type,
+        pet_type: formData.pet_type,
         user_breed_id: formData.user_breed_id,
         breed_id: formData.breed_id,
         ...(formData.type === 'litter' && { birth_date: formData.birth_date }),

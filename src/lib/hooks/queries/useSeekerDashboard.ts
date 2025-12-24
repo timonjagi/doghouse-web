@@ -14,13 +14,14 @@ export interface SeekerDashboardData {
   stats: any;
 }
 
-export const useSeekerDashboard = () => {
+export const useSeekerDashboard = (petType?: string) => {
   // Use individual hooks that manage their own caching and loading states
-  const { data: popularBreeds, isLoading: breedsLoading, error: breedsError } = usePopularBreeds(12);
-  const { data: popularListings, isLoading: popularLoading, error: popularError } = usePopularListings(4);
-  const { data: newListings, isLoading: newLoading, error: newError } = useNewListings(4);
-  const { data: featuredBreeders, isLoading: breedersLoading, error: breedersError } = useFeaturedBreeders(4);
+  const { data: popularBreeds, isLoading: breedsLoading, error: breedsError } = usePopularBreeds(12, petType);
+  const { data: popularListings, isLoading: popularLoading, error: popularError } = usePopularListings(4, petType);
+  const { data: newListings, isLoading: newLoading, error: newError } = useNewListings(4, petType);
+  const { data: featuredBreeders, isLoading: breedersLoading, error: breedersError } = useFeaturedBreeders(4, petType);
   const { data: stats, isLoading: statsLoading, error: statsError } = useSeekerDashboardStats();
+
 
   // Combine loading states
   const isLoading = breedsLoading || popularLoading || newLoading || breedersLoading || statsLoading;

@@ -3,14 +3,18 @@ import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { Breed } from '../../db/schema';
 // Query to get all breeds
-export const useBreeds = () => {
+export const useBreeds = (petType?: string) => {
   return useQuery({
-    queryKey: queryKeys.breeds.lists(),
+    queryKey: queryKeys.breeds.lists(petType),
     queryFn: async (): Promise<Breed[]> => {
-      const { data, error } = await supabase
-        .from('breeds')
-        .select('*')
-        .order('name');
+      let query = supabase.from('breeds').select('*');
+
+      if (petType) {
+        query = query.eq('pet_type', petType);
+      }
+
+      const { data, error } = await query.order('name');
+
 
       if (error) throw error;
       return data || [];
@@ -20,15 +24,15 @@ export const useBreeds = () => {
 };
 
 // Query to get popular breeds ranked by breeder count (user_breeds join)
-export const usePopularBreeds = (limit?: number) => {
+export const usePopularBreeds = (limit?: number, petType?: string) => {
   return useQuery({
-    queryKey: queryKeys.breeds.popular(limit),
+    queryKey: queryKeys.breeds.popular(limit, petType),
     queryFn: async (): Promise<any[]> => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('user_breeds')
         .select(`
           breed_id,
-          breeds (
+          breeds!inner (
             id,
             name,
             description,
@@ -37,9 +41,17 @@ export const usePopularBreeds = (limit?: number) => {
             height,
             weight,
             life_span,
-            traits
+            traits,
+            pet_type
           )
         `);
+
+      if (petType) {
+        query = query.eq('breeds.pet_type', petType);
+      }
+
+      const { data, error } = await query;
+
 
       if (error) throw error;
 

@@ -14,6 +14,7 @@ import {
   useToast,
   Text,
   Box,
+  Switch,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useCreateUserBreed, useUpdateUserBreed, useDeleteUserBreed, useBreedImageUpload } from "../../hooks/queries/useUserBreeds";
@@ -24,6 +25,7 @@ import { supabase } from "lib/supabase/client";
 import breedsData from "../../data/breeds_with_group_and_traits.json";
 import { Select } from "chakra-react-select";
 import { UserBreed } from "../../db/schema";
+import { PetTypePicker } from "./PetTypePicker";
 
 interface BreedFormProps {
   isOpen: boolean;
@@ -38,6 +40,9 @@ export const BreedForm = ({
 }: BreedFormProps) => {
   const toast = useToast();
   const [selectedBreed, setSelectedBreed] = useState<any>(null);
+  const [selectedPetType, setSelectedPetType] = useState<string>("dog");
+  const [isCrossBreed, setIsCrossBreed] = useState(false);
+  const [secondaryBreed, setSecondaryBreed] = useState<any>(null);
   const [breedImages, setBreedImages] = useState<File[] | string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -52,6 +57,18 @@ export const BreedForm = ({
         setSelectedBreed(breed);
       }
 
+      if (editingBreed.pet_type) {
+        setSelectedPetType(editingBreed.pet_type);
+      }
+
+      if (editingBreed.is_cross_breed) {
+        setIsCrossBreed(true);
+        const secondBreed = breedsData.find((breed) => breed.name === editingBreed.secondary_breeds?.name);
+        if (secondBreed) {
+          setSecondaryBreed(secondBreed);
+        }
+      }
+
       setBreedImages(editingBreed.images as string[] || []);
 
     }
@@ -59,11 +76,17 @@ export const BreedForm = ({
   // Get current user for image upload
   const { data: currentUser } = useCurrentUser();
 
-  const breedOptions = breedsData.map((breed) => ({
-    label: breed.name,
-    value: breed.name, // Use name as value for selection
-    breed: breed,
-  }));
+  const breedOptions = breedsData
+    .filter((breed) => {
+      // If we have a way to filter breedsData by pet type, do it here. 
+      // For now, breedsData is all dogs.
+      return selectedPetType === 'dog';
+    })
+    .map((breed) => ({
+      label: breed.name,
+      value: breed.name, // Use name as value for selection
+      breed: breed,
+    }));
 
   // Image upload hook
   const { uploadImages, uploading } = useBreedImageUpload({
@@ -90,6 +113,14 @@ export const BreedForm = ({
     }
   };
 
+  const onSelectSecondaryBreed = (selectedOption: any) => {
+    if (selectedOption) {
+      setSecondaryBreed(selectedOption.breed);
+    } else {
+      setSecondaryBreed(null);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!selectedBreed) {
       toast({
@@ -113,10 +144,23 @@ export const BreedForm = ({
 
       if (findError) throw new Error(`Breed not found: ${selectedBreed.name}`);
 
+      let secondaryBreedId = undefined;
+      if (isCrossBreed && secondaryBreed) {
+        const { data: dbSecondaryBreed } = await supabase
+          .from('breeds')
+          .select('id')
+          .eq('name', secondaryBreed.name)
+          .single();
+        secondaryBreedId = dbSecondaryBreed?.id;
+      }
+
       // Create new breed association
       const newUserBreed = await createUserBreed.mutateAsync({
         breed_id: dbBreed.id,
-        is_owner: true
+        is_owner: true,
+        pet_type: selectedPetType,
+        is_cross_breed: isCrossBreed,
+        secondary_breed_id: secondaryBreedId
       });
 
       const uploadedUrls = await uploadImages(selectedImages as File[]);
@@ -175,10 +219,23 @@ export const BreedForm = ({
         if (deleteError) throw new Error(`Failed to delete images: ${deleteError.message}`);
       }
 
+      let secondaryBreedId = undefined;
+      if (isCrossBreed && secondaryBreed) {
+        const { data: dbSecondaryBreed } = await supabase
+          .from('breeds')
+          .select('id')
+          .eq('name', secondaryBreed.name)
+          .single();
+        secondaryBreedId = dbSecondaryBreed?.id;
+      }
+
       await updateUserBreed.mutateAsync({
         id: editingBreed.id,
         updates: {
           images: [...retainedPhotos, ...uploadedUrls],
+          pet_type: selectedPetType,
+          is_cross_breed: isCrossBreed,
+          secondary_breed_id: secondaryBreedId
         }
       });
 
@@ -224,6 +281,14 @@ export const BreedForm = ({
             </Text>
 
             <FormControl>
+              <FormLabel fontWeight="semibold">Pet Type</FormLabel>
+              <PetTypePicker
+                value={selectedPetType}
+                onChange={(types) => setSelectedPetType(types[0])}
+              />
+            </FormControl>
+
+            <FormControl>
               <FormLabel htmlFor="breed" fontWeight="semibold">
                 Breed
               </FormLabel>
@@ -236,6 +301,33 @@ export const BreedForm = ({
                 isDisabled={editingBreed}
               />
             </FormControl>
+
+            <FormControl display="flex" alignItems="center">
+              <FormLabel htmlFor="is-cross" mb="0">
+                Is this a cross-breed?
+              </FormLabel>
+              <Switch
+                id="is-cross"
+                isChecked={isCrossBreed}
+                onChange={(e) => setIsCrossBreed(e.target.checked)}
+                colorScheme="brand"
+              />
+            </FormControl>
+
+            {isCrossBreed && (
+              <FormControl>
+                <FormLabel fontWeight="semibold">
+                  Secondary Breed
+                </FormLabel>
+                <Select
+                  placeholder="Select secondary breed..."
+                  colorScheme="brand"
+                  options={breedOptions}
+                  value={secondaryBreed ? { label: secondaryBreed.name, value: secondaryBreed.id } : null}
+                  onChange={onSelectSecondaryBreed}
+                />
+              </FormControl>
+            )}
 
             <Box>
               <FormLabel fontWeight="semibold" mb={4}>

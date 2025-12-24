@@ -10,12 +10,18 @@ interface CreateUserBreedData {
   is_owner?: boolean;
   notes?: string;
   images?: string[];
+  pet_type?: string;
+  is_cross_breed?: boolean;
+  secondary_breed_id?: string;
 }
 
 interface UpdateUserBreedData {
   is_owner?: boolean;
   notes?: string;
   images?: string[];
+  pet_type?: string;
+  is_cross_breed?: boolean;
+  secondary_breed_id?: string;
 }
 
 // Query to get user's breeds with full breed details
