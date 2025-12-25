@@ -249,16 +249,16 @@ export const useConversationWithContext = (conversationId: string) => {
               completed: adoption.status === 'completed'
             },
             pet: {
-              name: adoption.listings?.pet_name || 'Pet',
-              age: adoption.listings?.pet_age,
-              gender: adoption.listings?.pet_gender,
-              breed: adoption.listings?.breeds?.name,
-              photos: adoption.listings?.photos || []
+              name: adoption.listings[0]?.pet_name || 'Pet',
+              age: adoption.listings[0]?.pet_age,
+              gender: adoption.listings[0]?.pet_gender,
+              breed: adoption.listings[0]?.breeds[0]?.name,
+              photos: adoption.listings[0]?.photos || []
             },
             seeker: adoption.users,
-            breeder: adoption.listings?.users,
-            price: adoption.listings?.price,
-            reservation_fee: adoption.listings?.reservation_fee
+            breeder: adoption.listings[0]?.users,
+            price: adoption.listings[0]?.price,
+            reservation_fee: adoption.listings[0]?.reservation_fee
           };
         }
       } else if (conversation.context_type === 'listing' && conversation.context_id) {

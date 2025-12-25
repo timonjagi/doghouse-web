@@ -779,7 +779,7 @@ export const useAdoption = (adoptionId: string) => {
           payment_completed,
           created_at,
           updated_at,
-          listings (
+          listings:listing_id (
             id,
             title,
             type,
@@ -795,11 +795,11 @@ export const useAdoption = (adoptionId: string) => {
             pet_gender,
             location_text,
             created_at,
-            breeds (
+            breeds:breed_id (
               id,
               name
             ),
-            users (
+            users:owner_id (
               id,
               display_name,
               email,
@@ -814,7 +814,7 @@ export const useAdoption = (adoptionId: string) => {
               )
             )
           ),
-          users (
+          users:seeker_id (
             id,
             display_name,
             email,
@@ -835,7 +835,23 @@ export const useAdoption = (adoptionId: string) => {
         .single();
 
       if (error) throw error;
-      return data;
+
+      if (data) {
+        // Safe mapping for potential array responses from O2M inference
+        const adoptionData = data as any;
+
+        if (adoptionData.users?.seeker_profiles && Array.isArray(adoptionData.users.seeker_profiles)) {
+          adoptionData.users.seeker_profiles = adoptionData.users.seeker_profiles[0] || null;
+        }
+
+        if (adoptionData.listings?.users?.breeder_profiles && Array.isArray(adoptionData.listings.users.breeder_profiles)) {
+          adoptionData.listings.users.breeder_profiles = adoptionData.listings.users.breeder_profiles[0] || null;
+        }
+
+        return adoptionData as AdoptionWithListing;
+      }
+
+      return null;
     },
     enabled: !!adoptionId,
   });
