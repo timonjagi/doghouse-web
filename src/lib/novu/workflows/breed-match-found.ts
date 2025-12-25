@@ -1,7 +1,7 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
 
-export const breedMatchFound = workflow('breed-match-found', async ({ step, payload }) => {
+export const breedMatchFound = workflow('breed-match-found', async ({ step, payload }: { step: any; payload: any }) => {
   // Send in-app notification to seeker
   await step.inApp('notify-seeker', async () => {
     return {

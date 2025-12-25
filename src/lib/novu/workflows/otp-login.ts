@@ -1,7 +1,7 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
 
-export const otpLogin = workflow('otp-login', async ({ step, payload }) => {
+export const otpLogin = workflow('otp-login', async ({ step, payload }: { step: any; payload: any }) => {
   // Send OTP via SMS
   await step.sms('otp-sms', async () => {
     return {

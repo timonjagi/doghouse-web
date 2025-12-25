@@ -1,7 +1,7 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
 
-export const breederApplicationSubmitted = workflow('breeder-application-submitted', async ({ step, payload }) => {
+export const breederApplicationSubmitted = workflow('breeder-application-submitted', async ({ step, payload }: { step: any; payload: any }) => {
   // Notify admin via in-app
   await step.inApp('admin-notification', async () => {
     return {

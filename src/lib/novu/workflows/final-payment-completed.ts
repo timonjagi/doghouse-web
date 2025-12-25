@@ -1,8 +1,8 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createProfessionalEmailTemplate } from '../../emailTemplates';
+import { createPaymentReceivedEmail } from '../emailTemplates';
 
-export const finalPaymentCompleted = workflow('final-payment-completed', async ({ step, payload }) => {
+export const finalPaymentCompleted = workflow('final-payment-completed', async ({ step, payload }: { step: any; payload: any }) => {
   // Send in-app to breeder
   await step.inApp('notify-breeder', async () => {
     return {

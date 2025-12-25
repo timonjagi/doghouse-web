@@ -1,8 +1,8 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createBreedMatchEmail } from '../../emailTemplates';
+import { createBreedMatchEmail } from '../emailTemplates';
 
-export const breedInterestBroadcast = workflow('breed-interest-broadcast', async ({ step, payload }) => {
+export const breedInterestBroadcast = workflow('breed-interest-broadcast', async ({ step, payload }: { step: any; payload: any }) => {
   // Send in-app notification to users interested in this breed
   await step.inApp('breed-match-notification', async () => {
     return {

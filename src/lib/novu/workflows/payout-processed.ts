@@ -1,7 +1,7 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
 
-export const payoutProcessed = workflow('payout-processed', async ({ step, payload }) => {
+export const payoutProcessed = workflow('payout-processed', async ({ step, payload }: { step: any; payload: any }) => {
   // Send in-app notification to breeder
   await step.inApp('notify-breeder', async () => {
     return {

@@ -1,7 +1,7 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
 
-export const passwordReset = workflow('password-reset', async ({ step, payload }) => {
+export const passwordReset = workflow('password-reset', async ({ step, payload }: { step: any; payload: any }) => {
   // Send password reset email
   await step.email('reset-email', async () => {
     return {

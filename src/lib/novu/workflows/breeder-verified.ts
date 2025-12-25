@@ -1,7 +1,7 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
 
-export const breederVerified = workflow('breeder-verified', async ({ step, payload }) => {
+export const breederVerified = workflow('breeder-verified', async ({ step, payload }: { step: any; payload: any }) => {
   // Send in-app notification
   await step.inApp('notify-breeder', async () => {
     return {

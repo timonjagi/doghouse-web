@@ -1,8 +1,8 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createAdoptionSubmittedEmail, createNewApplicationEmail } from '../../emailTemplates';
+import { createAdoptionSubmittedEmail, createNewApplicationEmail } from '../emailTemplates';
 
-export const adoptionSubmitted = workflow('adoption-submitted', async ({ step, payload }) => {
+export const adoptionSubmitted = workflow('adoption-submitted', async ({ step, payload }: { step: any; payload: any }) => {
   // Send in-app notification to breeder
   await step.inApp('notify-breeder', async () => {
     return {

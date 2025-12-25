@@ -1,7 +1,7 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
 
-export const payoutBatchProcessed = workflow('payout-batch-processed', async ({ step, payload }) => {
+export const payoutBatchProcessed = workflow('payout-batch-processed', async ({ step, payload }: { step: any; payload: any }) => {
   // Send in-app notification to admin
   await step.inApp('notify-admin', async () => {
     return {

@@ -1,12 +1,13 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
+import { createEmailVerificationEmail } from '../emailTemplates';
 
-export const verifyEmail = workflow('verify-email', async ({ step, payload }) => {
+export const verifyEmail = workflow('verify-email', async ({ step, payload }: { step: any; payload: any }) => {
   // Send verification email
   await step.email('verification-email', async () => {
     return {
       subject: 'Verify Your Email - Pethouse',
-      body: `Hi ${payload.firstName},\n\nPlease verify your email address by clicking the link below:\n\n${payload.verificationUrl}\n\nThis link will expire in 24 hours.\n\nIf you didn't create an account, please ignore this email.\n\nBest regards,\nThe Pethouse Team`,
+      body: createEmailVerificationEmail(payload.firstName, payload.verificationUrl),
     };
   });
 }, {

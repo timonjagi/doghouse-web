@@ -1,8 +1,8 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createProfessionalEmailTemplate } from '../../emailTemplates';
+import { createProfessionalEmailTemplate } from '../emailTemplates';
 
-export const adminBroadcast = workflow('admin-broadcast', async ({ step, payload }) => {
+export const adminBroadcast = workflow('admin-broadcast', async ({ step, payload }: { step: any; payload: any }) => {
   // Send in-app notification to all admin users via topic
   await step.inApp('admin-notification', async () => {
     return {

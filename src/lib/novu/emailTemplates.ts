@@ -15,7 +15,7 @@ export interface EmailTemplateData {
 
 export function createProfessionalEmailTemplate(data: EmailTemplateData): string {
   const {
-    logoUrl = 'https://your-domain.com/logo.png',
+    logoUrl = 'https://pethouse-preview.vercel.app/logo.png',
     title,
     greeting,
     content,
@@ -23,8 +23,8 @@ export function createProfessionalEmailTemplate(data: EmailTemplateData): string
     actionButton,
     footerContent,
     nextSteps,
-    unsubscribeUrl = 'https://your-domain.com/unsubscribe',
-    privacyUrl = 'https://your-domain.com/privacy'
+    unsubscribeUrl = 'https://pethouse-preview.vercel.app/unsubscribe',
+    privacyUrl = 'https://pethouse-preview.vercel.app/privacy'
   } = data;
 
   return `

@@ -1,8 +1,8 @@
 import { workflow } from '@novu/framework';
 import { z } from 'zod';
-import { createMessageReceivedEmail } from '../../emailTemplates';
+import { createMessageReceivedEmail } from '../emailTemplates';
 
-export const messageReceived = workflow('message-received', async ({ step, payload }) => {
+export const messageReceived = workflow('message-received', async ({ step, payload }: { step: any; payload: any }) => {
   // Send in-app notification to recipient
   await step.inApp('notify-recipient', async () => {
     return {
