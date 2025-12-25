@@ -251,6 +251,15 @@ export const ListingList: React.FC<ListingListProps> = ({
       {/* Listings Grid */}
       {filteredListings.length > 0 || (onAdd && !filters.search) ? (
         <SimpleGrid columns={columns} spacing={spacing}>
+
+          {filteredListings.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              handleListingClick={handleListingClick}
+            />
+          ))}
+
           {onAdd && (
             <Card
               height="100%"
@@ -280,13 +289,6 @@ export const ListingList: React.FC<ListingListProps> = ({
               </CardBody>
             </Card>
           )}
-          {filteredListings.map((listing) => (
-            <ListingCard
-              key={listing.id}
-              listing={listing}
-              handleListingClick={handleListingClick}
-            />
-          ))}
         </SimpleGrid>
       ) : (
         <Center py={12}>

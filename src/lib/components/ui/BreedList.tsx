@@ -197,6 +197,16 @@ export const BreedList = ({
 
       {filteredBreeds.length > 0 || (onAdd && !searchTerm && !selectedGroup) ? (
         <SimpleGrid columns={columns} spacing={spacing}>
+
+          {filteredBreeds.map((userBreed) => (
+            <BreedCard
+              key={userBreed.id}
+              userBreed={userBreed}
+              userRole={userRole}
+              onClick={() => handleBreedClick(userBreed)}
+            />
+          ))}
+
           {onAdd && (
             <Card
               height="100%"
@@ -226,14 +236,6 @@ export const BreedList = ({
               </CardBody>
             </Card>
           )}
-          {filteredBreeds.map((userBreed) => (
-            <BreedCard
-              key={userBreed.id}
-              userBreed={userBreed}
-              userRole={userRole}
-              onClick={() => handleBreedClick(userBreed)}
-            />
-          ))}
         </SimpleGrid>
       ) : (
         <Center py={12}>

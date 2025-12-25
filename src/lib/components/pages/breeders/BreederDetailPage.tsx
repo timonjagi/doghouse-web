@@ -39,6 +39,7 @@ import { FiBell, FiEdit, FiPlus, FiShield, FiShoppingBag, FiStar, FiUserPlus } f
 import { LuDog } from 'react-icons/lu';
 import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 import { KennelForm } from '../../ui/KennelForm';
+import { BreedForm } from '../../ui/BreedForm';
 import { BreedList, UserBreedWithBreed } from 'lib/components/ui/BreedList';
 import ListingList from 'lib/components/ui/ListingList';
 import { UserBreed } from 'lib/db/schema';
@@ -80,6 +81,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
   const { data: breederListings, isLoading: listingsLoading } = useListingsByOwner(breederId as string);
 
   const { isOpen: isListingFormOpen, onOpen: onListingFormOpen, onClose: onListingFormClose } = useDisclosure();
+  const { isOpen: isBreedFormOpen, onOpen: onBreedFormOpen, onClose: onBreedFormClose } = useDisclosure();
 
   const incrementViewsMutation = useIncrementListingViews();
 
@@ -280,6 +282,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   userRole={user?.role as 'seeker' | 'breeder' | 'admin'}
                   columns={{ base: 2, md: 3, lg: 4 }}
                   onBreedClick={(userBreed: UserBreed) => handleBreedClick(userBreed)}
+                  onAdd={isManaging ? onBreedFormOpen : undefined}
                 />
               </TabPanel>
 
@@ -298,6 +301,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   showFilters={false}
                   showResultsCount={false}
                   showSearch={false}
+                  onAdd={isManaging ? onListingFormOpen : undefined}
                 />
               </TabPanel>
 
@@ -315,6 +319,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   showFilters={false}
                   showResultsCount={false}
                   showSearch={false}
+                  onAdd={isManaging ? onListingFormOpen : undefined}
                 />
               </TabPanel>
 
@@ -373,6 +378,11 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
           userBreeds={breederBreeds}
           userProfile={breederUser}
           isEditing={false}
+        />
+
+        <BreedForm
+          isOpen={isBreedFormOpen}
+          onClose={onBreedFormClose}
         />
       </Container>
     </>

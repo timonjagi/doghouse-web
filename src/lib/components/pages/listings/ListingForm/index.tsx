@@ -134,7 +134,8 @@ interface ListingFormProps {
   userBreeds: UserBreed[];
   userProfile: { id: string } | null;
   isEditing?: boolean,
-  listing?: Listing
+  listing?: Listing,
+  preselectedBreedId?: string
 }
 
 const ListingForm: React.FC<ListingFormProps> = ({
@@ -143,7 +144,8 @@ const ListingForm: React.FC<ListingFormProps> = ({
   userBreeds,
   userProfile,
   isEditing,
-  listing
+  listing,
+  preselectedBreedId
 }) => {
   const router = useRouter();
   const toast = useToast();
@@ -193,7 +195,7 @@ const ListingForm: React.FC<ListingFormProps> = ({
     type: listing?.type as 'litter' | 'single_pet' || 'litter',
     owner_type: listing?.owner_type as 'breeder' | 'seeker' || 'breeder',
     pet_type: listing?.pet_type || '',
-    user_breed_id: listing?.user_breed_id || '',
+    user_breed_id: listing?.user_breed_id || preselectedBreedId || '',
     breed_id: listing?.breed_id || '',
     birth_date: listing?.birth_date ? listing?.birth_date.toString().split('T')[0] : '',
     available_date: listing?.available_date ? listing?.available_date.toString().split('T')[0] : '',
