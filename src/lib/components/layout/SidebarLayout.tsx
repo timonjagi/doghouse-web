@@ -31,6 +31,7 @@ import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { notifications } from "lib/db/schema";
 import error from "next/error";
 import { NotificationsDrawer } from "./NotificationsDrawer";
+import { NotificationBadge } from "./NotificationBadge";
 
 type LayoutProps = {
   children: ReactNode;
@@ -38,7 +39,7 @@ type LayoutProps = {
 
 // Detail page routes contain dynamic segments like [id], [chatId], [slug]
 const DETAIL_PAGE_PATTERNS = [
-  "/dashboard/inbox/[chatId]",
+  "/dashboard/inbox/[conversationId]",
   "/dashboard/breeds/[breedName]",
   "/dashboard/breeds/[id]",
   "/dashboard/breeders/[id]",
@@ -96,12 +97,16 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   );
 
   const searchHeaderHeight = 64;
-  const detailHeaderHeight = 56;
+  const detailHeaderHeight = isMobile ? 40 : 48;
   const headerHeight = isDetailPage
     ? detailHeaderHeight
     : searchHeaderHeight;
   const bannerHeight = 21;
   const footerHeight = 64;
+  const detailPageContainerHeight = isDetailPage
+    ? detailHeaderHeight
+    : searchHeaderHeight;
+
 
 
   return (
@@ -128,7 +133,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
             <HeaderButtons unreadCount={unreadCount} onToggleNotifications={onToggleNotifications} />}
         />
       )}
-      <Flex height={{ base: "auto", lg: "100vh" }}>
+      <Flex height={{ base: "100dvh", lg: "100vh" }}>
         {/* Primary Navigation Sidebar - Desktop only */}
         <Box
           h={{
@@ -156,8 +161,8 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           flex="1"
           h={{
             base: profile?.role === "seeker" && !isDetailPage
-              ? `calc(100dvh - ${searchHeaderHeight + footerHeight + (showTopBanner ? bannerHeight : 0)} px)`
-              : `calc(100dvh -${detailHeaderHeight + footerHeight + (showTopBanner ? bannerHeight : 0)}px)`,
+              ? `calc(100dvh - ${searchHeaderHeight + footerHeight + (showTopBanner ? bannerHeight : 0)}px)`
+              : `calc(100dvh - ${detailHeaderHeight + footerHeight + (showTopBanner ? bannerHeight : 0)}px)`,
             lg: "full"
           }}
           overflowY="auto"
@@ -236,10 +241,9 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
           <NotificationsDrawer
             isOpen={isNotificationsOpen}
             onClose={onCloseNotifications}
-            notifications={notifications!}
+            notifications={notifications}
             isLoading={isLoading}
             error={error}
-            unreadCount={unreadCount!}
           />
         </DrawerContent>
       </Drawer>
@@ -262,7 +266,7 @@ const HeaderButtons = ({ unreadCount, onToggleNotifications }) => {
 
       <Box position="relative">
 
-        {unreadCount > 0 && <Circle size="2" bg="brand.500" position="absolute" top={0} right={1} zIndex={1} />}
+        <NotificationBadge />
 
         <IconButton
           icon={<FiBell fontSize="1.25rem" />}

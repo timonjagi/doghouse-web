@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from 'lib/supabase/client';
+import { supabaseServer as supabase } from 'lib/supabase/server';
 import { paystack } from 'lib/services/paystackService';
+import novu from 'lib/novu/client';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -9,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // Read raw body for signature verification
-    const chunks: Buffer[] = [];
+    const chunks: any[] = [];
     for await (const chunk of req) {
       chunks.push(chunk);
     }
@@ -87,14 +88,68 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         // Create notification for breeder
-        await supabase.from('notifications').insert({
-          user_id: breederId,
-          type: 'reservation_paid',
-          title: 'Reservation Fee Paid',
-          body: 'A seeker has paid the reservation fee for your listing.',
-          target_type: 'application',
-          target_id: applicationId,
-        });
+        // Get additional data for Novu payload
+        const { data: application } = await supabase
+          .from('applications')
+          .select('*')
+          .eq('id', applicationId)
+          .single();
+
+        if (application) {
+          const { data: litter } = await supabase
+            .from('litters')
+            .select('name, breeder_id')
+            .eq('id', application.litter_id)
+            .single();
+
+          const { data: breeder } = await supabase
+            .from('users')
+            .select('display_name')
+            .eq('id', litter?.breeder_id)
+            .single();
+
+          const { data: seeker } = await supabase
+            .from('users')
+            .select('display_name')
+            .eq('id', application.seeker_id)
+            .single();
+
+          const breederName = breeder?.display_name || 'Breeder';
+          const seekerName = seeker?.display_name || 'Seeker';
+          const litterName = litter?.name || 'Litter';
+
+          // Trigger Novu workflow for breeder
+          await novu.trigger({
+            workflowId: 'reservation-fee-paid',
+            to: {
+              subscriberId: breederId,
+            },
+            payload: {
+              breederId,
+              breederName,
+              seekerId,
+              litterName,
+              applicationId,
+              amount: (amount / 100).toString(),
+            },
+          });
+
+          // Trigger for seeker
+          await novu.trigger({
+            workflowId: 'reservation-fee-paid',
+            to: {
+              subscriberId: seekerId,
+            },
+            payload: {
+              breederId,
+              breederName,
+              seekerId,
+              litterName,
+              applicationId,
+              amount: (amount / 100).toString(),
+            },
+          });
+        }
 
       } else if (paymentType === 'final') {
         // Update final payment status
@@ -112,14 +167,68 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         // Create notification for breeder
-        await supabase.from('notifications').insert({
-          user_id: breederId,
-          type: 'final_payment_completed',
-          title: 'Final Payment Completed',
-          body: 'The final payment has been completed for your listing.',
-          target_type: 'application',
-          target_id: applicationId,
-        });
+        // Get additional data for Novu payload
+        const { data: application } = await supabase
+          .from('applications')
+          .select('*')
+          .eq('id', applicationId)
+          .single();
+
+        if (application) {
+          const { data: litter } = await supabase
+            .from('litters')
+            .select('name, breeder_id')
+            .eq('id', application.litter_id)
+            .single();
+
+          const { data: breeder } = await supabase
+            .from('users')
+            .select('display_name')
+            .eq('id', litter?.breeder_id)
+            .single();
+
+          const { data: seeker } = await supabase
+            .from('users')
+            .select('display_name')
+            .eq('id', application.seeker_id)
+            .single();
+
+          const breederName = breeder?.display_name || 'Breeder';
+          const seekerName = seeker?.display_name || 'Seeker';
+          const litterName = litter?.name || 'Litter';
+
+          // Trigger Novu workflow for breeder
+          await novu.trigger({
+            workflowId: 'final-payment-completed',
+            to: {
+              subscriberId: breederId,
+            },
+            payload: {
+              breederId,
+              breederName,
+              seekerId,
+              litterName,
+              applicationId,
+              amount: (amount / 100).toString(),
+            },
+          });
+
+          // Trigger for seeker
+          await novu.trigger({
+            workflowId: 'final-payment-completed',
+            to: {
+              subscriberId: seekerId,
+            },
+            payload: {
+              breederId,
+              breederName,
+              seekerId,
+              litterName,
+              applicationId,
+              amount: (amount / 100).toString(),
+            },
+          });
+        }
 
         // TODO: Trigger payout to breeder (minus commission)
         // This would be implemented in the payout system

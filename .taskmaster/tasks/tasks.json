@@ -266,100 +266,100 @@
                 "title": "Enhance useWishlist Hook with User ID Filtering and Counts",
                 "description": "Update the useWishlist.ts hook to properly filter by authenticated user, add a useWishlistCount hook for navigation badge, and ensure the useIsInWishlist hook returns the wishlist item ID for removal.",
                 "dependencies": [],
-                "details": "Modify src/lib/hooks/queries/useWishlist.ts to: (1) Add user_id filtering in useWishlist query to ensure users only see their own wishlist items, (2) Create useWishlistCount hook that returns total count for navigation badge display, (3) Enhance useIsInWishlist to return the wishlist item ID along with the boolean status so items can be removed directly, (4) Add breed_id support to useAddToWishlist for saving entire breeds (not just user_breeds or listings).",
-                "status": "pending",
-                "testStrategy": "Test that useWishlist only returns current user's items. Verify useWishlistCount returns accurate total. Test useIsInWishlist returns both status and item ID for removal functionality."
-              },
-              {
-                "id": 2,
-                "title": "Create Reusable AddToWishlistButton Component",
+        "details": "Modify src/lib/hooks/queries/useWishlist.ts to: (1) Add user_id filtering in useWishlist query to ensure users only see their own wishlist items, (2) Create useWishlistCount hook that returns total count for navigation badge display, (3) Enhance useIsInWishlist to return the wishlist item ID along with the boolean status so items can be removed directly, (4) Add breed_id support to useAddToWishlist for saving entire breeds (not just user_breeds or listings).",
+        "status": "done",
+        "testStrategy": "Test that useWishlist only returns current user's items. Verify useWishlistCount returns accurate total. Test useIsInWishlist returns both status and item ID for removal functionality."
+      },
+      {
+        "id": 2,
+        "title": "Create Reusable AddToWishlistButton Component",
                 "description": "Build a reusable button component that handles add/remove wishlist functionality with proper state transitions and loading states.",
                 "dependencies": [
                   1
                 ],
-                "details": "Create src/lib/components/ui/AddToWishlistButton.tsx that: (1) Accepts listing_id, user_breed_id, or breed_id as props, (2) Uses useIsInWishlist to determine current state, (3) Toggles between 'Add to Wishlist' (heart outline) and 'Added to Wishlist' (filled heart) states, (4) Shows loading spinner during add/remove operations, (5) Uses useAddToWishlist and useRemoveFromWishlist mutations, (6) Displays toast notifications on success/error, (7) Supports different sizes and variants for use in cards vs detail pages.",
-                "status": "pending",
-                "testStrategy": "Render AddToWishlistButton in isolation, verify state transitions work correctly, test loading states during mutations, verify toast notifications appear."
-              },
-              {
-                "id": 3,
-                "title": "Integrate Wishlist Button in PublicBreedDetailPage",
+        "details": "Create src/lib/components/ui/AddToWishlistButton.tsx that: (1) Accepts listing_id, user_breed_id, or breed_id as props, (2) Uses useIsInWishlist to determine current state, (3) Toggles between 'Add to Wishlist' (heart outline) and 'Added to Wishlist' (filled heart) states, (4) Shows loading spinner during add/remove operations, (5) Uses useAddToWishlist and useRemoveFromWishlist mutations, (6) Displays toast notifications on success/error, (7) Supports different sizes and variants for use in cards vs detail pages.",
+        "status": "done",
+        "testStrategy": "Render AddToWishlistButton in isolation, verify state transitions work correctly, test loading states during mutations, verify toast notifications appear."
+      },
+      {
+        "id": 3,
+        "title": "Integrate Wishlist Button in PublicBreedDetailPage",
                 "description": "Replace the placeholder onAddToWishlist toast function in PublicBreedDetailPage.tsx with actual AddToWishlistButton component functionality.",
                 "dependencies": [
                   2
                 ],
-                "details": "Update src/lib/components/pages/breeds/PublicBreedDetailPage.tsx to: (1) Replace the onAddToWishlist toast-only function with actual wishlist integration, (2) Use AddToWishlistButton in PageHeaderWithTwoButtons for the primary action, (3) Update empty state actions in ListingList and BreedersList to use the actual wishlist functionality, (4) Pass breed_id to save the breed to wishlist for topic-based notifications when new listings/breeders are added.",
-                "status": "pending",
-                "testStrategy": "Navigate to a breed detail page, click Add to Wishlist, verify item appears in wishlist page, verify button state changes to 'Added to Wishlist', click again to remove, verify removal."
-              },
-              {
-                "id": 4,
-                "title": "Integrate Wishlist Button in ExploreUserBreedDetailView",
+        "details": "Update src/lib/components/pages/breeds/PublicBreedDetailPage.tsx to: (1) Replace the onAddToWishlist toast-only function with actual wishlist integration, (2) Use AddToWishlistButton in PageHeaderWithTwoButtons for the primary action, (3) Update empty state actions in ListingList and BreedersList to use the actual wishlist functionality, (4) Pass breed_id to save the breed to wishlist for topic-based notifications when new listings/breeders are added.",
+        "status": "done",
+        "testStrategy": "Navigate to a breed detail page, click Add to Wishlist, verify item appears in wishlist page, verify button state changes to 'Added to Wishlist', click again to remove, verify removal."
+      },
+      {
+        "id": 4,
+        "title": "Integrate Wishlist Button in ExploreUserBreedDetailView",
                 "description": "Replace the placeholder onAddToWishlist toast function in ExploreUserBreedDetailView.tsx with actual wishlist functionality.",
                 "dependencies": [
                   2
                 ],
-                "details": "Update src/lib/components/pages/breeds/ExploreUserBreedDetailView.tsx to: (1) Replace onAddToWishlist toast function with AddToWishlistButton integration, (2) Add a header action button for adding the user_breed to wishlist, (3) Update empty state actions in ListingList and BreedersList to use actual wishlist functionality, (4) Pass user_breed_id to save for notifications when new listings become available from this breeder's breed.",
-                "status": "pending",
-                "testStrategy": "Navigate to a breeder's breed detail view, test add/remove wishlist functionality in header and empty states, verify wishlist page reflects changes."
-              },
-              {
-                "id": 5,
-                "title": "Add Wishlist Button to Listing Detail and Listing Cards",
+        "details": "Update src/lib/components/pages/breeds/ExploreUserBreedDetailView.tsx to: (1) Replace onAddToWishlist toast function with AddToWishlistButton integration, (2) Add a header action button for adding the user_breed to wishlist, (3) Update empty state actions in ListingList and BreedersList to use actual wishlist functionality, (4) Pass user_breed_id to save for notifications when new listings become available from this breeder's breed.",
+        "status": "done",
+        "testStrategy": "Navigate to a breeder's breed detail view, test add/remove wishlist functionality in header and empty states, verify wishlist page reflects changes."
+      },
+      {
+        "id": 5,
+        "title": "Add Wishlist Button to Listing Detail and Listing Cards",
                 "description": "Add AddToWishlistButton to listing detail pages and listing cards where seekers browse listings.",
                 "dependencies": [
                   2
                 ],
-                "details": "Update listing-related components: (1) Add AddToWishlistButton to listing detail page (src/lib/pages/listings or similar), (2) Add wishlist heart icon button to ListingCard component, (3) Ensure listing_id is passed for saving specific listings, (4) Handle sold/unavailable listings gracefully (maybe disable wishlist for sold items).",
-                "status": "pending",
-                "testStrategy": "Browse listings as seeker, add listing to wishlist from card and detail page, verify persistence and button state transitions."
-              },
-              {
-                "id": 6,
-                "title": "Add Wishlist Count Badge to Navigation",
+        "details": "Update listing-related components: (1) Add AddToWishlistButton to listing detail page (src/lib/pages/listings or similar), (2) Add wishlist heart icon button to ListingCard component, (3) Ensure listing_id is passed for saving specific listings, (4) Handle sold/unavailable listings gracefully (maybe disable wishlist for sold items).",
+        "status": "done",
+        "testStrategy": "Browse listings as seeker, add listing to wishlist from card and detail page, verify persistence and button state transitions."
+      },
+      {
+        "id": 6,
+        "title": "Add Wishlist Count Badge to Navigation",
                 "description": "Display a badge showing the total wishlist item count in the navigation sidebar for seekers.",
                 "dependencies": [
                   1
                 ],
-                "details": "Update navigation components: (1) Use useWishlistCount hook in Sidebar or navigation component, (2) Display badge with count next to Wishlist nav item for seekers, (3) Update badge in real-time when items are added/removed, (4) Only show badge when count > 0, (5) Ensure badge styling matches existing navigation design.",
-                "status": "pending",
-                "testStrategy": "As seeker, verify wishlist navigation item shows badge with correct count, add/remove items and verify count updates in real-time."
-              },
-              {
-                "id": 7,
-                "title": "Implement Notification Triggers in useListings and useUserBreeds Hooks",
+        "details": "Update navigation components: (1) Use useWishlistCount hook in Sidebar or navigation component, (2) Display badge with count next to Wishlist nav item for seekers, (3) Update badge in real-time when items are added/removed, (4) Only show badge when count > 0, (5) Ensure badge styling matches existing navigation design.",
+        "status": "done",
+        "testStrategy": "As seeker, verify wishlist navigation item shows badge with correct count, add/remove items and verify count updates in real-time."
+      },
+      {
+        "id": 7,
+        "title": "Implement Notification Triggers in useListings and useUserBreeds Hooks",
                 "description": "Add notification triggers to useListings and useUserBreeds hooks to automatically send topic-based notifications when wishlisted breeds become available.",
                 "dependencies": [
                   1,
                   12
                 ],
-                "details": "Update src/lib/hooks/queries/useListings.ts and src/lib/hooks/queries/useUserBreeds.ts: (1) When a new listing is created successfully, check if any seekers have wishlisted that breed, (2) Call NotificationService.sendBreedMatchNotification() with the breed_id, listing details, and breeder info, (3) Use the existing breed-{breedId}-interested topic system for automatic subscriber notification, (4) Include listing link and breed information in notification payload, (5) Ensure notifications are sent asynchronously without blocking the listing creation flow.",
-                "status": "pending",
-                "testStrategy": "As seeker, add breed to wishlist during onboarding. As breeder, create new listing for that breed using useListings hook. Verify NotificationService.sendBreedMatchNotification() is triggered and seeker receives topic-based notification with direct link to the new listing."
-              },
-              {
-                "id": 8,
-                "title": "Enhance Wishlist Page with Better UX",
+        "details": "Update src/lib/hooks/queries/useListings.ts and src/lib/hooks/queries/useUserBreeds.ts: (1) When a new listing is created successfully, check if any seekers have wishlisted that breed, (2) Call NotificationService.sendBreedMatchNotification() with the breed_id, listing details, and breeder info, (3) Use the existing breed-{breedId}-interested topic system for automatic subscriber notification, (4) Include listing link and breed information in notification payload, (5) Ensure notifications are sent asynchronously without blocking the listing creation flow.",
+        "status": "done",
+        "testStrategy": "As seeker, add breed to wishlist during onboarding. As breeder, create new listing for that breed using useListings hook. Verify NotificationService.sendBreedMatchNotification() is triggered and seeker receives topic-based notification with direct link to the new listing."
+      },
+      {
+        "id": 8,
+        "title": "Enhance Wishlist Page with Better UX",
                 "description": "Improve the existing WishlistPage component with better organization, filtering, and actions.",
                 "dependencies": [
                   1
                 ],
-                "details": "Enhance src/lib/components/pages/wishlist/index.tsx: (1) Add tabs or sections for Listings, Breeds, User Breeds, (2) Add bulk notification toggle (enable/disable all), (3) Add sorting options (recently added, availability), (4) Improve empty state with better CTAs, (5) Add quick links to browse more content, (6) Show breeder info for user_breeds listings, (7) Better handling of unavailable/sold items.",
-                "status": "pending",
-                "testStrategy": "Navigate to wishlist page, verify sections display correctly, test notification toggles, test sorting, verify sold items display appropriately."
-              },
-              {
-                "id": 9,
-                "title": "Implement Breeder Matches Page Based on Wishlist Data",
+        "details": "Enhance src/lib/components/pages/wishlist/index.tsx: (1) Add tabs or sections for Listings, Breeds, User Breeds, (2) Add bulk notification toggle (enable/disable all), (3) Add sorting options (recently added, availability), (4) Improve empty state with better CTAs, (5) Add quick links to browse more content, (6) Show breeder info for user_breeds listings, (7) Better handling of unavailable/sold items.",
+        "status": "done",
+        "testStrategy": "Navigate to wishlist page, verify sections display correctly, test notification toggles, test sorting, verify sold items display appropriately."
+      },
+      {
+        "id": 9,
+        "title": "Implement Breeder Matches Page Based on Wishlist Data",
                 "description": "Build the matches page for breeders showing seekers who have wishlisted their breeds/listings, enabling outreach opportunities.",
                 "dependencies": [
                   1,
                   7
                 ],
-                "details": "Implement src/lib/components/pages/matches/matches.tsx: (1) Create useBreederMatches hook that queries wishlists table for items matching breeder's breeds/listings, (2) Join with users table to get seeker information (display_name, profile_photo, location), (3) Group matches by breed/listing for organization, (4) Show seeker contact preferences and profile summary, (5) Add 'Contact' CTA linking to messaging/inbox, (6) Show when seeker added to wishlist (created_at), (7) Display notification preference status, (8) Include filters for breed, recency, notification status.",
-                "status": "pending",
-                "testStrategy": "As seeker, wishlist a breeder's breed. As that breeder, navigate to Matches page, verify the seeker appears in matches with their profile info and contact options."
-              },
+        "details": "Implement src/lib/components/pages/matches/matches.tsx: (1) Create useBreederMatches hook that queries wishlists table for items matching breeder's breeds/listings, (2) Join with users table to get seeker information (display_name, profile_photo, location), (3) Group matches by breed/listing for organization, (4) Show seeker contact preferences and profile summary, (5) Add 'Contact' CTA linking to messaging/inbox, (6) Show when seeker added to wishlist (created_at), (7) Display notification preference status, (8) Include filters for breed, recency, notification status.",
+        "status": "done",
+        "testStrategy": "As seeker, wishlist a breeder's breed. As that breeder, navigate to Matches page, verify the seeker appears in matches with their profile info and contact options."
+      },
               {
                 "id": 10,
                 "title": "Add Wishlist Quick Actions to Breeder Profile Cards",
@@ -695,7 +695,7 @@
           1,
           2
         ],
-        "status": "pending",
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
@@ -744,73 +744,73 @@
           8,
           13
         ],
-        "status": "pending",
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
-            "title": "Database Schema Updates for Notifications",
-            "description": "Create enhanced notifications, notification_types, and notification_rules tables.",
+            "title": "Implement Novu Integration for In-App & Push Notifications",
+            "description": "Set up Novu client and workflows for real-time in-app and push notifications.",
             "dependencies": [],
-            "details": "Enhance notifications table with delivery tracking, add notification_types table for predefined categories, add notification_rules table for admin configuration with proper relationships and RLS policies.",
-            "status": "pending",
-            "testStrategy": "Run migrations and verify notification-related tables are created with correct relationships and RLS policies."
+            "details": "Configure Novu client in the application, create workflows for adoption-status-changed, message-received, reservation-fee-paid, final-payment-completed. Implement subscriber management for users.",
+            "status": "completed",
+            "testStrategy": "Verify Novu workflows are triggered correctly, notifications appear in-app and as push notifications on supported devices."
           },
           {
             "id": 2,
-            "title": "Build Notifications Service Core",
-            "description": "Create comprehensive NotificationService with database storage and multi-channel dispatch capabilities.",
+            "title": "Build Centralized NotificationService",
+            "description": "Create comprehensive NotificationService class with database storage and Novu dispatch capabilities.",
             "dependencies": [
               1
             ],
-            "details": "Implement NotificationService class with DatabaseService, DispatchService, TemplateService, and RulesEngine. Support in-app, email, SMS, WhatsApp, and push notification delivery.",
-            "status": "pending",
-            "testStrategy": "Test notification creation, storage, and delivery through different channels. Verify service architecture handles various notification types."
+            "details": "Implement NotificationService class with methods for adoption status notifications, payment notifications, message notifications. Handle both database storage and Novu workflow triggering with proper correlation IDs.",
+            "status": "completed",
+            "testStrategy": "Test notification creation and storage in database, verify Novu workflow triggering, ensure proper data correlation between database and Novu notifications."
           },
           {
             "id": 3,
-            "title": "Implement Multi-Channel Dispatch System",
-            "description": "Build email, SMS, WhatsApp, and push notification delivery systems with proper integrations.",
+            "title": "Implement Notification Popup Provider",
+            "description": "Create React context provider for managing notification popups and real-time updates.",
             "dependencies": [
+              1,
               2
             ],
-            "details": "Integrate SendGrid for email, Africa's Talking/Twilio for SMS, WhatsApp Business API for WhatsApp messaging, and web push API for browser notifications. Implement delivery tracking and error handling for all channels.",
-            "status": "pending",
-            "testStrategy": "Test each delivery channel individually (email, SMS, WhatsApp, push), verify delivery confirmations, and ensure proper fallback mechanisms for failed deliveries."
+            "details": "Build NotificationPopupProvider with Novu hook integration, implement popup display logic, add mark-as-read functionality, handle different notification types with appropriate actions.",
+            "status": "completed",
+            "testStrategy": "Test notification popup display, verify real-time updates, test mark-as-read functionality, ensure different notification types show appropriate actions."
           },
           {
             "id": 4,
-            "title": "Create Notification Types & Rules Configuration",
-            "description": "Build comprehensive system for defining notification types and admin-configurable rules.",
+            "title": "Create Notification Drawer Component",
+            "description": "Build comprehensive notification drawer with list view, filtering, and management capabilities.",
             "dependencies": [
-              2
+              2,
+              3
             ],
-            "details": "Define taxonomy of notification types (application updates, payments, matches, announcements), create admin interface for rule configuration, implement user preference management.",
-            "status": "pending",
-            "testStrategy": "Test admin rule configuration, verify notification type definitions, ensure user preferences are respected in delivery decisions."
+            "details": "Implement NotificationsDrawer component with Novu notifications integration, add proper styling with Chakra UI, implement click handlers for notification actions, show read/unread states.",
+            "status": "completed",
+            "testStrategy": "Test notification drawer display, verify notification list shows correctly, test click actions work properly, ensure read/unread states are displayed accurately."
           },
           {
             "id": 5,
-            "title": "Integrate with Platform Systems",
-            "description": "Connect notifications service with applications, payments, matching, and admin systems.",
-            "dependencies": [
-              2,
-              3,
-              4
-            ],
-            "details": "Implement automated notifications for application status changes, payment confirmations, new matches, and admin announcements. Ensure proper integration with existing workflows.",
-            "status": "pending",
-            "testStrategy": "Test end-to-end notification flows for key platform events, verify proper triggering and delivery across all integrated systems."
-          },
-          {
-            "id": 6,
-            "title": "Refactor Notification Dispatch in Business Logic Hooks",
-            "description": "Update hooks like useApplications, useListings, and usePayments to use the new NotificationService for dispatching notifications instead of direct Supabase calls.",
+            "title": "Integrate Notifications with Platform Events",
+            "description": "Connect notification system with applications, payments, and messaging events.",
             "dependencies": [
               2
             ],
-            "details": "Refactor notification dispatch logic in src/lib/hooks/queries/useApplications.ts, src/lib/hooks/queries/useListings.ts, and src/lib/hooks/queries/usePayments.ts to use the centralized NotificationService instead of direct supabase.from('notifications').insert() calls.",
-            "status": "pending",
-            "testStrategy": "Verify that all existing notification dispatch functionality still works correctly after refactoring, and that business logic hooks now use the centralized NotificationService for consistent notification handling."
+            "details": "Update useAdoptions hook to use NotificationService for adoption status changes, update usePayments hook for payment confirmations, update message hooks for conversation notifications. Ensure proper party routing (seeker/breeder/admin).",
+            "status": "completed",
+            "testStrategy": "Test end-to-end notification flows: adoption submissions, status changes, payment confirmations, message notifications. Verify correct recipients receive appropriate notifications."
+          },
+          {
+            "id": 6,
+            "title": "Implement Admin Notification Oversight",
+            "description": "Add admin notifications for all platform activities requiring oversight.",
+            "dependencies": [
+              5
+            ],
+            "details": "Configure NotificationService to send admin notifications for adoption submissions, status changes, payment processing, and other key platform events. Use admin subscriber ID in Novu workflows.",
+            "status": "completed",
+            "testStrategy": "Verify admin receives notifications for all major platform events, test notification delivery to admin subscriber, ensure admin can view all platform activity through notifications."
           }
         ]
       },

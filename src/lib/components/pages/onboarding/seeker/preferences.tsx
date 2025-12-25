@@ -21,6 +21,7 @@ import { Loader } from "lib/components/ui/Loader";
 import breedsData from "../../../../data/breeds_with_group_and_traits.json";
 import { Select } from "chakra-react-select";
 import { supabase } from "lib/supabase/client";
+import { NotificationService } from "../../../../services/notificationService";
 
 type PageProps = {
   currentStep: number;
@@ -147,6 +148,37 @@ export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep })
         activity_level: activityLevel,
       });
 
+      // Create wishlist item for the preferred breed
+      if (user) {
+        const { error } = await supabase
+          .from('wishlists')
+          .insert({
+            user_id: user.id,
+            breed_id: dbBreed.id,
+            notify_when_available: true,
+          });
+
+        if (error) {
+          console.error('Failed to create wishlist item:', error);
+        }
+
+        // Create subscriber in Novu
+        await NotificationService.completeSeekerOnboarding(user.id, {
+          firstName: user.user_metadata?.display_name || user.email?.split('@')[0] || 'User',
+          email: user.email || '',
+          phone: user.phone || undefined,
+          data: { role: 'seeker' },
+        }, {
+          preferredBreedId: dbBreed.id,
+          preferredBreedName: selectedBreed.name,
+          preferredAge,
+          preferredSex,
+          spayNeuterPreference,
+          activityLevel,
+        });
+
+
+      }
 
       setStep(currentStep + 1);
     } catch (err: any) {
@@ -310,3 +342,4 @@ export const SeekerPreferences: React.FC<PageProps> = ({ currentStep, setStep })
 
   );
 };
+

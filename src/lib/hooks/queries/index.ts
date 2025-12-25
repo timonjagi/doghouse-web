@@ -6,6 +6,7 @@ export * from './useBreederProfile';
 export * from './useBreeders';
 export * from './useBreeds';
 export * from './useCategories';
+export * from './useConversations';
 export * from './useListings';
 export * from './useNotifications';
 export * from './usePayments';

@@ -7,9 +7,10 @@ interface EmptyViewProps {
   ctaText?: string,
   ctaAction?: () => void
   ctaIcon?: any
+  ctaComponent?: React.ReactNode
 }
 
-export const EmptyView: React.FC<EmptyViewProps> = ({ title, description, ctaText, ctaAction, ctaIcon }) => (
+export const EmptyView: React.FC<EmptyViewProps> = ({ title, description, ctaText, ctaAction, ctaIcon, ctaComponent }) => (
   <Alert
     status='info'
     variant='brand'
@@ -33,7 +34,9 @@ export const EmptyView: React.FC<EmptyViewProps> = ({ title, description, ctaTex
 
       <Spacer />
 
-      {ctaText && ctaAction && <Button
+      {ctaComponent}
+
+      {ctaText && ctaAction && !ctaComponent && <Button
         colorScheme='brand'
         variant="primary"
         size='lg'

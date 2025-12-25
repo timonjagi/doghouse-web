@@ -1,4 +1,4 @@
-import { Box, Button, Container, Heading, Stack, Text, useBreakpointValue } from '@chakra-ui/react'
+import { Box, Button, Container, Heading, HStack, Stack, Text, useBreakpointValue } from '@chakra-ui/react'
 import * as React from 'react'
 
 interface PageHeaderWithTwoButtonsProps {
@@ -24,6 +24,7 @@ interface PageHeaderWithTwoButtonsProps {
     isDisabled?: boolean;
   };
   flexDir?: { base: "column" | "row", md: "column" | "row" };
+  actions?: React.ReactNode;
 }
 
 export const PageHeaderWithTwoButtons = ({
@@ -33,22 +34,29 @@ export const PageHeaderWithTwoButtons = ({
   buttonPrimary,
   buttonSecondary,
   flexDir = { base: 'column', md: 'row' },
+  actions,
 }: PageHeaderWithTwoButtonsProps) => (
   <Stack spacing="4" direction={flexDir} justify="space-between">
     <Stack spacing="1">
       <Heading size={useBreakpointValue({ base: 'xs', md: 'sm' })} fontWeight="medium">
         {title}
       </Heading>
-      {badge && (
-        <Box>{badge}</Box>
-      )}
-      {typeof description === 'string' ? (
-        <Text color="muted">{description}</Text>
-      ) : (
-        <Box color="muted">{description}</Box>
-      )}
+
+      <HStack spacing="2">
+
+        {typeof description === 'string' ? (
+          <Text color="muted">{description}</Text>
+        ) : (
+          <Box color="muted">{description}</Box>
+        )}
+
+        {badge && (
+          <Box>{badge}</Box>
+        )}
+      </HStack>
     </Stack>
     <Stack direction="row" spacing="3">
+      {actions}
       {buttonPrimary && (
         <Button
           key={buttonPrimary.label}

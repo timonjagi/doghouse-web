@@ -41,6 +41,7 @@ import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 import { KennelForm } from '../../ui/KennelForm';
 import { BreedForm } from '../../ui/BreedForm';
 import { BreedList, UserBreedWithBreed } from 'lib/components/ui/BreedList';
+import { NotificationService } from 'lib/services/notificationService';
 import ListingList from 'lib/components/ui/ListingList';
 import { UserBreed } from 'lib/db/schema';
 import { EmptyView } from 'lib/components/ui/EmptyView';
@@ -58,8 +59,77 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
   const { data: user } = useCurrentUser();
 
 
-  useEffect(() => {
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
+  const handleSubscribeClick = async () => {
+    if (!user?.id) {
+      toast({
+        title: "Please log in to subscribe",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      if (isSubscribed) {
+        // Unsubscribe from all breeder-related topics
+        await Promise.all([
+          NotificationService.unsubscribeFromBreeder(user.id, breederId!),
+          // Also unsubscribe from user breed topics for this breeder's breeds
+          ...(breederBreeds?.map(b =>
+            NotificationService.unsubscribeFromBreedInterest(user.id, b.id)
+          ) || [])
+        ]);
+        setIsSubscribed(false);
+        toast({
+          title: "Unsubscribed from breeder updates",
+          description: `You will no longer receive notifications from ${breederProfile?.kennel_name || breederUser?.display_name}.`,
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        // Subscribe to breeder activity
+        await NotificationService.subscribeToBreeder(
+          user.id,
+          breederId!,
+          breederProfile?.kennel_name || breederUser?.display_name
+        );
+
+        // Also subscribe to all user breed topics for this breeder's breeds
+        const subscriptionPromises = breederBreeds?.map(async (b) => {
+          await NotificationService.subscribeToBreedInterest(
+            user.id,
+            b.id,
+            b.breeds?.name || 'Unknown Breed'
+          );
+        }) || [];
+
+        await Promise.all(subscriptionPromises);
+
+        setIsSubscribed(true);
+        toast({
+          title: "Subscribed to breeder updates",
+          description: `You will be notified when ${breederProfile?.kennel_name || breederUser?.display_name} posts new content or adds new listings for their breeds.`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Subscription failed",
+        description: "Please try again later.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  useEffect(() => {
     const id = router.query.id as string;
     if (id) {
       setBreederId(id);
@@ -129,21 +199,11 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
     );
   }
 
-  const handleSubscribeClick = () => {
-    // For now, just show a toast. In the future, this could open a contact form
-    toast({
-      title: 'Subscribe feature coming soon',
-      description: 'Subscribing to breeders will be available soon.',
-      status: 'info',
-      duration: 3000,
-    });
-  };
-
   const handleBreedClick = (b: UserBreedWithBreed) => {
     router.push(`/dashboard/breeders/${breederId}/breeds/${b?.id}`);
   };
 
-
+  const userBreedId = breederBreeds?.[0]?.id;
 
   const handleListingClick = async (listingId: string) => {
     // Increment view count
@@ -190,14 +250,18 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                   onClick={() => onOpen()}
                 >
                   Edit
-                </Button> : <Button
-                  variant="primary"
-                  size="sm"
-                  rightIcon={<FiBell />}
-                  onClick={handleSubscribeClick}
-                >
-                  Subscribe
-                </Button>
+                </Button> : (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    rightIcon={<FiBell />}
+                    isDisabled={!userBreedId}
+                    title={!userBreedId ? "No breeds available to subscribe to" : isSubscribed ? "Unsubscribe from breeder updates" : "Subscribe to breeder updates"}
+                    onClick={handleSubscribeClick}
+                  >
+                    {isSubscribed ? "Unsubscribe" : "Subscribe"}
+                  </Button>
+                )
               }
             >
               <CardContent>

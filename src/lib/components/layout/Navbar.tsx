@@ -198,10 +198,6 @@ export const Navbar = () => {
           <NotificationsDrawer
             isOpen={isOpen}
             onClose={onClose}
-            notifications={notifications!}
-            isLoading={isLoading}
-            error={error}
-            unreadCount={unreadCount!}
           />
         </DrawerContent>
       </Drawer>

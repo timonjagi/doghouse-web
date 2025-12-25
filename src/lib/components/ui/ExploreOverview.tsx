@@ -143,7 +143,7 @@ const ExploreOverview: React.FC = () => {
                     <NavCategorySubmenu.Mobile
                       data={{
                         category: {
-                          label: 'Popular Breeds',
+                          label: 'Categories',
                           links: categories.breeds,
                         },
                         featured: {
@@ -207,12 +207,12 @@ const ExploreOverview: React.FC = () => {
                   {!isDesktop && <NavMenu.Mobile
                     data={{
                       category: {
-                        label: '',
-                        links: [],
+                        label: 'Categories',
+                        links: categories.listings,
                       },
                       featured: {
-                        label: '',
-                        links: []
+                        label: 'Breed Groups',
+                        links: categories.breedGroups,
                       },
                       products: [
                         {

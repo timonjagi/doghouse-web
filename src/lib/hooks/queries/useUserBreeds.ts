@@ -4,6 +4,7 @@ import { queryKeys } from '../../queryKeys';
 import { UserBreed } from '../../db/schema';
 import { useToast } from '@chakra-ui/react';
 import { useState } from 'react';
+import { NotificationService } from '../../services/notificationService';
 
 interface CreateUserBreedData {
   breed_id: string;
@@ -310,8 +311,27 @@ export const useCreateUserBreed = () => {
       if (error) throw error;
       return result;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.breeds.userBreeds() });
+
+      // Send notifications using the centralized breeder activity service
+      const { data: breeder } = await supabase
+        .from('users')
+        .select('display_name')
+        .eq('id', data.user_id)
+        .single();
+
+      await NotificationService.sendBreederActivityNotification(
+        data.user_id,
+        breeder?.display_name || 'Breeder',
+        'breed',
+        {
+          title: 'New Breed Added',
+          id: data.id,
+          breed_id: data.breed_id,
+          user_breed_id: data.id,
+        }
+      );
     },
   });
 };

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { Adoption } from '../../db/schema';
+import { NotificationService } from '../../services/notificationService';
 import {
   CheckCircleIcon,
   WarningIcon,
@@ -9,6 +10,7 @@ import {
   InfoIcon,
   CheckIcon,
   EditIcon,
+  ChatIcon,
 } from '@chakra-ui/icons';
 
 // Extended Adoption type with related data
@@ -74,7 +76,8 @@ interface UpdateAdoptionData {
   reservation_paid?: boolean;
   contract_signed?: boolean;
   payment_completed?: boolean;
-  application_data?: any
+  application_data?: any;
+  response_message?: string;
 }
 
 interface TimelineStep {
@@ -87,19 +90,7 @@ interface TimelineStep {
   info?: string[];
 }
 
-interface AdoptionTimelineActions {
-  onPayReservation?: () => void;
-  onSignContract?: () => void;
-  onCompletePayment?: () => void;
-  onMarkCompleted?: () => void;
-  onWithdrawAdoption?: () => void;
-  onApproveAdoption?: () => void;
-  onRejectAdoption?: () => void;
-  onCheckPaymentStatus?: (reference: string, type: string) => void;
-  onLeaveReview?: () => void;
-  onContactBreeder?: () => void;
-  onContactSupport?: () => void;
-}
+
 
 
 
@@ -110,11 +101,19 @@ export const useAdoptionTimelineLogic = ({
   transactions = [],
   statusHistory = []
 }: {
-  adoption: AdoptionWithListing;
+  adoption?: AdoptionWithListing;
   userProfile: any;
   transactions?: any[];
   statusHistory?: AdoptionStatusHistory[];
 }) => {
+  if (!adoption) {
+    return {
+      steps: [],
+      currentStepIndex: 0,
+      currentStep: null,
+      getStatusBannerProps: () => null
+    };
+  }
   const isApplicant = userProfile?.id === adoption.seeker_id;
 
   // Helper to get date from history
@@ -421,7 +420,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Approve Adoption',
     colorScheme: 'green',
     icon: CheckCircleIcon,
-    buttonLabel: 'Approve'
+    buttonLabel: 'Approve',
+    isPriority: true
   },
   reject: {
     type: 'reject',
@@ -432,7 +432,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Reject Adoption',
     colorScheme: 'red',
     icon: WarningIcon,
-    buttonLabel: 'Reject'
+    buttonLabel: 'Reject',
+    isPriority: true
   },
   complete: {
     type: 'complete',
@@ -452,7 +453,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Proceed to Payment',
     colorScheme: 'green',
     icon: StarIcon,
-    buttonLabel: 'Pay Reservation Fee'
+    buttonLabel: 'Pay Reservation Fee',
+    isPriority: true
   },
   sign_contract: {
     type: 'sign_contract',
@@ -461,7 +463,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Sign Contract',
     colorScheme: 'blue',
     icon: EditIcon,
-    buttonLabel: 'Sign Contract'
+    buttonLabel: 'Sign Contract',
+    isPriority: true
   },
   complete_payment: {
     type: 'complete_payment',
@@ -470,7 +473,8 @@ export const ADOPTION_ACTION_CONFIGS = {
     confirmText: 'Proceed to Payment',
     colorScheme: 'green',
     icon: StarIcon,
-    buttonLabel: 'Complete Payment'
+    buttonLabel: 'Complete Payment',
+    isPriority: true
   },
   contact_support: {
     type: 'contact_support',
@@ -498,196 +502,179 @@ export const ADOPTION_ACTION_CONFIGS = {
     colorScheme: 'blue',
     icon: InfoIcon,
     buttonLabel: 'Check Payment Status'
+  },
+  contact_breeder: {
+    type: 'contact_breeder',
+    title: 'Contact Breeder',
+    dialogBody: 'Redirecting to your conversation with the breeder...',
+    confirmText: 'Go to Chat',
+    colorScheme: 'blue',
+    icon: ChatIcon,
+    buttonLabel: 'Contact Breeder'
+  },
+  contact_applicant: {
+    type: 'contact_applicant',
+    title: 'Contact Applicant',
+    dialogBody: 'Redirecting to your conversation with the applicant...',
+    confirmText: 'Go to Chat',
+    colorScheme: 'blue',
+    icon: ChatIcon,
+    buttonLabel: 'Contact Applicant'
   }
 };
 
-export const useAdoptionActions = ({
+export const getAvailableAdoptionActions = ({
   adoption,
   userProfile,
-  transactions = [],
-  actions
+  transactions = []
 }: {
-  adoption?: AdoptionWithListing;
+  adoption: AdoptionWithListing;
   userProfile: any;
   transactions?: any[];
-  actions: AdoptionTimelineActions;
 }) => {
-  const updateAdoptionMutation = useUpdateAdoption();
-
-  if (!adoption) {
-    return {
-      updateAdoption: updateAdoptionMutation.mutateAsync,
-      isLoading: updateAdoptionMutation.isPending,
-      availableActions: []
-    };
-  }
-
   const isApplicant = userProfile?.id === adoption.seeker_id;
   const pendingTransactions = transactions?.filter(tx => tx.status === 'pending') || [];
   const hasPendingReservationPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'reservation');
   const hasPendingFinalPayment = pendingTransactions.some(tx => (tx.meta as any)?.payment_type === 'final');
   const contractRequired = adoption.listings?.requirements?.contract_required;
 
-  const getAvailableActions = () => {
-    const buttons: any[] = [];
+  const buttons: any[] = [];
 
-    // Seeker Actions
-    if (isApplicant) {
-      if (adoption.status === 'submitted') {
-        const config = ADOPTION_ACTION_CONFIGS.withdraw;
-        buttons.push({
-          ...config,
-          label: config.buttonLabel,
-          variant: 'outline'
-        });
-      }
-
-      if (adoption.status === 'approved' && !adoption.reservation_paid && actions.onPayReservation) {
-        buttons.push({
-          label: 'Pay Reservation Fee',
-          onClick: actions.onPayReservation,
-          colorScheme: 'green',
-          icon: StarIcon,
-          variant: 'solid'
-        });
-      }
-
-      if (['approved', 'reserved'].includes(adoption.status) && hasPendingReservationPayment && actions.onCheckPaymentStatus) {
-        buttons.push({
-          label: 'Check Payment Status',
-          onClick: () => {
-            const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'reservation');
-            if (transaction) {
-              actions.onCheckPaymentStatus?.((transaction.meta as any).paystack_reference, 'reservation');
-            }
-          },
-          colorScheme: 'blue',
-          icon: InfoIcon,
-          variant: 'outline'
-        });
-
-        if (actions.onContactSupport) {
-          buttons.push({
-            label: 'Contact Support',
-            onClick: actions.onContactSupport,
-            colorScheme: 'orange',
-            icon: InfoIcon,
-            variant: 'ghost'
-          });
-        }
-      }
-
-      if (adoption.status === 'rejected' && actions.onContactSupport) {
-        buttons.push({
-          label: 'Contact Support',
-          onClick: actions.onContactSupport,
-          colorScheme: 'red',
-          icon: InfoIcon,
-          variant: 'ghost'
-        });
-      }
-
-      if (adoption.reservation_paid && !adoption.contract_signed && contractRequired && actions.onSignContract) {
-        buttons.push({
-          label: 'Sign Contract',
-          onClick: actions.onSignContract,
-          colorScheme: 'blue',
-          icon: EditIcon,
-          variant: 'solid'
-        });
-      }
-
-      if ((adoption.contract_signed || (adoption.reservation_paid && !contractRequired)) && !adoption.payment_completed && actions.onCompletePayment) {
-        buttons.push({
-          label: 'Complete Payment',
-          onClick: actions.onCompletePayment,
-          colorScheme: 'green',
-          icon: StarIcon,
-          variant: 'solid'
-        });
-      }
-
-      if (hasPendingFinalPayment && actions.onCheckPaymentStatus) {
-        buttons.push({
-          label: 'Check Payment Status',
-          onClick: () => {
-            const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'final');
-            if (transaction) {
-              actions.onCheckPaymentStatus?.((transaction.meta as any).paystack_reference, 'final');
-            }
-          },
-          colorScheme: 'blue',
-          icon: InfoIcon,
-          variant: 'outline'
-        });
-        if (actions.onContactSupport) {
-          buttons.push({
-            label: 'Contact Support',
-            onClick: actions.onContactSupport,
-            colorScheme: 'orange',
-            icon: InfoIcon,
-            variant: 'ghost'
-          });
-        }
-      }
-
-      if (adoption.status === 'completed' && actions.onLeaveReview) {
-        buttons.push({
-          label: 'Leave Review',
-          onClick: actions.onLeaveReview,
-          colorScheme: 'blue',
-          icon: StarIcon,
-          variant: 'solid'
-        });
-      }
-
-    } else {
-      // Breeder Actions
-      if (adoption.status === 'submitted') {
-        const approveConfig = ADOPTION_ACTION_CONFIGS.approve;
-        const rejectConfig = ADOPTION_ACTION_CONFIGS.reject;
-
-        buttons.push({
-          ...approveConfig,
-          label: approveConfig.buttonLabel,
-          variant: 'solid'
-        });
-
-        buttons.push({
-          ...rejectConfig,
-          label: rejectConfig.buttonLabel,
-          variant: 'outline'
-        });
-      }
-
-      if (adoption.payment_completed && adoption.status !== 'completed') {
-        const config = ADOPTION_ACTION_CONFIGS.complete;
-        buttons.push({
-          ...config,
-          label: config.buttonLabel,
-          variant: 'solid'
-        });
-      }
-
-      if (adoption.status === 'completed' && actions.onLeaveReview) {
-        buttons.push({
-          label: 'Leave Review',
-          onClick: actions.onLeaveReview,
-          colorScheme: 'purple',
-          icon: StarIcon,
-          variant: 'solid'
-        });
-      }
+  // Seeker Actions
+  if (isApplicant) {
+    if (adoption.status === 'submitted') {
+      const config = ADOPTION_ACTION_CONFIGS.withdraw;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'outline'
+      });
     }
 
-    return buttons;
-  };
+    if (adoption.status === 'approved' && !adoption.reservation_paid) {
+      const config = ADOPTION_ACTION_CONFIGS.pay_reservation;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
 
-  return {
-    updateAdoption: updateAdoptionMutation.mutateAsync,
-    isLoading: updateAdoptionMutation.isPending,
-    availableActions: getAvailableActions()
-  };
+    if (['approved', 'reserved'].includes(adoption.status) && hasPendingReservationPayment) {
+      const config = ADOPTION_ACTION_CONFIGS.check_payment_status;
+      const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'reservation');
+
+      buttons.push({
+        ...config,
+        type: 'check_payment_status_reservation',
+        label: config.buttonLabel,
+        variant: 'outline',
+        payload: { reference: (transaction?.meta as any)?.paystack_reference, type: 'reservation' }
+      });
+    }
+
+    if (adoption.reservation_paid && !adoption.contract_signed && contractRequired) {
+      const config = ADOPTION_ACTION_CONFIGS.sign_contract;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    if ((adoption.contract_signed || (adoption.reservation_paid && !contractRequired)) && !adoption.payment_completed) {
+      const config = ADOPTION_ACTION_CONFIGS.complete_payment;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    if (hasPendingFinalPayment) {
+      const config = ADOPTION_ACTION_CONFIGS.check_payment_status;
+      const transaction = pendingTransactions.find(tx => (tx.meta as any)?.payment_type === 'final');
+
+      buttons.push({
+        ...config,
+        type: 'check_payment_status_final',
+        label: config.buttonLabel,
+        variant: 'outline',
+        payload: { reference: (transaction?.meta as any)?.paystack_reference, type: 'final' }
+      });
+    }
+
+    if (adoption.status === 'completed') {
+      const config = ADOPTION_ACTION_CONFIGS.leave_review;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
+    buttons.push({
+      ...supportConfig,
+      label: supportConfig.buttonLabel,
+      variant: 'ghost'
+    });
+
+  } else {
+    // Breeder Actions
+    if (adoption.status === 'submitted') {
+      const approveConfig = ADOPTION_ACTION_CONFIGS.approve;
+      const rejectConfig = ADOPTION_ACTION_CONFIGS.reject;
+
+      buttons.push({
+        ...approveConfig,
+        label: approveConfig.buttonLabel,
+        variant: 'solid'
+      });
+
+      buttons.push({
+        ...rejectConfig,
+        label: rejectConfig.buttonLabel,
+        variant: 'outline'
+      });
+    }
+
+    if (adoption.payment_completed && adoption.status !== 'completed') {
+      const config = ADOPTION_ACTION_CONFIGS.complete;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    if (adoption.status === 'completed') {
+      const config = ADOPTION_ACTION_CONFIGS.leave_review;
+      buttons.push({
+        ...config,
+        label: config.buttonLabel,
+        variant: 'solid'
+      });
+    }
+
+    const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
+    buttons.push({
+      ...supportConfig,
+      label: supportConfig.buttonLabel,
+      variant: 'ghost'
+    });
+  }
+
+  return buttons;
+};
+
+export const getPriorityAdoptionAction = (params: {
+  adoption: AdoptionWithListing;
+  userProfile: any;
+  transactions?: any[];
+}) => {
+  const actions = getAvailableAdoptionActions(params);
+  return actions.find(a => a.isPriority) || null;
 };
 
 
@@ -781,8 +768,18 @@ export const useAdoption = (adoptionId: string) => {
       const { data, error } = await supabase
         .from('adoptions')
         .select(`
-          *,
-          listings (
+          id,
+          listing_id,
+          seeker_id,
+          status,
+          application_data,
+          contract_url,
+          reservation_paid,
+          contract_signed,
+          payment_completed,
+          created_at,
+          updated_at,
+          listings:listing_id (
             id,
             title,
             type,
@@ -798,11 +795,11 @@ export const useAdoption = (adoptionId: string) => {
             pet_gender,
             location_text,
             created_at,
-            breeds (
+            breeds:breed_id (
               id,
               name
             ),
-            users (
+            users:owner_id (
               id,
               display_name,
               email,
@@ -817,7 +814,7 @@ export const useAdoption = (adoptionId: string) => {
               )
             )
           ),
-          users (
+          users:seeker_id (
             id,
             display_name,
             email,
@@ -838,7 +835,23 @@ export const useAdoption = (adoptionId: string) => {
         .single();
 
       if (error) throw error;
-      return data;
+
+      if (data) {
+        // Safe mapping for potential array responses from O2M inference
+        const adoptionData = data as any;
+
+        if (adoptionData.users?.seeker_profiles && Array.isArray(adoptionData.users.seeker_profiles)) {
+          adoptionData.users.seeker_profiles = adoptionData.users.seeker_profiles[0] || null;
+        }
+
+        if (adoptionData.listings?.users?.breeder_profiles && Array.isArray(adoptionData.listings.users.breeder_profiles)) {
+          adoptionData.listings.users.breeder_profiles = adoptionData.listings.users.breeder_profiles[0] || null;
+        }
+
+        return adoptionData as AdoptionWithListing;
+      }
+
+      return null;
     },
     enabled: !!adoptionId,
   });
@@ -946,24 +959,18 @@ export const useCreateAdoption = () => {
       return data;
     },
     onSuccess: async (data) => {
-      // Create notification for breeder
+      // Send notifications using NotificationService (DB + Novu, no email)
       try {
-        await supabase
-          .from('notifications')
-          .insert({
-            user_id: data.listings.owner_id,
-            type: 'application_received',
-            title: 'New Adoption Application Received',
-            body: `${data.users?.display_name || 'Someone'} applied for ${data.listings.title}`,
-            target_type: 'adoption',
-            target_id: data.listings.id,
-            meta: {
-              adoptionId: data.id,
-              listingId: data.listings.id,
-            },
-          });
+        await NotificationService.sendAdoptionStatusNotification(
+          data.seeker_id,
+          data.listings.owner_id,
+          'submitted', // Initial status
+          data.listings.title,
+          data.id,
+          data.listing_id
+        );
       } catch (notificationError) {
-        console.error('Failed to create notification:', notificationError);
+        console.error('Failed to send adoption application notifications:', notificationError);
       }
 
       queryClient.invalidateQueries({ queryKey: queryKeys.adoptions.byUser() });
@@ -1062,49 +1069,19 @@ export const useUpdateAdoption = () => {
         }
       }
 
-      // Create notification for seeker when status changes
-      if (data.status === 'pending' || data.status === 'approved' || data.status === 'rejected' || data.status === 'completed') {
+      // Send notifications to relevant parties using NotificationService (DB + Novu, no email)
+      if (data.status === 'pending' || data.status === 'approved' || data.status === 'rejected' || data.status === 'withdrawn' || data.status === 'completed') {
         try {
-          let title = '';
-          let body = '';
-          const listingTitle = data.listings?.title || 'listing';
-
-          switch (data.status) {
-            case 'pending':
-              title = 'Adoption Under Review';
-              body = `Your adoption application for ${listingTitle} is now being reviewed by the breeder`;
-              break;
-            case 'approved':
-              title = 'Adoption Application Approved';
-              body = `Congratulations! Your adoption application for ${listingTitle} has been approved.`;
-              break;
-            case 'rejected':
-              title = 'Adoption Application Not Approved';
-              body = `Your adoption application for ${listingTitle} was not approved at this time`;
-              break;
-            case 'completed':
-              title = 'Adoption Completed';
-              body = `Your adoption process for ${listingTitle} has been completed successfully`;
-              break;
-          }
-
-          await supabase
-            .from('notifications')
-            .insert({
-              user_id: data.seeker_id,
-              type: 'adoption_status_changed',
-              title,
-              body,
-              target_type: 'adoption',
-              target_id: data.listings?.id,
-              meta: {
-                adoptionId: data.id,
-                listingId: data.listings?.id,
-                status: data.status,
-              },
-            });
+          await NotificationService.sendAdoptionStatusNotification(
+            data.seeker_id,
+            data.listings?.owner_id || '',
+            data.status,
+            data.listings?.title || 'Listing',
+            data.id,
+            data.listing_id
+          );
         } catch (notificationError) {
-          console.error('Failed to create status change notification:', notificationError);
+          console.error('Failed to send status change notification:', notificationError);
         }
       }
 

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { Listing } from '../../db/schema';
+import { NotificationService } from '../../services/notificationService';
 
 interface CreateListingData {
   title: string;
@@ -586,10 +587,28 @@ export const useCreateListing = () => {
         .select()
         .single();
 
-      if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      // Send notifications using the centralized breeder activity service
+      const { data: breeder } = await supabase
+        .from('users')
+        .select('display_name')
+        .eq('id', data.owner_id)
+        .single();
+
+      await NotificationService.sendBreederActivityNotification(
+        data.owner_id,
+        breeder?.display_name || 'Breeder',
+        'listing',
+        {
+          title: data.title,
+          id: data.id,
+          breed_id: data.breed_id,
+          user_breed_id: data.user_breed_id,
+        }
+      );
+
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
     },
   });

@@ -17,6 +17,7 @@ import { GiDogHouse } from "react-icons/gi";
 import { LuDog } from "react-icons/lu";
 import { useBreedersForBreed } from "lib/hooks/queries/useBreeders";
 import { PageHeaderWithTwoButtons } from "lib/components/ui/PageHeaderWithTwoButtons";
+import { AddToWishlistButton } from "lib/components/ui/AddToWishlistButton";
 
 const PublicBreedDetailPage = () => {
   const router = useRouter();
@@ -34,16 +35,6 @@ const PublicBreedDetailPage = () => {
   };
   const toast = useToast();
   const isMobile = useBreakpointValue({ base: true, md: false });
-
-  const onAddToWishlist = () => {
-    toast({
-      title: "Added to wishlist",
-      description: "You will be notified when new listings are added.",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
-  }
 
   if (isLoadingBreed || isLoadingListings || isLoadingBreeders) {
     return (
@@ -111,13 +102,13 @@ const PublicBreedDetailPage = () => {
 
                 </HStack>
               }
-              buttonPrimary={
-                {
-                  label: "Add to wishlist",
-                  variant: "secondary",
-                  onClick: onAddToWishlist,
-                  icon: <FiHeart />
-                }
+              actions={
+                <AddToWishlistButton
+                  breedId={breed?.id}
+                  notifyWhenAvailable={true}
+                  withText={true}
+                  variant="secondary"
+                />
               }
               flexDir={{ base: "row", md: "row" }}
             // buttonSecondary={[
@@ -268,10 +259,15 @@ const PublicBreedDetailPage = () => {
                     onListingClick={handleListingClick}
                     emptyMessage={`No ${breed?.name} listings found`}
                     emptyDescription="Add to wishlist to get notified when new listings are added."
-                    showEmptyAction={true}
-                    onEmptyAction={onAddToWishlist}
-                    emptyActionLabel="Add to Wishlist"
-                    emptyActionIcon={<FiHeart />}
+                    emptyActionComponent={
+                      <AddToWishlistButton
+                        breedId={breed?.id}
+                        notifyWhenAvailable={true}
+                        withText={true}
+                        variant="primary"
+                        colorScheme="brand"
+                      />
+                    }
                     showFilters={false}
                     showResultsCount={false}
                     showSearch={false}
@@ -283,9 +279,15 @@ const PublicBreedDetailPage = () => {
                     breeders={breeders}
                     emptyMessage={`No ${breed?.name} breeders found`}
                     emptyDescription="Add to wishlist to get notified when new breeders are added."
-                    emptyActionLabel="Add to Wishlist"
-                    emptyActionIcon={<FiHeart />}
-                    emptyAction={onAddToWishlist}
+                    emptyActionComponent={
+                      <AddToWishlistButton
+                        breedId={breed?.id}
+                        notifyWhenAvailable={true}
+                        withText={true}
+                        variant="primary"
+                        colorScheme="brand"
+                      />
+                    }
                     columns={{ base: 1, md: 2, lg: 1 }}
                   />
                 </TabPanel>
