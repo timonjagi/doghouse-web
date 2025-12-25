@@ -56,6 +56,7 @@ interface BreedListProps {
 
   // Custom handlers
   onBreedClick?: (userBreed: UserBreedWithBreed) => void;
+  onAdd?: () => void;
 
   // Empty state
   emptyMessage?: string;
@@ -72,6 +73,7 @@ export const BreedList = ({
   showResultsCount = true,
   showSort = true,
   onBreedClick,
+  onAdd,
   emptyMessage
 }: BreedListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -193,8 +195,37 @@ export const BreedList = ({
         </HStack>
       )}
 
-      {filteredBreeds.length > 0 ? (
+      {filteredBreeds.length > 0 || (onAdd && !searchTerm && !selectedGroup) ? (
         <SimpleGrid columns={columns} spacing={spacing}>
+          {onAdd && (
+            <Card
+              height="100%"
+              minH="300px"
+              cursor="pointer"
+              onClick={onAdd}
+              borderStyle="dashed"
+              borderWidth="2px"
+              borderColor="gray.300"
+              _hover={{ borderColor: "brand.500", shadow: "md" }}
+              bg="transparent"
+            >
+              <CardBody display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                <IconButton
+                  aria-label="Add breed"
+                  icon={<SearchIcon transform="rotate(45deg)" />} // Using SearchIcon rotated as plus for now, or fetch FiPlus
+                  fontSize="3xl"
+                  variant="ghost"
+                  colorScheme="brand"
+                  isRound
+                  onClick={onAdd}
+                  mb={4}
+                />
+                <Text fontWeight="bold" fontSize="lg" color="gray.600">
+                  Add New Breed
+                </Text>
+              </CardBody>
+            </Card>
+          )}
           {filteredBreeds.map((userBreed) => (
             <BreedCard
               key={userBreed.id}

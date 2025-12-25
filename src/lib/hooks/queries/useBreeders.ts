@@ -9,7 +9,7 @@ export const useAllBreeders = (
     location?: string;
     page?: number;
     pageSize?: number;
-    petType?: string;
+    pet_type?: string;
   }
 ) => {
   return useQuery({
@@ -49,9 +49,9 @@ export const useAllBreeders = (
         `)
         .eq('role', 'breeder');
 
-      if (options?.petType) {
+      if (options?.pet_type) {
         // Since pet_types is a jsonb array, use contains
-        query = query.contains('breeder_profiles.pet_types', [options.petType]);
+        query = query.contains('breeder_profiles.pet_types', [options.pet_type]);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });

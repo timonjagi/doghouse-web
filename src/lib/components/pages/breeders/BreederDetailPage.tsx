@@ -7,9 +7,6 @@ import {
   Text,
   Alert,
   AlertIcon,
-  Card,
-  CardBody,
-  Avatar,
   HStack,
   Badge,
   Button,
@@ -18,10 +15,8 @@ import {
   Tab,
   TabPanels,
   TabPanel,
-  SimpleGrid,
   useToast,
   Icon,
-  Stack,
   useColorModeValue,
   Modal,
   ModalBody,
@@ -31,27 +26,22 @@ import {
   ModalCloseButton,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { MdLocationOn, MdStar, MdEmail, MdPhone, MdVerifiedUser } from 'react-icons/md';
+import { MdVerifiedUser } from 'react-icons/md';
 import { Loader } from 'lib/components/ui/Loader';
 import { useUserProfileById } from 'lib/hooks/queries/useUserProfile';
 import { useBreederProfile } from 'lib/hooks/queries/useBreederProfile';
 import { useUserBreedsFromUser } from 'lib/hooks/queries/useUserBreeds';
 import { useIncrementListingViews, useListingsByOwner } from 'lib/hooks/queries/useListings';
-import ListingCard from 'lib/components/ui/ListingCard';
-import { BreedCard } from 'lib/components/ui/BreedCard';
-import { ArrowBackIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
-import { BsFillBuildingFill } from 'react-icons/bs';
-import { Rating } from 'lib/components/ui/Rating';
 import { CardContent, CardWithAvatar } from 'lib/components/ui/UserCardWithBackground';
 import { UserInfo } from 'lib/components/ui/UserInfo';
-import { FiBell, FiEdit, FiEdit2, FiEdit3, FiLogOut, FiPlus, FiShield, FiShoppingBag, FiStar, FiUserPlus } from 'react-icons/fi';
+import { FiBell, FiEdit, FiPlus, FiShield, FiShoppingBag, FiStar, FiUserPlus } from 'react-icons/fi';
 import { LuDog } from 'react-icons/lu';
 import { useCurrentUser } from 'lib/hooks/queries/useAuth';
 import { KennelForm } from '../../ui/KennelForm';
 import { BreedList, UserBreedWithBreed } from 'lib/components/ui/BreedList';
 import ListingList from 'lib/components/ui/ListingList';
-import { Listing, UserBreed } from 'lib/db/schema';
+import { UserBreed } from 'lib/db/schema';
 import { EmptyView } from 'lib/components/ui/EmptyView';
 import ListingForm from '../listings/ListingForm';
 
@@ -216,7 +206,9 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
                 <HStack justifyContent={{ base: 'flex-start', sm: 'center' }} py="2">
                   <Text color={useColorModeValue("gray.600", "gray.400")}>
-                    {breederProfile?.pet_type || 'Dog'} breeder
+                    {breederProfile?.pet_types && Array.isArray(breederProfile.pet_types) && breederProfile.pet_types.length > 0
+                      ? breederProfile.pet_types.map((t: string) => t.charAt(0).toUpperCase() + t.slice(1)).join(', ')
+                      : 'Dog'} breeder
                   </Text>
                   <Badge colorScheme={breederProfile?.verified_at ? 'green' : 'gray'} size="sm">
                     <HStack>
