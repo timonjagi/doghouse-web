@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // Read raw body for signature verification
-    const chunks: Buffer[] = [];
+    const chunks: any[] = [];
     for await (const chunk of req) {
       chunks.push(chunk);
     }
