@@ -68,6 +68,7 @@ interface ListingListProps {
 
   // Custom handlers
   onListingClick?: (listingId: string) => void;
+  onAdd?: () => void;
 
   // Empty state
   emptyMessage?: string;
@@ -91,6 +92,7 @@ export const ListingList: React.FC<ListingListProps> = ({
   breeds,
   breedsLoading = false,
   onListingClick,
+  onAdd,
   emptyMessage = "No listings found.",
   emptyDescription = "Clear your search criteria to find listings.",
   showEmptyAction = false,
@@ -250,8 +252,9 @@ export const ListingList: React.FC<ListingListProps> = ({
       )}
 
       {/* Listings Grid */}
-      {filteredListings.length > 0 ? (
+      {filteredListings.length > 0 || (onAdd && !filters.search) ? (
         <SimpleGrid columns={columns} spacing={spacing}>
+
           {filteredListings.map((listing) => (
             <ListingCard
               key={listing.id}
@@ -259,6 +262,36 @@ export const ListingList: React.FC<ListingListProps> = ({
               handleListingClick={handleListingClick}
             />
           ))}
+
+          {onAdd && (
+            <Card
+              height="100%"
+              minH="380px"
+              cursor="pointer"
+              onClick={onAdd}
+              borderStyle="dashed"
+              borderWidth="2px"
+              borderColor="gray.300"
+              _hover={{ borderColor: "brand.500", shadow: "md" }}
+              bg="transparent"
+            >
+              <CardBody display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                <IconButton
+                  aria-label="Add listing"
+                  icon={<SearchIcon transform="rotate(45deg)" />}
+                  fontSize="3xl"
+                  variant="ghost"
+                  colorScheme="brand"
+                  isRound
+                  mb={4}
+                  pointerEvents="none"
+                />
+                <Text fontWeight="bold" fontSize="lg" color="gray.600">
+                  Add New Listing
+                </Text>
+              </CardBody>
+            </Card>
+          )}
         </SimpleGrid>
       ) : (
         <Center py={12}>

@@ -148,6 +148,7 @@ export const mapFiltersToListingsParams = (
   if (filters.breeds && filters.breeds.length > 0) {
     params.breed_ids = filters.breeds
   }
+  if (filters.pet_type) params.pet_type = filters.pet_type
 
   return params
 }
@@ -172,6 +173,7 @@ export const mapFiltersToBreedParams = (
     params.breed_groups = filters.breed_groups
   }
   if (filters.size) params.size = filters.size
+  if (filters.pet_type) params.pet_type = filters.pet_type
 
   return params
 }
@@ -190,6 +192,7 @@ export const mapFiltersToBreederParams = (
 
   if (filters.q) params.search = filters.q
   if (filters.location) params.location = filters.location
+  if (filters.pet_type) params.pet_type = filters.pet_type
 
   return params
 }
@@ -285,7 +288,10 @@ export const getRelevantFiltersForTab = (
       }
 
     default:
-      return baseFilters
+      return {
+        ...baseFilters,
+        pet_type: filters.pet_type,
+      }
   }
 }
 

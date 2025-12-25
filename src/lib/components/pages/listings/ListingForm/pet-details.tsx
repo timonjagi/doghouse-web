@@ -37,17 +37,30 @@ interface PetDetailsStepProps {
 export const PetDetailsStep: React.FC<PetDetailsStepProps> = ({ data, updateData, userBreeds }) => {
   const bgColor = useColorModeValue('gray.50', 'gray.700');
 
+  const filteredBreeds = React.useMemo(() => {
+    if (!userBreeds || !data.pet_type) return userBreeds;
+    return userBreeds.filter(ub => ub.pet_type === data.pet_type || (!ub.pet_type && data.pet_type === 'dog'));
+  }, [userBreeds, data.pet_type]);
 
-  if (userBreeds?.length === 0) {
+  if (!filteredBreeds || filteredBreeds.length === 0) {
     return (
       <Alert status="info">
         <AlertIcon />
-        No breeds added yet. Please add a breed first.
-
-        <Button as={Link} href="/dashboard/breeds">Add Breed</Button>
+        <VStack align="start" spacing={2}>
+          <Text>
+            No <strong>{data.pet_type}</strong> breeds found in your profile.
+          </Text>
+          <Text fontSize="sm">
+            Please add a {data.pet_type} breed to your manage breeds page before creating a listing for this type.
+          </Text>
+          <Button as={Link} href="/dashboard/breeds/manage" size="sm" colorScheme="blue">
+            Add {data.pet_type} Breed
+          </Button>
+        </VStack>
       </Alert>
     );
   }
+
 
   if (data.type === 'litter') {
     return (
@@ -73,11 +86,12 @@ export const PetDetailsStep: React.FC<PetDetailsStepProps> = ({ data, updateData
                 onChange={(e) => updateData({ user_breed_id: e.target.value || undefined })}
                 bg="white"
               >
-                {userBreeds?.map((userBreed) => (
+                {filteredBreeds?.map((userBreed) => (
                   <option key={userBreed.id} value={userBreed.id}>
                     {userBreed.breeds?.name}
                   </option>
                 ))}
+
               </Select>
               <Text fontSize="xs" color="gray.500" mt={1}>
                 You can only select from the breeds you have added. To add a new breed, go to the <Text as={Link} color="brand.600" cursor="pointer" href="/dashboard/breeds/manage">Manage Breeds</Text> page.
@@ -163,11 +177,12 @@ export const PetDetailsStep: React.FC<PetDetailsStepProps> = ({ data, updateData
                 onChange={(e) => updateData({ user_breed_id: e.target.value || undefined })}
                 bg="white"
               >
-                {userBreeds?.map((userBreed) => (
+                {filteredBreeds?.map((userBreed) => (
                   <option key={userBreed.id} value={userBreed.id}>
                     {userBreed.breeds?.name}
                   </option>
                 ))}
+
               </Select>
               <Text fontSize="xs" color="gray.500" mt={1}>
                 You can only select from the breeds you have added. To add a new breed, go to the <Text as={Link} color="brand.600" cursor="pointer" href="/dashboard/breeds/manage">Manage Breeds</Text> page.

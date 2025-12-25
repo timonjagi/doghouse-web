@@ -10,6 +10,9 @@ interface CreateListingData {
   type: 'litter' | 'single_pet' | 'wanted';
   breed_id?: string;
   user_breed_id?: string;
+  pet_type?: string;
+  is_cross_breed?: boolean;
+  secondary_breed_id?: string;
   birth_date?: string;
   available_date?: string;
   number_of_puppies?: number;
@@ -37,6 +40,9 @@ interface UpdateListingData {
   type?: 'litter' | 'single_pet' | 'wanted';
   breed_id?: string;
   user_breed_id?: string;
+  pet_type?: string;
+  is_cross_breed?: boolean;
+  secondary_breed_id?: string;
   birth_date?: string;
   available_date?: string;
   number_of_puppies?: number;
@@ -71,6 +77,7 @@ export const useListings = (filters?: {
   price_min?: string;
   price_max?: string;
   location?: string;
+  pet_type?: string;
   sort?: string;
   page?: number;
   pageSize?: number;
@@ -88,6 +95,9 @@ export const useListings = (filters?: {
         type,
         owner_id,
         owner_type,
+        pet_type,
+        is_cross_breed,
+        secondary_breed_id,
         breed_id,
         user_breed_id,
         birth_date,
@@ -166,6 +176,11 @@ export const useListings = (filters?: {
         query = query.ilike('location_text', `%${filters.location}%`);
       }
 
+      // Apply pet type filter
+      if (filters?.pet_type) {
+        query = query.eq('pet_type', filters.pet_type);
+      }
+
       // Apply sorting
       if (filters?.sort) {
         switch (filters.sort) {
@@ -215,18 +230,21 @@ export const useListings = (filters?: {
 };
 
 
-export const usePopularListings = (limit: number = 6) => {
+export const usePopularListings = (limit: number = 6, petType?: string) => {
   return useQuery({
-    queryKey: queryKeys.listings.popular(limit),
+    queryKey: queryKeys.listings.popular(limit, petType),
     queryFn: async (): Promise<any[]> => {
       // Get listings ordered by view_count (popularity) and recent activity
-      const { data, error } = await supabase
+      let query = supabase
         .from('listings')
         .select(`
           id,
           title,
           description,
           type,
+          pet_type,
+          is_cross_breed,
+          secondary_breed_id,
           price,
           reservation_fee,
           photos,
@@ -246,10 +264,17 @@ export const usePopularListings = (limit: number = 6) => {
               kennel_location
             )
           )
-        `)
+        `);
+
+      if (petType) {
+        query = query.eq('pet_type', petType);
+      }
+
+      const { data, error } = await query
         .order('view_count', { ascending: false })
         .order('updated_at', { ascending: false })
         .limit(limit);
+
 
       if (error) throw error;
 
@@ -261,18 +286,21 @@ export const usePopularListings = (limit: number = 6) => {
 };
 
 
-export const useNewListings = (limit: number = 6) => {
+export const useNewListings = (limit: number = 6, petType?: string) => {
   return useQuery({
-    queryKey: queryKeys.listings.new(limit),
+    queryKey: queryKeys.listings.new(limit, petType),
     queryFn: async (): Promise<any[]> => {
       // Get recently added listings
-      const { data, error } = await supabase
+      let query = supabase
         .from('listings')
         .select(`
           id,
           title,
           description,
           type,
+          pet_type,
+          is_cross_breed,
+          secondary_breed_id,
           price,
           reservation_fee,
           photos,
@@ -290,10 +318,17 @@ export const useNewListings = (limit: number = 6) => {
               kennel_location
             )
           )
-        `)
+        `);
+
+      if (petType) {
+        query = query.eq('pet_type', petType);
+      }
+
+      const { data, error } = await query
         // .eq('status', 'available')
         .order('created_at', { ascending: false })
         .limit(limit);
+
 
       if (error) throw error;
       return data || [];
@@ -319,6 +354,9 @@ export const useListing = (id: string) => {
           user_breed_id,
           owner_id,
           owner_type,
+          pet_type,
+          is_cross_breed,
+          secondary_breed_id,
           birth_date,
           available_date,
           number_of_puppies,
@@ -404,6 +442,9 @@ export const useListingsByOwner = (ownerId: string) => {
           type,
           breed_id,
           owner_id,
+          pet_type,
+          is_cross_breed,
+          secondary_breed_id,
           user_breed_id,
           birth_date,
           available_date,

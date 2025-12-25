@@ -41,6 +41,7 @@ export const breeds = pgTable("breeds", {
   life_span: text("life_span"),
   description: text("description"),
   traits: jsonb("traits"), // temperament etc.
+  pet_type: varchar("pet_type", { length: 50 }).default('dog'),
   featured_image_url: text("featured_image_url"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
@@ -77,7 +78,7 @@ export const breeder_profiles = pgTable("breeder_profiles", {
   rating: numeric("rating", { precision: 3, scale: 2 }).default('0'),
   review_count: integer("review_count").default(0),
   kennel_avatar_url: text("kennel_avatar_url"),
-  pet_type: varchar("pet_type", { length: 50 }),
+  pet_types: jsonb("pet_types").$default(() => "[]"),
   website: text("website"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
@@ -102,8 +103,13 @@ export const user_breeds = pgTable("user_breeds", {
   user_id: uuid("user_id").notNull().references(() => users.id),
   breed_id: uuid("breed_id").notNull().references(() => breeds.id),
   is_owner: boolean("is_owner").notNull().default(true),
+  pet_type: varchar("pet_type", { length: 50 }),
   notes: text("notes"),
   images: jsonb("images").$default(() => "[]"),
+  is_cross_breed: boolean("is_cross_breed").default(false),
+  secondary_breed_id: uuid("secondary_breed_id").references(() => breeds.id),
+  is_verified: boolean("is_verified").default(false),
+
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -115,6 +121,7 @@ export const listings = pgTable("listings", {
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   type: varchar("type", { length: 50 }).notNull(), // 'litter' | 'single_pet' | 'wanted'
+  pet_type: varchar("pet_type", { length: 50 }),
 
   // Owner information
   owner_id: uuid("owner_id").notNull().references(() => users.id),
@@ -122,6 +129,8 @@ export const listings = pgTable("listings", {
 
   // Breed information
   breed_id: uuid("breed_id").references(() => breeds.id),
+  secondary_breed_id: uuid("secondary_breed_id").references(() => breeds.id),
+  is_cross_breed: boolean("is_cross_breed").default(false),
   user_breed_id: uuid("user_breed_id").references(() => user_breeds.id),
 
   // Litter-specific fields (only for type = 'litter')
