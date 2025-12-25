@@ -13,6 +13,7 @@ import {
   Box,
   Center,
   HStack,
+  Switch,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useBreedImageUpload, useCreateUserBreed, useCurrentUser, useUpdateUserBreed, useUpdateUserProfile, useUserBreedsFromUser } from "../../../../hooks/queries";
@@ -23,6 +24,7 @@ import { supabase } from "../../../../supabase/client";
 import { BsInfoCircle } from "react-icons/bs";
 import { Select } from "chakra-react-select";
 import { Loader } from "lib/components/ui/Loader";
+import { PetTypePicker } from "../../../ui/PetTypePicker";
 
 type PageProps = {
   currentStep: number;
@@ -39,15 +41,23 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
   const toast = useToast();
 
   const [selectedBreed, setSelectedBreed] = useState<any>(null);
+  const [selectedPetType, setSelectedPetType] = useState<string>("dog");
+  const [isCrossBreed, setIsCrossBreed] = useState(false);
+  const [secondaryBreed, setSecondaryBreed] = useState<any>(null);
   const [breedImages, setBreedImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Use local breeds data for better performance
-  const breedOptions = breedsData.map((breed) => ({
-    label: breed.name,
-    value: breed.name, // Use name as value for selection
-    breed: breed,
-  }));
+  const breedOptions = breedsData
+    .filter((breed) => {
+      // In a real app, this would filter by selectedPetType if JSON supported it
+      return selectedPetType === 'dog';
+    })
+    .map((breed) => ({
+      label: breed.name,
+      value: breed.name, // Use name as value for selection
+      breed: breed,
+    }));
 
   const onSelectBreed = (selectedOption: any) => {
     if (selectedOption) {
@@ -56,6 +66,15 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
       setSelectedBreed(null);
     }
   };
+
+  const onSelectSecondaryBreed = (selectedOption: any) => {
+    if (selectedOption) {
+      setSecondaryBreed(selectedOption.breed);
+    } else {
+      setSecondaryBreed(null);
+    }
+  };
+
   // Use the reusable hooks
   const { onSelectImage, onRemoveImage, isMaxFiles, selectedImages } = useDropZone({
     selectedImages: breedImages,
@@ -113,10 +132,23 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
 
       if (findError) throw new Error(`Breed not found: ${selectedBreed.name}`);
 
+      let secondaryBreedId = undefined;
+      if (isCrossBreed && secondaryBreed) {
+        const { data: dbSecondaryBreed } = await supabase
+          .from('breeds')
+          .select('id')
+          .eq('name', secondaryBreed.name)
+          .single();
+        secondaryBreedId = dbSecondaryBreed?.id;
+      }
+
       // Create the user_breed record with the database ID
       const newUserBreed = await createUserBreed({
         breed_id: dbBreed.id,
-        is_owner: true
+        is_owner: true,
+        pet_type: selectedPetType,
+        is_cross_breed: isCrossBreed,
+        secondary_breed_id: secondaryBreedId
       });
 
       const uploadedUrls = await uploadImages(selectedImages as File[]);
@@ -129,7 +161,26 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
       }
       await updateUserProfile({
         onboarding_completed: true,
+        // We might also want to update the specialized pet types in breeder_profiles
       });
+
+      // Update breeder profile pet_types array
+      const { data: profile } = await supabase
+        .from('breeder_profiles')
+        .select('pet_types')
+        .eq('user_id', user.id)
+        .single();
+
+      const existingPetTypes = profile?.pet_types || [];
+      if (!existingPetTypes.includes(selectedPetType)) {
+        await supabase
+          .from('breeder_profiles')
+          .update({
+            pet_types: [...existingPetTypes, selectedPetType]
+          })
+          .eq('user_id', user.id);
+      }
+
 
       toast({
         title: "Breed details saved successfully!",
@@ -167,6 +218,14 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
 
           <Stack spacing={4} w="full">
             <FormControl>
+              <FormLabel fontWeight="semibold">Pet Type</FormLabel>
+              <PetTypePicker
+                value={selectedPetType}
+                onChange={(types) => setSelectedPetType(types[0])}
+              />
+            </FormControl>
+
+            <FormControl>
               <FormLabel htmlFor="breed" fontWeight="semibold">
                 Primary Breed
               </FormLabel>
@@ -178,6 +237,33 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
                 onChange={onSelectBreed}
               />
             </FormControl>
+
+            <FormControl display="flex" alignItems="center">
+              <FormLabel htmlFor="is-cross" mb="0">
+                Is this a cross-breed?
+              </FormLabel>
+              <Switch
+                id="is-cross"
+                isChecked={isCrossBreed}
+                onChange={(e) => setIsCrossBreed(e.target.checked)}
+                colorScheme="brand"
+              />
+            </FormControl>
+
+            {isCrossBreed && (
+              <FormControl>
+                <FormLabel fontWeight="semibold">
+                  Secondary Breed
+                </FormLabel>
+                <Select
+                  placeholder="Select secondary breed..."
+                  colorScheme="brand"
+                  options={breedOptions}
+                  value={secondaryBreed ? { label: secondaryBreed.name, value: secondaryBreed.id } : null}
+                  onChange={onSelectSecondaryBreed}
+                />
+              </FormControl>
+            )}
 
             <Box>
               <FormLabel fontWeight="semibold" mb={4}>

@@ -1,3 +1,3 @@
-import BreederBreedsView from "lib/components/pages/breeds/BreederBreedsView";
+import ManageBreedDetailView from "lib/components/pages/breeds/ManageBreedDetailView";
 
-export default BreederBreedsView;
+export default ManageBreedDetailView;

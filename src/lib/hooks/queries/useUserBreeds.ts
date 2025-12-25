@@ -10,12 +10,18 @@ interface CreateUserBreedData {
   is_owner?: boolean;
   notes?: string;
   images?: string[];
+  pet_type?: string;
+  is_cross_breed?: boolean;
+  secondary_breed_id?: string;
 }
 
 interface UpdateUserBreedData {
   is_owner?: boolean;
   notes?: string;
   images?: string[];
+  pet_type?: string;
+  is_cross_breed?: boolean;
+  secondary_breed_id?: string;
 }
 
 // Query to get user's breeds with full breed details
@@ -104,6 +110,7 @@ export const useAllAvailableUserBreeds = (
     breed_ids?: string[];
     breed_groups?: string[];
     size?: string;
+    pet_type?: string;
     page?: number;
     pageSize?: number;
   }
@@ -120,6 +127,7 @@ export const useAllAvailableUserBreeds = (
           is_owner,
           notes,
           images,
+          pet_type,
           created_at,
           updated_at,
           breeds (
@@ -142,7 +150,8 @@ export const useAllAvailableUserBreeds = (
               user_id,
               kennel_name,
               kennel_location,
-              rating
+              rating,
+              pet_types
             )
           )
         `);
@@ -241,6 +250,23 @@ export const useAllAvailableUserBreeds = (
             case 'extra-large': return weightValue > 90;
             default: return true;
           }
+        });
+      }
+
+      // Apply pet_type filter (filters by the breed's pet_type or breeder specialization)
+      if (options?.pet_type) {
+        uniqueBreeds = uniqueBreeds.filter(breed => {
+          // Check explicit user_breed pet_type
+          if (breed.pet_type === options.pet_type) return true;
+
+          // Check breeder profile specialization
+          if (breed.users?.breeder_profiles?.some((bp: any) =>
+            bp.pet_types?.includes(options.pet_type)
+          )) return true;
+
+          // Default fallback (e.g. if breed is a dog and pet_type is dog)
+          // Ideally we check breed.breeds.pet_type if it existed, but we can rely on user_breed.pet_type
+          return false;
         });
       }
 

@@ -16,13 +16,13 @@ export const queryKeys = {
     currentProfile: (userId?: string): readonly string[] => ['users', 'current-profile', userId].filter(Boolean) as any,
     seekerProfile: (userId?: string): readonly string[] => ['users', 'seeker-profile', userId].filter(Boolean) as any,
     breederProfile: (userId?: string): readonly string[] => ['users', 'breeder-profile', userId].filter(Boolean) as any,
-    featured: (limit?: number): readonly string[] => ['users', 'featured', limit].filter(Boolean) as any,
+    featured: (limit?: number, petType?: string): readonly string[] => ['users', 'featured', limit, petType].filter(Boolean) as any,
   },
 
   // Breed related queries
   breeds: {
     all: (): readonly string[] => ['breeds'] as const,
-    lists: (): readonly string[] => ['breeds', 'list'] as const,
+    lists: (petType?: string): readonly string[] => ['breeds', 'list', petType].filter(Boolean) as any,
     list: (filters?: Record<string, unknown>): readonly string[] => ['breeds', 'list', filters].filter(Boolean) as any,
     details: (): readonly string[] => ['breeds', 'detail'] as const,
     detail: (id: string): readonly string[] => ['breeds', 'detail', id] as const,
@@ -30,7 +30,7 @@ export const queryKeys = {
     available: (options?: Record<string, unknown>): readonly string[] => ['breeds', 'available', options].filter(Boolean) as any,
     breedBreeders: (breedId: string): readonly string[] => ['breeds', 'breed-breeders', breedId] as const,
     categories: (limit?: number): readonly string[] => ['breeds', 'categories', limit].filter(Boolean) as any,
-    popular: (limit?: number): readonly string[] => ['breeds', 'popular', limit].filter(Boolean) as any,
+    popular: (limit?: number, petType?: string): readonly string[] => ['breeds', 'popular', limit, petType].filter(Boolean) as any,
   },
 
   // Listing related queries (unified litters + wanted listings)
@@ -42,8 +42,8 @@ export const queryKeys = {
     detail: (id: string): readonly string[] => ['listings', 'detail', id] as const,
     byOwner: (ownerId: string): readonly string[] => ['listings', 'owner', ownerId] as const,
     featured: (): readonly string[] => ['listings', 'featured'] as const,
-    popular: (limit?: number): readonly string[] => ['listings', 'popular', limit].filter(Boolean) as any,
-    new: (limit?: number): readonly string[] => ['listings', 'new', limit].filter(Boolean) as any,
+    popular: (limit?: number, petType?: string): readonly string[] => ['listings', 'popular', limit, petType].filter(Boolean) as any,
+    new: (limit?: number, petType?: string): readonly string[] => ['listings', 'new', limit, petType].filter(Boolean) as any,
     byType: (type: string): readonly string[] => ['listings', 'type', type] as const,
     byBreed: (breedId: string): readonly string[] => ['listings', 'breed', breedId] as const,
   },
