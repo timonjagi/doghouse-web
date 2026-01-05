@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../../supabase/client';
-import { queryKeys } from '../../queryKeys';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../../supabase/client";
+import { queryKeys } from "../../queryKeys";
 
 export const useAllBreeders = (
   limit?: number,
@@ -20,8 +20,9 @@ export const useAllBreeders = (
 
       // Get verified breeders with active listings, ordered by rating and activity
       let query = supabase
-        .from('users')
-        .select(`
+        .from("users")
+        .select(
+          `
           id,
           display_name,
           email,
@@ -46,17 +47,13 @@ export const useAllBreeders = (
               name
             )
           )
-        `)
-        .eq('role', 'breeder');
+        `
+        )
+        .eq("role", "breeder");
 
-      if (options?.pet_type) {
-        // Since pet_types is a jsonb array, use contains
-        query = query.contains('breeder_profiles.pet_types', [options.pet_type]);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
-
-
+      const { data, error } = await query.order("created_at", {
+        ascending: false,
+      });
 
       if (error) throw error;
 
@@ -93,10 +90,18 @@ export const useAllBreeders = (
       // Apply search filter (display_name, kennel_name, breed names)
       if (searchTerm) {
         results = results.filter((breeder: any) => {
-          const nameMatch = breeder.display_name?.toLowerCase().includes(searchTerm);
-          const kennelMatch = breeder.breeder_profiles?.[0]?.kennel_name?.toLowerCase().includes(searchTerm);
-          const locationMatch = breeder.breeder_profiles?.[0]?.kennel_location?.toLowerCase().includes(searchTerm);
-          const breedMatch = breeder.breedNames?.some((name: string) => name.includes(searchTerm));
+          const nameMatch = breeder.display_name
+            ?.toLowerCase()
+            .includes(searchTerm);
+          const kennelMatch = breeder.breeder_profiles?.[0]?.kennel_name
+            ?.toLowerCase()
+            .includes(searchTerm);
+          const locationMatch = breeder.breeder_profiles?.[0]?.kennel_location
+            ?.toLowerCase()
+            .includes(searchTerm);
+          const breedMatch = breeder.breedNames?.some((name: string) =>
+            name.includes(searchTerm)
+          );
           return nameMatch || kennelMatch || locationMatch || breedMatch;
         });
       }
@@ -105,8 +110,20 @@ export const useAllBreeders = (
       if (options?.location) {
         const locationTerm = options.location.toLowerCase();
         results = results.filter((breeder: any) =>
-          breeder.breeder_profiles?.[0]?.kennel_location?.toLowerCase().includes(locationTerm)
+          breeder.breeder_profiles?.[0]?.kennel_location
+            ?.toLowerCase()
+            .includes(locationTerm)
         );
+      }
+
+      // Apply pet_type filter
+      if (options?.pet_type) {
+        results = results.filter((breeder: any) => {
+          const petTypes = breeder.breeder_profiles?.[0]?.pet_types;
+          if (!petTypes) return false;
+          const types = Array.isArray(petTypes) ? petTypes : [];
+          return types.includes(options.pet_type);
+        });
       }
 
       // Apply pagination
@@ -133,8 +150,9 @@ export const useFeaturedBreeders = (limit: number = 4, petType?: string) => {
     queryFn: async (): Promise<any[]> => {
       // Get verified breeders with active listings, ordered by rating and activity
       let query = supabase
-        .from('users')
-        .select(`
+        .from("users")
+        .select(
+          `
           id,
           display_name,
           profile_photo_url,
@@ -157,20 +175,16 @@ export const useFeaturedBreeders = (limit: number = 4, petType?: string) => {
               name
             )
           )
-        `)
-        .eq('role', 'breeder');
-
-      if (petType) {
-        query = query.contains('breeder_profiles.pet_types', [petType]);
-      }
+        `
+        )
+        .eq("role", "breeder");
 
       const { data, error } = await query
         // .not('breeder_profiles.verified_at', 'is', null)
         //.eq('listings.status', 'available')
         //.order('breeder_profiles.rating', { ascending: false, nullsFirst: false })
-        .order('created_at', { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(limit);
-
 
       if (error) throw error;
 
@@ -204,7 +218,21 @@ export const useFeaturedBreeders = (limit: number = 4, petType?: string) => {
         }
       });
 
-      return Array.from(breederMap.values()).slice(0, limit);
+      const results = Array.from(breederMap.values());
+
+      // Apply pet_type filter client-side
+      if (petType) {
+        return results
+          .filter((breeder: any) => {
+            const petTypes = breeder.breeder_profiles?.[0]?.pet_types;
+            if (!petTypes) return false;
+            const types = Array.isArray(petTypes) ? petTypes : [];
+            return types.includes(petType);
+          })
+          .slice(0, limit);
+      }
+
+      return results.slice(0, limit);
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -215,33 +243,37 @@ export const useBreedersForBreed = (breedId: string) => {
   return useQuery({
     queryKey: queryKeys.breeds.breedBreeders(breedId),
     queryFn: async (): Promise<any[]> => {
-
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       // First, get the user IDs of breeders who have this breed
       const { data: breedersWithBreed, error: breederError } = await supabase
-        .from('user_breeds')
-        .select('user_id')
-        .eq('breed_id', breedId)
-        .eq('is_owner', true);
+        .from("user_breeds")
+        .select("user_id")
+        .eq("breed_id", breedId)
+        .eq("is_owner", true);
 
       if (breederError) throw breederError;
       if (!breedersWithBreed || breedersWithBreed.length === 0) return [];
 
       // Get unique breeder user IDs
-      let breederUserIds = [...new Set(breedersWithBreed.map(b => b.user_id))];
+      let breederUserIds = [
+        ...new Set(breedersWithBreed.map((b) => b.user_id)),
+      ];
 
       // Filter out current user if they are a breeder
-      if (user && user?.user_metadata?.role === 'breeder') {
-        breederUserIds = breederUserIds.filter(id => id !== user.id);
+      if (user && user?.user_metadata?.role === "breeder") {
+        breederUserIds = breederUserIds.filter((id) => id !== user.id);
       }
 
       if (breederUserIds.length === 0) return [];
 
       // Now fetch all user_breeds for those breeders to get complete breed info
       const { data, error } = await supabase
-        .from('users')
-        .select(`
+        .from("users")
+        .select(
+          `
           id,
           profile_photo_url,
           display_name,
@@ -261,8 +293,9 @@ export const useBreedersForBreed = (breedId: string) => {
               name
             )
           )
-        `)
-        .in('id', breederUserIds);
+        `
+        )
+        .in("id", breederUserIds);
 
       if (error) throw error;
 
