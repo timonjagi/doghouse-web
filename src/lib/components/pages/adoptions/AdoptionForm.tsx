@@ -22,7 +22,6 @@ import {
   List,
   ListItem,
   ListIcon,
-  AlertDescription,
 } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useCreateAdoption } from "../../../hooks/queries/useAdoptions";
@@ -154,25 +153,23 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
             <VStack spacing={6} align="stretch">
               <Alert status="info" borderRadius="md">
                 <Box>
-                  <AlertDescription>
-                    <Text fontWeight="semibold" mb={2}>
-                      What happens after you apply?
-                    </Text>
-                    <List spacing={1} fontSize="sm">
-                      <ListItem>
-                        <ListIcon as={CheckCircleIcon} color="green.500" />
-                        Breeder review
-                      </ListItem>
-                      <ListItem>
-                        <ListIcon as={CheckCircleIcon} color="green.500" />
-                        View adoption status
-                      </ListItem>
-                      <ListItem>
-                        <ListIcon as={CheckCircleIcon} color="green.500" />
-                        Secure Payment
-                      </ListItem>
-                    </List>
-                  </AlertDescription>
+                  <Text fontWeight="semibold" mb={2}>
+                    What happens after you apply?
+                  </Text>
+                  <List spacing={1} fontSize="sm">
+                    <ListItem>
+                      <ListIcon as={CheckCircleIcon} color="green.500" />
+                      Breeder review
+                    </ListItem>
+                    <ListItem>
+                      <ListIcon as={CheckCircleIcon} color="green.500" />
+                      View adoption status
+                    </ListItem>
+                    <ListItem>
+                      <ListIcon as={CheckCircleIcon} color="green.500" />
+                      Secure Payment
+                    </ListItem>
+                  </List>
                 </Box>
               </Alert>
 
