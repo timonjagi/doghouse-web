@@ -22,6 +22,7 @@ import {
   List,
   ListItem,
   ListIcon,
+  AlertDescription,
 } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useCreateAdoption } from "../../../hooks/queries/useAdoptions";
