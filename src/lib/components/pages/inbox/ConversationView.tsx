@@ -25,6 +25,7 @@ import {
   Flex,
   useDisclosure,
   IconButton,
+  Tooltip,
   Drawer,
   DrawerBody,
   DrawerFooter,
@@ -600,24 +601,33 @@ const ConversationView: React.FC<ConversationViewProps> = ({
                 </Badge>
               )}
             </Box>
-            <Textarea
-              value={messageText}
-              onChange={(e) => {
-                setMessageText(e.target.value);
-              }}
-              onKeyUp={handleKeyPress}
-              placeholder={
+            <Tooltip
+              label={
                 priorityAction
-                  ? "Please complete the pending action above..."
-                  : "Type your message..."
+                  ? "Please complete the pending action in the adoption details above before messaging"
+                  : undefined
               }
-              resize="none"
-              rows={1}
-              maxLength={1000}
-              bg={useColorModeValue("gray.50", "gray.700")}
-              borderColor={useColorModeValue("gray.300", "gray.600")}
-              isDisabled={!!priorityAction}
-            />
+              hasArrow
+            >
+              <Textarea
+                value={messageText}
+                onChange={(e) => {
+                  setMessageText(e.target.value);
+                }}
+                onKeyUp={handleKeyPress}
+                placeholder={
+                  priorityAction
+                    ? "Please complete a pending action above..."
+                    : "Type your message..."
+                }
+                resize="none"
+                rows={1}
+                maxLength={1000}
+                bg={useColorModeValue("gray.50", "gray.700")}
+                borderColor={useColorModeValue("gray.300", "gray.600")}
+                isDisabled={!!priorityAction}
+              />
+            </Tooltip>
             <Button
               colorScheme="blue"
               onClick={handleSendMessage}
