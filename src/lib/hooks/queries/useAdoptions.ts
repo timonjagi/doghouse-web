@@ -721,12 +721,15 @@ export const getAvailableAdoptionActions = ({
       });
     }
 
-    const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
-    buttons.push({
-      ...supportConfig,
-      label: supportConfig.buttonLabel,
-      variant: "ghost",
-    });
+    // Only add support button if not completed or rejected
+    if (!["completed", "rejected"].includes(adoption.status)) {
+      const supportConfig = ADOPTION_ACTION_CONFIGS.contact_support;
+      buttons.push({
+        ...supportConfig,
+        label: supportConfig.buttonLabel,
+        variant: "ghost",
+      });
+    }
   } else {
     // Breeder Actions
     if (adoption.status === "submitted") {
