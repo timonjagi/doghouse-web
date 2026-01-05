@@ -26,7 +26,9 @@ export const users = pgTable("users", {
   location_text: varchar("location_text", { length: 255 }),
   location_lat: numeric("location_lat", { precision: 9, scale: 6 }), // lat/lng as decimals
   location_lng: numeric("location_lng", { precision: 9, scale: 6 }),
-  onboarding_completed: boolean("onboarding_completed").notNull().default(false),
+  onboarding_completed: boolean("onboarding_completed")
+    .notNull()
+    .default(false),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -41,7 +43,7 @@ export const breeds = pgTable("breeds", {
   life_span: text("life_span"),
   description: text("description"),
   traits: jsonb("traits"), // temperament etc.
-  pet_type: varchar("pet_type", { length: 50 }).default('dog'),
+  pet_type: varchar("pet_type", { length: 50 }).default("dog"),
   featured_image_url: text("featured_image_url"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
@@ -50,7 +52,9 @@ export const breeds = pgTable("breeds", {
 // SEEKER PROFILES (new table for seeker-specific data)
 export const seeker_profiles = pgTable("seeker_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
-  user_id: uuid("user_id").notNull().references(() => users.id),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
   living_situation: text("living_situation"),
   experience_level: varchar("experience_level", { length: 50 }),
   has_allergies: boolean("has_allergies").default(false),
@@ -69,13 +73,15 @@ export const seeker_profiles = pgTable("seeker_profiles", {
 // BREEDER PROFILES (enhanced existing)
 export const breeder_profiles = pgTable("breeder_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
-  user_id: uuid("user_id").notNull().references(() => users.id),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
   kennel_name: varchar("kennel_name", { length: 255 }),
   kennel_location: varchar("kennel_location", { length: 255 }),
   facility_type: varchar("facility_type", { length: 100 }),
   verification_docs: jsonb("verification_docs"), // references to storage keys
   verified_at: timestamp("verified_at"),
-  rating: numeric("rating", { precision: 3, scale: 2 }).default('0'),
+  rating: numeric("rating", { precision: 3, scale: 2 }).default("0"),
   review_count: integer("review_count").default(0),
   kennel_avatar_url: text("kennel_avatar_url"),
   pet_types: jsonb("pet_types").$default(() => "[]"),
@@ -87,7 +93,9 @@ export const breeder_profiles = pgTable("breeder_profiles", {
 // KENNELS (enhanced for multiple facilities)
 export const kennels = pgTable("kennels", {
   id: uuid("id").primaryKey().defaultRandom(),
-  breeder_profile_id: uuid("breeder_profile_id").notNull().references(() => breeder_profiles.id),
+  breeder_profile_id: uuid("breeder_profile_id")
+    .notNull()
+    .references(() => breeder_profiles.id),
   name: varchar("name", { length: 255 }).notNull(),
   location: varchar("location", { length: 255 }),
   location_lat: numeric("location_lat", { precision: 9, scale: 6 }),
@@ -100,14 +108,16 @@ export const kennels = pgTable("kennels", {
 // USER_BREEDS (breeder offers or owns these breeds)
 export const user_breeds = pgTable("user_breeds", {
   id: uuid("id").primaryKey().defaultRandom(),
-  user_id: uuid("user_id").notNull().references(() => users.id),
-  breed_id: uuid("breed_id").notNull().references(() => breeds.id),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  breed_id: uuid("breed_id")
+    .notNull()
+    .references(() => breeds.id),
   is_owner: boolean("is_owner").notNull().default(true),
   pet_type: varchar("pet_type", { length: 50 }),
   notes: text("notes"),
   images: jsonb("images").$default(() => "[]"),
-  is_cross_breed: boolean("is_cross_breed").default(false),
-  secondary_breed_id: uuid("secondary_breed_id").references(() => breeds.id),
   is_verified: boolean("is_verified").default(false),
 
   created_at: timestamp("created_at").notNull().defaultNow(),
@@ -124,13 +134,13 @@ export const listings = pgTable("listings", {
   pet_type: varchar("pet_type", { length: 50 }),
 
   // Owner information
-  owner_id: uuid("owner_id").notNull().references(() => users.id),
+  owner_id: uuid("owner_id")
+    .notNull()
+    .references(() => users.id),
   owner_type: varchar("owner_type", { length: 32 }).notNull(), // 'breeder' | 'seeker'
 
   // Breed information
   breed_id: uuid("breed_id").references(() => breeds.id),
-  secondary_breed_id: uuid("secondary_breed_id").references(() => breeds.id),
-  is_cross_breed: boolean("is_cross_breed").default(false),
   user_breed_id: uuid("user_breed_id").references(() => user_breeds.id),
 
   // Litter-specific fields (only for type = 'litter')
@@ -169,12 +179,13 @@ export const listings = pgTable("listings", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
-
 // ADOPTIONS (adoption requests) - Renamed from applications
 export const adoptions = pgTable("adoptions", {
   id: uuid("id").primaryKey().defaultRandom(),
   listing_id: uuid("listing_id").references(() => listings.id),
-  seeker_id: uuid("seeker_id").notNull().references(() => users.id),
+  seeker_id: uuid("seeker_id")
+    .notNull()
+    .references(() => users.id),
   status: varchar("status", { length: 50 }).notNull().default("submitted"), // submitted/pending/approved/rejected/completed
   application_data: jsonb("application_data"), // full answers, contact prefs
   contract_url: text("contract_url"),
@@ -188,7 +199,9 @@ export const adoptions = pgTable("adoptions", {
 // ADOPTION STATUS HISTORY (new table)
 export const adoption_status_history = pgTable("adoption_status_history", {
   id: uuid("id").primaryKey().defaultRandom(),
-  adoption_id: uuid("adoption_id").notNull().references(() => adoptions.id),
+  adoption_id: uuid("adoption_id")
+    .notNull()
+    .references(() => adoptions.id),
   status: varchar("status", { length: 50 }).notNull(),
   notes: text("notes"),
   created_by: uuid("created_by").references(() => users.id),
@@ -207,7 +220,9 @@ export const conversations = pgTable("conversations", {
   last_message_preview: text("last_message_preview"),
   unread_count: jsonb("unread_count").$default(() => "{}"), // Unread counts per participant {userId: count}
   is_active: boolean("is_active").notNull().default(true),
-  created_by: uuid("created_by").notNull().references(() => users.id),
+  created_by: uuid("created_by")
+    .notNull()
+    .references(() => users.id),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -215,8 +230,12 @@ export const conversations = pgTable("conversations", {
 // MESSAGES (enhanced with conversation support)
 export const messages = pgTable("messages", {
   id: uuid("id").primaryKey().defaultRandom(),
-  conversation_id: uuid("conversation_id").notNull().references(() => conversations.id),
-  sender_id: uuid("sender_id").notNull().references(() => users.id),
+  conversation_id: uuid("conversation_id")
+    .notNull()
+    .references(() => conversations.id),
+  sender_id: uuid("sender_id")
+    .notNull()
+    .references(() => users.id),
   content: text("content"),
   attachments: jsonb("attachments"),
   read_by: jsonb("read_by").$default(() => "[]"), // Array of user IDs who have read this message
@@ -227,8 +246,12 @@ export const messages = pgTable("messages", {
 // NOTIFICATIONS (enhanced with delivery tracking and multi-channel support)
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
-  user_id: uuid("user_id").notNull().references(() => users.id),
-  notification_type_id: uuid("notification_type_id").references(() => notification_types.id),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  notification_type_id: uuid("notification_type_id").references(
+    () => notification_types.id
+  ),
   type: varchar("type", { length: 100 }).notNull(), // 'match', 'application', 'payment', etc.
   title: varchar("title", { length: 255 }),
   body: text("body"),
@@ -267,7 +290,9 @@ export const notification_types = pgTable("notification_types", {
 
   // Default settings
   default_channels: jsonb("default_channels").$default(() => "['push']"), // Default delivery channels
-  default_priority: varchar("default_priority", { length: 20 }).notNull().default("normal"),
+  default_priority: varchar("default_priority", { length: 20 })
+    .notNull()
+    .default("normal"),
 
   is_active: boolean("is_active").notNull().default(true),
   created_at: timestamp("created_at").notNull().defaultNow(),
@@ -279,7 +304,9 @@ export const notification_rules = pgTable("notification_rules", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  notification_type_id: uuid("notification_type_id").notNull().references(() => notification_types.id),
+  notification_type_id: uuid("notification_type_id")
+    .notNull()
+    .references(() => notification_types.id),
 
   // Trigger conditions
   trigger_event: varchar("trigger_event", { length: 100 }).notNull(), // 'adoption_status_changed', 'payment_received', etc.
@@ -303,30 +330,40 @@ export const notification_rules = pgTable("notification_rules", {
 });
 
 // USER NOTIFICATION PREFERENCES
-export const user_notification_preferences = pgTable("user_notification_preferences", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  user_id: uuid("user_id").notNull().references(() => users.id).unique(),
+export const user_notification_preferences = pgTable(
+  "user_notification_preferences",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    user_id: uuid("user_id")
+      .notNull()
+      .references(() => users.id)
+      .unique(),
 
-  // Channel preferences
-  email_enabled: boolean("email_enabled").notNull().default(true),
-  sms_enabled: boolean("sms_enabled").notNull().default(true),
-  whatsapp_enabled: boolean("whatsapp_enabled").notNull().default(true),
-  push_enabled: boolean("push_enabled").notNull().default(true),
+    // Channel preferences
+    email_enabled: boolean("email_enabled").notNull().default(true),
+    sms_enabled: boolean("sms_enabled").notNull().default(true),
+    whatsapp_enabled: boolean("whatsapp_enabled").notNull().default(true),
+    push_enabled: boolean("push_enabled").notNull().default(true),
 
-  // Category preferences
-  applications_enabled: boolean("applications_enabled").notNull().default(true),
-  payments_enabled: boolean("payments_enabled").notNull().default(true),
-  matches_enabled: boolean("matches_enabled").notNull().default(true),
-  system_enabled: boolean("system_enabled").notNull().default(true),
+    // Category preferences
+    applications_enabled: boolean("applications_enabled")
+      .notNull()
+      .default(true),
+    payments_enabled: boolean("payments_enabled").notNull().default(true),
+    matches_enabled: boolean("matches_enabled").notNull().default(true),
+    system_enabled: boolean("system_enabled").notNull().default(true),
 
-  // Quiet hours
-  quiet_hours_enabled: boolean("quiet_hours_enabled").notNull().default(false),
-  quiet_hours_start: time("quiet_hours_start"), // 22:00
-  quiet_hours_end: time("quiet_hours_end"), // 08:00
+    // Quiet hours
+    quiet_hours_enabled: boolean("quiet_hours_enabled")
+      .notNull()
+      .default(false),
+    quiet_hours_start: time("quiet_hours_start"), // 22:00
+    quiet_hours_end: time("quiet_hours_end"), // 08:00
 
-  created_at: timestamp("created_at").notNull().defaultNow(),
-  updated_at: timestamp("updated_at").notNull().defaultNow(),
-});
+    created_at: timestamp("created_at").notNull().defaultNow(),
+    updated_at: timestamp("updated_at").notNull().defaultNow(),
+  }
+);
 
 // ACTIVITY LOGS
 export const activity_logs = pgTable("activity_logs", {
@@ -341,10 +378,14 @@ export const activity_logs = pgTable("activity_logs", {
 // WISHLISTS (user saved listings and user_breeds for notifications)
 export const wishlists = pgTable("wishlists", {
   id: uuid("id").primaryKey().defaultRandom(),
-  user_id: uuid("user_id").notNull().references(() => users.id),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
   breed_id: uuid("breed_id").references(() => breeds.id),
   user_breed_id: uuid("user_breed_id").references(() => user_breeds.id), // optional - for saved breeds without listings
-  notify_when_available: boolean("notify_when_available").notNull().default(false),
+  notify_when_available: boolean("notify_when_available")
+    .notNull()
+    .default(false),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -353,12 +394,18 @@ export const wishlists = pgTable("wishlists", {
 export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey().defaultRandom(),
   application_id: uuid("application_id").references(() => adoptions.id), // Kept column name, referenced adoptions
-  seeker_id: uuid("seeker_id").notNull().references(() => users.id),
-  breeder_id: uuid("breeder_id").notNull().references(() => users.id),
+  seeker_id: uuid("seeker_id")
+    .notNull()
+    .references(() => users.id),
+  breeder_id: uuid("breeder_id")
+    .notNull()
+    .references(() => users.id),
   amount: numeric("amount", { precision: 10, scale: 2 }),
   commission_fee: numeric("commission_fee", { precision: 10, scale: 2 }),
   status: varchar("status", { length: 50 }).notNull().default("pending"), // payment status
-  payout_status: varchar("payout_status", { length: 50 }).notNull().default("pending"), // payout status to breeder
+  payout_status: varchar("payout_status", { length: 50 })
+    .notNull()
+    .default("pending"), // payout status to breeder
   payment_method: varchar("payment_method", { length: 100 }),
   meta: jsonb("meta"),
   created_at: timestamp("created_at").notNull().defaultNow(),
