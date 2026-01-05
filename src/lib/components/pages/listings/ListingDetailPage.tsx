@@ -241,7 +241,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                 colorScheme: "brand",
                 isDisabled: listing.status !== 'available',
               } : listing.status === 'available' ? {
-                label: "Message Seller",
+                label: "Reserve Pet",
                 onClick: onApplicationOpen,
                 icon: <ChatIcon />,
                 colorScheme: "brand",
@@ -392,7 +392,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
           />
         )}
 
-        {/* Adoption Form Modal (Unified Message Seller Flow) */}
+        {/* Adoption Form Modal (Unified Adoption Flow) */}
         {!isOwner && listing && (
           <AdoptionForm
             isOpen={isApplicationOpen}
