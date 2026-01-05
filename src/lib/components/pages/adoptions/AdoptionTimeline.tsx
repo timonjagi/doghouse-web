@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   VStack,
   HStack,
@@ -17,13 +17,13 @@ import {
   StepTitle,
   Stepper,
   useSteps,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   AdoptionWithListing,
   AdoptionStatusHistory,
-  useAdoptionTimelineLogic
-} from '../../../hooks/queries/useAdoptions';
-import { AdoptionActionList } from './AdoptionActionList';
+  useAdoptionTimelineLogic,
+} from "../../../hooks/queries/useAdoptions";
+import { AdoptionActionList } from "./AdoptionActionList";
 
 interface AdoptionTimelineProps {
   adoption: AdoptionWithListing;
@@ -33,15 +33,18 @@ interface AdoptionTimelineProps {
   availableActions?: any[]; // Defined button configs
 }
 
-export const AdoptionTimeline = React.forwardRef<{
-  getCurrentStepButtons: () => any[];
-}, AdoptionTimelineProps>((props, ref) => {
+export const AdoptionTimeline = React.forwardRef<
+  {
+    getCurrentStepButtons: () => any[];
+  },
+  AdoptionTimelineProps
+>((props, ref) => {
   // Use the logic hook - no actions passed here anymore
   const { steps, currentStepIndex } = useAdoptionTimelineLogic({
     adoption: props.adoption,
     userProfile: props.userProfile,
     transactions: props.transactions,
-    statusHistory: props.statusHistory
+    statusHistory: props.statusHistory,
   });
 
   // Export function to get current step buttons for use in parent components
@@ -60,9 +63,21 @@ export const AdoptionTimeline = React.forwardRef<{
   });
 
   return (
-    <Stepper index={activeStep} orientation='vertical' height='fit-content' gap='0' w="full">
+    <Stepper
+      index={activeStep}
+      orientation="vertical"
+      height="fit-content"
+      gap="0"
+      w="full"
+    >
       {steps.map((step, index) => (
-        <Step key={index} style={{ width: '100%', marginBottom: index === steps.length - 1 ? 0 : '24px' }}>
+        <Step
+          key={index}
+          style={{
+            width: "100%",
+            marginBottom: index === steps.length - 1 ? 0 : "24px",
+          }}
+        >
           <StepIndicator>
             <StepStatus
               complete={<StepIcon />}
@@ -71,12 +86,20 @@ export const AdoptionTimeline = React.forwardRef<{
             />
           </StepIndicator>
 
-          <Box flexShrink='0' width="100%" pl={4}>
-            <StepTitle fontSize="md" fontWeight="bold">{step.title}</StepTitle>
-            <StepDescription fontSize="sm" color="gray.600">{step.description}</StepDescription>
+          <Box flexShrink="0" width="100%" pl={4}>
+            <StepTitle
+              fontSize="md"
+              fontWeight="bold"
+              color={step.status === "current" ? "brand.600" : "gray.800"}
+            >
+              {step.title}
+            </StepTitle>
+            <StepDescription fontSize="sm" color="gray.600">
+              {step.description}
+            </StepDescription>
 
             {/* Render Actions ONLY for the current step */}
-            {step.status === 'current' && (
+            {step.status === "current" && (
               <Box mt={3}>
                 <AdoptionActionList
                   adoption={props.adoption}

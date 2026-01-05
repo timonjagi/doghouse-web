@@ -200,6 +200,7 @@ export const useAdoptionTimelineLogic = ({
               ? [
                   "You can apply for other available listings",
                   "Consider reaching out to the breeder for feedback",
+                  "Don't give up - the right pet is waiting for you!",
                 ]
               : [
                   "Breeder will notify you of their decision",

@@ -459,7 +459,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                     />
                   </TabPanel>
                   <TabPanel px={0}>
-                    <ListingInfo adoption={adoption} />
+                    <ListingInfo adoption={adoption} router={router} />
                   </TabPanel>
                   <TabPanel px={0}>
                     {isOwner ? (
@@ -502,11 +502,24 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
 };
 
 // Listing Information Component
-const ListingInfo = ({ adoption }) => {
+const ListingInfo = ({ adoption, router }) => {
   return (
     <VStack spacing={4} align="stretch">
       {/* Removed Gallery from here as it is now in main layout */}
       {/* Removed Divider */}
+
+      <Button
+        as="a"
+        href={`/listings/${adoption.listings.id}`}
+        variant="outline"
+        colorScheme="blue"
+        size="sm"
+        alignSelf="flex-start"
+        leftIcon={<FiInfo />}
+        mt={2}
+      >
+        View Full Listing
+      </Button>
 
       <SimpleGrid columns={2} spacing={4}>
         <Box>
@@ -630,29 +643,11 @@ const ApplicantInfo = ({ adoption, router }) => {
         </HStack>
 
         <HStack spacing={4} pt={2}>
-          <Button
-            leftIcon={<PhoneIcon />}
-            size="sm"
-            variant="outline"
-            isDisabled={!adoption?.reservation_paid}
-          >
+          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
             Call Applicant
           </Button>
-          <Button
-            leftIcon={<ChatIcon />}
-            size="sm"
-            variant="outline"
-            isDisabled={!adoption?.reservation_paid}
-          >
+          <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
             Message Applicant
-          </Button>
-          <Button
-            leftIcon={<WarningIcon />}
-            size="sm"
-            variant="outline"
-            onClick={() => router.push("/support")}
-          >
-            Contact Support
           </Button>
         </HStack>
       </Stack>
@@ -734,29 +729,11 @@ const BreederInfo = ({ adoption, formatDate, router }) => {
         </HStack>
 
         <HStack spacing={4} pt={2}>
-          <Button
-            leftIcon={<PhoneIcon />}
-            size="sm"
-            variant="outline"
-            isDisabled={adoption?.reservation_paid}
-          >
+          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
             Call Breeder
           </Button>
-          <Button
-            leftIcon={<ChatIcon />}
-            size="sm"
-            variant="outline"
-            isDisabled={adoption?.reservation_paid}
-          >
+          <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
             Message Breeder
-          </Button>
-          <Button
-            leftIcon={<WarningIcon />}
-            size="sm"
-            variant="outline"
-            onClick={() => router.push("/support")}
-          >
-            Contact Support
           </Button>
         </HStack>
       </Stack>

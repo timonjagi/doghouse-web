@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -30,13 +30,11 @@ import {
   ListItem,
   ListIcon,
   Badge,
-} from '@chakra-ui/react';
-import { CheckCircleIcon, InfoIcon } from '@chakra-ui/icons';
-import { useCreateAdoption } from '../../../hooks/queries/useAdoptions';
-import { useListingConversation, useAdoptionConversation } from '../../../hooks/queries/useContextConversations';
-import { useSendMessage } from '../../../hooks/queries/useConversations';
-import { useCurrentUser } from '../../../hooks/queries/useAuth';
-import { useRouter } from 'next/router';
+} from "@chakra-ui/react";
+import { CheckCircleIcon, InfoIcon } from "@chakra-ui/icons";
+import { useCreateAdoption } from "../../../hooks/queries/useAdoptions";
+import { useCurrentUser } from "../../../hooks/queries/useAuth";
+import { useRouter } from "next/router";
 
 interface AdoptionFormProps {
   isOpen: boolean;
@@ -62,12 +60,10 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
   const { data: user } = useCurrentUser();
 
   const createAdoptionMutation = useCreateAdoption();
-  const createConversationMutation = useCreateConversation();
-  const sendMessageMutation = useSendMessage();
   const [formData, setFormData] = useState<AdoptionData>({
-    message: '',
-    contact_preference: 'email',
-    timeline: '',
+    message: "",
+    contact_preference: "email",
+    timeline: "",
     offer_price: undefined,
   });
 
@@ -78,11 +74,11 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
     const newErrors: any = {};
 
     if (!formData.timeline) {
-      newErrors.timeline = 'Please specify your timeline for adoption';
+      newErrors.timeline = "Please specify your timeline for adoption";
     }
 
     if (!formData.message.trim()) {
-      newErrors.message = 'Please enter a message to the breeder.';
+      newErrors.message = "Please enter a message to the breeder.";
     }
 
     setErrors(newErrors);
@@ -97,7 +93,6 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
     }
 
     setIsSubmitting(true);
-
     try {
       // Create Adoption Record
       const adoptionData = {
@@ -105,7 +100,7 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
         timeline: formData.timeline,
         offer_price: formData.offer_price,
         submitted_at: new Date().toISOString(),
-        response_message: formData.message
+        message: formData.message,
       };
 
       const adoption = await createAdoptionMutation.mutateAsync({
@@ -115,21 +110,21 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
 
       // Create Adoption Conversation
       const contextData = {
-        listing_title: listing?.title || 'Unknown Listing',
+        listing_title: listing?.title || "Unknown Listing",
         listing_id: listing?.id,
         adoption_id: adoption.id,
         breeder_id: listing?.owner_id,
         seeker_id: user.id,
-        status: 'active'
+        status: "active",
       };
 
       const conv = await createConversationMutation.mutateAsync({
-        contextType: 'adoption',
+        contextType: "adoption",
         contextId: adoption.id,
         participants: [user.id, listing.owner_id],
         title: `Adoption: ${listing.title}`,
         contextData,
-        createdBy: user.id
+        createdBy: user.id,
       });
 
       // Send Initial Message
@@ -137,25 +132,24 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
         await sendMessageMutation.mutateAsync({
           conversationId: conv.id,
           senderId: user.id,
-          content: formData.message
+          content: formData.message,
         });
       }
 
       toast({
-        title: 'Application Submitted',
-        description: 'Redirecting to conversation...',
-        status: 'success',
+        title: "Application Submitted",
+        description: "Redirecting to conversation...",
+        status: "success",
         duration: 2000,
       });
 
       router.push(`/dashboard/inbox/${conv.id}`);
       onClose();
-
     } catch (error) {
       toast({
-        title: 'Submission failed',
-        description: error.message || 'Failed to process request.',
-        status: 'error',
+        title: "Submission failed",
+        description: error.message || "Failed to process request.",
+        status: "error",
         duration: 5000,
       });
       setIsSubmitting(false);
@@ -178,23 +172,19 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
       listing={listing}
       user={user}
     />
-  )
+  );
 };
 
 // Separated Content Component to cleanly use hooks
-import { useCreateConversation } from '../../../hooks/queries/useConversations';
-
 const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
   const toast = useToast();
   const router = useRouter();
   const createAdoptionMutation = useCreateAdoption();
-  const createConversationMutation = useCreateConversation();
-  const sendMessageMutation = useSendMessage();
 
   const [formData, setFormData] = useState<AdoptionData>({
-    message: '',
-    contact_preference: 'email',
-    timeline: '',
+    message: "",
+    contact_preference: "email",
+    timeline: "",
     offer_price: undefined,
   });
 
@@ -205,11 +195,11 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
     const newErrors: any = {};
 
     if (!formData.timeline) {
-      newErrors.timeline = 'Please specify your timeline for adoption';
+      newErrors.timeline = "Please specify your timeline for adoption";
     }
 
     if (!formData.message.trim()) {
-      newErrors.message = 'Please enter a message to the breeder.';
+      newErrors.message = "Please enter a message to the breeder.";
     }
 
     setErrors(newErrors);
@@ -217,9 +207,9 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
   };
 
   const handleInputChange = (field: keyof AdoptionData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -236,7 +226,7 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
         timeline: formData.timeline,
         offer_price: formData.offer_price,
         submitted_at: new Date().toISOString(),
-        response_message: formData.message
+        message: formData.message,
       };
 
       const adoption = await createAdoptionMutation.mutateAsync({
@@ -244,57 +234,28 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
         application_data: adoptionData,
       });
 
-      // Create Adoption Conversation
-      const contextData = {
-        listing_title: listing?.title || 'Unknown Listing',
-        listing_id: listing?.id,
-        adoption_id: adoption.id,
-        breeder_id: listing?.owner_id,
-        seeker_id: user.id,
-        status: 'active'
-      };
-
-      const conv = await createConversationMutation.mutateAsync({
-        contextType: 'adoption',
-        contextId: adoption.id,
-        participants: [user.id, listing.owner_id],
-        title: `Adoption: ${listing.title}`,
-        contextData,
-        createdBy: user.id
-      });
-
-      // Send Initial Message
-      if (conv.id && formData.message) {
-        await sendMessageMutation.mutateAsync({
-          conversationId: conv.id,
-          senderId: user.id,
-          content: formData.message
-        });
-      }
-
       toast({
-        title: 'Application Submitted',
-        description: 'Redirecting to conversation...',
-        status: 'success',
+        title: "Application Submitted",
+        description: "Adoption application submitted successfully.",
+        status: "success",
         duration: 2000,
       });
 
-      router.push(`/dashboard/inbox/${conv.id}`);
+      router.push(`/dashboard/adoptions/${adoption.id}`);
       onClose();
-
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to process request. Please try again.',
-        status: 'error',
+        title: "Error",
+        description: "Failed to process request. Please try again.",
+        status: "error",
       });
       setIsSubmitting(false);
     }
-  }
+  };
 
   const getListingTitle = () => {
     if (listing.title) return listing.title;
-    if (listing.type === 'litter') {
+    if (listing.type === "litter") {
       return `${listing.breeds?.name} Puppies`;
     } else {
       return `${listing.breeds?.name} ${listing.pet_age} old`;
@@ -317,15 +278,25 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
         <form onSubmit={handleSubmit}>
           <ModalBody>
             <VStack spacing={6} align="stretch">
-
               <Alert status="info" borderRadius="md">
                 <Box>
                   <AlertDescription>
-                    <Text fontWeight="semibold" mb={2}>What happens after you apply?</Text>
+                    <Text fontWeight="semibold" mb={2}>
+                      What happens after you apply?
+                    </Text>
                     <List spacing={1} fontSize="sm">
-                      <ListItem><ListIcon as={CheckCircleIcon} color="green.500" />Breeder review</ListItem>
-                      <ListItem><ListIcon as={CheckCircleIcon} color="green.500" />Chat in Inbox</ListItem>
-                      <ListItem><ListIcon as={CheckCircleIcon} color="green.500" />Secure Payment</ListItem>
+                      <ListItem>
+                        <ListIcon as={CheckCircleIcon} color="green.500" />
+                        Breeder review
+                      </ListItem>
+                      <ListItem>
+                        <ListIcon as={CheckCircleIcon} color="green.500" />
+                        Chat in Inbox
+                      </ListItem>
+                      <ListItem>
+                        <ListIcon as={CheckCircleIcon} color="green.500" />
+                        Secure Payment
+                      </ListItem>
                     </List>
                   </AlertDescription>
                 </Box>
@@ -337,14 +308,20 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
                     <FormLabel>Timeline</FormLabel>
                     <Select
                       value={formData.timeline}
-                      onChange={(e) => handleInputChange('timeline', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("timeline", e.target.value)
+                      }
                     >
                       <option value="">Select...</option>
                       <option value="immediately">Immediately</option>
                       <option value="1_week">Within 1 week</option>
                       <option value="flexible">Flexible</option>
                     </Select>
-                    {errors.timeline && <Text fontSize="xs" color="red.500">{errors.timeline}</Text>}
+                    {errors.timeline && (
+                      <Text fontSize="xs" color="red.500">
+                        {errors.timeline}
+                      </Text>
+                    )}
                   </FormControl>
 
                   <FormControl>
@@ -352,8 +329,13 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
                     <Input
                       type="number"
                       placeholder={listing.price}
-                      value={formData.offer_price || ''}
-                      onChange={(e) => handleInputChange('offer_price', parseInt(e.target.value) || undefined)}
+                      value={formData.offer_price || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "offer_price",
+                          parseInt(e.target.value) || undefined
+                        )
+                      }
                     />
                   </FormControl>
                 </SimpleGrid>
@@ -364,23 +346,28 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
                 <Textarea
                   placeholder="Tell the breeder why you're interested..."
                   value={formData.message}
-                  onChange={(e) => handleInputChange('message', e.target.value)}
+                  onChange={(e) => handleInputChange("message", e.target.value)}
                   rows={4}
                 />
-                {errors.message && <Text fontSize="xs" color="red.500">{errors.message}</Text>}
+                {errors.message && (
+                  <Text fontSize="xs" color="red.500">
+                    {errors.message}
+                  </Text>
+                )}
               </FormControl>
-
             </VStack>
           </ModalBody>
 
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onClose}>Cancel</Button>
+            <Button variant="ghost" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
             <Button colorScheme="brand" type="submit" isLoading={isSubmitting}>
               Submit Application
             </Button>
           </ModalFooter>
         </form>
       </ModalContent>
-    </Modal >
+    </Modal>
   );
-}
+};
