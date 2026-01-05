@@ -16,22 +16,14 @@ import {
   Alert,
   useToast,
   Box,
-  Divider,
   SimpleGrid,
   Select,
   Input,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  AlertDescription,
   List,
   ListItem,
   ListIcon,
-  Badge,
 } from "@chakra-ui/react";
-import { CheckCircleIcon, InfoIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useCreateAdoption } from "../../../hooks/queries/useAdoptions";
 import { useCurrentUser } from "../../../hooks/queries/useAuth";
 import { useRouter } from "next/router";
@@ -47,7 +39,7 @@ interface AdoptionData {
   contact_preference: string;
   timeline: string;
   offer_price?: number;
-  quantity?: number; // For litters only
+  quantity?: number;
 }
 
 export const AdoptionForm: React.FC<AdoptionFormProps> = ({
@@ -65,6 +57,7 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
     contact_preference: "email",
     timeline: "",
     offer_price: undefined,
+    quantity: undefined,
   });
 
   const [errors, setErrors] = useState<Partial<AdoptionData>>({});
@@ -78,128 +71,7 @@ export const AdoptionForm: React.FC<AdoptionFormProps> = ({
     }
 
     if (!formData.message.trim()) {
-      newErrors.message = "Please enter a message to the breeder.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm() || !user) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      // Create Adoption Record
-      const adoptionData = {
-        contact_preference: formData.contact_preference,
-        timeline: formData.timeline,
-        offer_price: formData.offer_price,
-        submitted_at: new Date().toISOString(),
-        message: formData.message,
-      };
-
-      const adoption = await createAdoptionMutation.mutateAsync({
-        listing_id: listing.id,
-        application_data: adoptionData,
-      });
-
-      // Create Adoption Conversation
-      const contextData = {
-        listing_title: listing?.title || "Unknown Listing",
-        listing_id: listing?.id,
-        adoption_id: adoption.id,
-        breeder_id: listing?.owner_id,
-        seeker_id: user.id,
-        status: "active",
-      };
-
-      const conv = await createConversationMutation.mutateAsync({
-        contextType: "adoption",
-        contextId: adoption.id,
-        participants: [user.id, listing.owner_id],
-        title: `Adoption: ${listing.title}`,
-        contextData,
-        createdBy: user.id,
-      });
-
-      // Send Initial Message
-      if (conv.id && formData.message) {
-        await sendMessageMutation.mutateAsync({
-          conversationId: conv.id,
-          senderId: user.id,
-          content: formData.message,
-        });
-      }
-
-      toast({
-        title: "Application Submitted",
-        description: "Redirecting to conversation...",
-        status: "success",
-        duration: 2000,
-      });
-
-      router.push(`/dashboard/inbox/${conv.id}`);
-      onClose();
-    } catch (error) {
-      toast({
-        title: "Submission failed",
-        description: error.message || "Failed to process request.",
-        status: "error",
-        duration: 5000,
-      });
-      setIsSubmitting(false);
-    }
-  };
-
-  // Helper to handle creation since hook is top-level only
-  // const { createConversation } = useListingConversation(listing.id);
-  // Wait, `createConversationMutation` is not exposed directly by `useListingConversation` in my previous view.
-  // I need to use `useCreateConversation` directly for the Adoption case since I don't have the hook instance for the new adoption yet.
-  //  const createConvMutation = useSendMessage(); // Wrong hook
-  // Re-import useCreateConversation
-  // See imports.
-
-  // Actually, I'll implementing `handleSubmit` fully below.
-  return (
-    <AdoptionFormContent
-      isOpen={isOpen}
-      onClose={onClose}
-      listing={listing}
-      user={user}
-    />
-  );
-};
-
-// Separated Content Component to cleanly use hooks
-const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
-  const toast = useToast();
-  const router = useRouter();
-  const createAdoptionMutation = useCreateAdoption();
-
-  const [formData, setFormData] = useState<AdoptionData>({
-    message: "",
-    contact_preference: "email",
-    timeline: "",
-    offer_price: undefined,
-  });
-
-  const [errors, setErrors] = useState<Partial<AdoptionData>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const validateForm = (): boolean => {
-    const newErrors: any = {};
-
-    if (!formData.timeline) {
-      newErrors.timeline = "Please specify your timeline for adoption";
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = "Please enter a message to the breeder.";
+      newErrors.message = "Please enter a message to breeder.";
     }
 
     setErrors(newErrors);
@@ -217,10 +89,10 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
     e.preventDefault();
 
     if (!validateForm() || !user) return;
+
     setIsSubmitting(true);
 
     try {
-      // Create Adoption Record
       const adoptionData = {
         contact_preference: formData.contact_preference,
         timeline: formData.timeline,
@@ -248,6 +120,7 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
         title: "Error",
         description: "Failed to process request. Please try again.",
         status: "error",
+        duration: 5000,
       });
       setIsSubmitting(false);
     }
@@ -291,7 +164,7 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
                       </ListItem>
                       <ListItem>
                         <ListIcon as={CheckCircleIcon} color="green.500" />
-                        Chat in Inbox
+                        View adoption status
                       </ListItem>
                       <ListItem>
                         <ListIcon as={CheckCircleIcon} color="green.500" />
@@ -344,7 +217,7 @@ const AdoptionFormContent = ({ isOpen, onClose, listing, user }: any) => {
               <FormControl isRequired isInvalid={!!errors.message}>
                 <FormLabel>Message to Breeder</FormLabel>
                 <Textarea
-                  placeholder="Tell the breeder why you're interested..."
+                  placeholder="Tell breeder why you're interested..."
                   value={formData.message}
                   onChange={(e) => handleInputChange("message", e.target.value)}
                   rows={4}
