@@ -43,7 +43,7 @@ import {
   useIncrementListingViews,
   useListing,
   useAdoptionsByUser,
-} from "lib/hooks/queries/useListings";
+} from "../../hooks/queries/useAdoptions";
 import { NextSeo } from "next-seo";
 import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import { Loader } from "lib/components/ui/Loader";
@@ -86,17 +86,32 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
     onOpen: onApplicationOpen,
     onClose: onApplicationClose,
   } = useDisclosure();
-  const {
-    isOpen: isListingFormOpen,
-    onOpen: onListingFormOpen,
-    onClose: onListingFormClose,
-  } = useDisclosure();
 
   const { data: existingAdoptions, isLoading: checkExistingAdoptionLoading } =
     useAdoptionsByUser(user?.id);
 
-  const { data: existingAdoptions, isLoading: checkExistingAdoptionLoading } =
-    useAdoptionsByUser(user?.id);
+  const checkForExistingAdoption = () => {
+    if (!user || !listing) return;
+
+    const existingAdoption = existingAdoptions?.find(
+      (adoption: any) => adoption.listing_id === listing.id
+    );
+
+    if (existingAdoption) {
+      toast({
+        title: "Application Already Exists",
+        description: `You already have an application for this listing. View your adoption status in dashboard.`,
+        status: "info",
+        duration: 5000,
+      });
+      setTimeout(() => {
+        router.push(`/dashboard/adoptions/${existingAdoption.id}`);
+      }, 2000);
+      return;
+    }
+
+    onApplicationOpen();
+  };
 
   const {
     data: listing,
@@ -301,7 +316,7 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
                   : listing.status === "available"
                   ? {
                       label: "Reserve Pet",
-                      onClick: onApplicationOpen,
+                      onClick: handleApply,
                       icon: <ChatIcon />,
                       colorScheme: "brand",
                       variant: "primary",
