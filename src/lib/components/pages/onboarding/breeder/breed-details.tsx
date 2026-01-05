@@ -16,7 +16,14 @@ import {
   Switch,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { useBreedImageUpload, useCreateUserBreed, useCurrentUser, useUpdateUserBreed, useUpdateUserProfile, useUserBreedsFromUser } from "../../../../hooks/queries";
+import {
+  useBreedImageUpload,
+  useCreateUserBreed,
+  useCurrentUser,
+  useUpdateUserBreed,
+  useUpdateUserProfile,
+  useUserBreedsFromUser,
+} from "../../../../hooks/queries";
 import breedsData from "../../../../data/breeds_with_group_and_traits.json";
 import { useDropZone } from "../../../../hooks/useDropZone";
 import { Dropzone } from "../../../ui/Dropzone";
@@ -31,9 +38,13 @@ type PageProps = {
   setStep: (step: number) => void;
 };
 
-export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep }) => {
+export const BreederBreedDetails: React.FC<PageProps> = ({
+  currentStep,
+  setStep,
+}) => {
   const { data: user } = useCurrentUser();
-  const { data: userBreeds, isLoading: userBreedsLoading } = useUserBreedsFromUser(user?.id);
+  const { data: userBreeds, isLoading: userBreedsLoading } =
+    useUserBreedsFromUser(user?.id);
   const { mutateAsync: createUserBreed } = useCreateUserBreed();
   const { mutateAsync: updateUserBreed } = useUpdateUserBreed();
   const { mutateAsync: updateUserProfile } = useUpdateUserProfile();
@@ -42,8 +53,6 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
 
   const [selectedBreed, setSelectedBreed] = useState<any>(null);
   const [selectedPetType, setSelectedPetType] = useState<string>("dog");
-  const [isCrossBreed, setIsCrossBreed] = useState(false);
-  const [secondaryBreed, setSecondaryBreed] = useState<any>(null);
   const [breedImages, setBreedImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +60,7 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
   const breedOptions = breedsData
     .filter((breed) => {
       // In a real app, this would filter by selectedPetType if JSON supported it
-      return selectedPetType === 'dog';
+      return selectedPetType === "dog";
     })
     .map((breed) => ({
       label: breed.name,
@@ -67,28 +76,21 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
     }
   };
 
-  const onSelectSecondaryBreed = (selectedOption: any) => {
-    if (selectedOption) {
-      setSecondaryBreed(selectedOption.breed);
-    } else {
-      setSecondaryBreed(null);
-    }
-  };
-
   // Use the reusable hooks
-  const { onSelectImage, onRemoveImage, isMaxFiles, selectedImages } = useDropZone({
-    selectedImages: breedImages,
-    setSelectedImages: setBreedImages,
-    maxFiles: 5,
-    acceptedTypes: ['image/jpeg', 'image/png', 'image/webp']
-  });
+  const { onSelectImage, onRemoveImage, isMaxFiles, selectedImages } =
+    useDropZone({
+      selectedImages: breedImages,
+      setSelectedImages: setBreedImages,
+      maxFiles: 5,
+      acceptedTypes: ["image/jpeg", "image/png", "image/webp"],
+    });
 
   const { uploadImages, uploading } = useBreedImageUpload({
-    userId: user?.id || '',
-    breedId: selectedBreed?.id || '',
+    userId: user?.id || "",
+    breedId: selectedBreed?.id || "",
     onUploadComplete: async (urls) => {
-      console.log('Images uploaded successfully:', urls);
-    }
+      console.log("Images uploaded successfully:", urls);
+    },
   });
 
   const onBack = () => {
@@ -125,30 +127,18 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
     try {
       // First find the breed in the database by name
       const { data: dbBreed, error: findError } = await supabase
-        .from('breeds')
-        .select('id')
-        .eq('name', selectedBreed.name)
+        .from("breeds")
+        .select("id")
+        .eq("name", selectedBreed.name)
         .single();
 
       if (findError) throw new Error(`Breed not found: ${selectedBreed.name}`);
-
-      let secondaryBreedId = undefined;
-      if (isCrossBreed && secondaryBreed) {
-        const { data: dbSecondaryBreed } = await supabase
-          .from('breeds')
-          .select('id')
-          .eq('name', secondaryBreed.name)
-          .single();
-        secondaryBreedId = dbSecondaryBreed?.id;
-      }
 
       // Create the user_breed record with the database ID
       const newUserBreed = await createUserBreed({
         breed_id: dbBreed.id,
         is_owner: true,
         pet_type: selectedPetType,
-        is_cross_breed: isCrossBreed,
-        secondary_breed_id: secondaryBreedId
       });
 
       const uploadedUrls = await uploadImages(selectedImages as File[]);
@@ -156,7 +146,7 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
       if (uploadedUrls.length > 0 && newUserBreed?.id) {
         await updateUserBreed({
           id: newUserBreed.id,
-          updates: { images: uploadedUrls }
+          updates: { images: uploadedUrls },
         });
       }
       await updateUserProfile({
@@ -166,21 +156,20 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
 
       // Update breeder profile pet_types array
       const { data: profile } = await supabase
-        .from('breeder_profiles')
-        .select('pet_types')
-        .eq('user_id', user.id)
+        .from("breeder_profiles")
+        .select("pet_types")
+        .eq("user_id", user.id)
         .single();
 
       const existingPetTypes = profile?.pet_types || [];
       if (!existingPetTypes.includes(selectedPetType)) {
         await supabase
-          .from('breeder_profiles')
+          .from("breeder_profiles")
           .update({
-            pet_types: [...existingPetTypes, selectedPetType]
+            pet_types: [...existingPetTypes, selectedPetType],
           })
-          .eq('user_id', user.id);
+          .eq("user_id", user.id);
       }
-
 
       toast({
         title: "Breed details saved successfully!",
@@ -203,13 +192,13 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
     }
   };
 
-
   return (
     <>
-      {userBreedsLoading && <Center h="100%" flex="1" position="absolute" bg="white">
-        <Loader />
-      </Center>
-      }
+      {userBreedsLoading && (
+        <Center h="100%" flex="1" position="absolute" bg="white">
+          <Loader />
+        </Center>
+      )}
       <Stack as="form" spacing="8" onSubmit={onSubmit}>
         <VStack spacing={6} textAlign="center">
           <Heading size={{ base: "sm", lg: "md" }}>
@@ -233,37 +222,14 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
                 placeholder="Select breed..."
                 colorScheme="brand"
                 options={breedOptions}
-                value={selectedBreed ? { label: selectedBreed.name, value: selectedBreed.id } : null}
+                value={
+                  selectedBreed
+                    ? { label: selectedBreed.name, value: selectedBreed.id }
+                    : null
+                }
                 onChange={onSelectBreed}
               />
             </FormControl>
-
-            <FormControl display="flex" alignItems="center">
-              <FormLabel htmlFor="is-cross" mb="0">
-                Is this a cross-breed?
-              </FormLabel>
-              <Switch
-                id="is-cross"
-                isChecked={isCrossBreed}
-                onChange={(e) => setIsCrossBreed(e.target.checked)}
-                colorScheme="brand"
-              />
-            </FormControl>
-
-            {isCrossBreed && (
-              <FormControl>
-                <FormLabel fontWeight="semibold">
-                  Secondary Breed
-                </FormLabel>
-                <Select
-                  placeholder="Select secondary breed..."
-                  colorScheme="brand"
-                  options={breedOptions}
-                  value={secondaryBreed ? { label: secondaryBreed.name, value: secondaryBreed.id } : null}
-                  onChange={onSelectSecondaryBreed}
-                />
-              </FormControl>
-            )}
 
             <Box>
               <FormLabel fontWeight="semibold" mb={4}>
@@ -284,7 +250,9 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
 
           <HStack justify="start">
             <Icon as={BsInfoCircle} color="subtle" size="sm"></Icon>
-            <Text fontSize="xs" color="subtle">You can add more breeds later from your dashboard.</Text>
+            <Text fontSize="xs" color="subtle">
+              You can add more breeds later from your dashboard.
+            </Text>
           </HStack>
         </VStack>
 
@@ -304,6 +272,5 @@ export const BreederBreedDetails: React.FC<PageProps> = ({ currentStep, setStep 
         </ButtonGroup>
       </Stack>
     </>
-
   );
 };

@@ -1,10 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../supabase/client';
-import { queryKeys } from '../../queryKeys';
-import { UserBreed } from '../../db/schema';
-import { useToast } from '@chakra-ui/react';
-import { useState } from 'react';
-import { NotificationService } from '../../services/notificationService';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "../../supabase/client";
+import { queryKeys } from "../../queryKeys";
+import { UserBreed } from "../../db/schema";
+import { useToast } from "@chakra-ui/react";
+import { useState } from "react";
+import { NotificationService } from "../../services/notificationService";
 
 interface CreateUserBreedData {
   breed_id: string;
@@ -12,8 +12,6 @@ interface CreateUserBreedData {
   notes?: string;
   images?: string[];
   pet_type?: string;
-  is_cross_breed?: boolean;
-  secondary_breed_id?: string;
 }
 
 interface UpdateUserBreedData {
@@ -21,8 +19,6 @@ interface UpdateUserBreedData {
   notes?: string;
   images?: string[];
   pet_type?: string;
-  is_cross_breed?: boolean;
-  secondary_breed_id?: string;
 }
 
 // Query to get user's breeds with full breed details
@@ -32,8 +28,9 @@ export const useUserBreedsFromUser = (userId?: string) => {
     queryFn: async (): Promise<any[]> => {
       if (!userId) return [];
       const { data, error } = await supabase
-        .from('user_breeds')
-        .select(`
+        .from("user_breeds")
+        .select(
+          `
           id,
           user_id,
           breed_id,
@@ -53,11 +50,12 @@ export const useUserBreedsFromUser = (userId?: string) => {
             life_span,
             traits
           )
-        `)
-        .eq('user_id', userId);
+        `
+        )
+        .eq("user_id", userId);
 
       if (error) throw error;
-      console.log(error)
+      console.log(error);
       return data || [];
     },
     enabled: !!userId,
@@ -67,11 +65,12 @@ export const useUserBreedsFromUser = (userId?: string) => {
 // Query to get specific user breed by ID
 export const useUserBreed = (breedId: string) => {
   return useQuery({
-    queryKey: ['breeds', 'user-breed', breedId] as const,
+    queryKey: ["breeds", "user-breed", breedId] as const,
     queryFn: async (): Promise<any> => {
       const { data, error } = await supabase
-        .from('user_breeds')
-        .select(`
+        .from("user_breeds")
+        .select(
+          `
           id,
           user_id,
           breed_id,
@@ -91,8 +90,9 @@ export const useUserBreed = (breedId: string) => {
             life_span,
             traits
           )
-        `)
-        .eq('id', breedId)
+        `
+        )
+        .eq("id", breedId)
         .single();
 
       if (error) throw error;
@@ -119,9 +119,7 @@ export const useAllAvailableUserBreeds = (
   return useQuery({
     queryKey: queryKeys.breeds.available(options),
     queryFn: async () => {
-      let query = supabase
-        .from('user_breeds')
-        .select(`
+      let query = supabase.from("user_breeds").select(`
           id,
           user_id,
           breed_id,
@@ -158,53 +156,69 @@ export const useAllAvailableUserBreeds = (
         `);
 
       // Apply sorting
-      query = query.order('created_at', { ascending: false });
+      query = query.order("created_at", { ascending: false });
 
       const { data, error } = await query;
 
       if (error) throw error;
 
       // Deduplicate by breed_id and return unique breeds
-      let uniqueBreeds = data?.reduce((acc, userBreed) => {
-        if (userBreed.breeds && !acc.some(item => item.breed_id === userBreed.breed_id)) {
-          acc.push({
-            ...userBreed,
-            // Include aggregated data from all breeders offering this breed
-            breeder_count: data.filter(item => item.breed_id === userBreed.breed_id).length,
-            // Use the most recent images from any breeder
-            all_images: data
-              .filter(item => item.breed_id === userBreed.breed_id && item.images)
-              .flatMap(item => item.images || [])
-          });
-        }
-        return acc;
-      }, [] as any[]) || [];
+      let uniqueBreeds =
+        data?.reduce((acc, userBreed) => {
+          if (
+            userBreed.breeds &&
+            !acc.some((item) => item.breed_id === userBreed.breed_id)
+          ) {
+            acc.push({
+              ...userBreed,
+              // Include aggregated data from all breeders offering this breed
+              breeder_count: data.filter(
+                (item) => item.breed_id === userBreed.breed_id
+              ).length,
+              // Use the most recent images from any breeder
+              all_images: data
+                .filter(
+                  (item) => item.breed_id === userBreed.breed_id && item.images
+                )
+                .flatMap((item) => item.images || []),
+            });
+          }
+          return acc;
+        }, [] as any[]) || [];
 
       // Apply search filter on unique breeds
       if (options?.search) {
         const searchLower = options.search.toLowerCase();
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.search);
+        const isUuid =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            options.search
+          );
 
-        uniqueBreeds = uniqueBreeds.filter(breed => {
+        uniqueBreeds = uniqueBreeds.filter((breed) => {
           // 1. Direct Breed ID match (if search is UUID)
           if (isUuid && breed.breed_id === options.search) return true;
 
           // 2. Breed Details (Name, Description, Group)
-          if (breed.breeds?.name?.toLowerCase().includes(searchLower) ||
+          if (
+            breed.breeds?.name?.toLowerCase().includes(searchLower) ||
             breed.breeds?.description?.toLowerCase().includes(searchLower) ||
-            breed.breeds?.group?.toLowerCase().includes(searchLower)) {
+            breed.breeds?.group?.toLowerCase().includes(searchLower)
+          ) {
             return true;
           }
 
           // 3. Breeder/User Details
           // Check User Display Name
-          if (breed.users?.display_name?.toLowerCase().includes(searchLower)) return true;
+          if (breed.users?.display_name?.toLowerCase().includes(searchLower))
+            return true;
 
           // Check Kennel Name (in breeder_profiles)
           // breeder_profiles is an array in the query response structure
-          if (breed.users?.breeder_profiles?.some((bp: any) =>
-            bp.kennel_name?.toLowerCase().includes(searchLower)
-          )) {
+          if (
+            breed.users?.breeder_profiles?.some((bp: any) =>
+              bp.kennel_name?.toLowerCase().includes(searchLower)
+            )
+          ) {
             return true;
           }
 
@@ -212,31 +226,32 @@ export const useAllAvailableUserBreeds = (
         });
       }
 
-
-
       // Apply breed_ids filter
       if (options?.breed_ids && options.breed_ids.length > 0) {
-        uniqueBreeds = uniqueBreeds.filter(breed =>
+        uniqueBreeds = uniqueBreeds.filter((breed) =>
           options.breed_ids!.includes(breed.breed_id)
         );
       }
 
       // Apply breed_groups filter with case-insensitive matching
       if (options?.breed_groups && options.breed_groups.length > 0) {
-        uniqueBreeds = uniqueBreeds.filter(breed => {
-          const breedGroup = breed.breeds?.group?.toLowerCase().replace(/\s+/g, '-');
+        uniqueBreeds = uniqueBreeds.filter((breed) => {
+          const breedGroup = breed.breeds?.group
+            ?.toLowerCase()
+            .replace(/\s+/g, "-");
           const breedGroupRaw = breed.breeds?.group?.toLowerCase();
-          return options.breed_groups!.some(g =>
-            g.toLowerCase() === breedGroup ||
-            g.toLowerCase() === breedGroupRaw ||
-            g.toLowerCase().replace(/-/g, ' ') === breedGroupRaw
+          return options.breed_groups!.some(
+            (g) =>
+              g.toLowerCase() === breedGroup ||
+              g.toLowerCase() === breedGroupRaw ||
+              g.toLowerCase().replace(/-/g, " ") === breedGroupRaw
           );
         });
       }
 
       // Apply size filter based on weight ranges
       if (options?.size) {
-        uniqueBreeds = uniqueBreeds.filter(breed => {
+        uniqueBreeds = uniqueBreeds.filter((breed) => {
           const weight = breed.breeds?.weight;
           if (!weight) return false;
           // Parse weight range (format: "10-15 lbs" or "10-15" or "10 lbs")
@@ -245,25 +260,33 @@ export const useAllAvailableUserBreeds = (
           const weightValue = parseInt(match[1], 10);
 
           switch (options.size) {
-            case 'small': return weightValue <= 20;
-            case 'medium': return weightValue > 20 && weightValue <= 50;
-            case 'large': return weightValue > 50 && weightValue <= 90;
-            case 'extra-large': return weightValue > 90;
-            default: return true;
+            case "small":
+              return weightValue <= 20;
+            case "medium":
+              return weightValue > 20 && weightValue <= 50;
+            case "large":
+              return weightValue > 50 && weightValue <= 90;
+            case "extra-large":
+              return weightValue > 90;
+            default:
+              return true;
           }
         });
       }
 
       // Apply pet_type filter (filters by the breed's pet_type or breeder specialization)
       if (options?.pet_type) {
-        uniqueBreeds = uniqueBreeds.filter(breed => {
+        uniqueBreeds = uniqueBreeds.filter((breed) => {
           // Check explicit user_breed pet_type
           if (breed.pet_type === options.pet_type) return true;
 
           // Check breeder profile specialization
-          if (breed.users?.breeder_profiles?.some((bp: any) =>
-            bp.pet_types?.includes(options.pet_type)
-          )) return true;
+          if (
+            breed.users?.breeder_profiles?.some((bp: any) =>
+              bp.pet_types?.includes(options.pet_type)
+            )
+          )
+            return true;
 
           // Default fallback (e.g. if breed is a dog and pet_type is dog)
           // Ideally we check breed.breeds.pet_type if it existed, but we can rely on user_breed.pet_type
@@ -289,18 +312,19 @@ export const useAllAvailableUserBreeds = (
   });
 };
 
-
 // Mutation to create a new user breed association
 export const useCreateUserBreed = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: CreateUserBreedData) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No authenticated user');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("No authenticated user");
 
       const { data: result, error } = await supabase
-        .from('user_breeds')
+        .from("user_breeds")
         .insert({
           user_id: user.id,
           ...data,
@@ -312,21 +336,23 @@ export const useCreateUserBreed = () => {
       return result;
     },
     onSuccess: async (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.breeds.userBreeds() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.breeds.userBreeds(),
+      });
 
       // Send notifications using the centralized breeder activity service
       const { data: breeder } = await supabase
-        .from('users')
-        .select('display_name')
-        .eq('id', data.user_id)
+        .from("users")
+        .select("display_name")
+        .eq("id", data.user_id)
         .single();
 
       await NotificationService.sendBreederActivityNotification(
         data.user_id,
-        breeder?.display_name || 'Breeder',
-        'breed',
+        breeder?.display_name || "Breeder",
+        "breed",
         {
-          title: 'New Breed Added',
+          title: "New Breed Added",
           id: data.id,
           breed_id: data.breed_id,
           user_breed_id: data.id,
@@ -341,14 +367,20 @@ export const useUpdateUserBreed = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: UpdateUserBreedData }) => {
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: UpdateUserBreedData;
+    }) => {
       const { data, error } = await supabase
-        .from('user_breeds')
+        .from("user_breeds")
         .update({
           ...updates,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', id)
+        .eq("id", id)
         .select()
         .single();
 
@@ -356,8 +388,12 @@ export const useUpdateUserBreed = () => {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.breeds.userBreeds() });
-      queryClient.invalidateQueries({ queryKey: ['breeds', 'user-breed', data.id] as const });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.breeds.userBreeds(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["breeds", "user-breed", data.id] as const,
+      });
     },
   });
 };
@@ -369,14 +405,16 @@ export const useDeleteUserBreed = () => {
   return useMutation({
     mutationFn: async (breedId: string) => {
       const { error } = await supabase
-        .from('user_breeds')
+        .from("user_breeds")
         .delete()
-        .eq('id', breedId);
+        .eq("id", breedId);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.breeds.userBreeds() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.breeds.userBreeds(),
+      });
     },
   });
 };
@@ -390,7 +428,7 @@ interface UseBreedImageUploadProps {
 export const useBreedImageUpload = ({
   userId,
   breedId,
-  onUploadComplete
+  onUploadComplete,
 }: UseBreedImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -407,18 +445,22 @@ export const useBreedImageUpload = ({
     try {
       for (let i = 0; i < images.length; i++) {
         const image = images[i];
-        const fileName = `breed-${breedId}-${Date.now()}-${Math.random()}.${image.name.split('.').pop()}`;
+        const fileName = `breed-${breedId}-${Date.now()}-${Math.random()}.${image.name
+          .split(".")
+          .pop()}`;
 
         // Upload to Supabase Storage
         const { error: uploadError } = await supabase.storage
-          .from('breed-images')
+          .from("breed-images")
           .upload(`user-${userId}/${fileName}`, image);
 
         if (uploadError) throw uploadError;
 
         // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('breed-images')
+        const {
+          data: { publicUrl },
+        } = supabase.storage
+          .from("breed-images")
           .getPublicUrl(`user-${userId}/${fileName}`);
 
         uploadedUrls.push(publicUrl);
@@ -434,12 +476,13 @@ export const useBreedImageUpload = ({
 
       toast({
         title: "Images uploaded successfully!",
-        description: `${uploadedUrls.length} breed image${uploadedUrls.length > 1 ? 's' : ''} uploaded.`,
+        description: `${uploadedUrls.length} breed image${
+          uploadedUrls.length > 1 ? "s" : ""
+        } uploaded.`,
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-
     } catch (error: any) {
       toast({
         title: "Upload failed",
@@ -455,15 +498,18 @@ export const useBreedImageUpload = ({
     return uploadedUrls;
   };
 
-  const updateUserBreedWithImages = async (breedId: string, imageUrls: string[]) => {
+  const updateUserBreedWithImages = async (
+    breedId: string,
+    imageUrls: string[]
+  ) => {
     try {
       const { error } = await supabase
-        .from('user_breeds')
+        .from("user_breeds")
         .update({
           images: imageUrls,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', breedId);
+        .eq("id", breedId);
 
       if (error) throw error;
 
@@ -474,7 +520,6 @@ export const useBreedImageUpload = ({
         duration: 3000,
         isClosable: true,
       });
-
     } catch (error: any) {
       toast({
         title: "Failed to update breed",
