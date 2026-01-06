@@ -13,6 +13,76 @@ import {
   ChatIcon,
 } from "@chakra-ui/icons";
 
+// Interface for adoption with full listing data
+export interface AdoptionWithListing extends Adoption {
+  listings: {
+    id: string;
+    title: string;
+    type: string;
+    price: number | null;
+    reservation_fee: number | null;
+    photos: string[];
+    owner_id: string;
+    birth_date: string | null;
+    available_date: string | null;
+    number_of_puppies: number | null;
+    pet_name: string | null;
+    pet_age: string | null;
+    pet_gender: string | null;
+    location_text: string | null;
+    location_lat: number | null;
+    location_lng: number | null;
+    requirements: any;
+    breeds?: {
+      id: string;
+      name: string;
+    };
+    users?: {
+      id: string;
+      display_name: string;
+      email: string;
+      profile_photo_url: string | null;
+      location_text: string | null;
+    };
+  };
+  users: {
+    id: string;
+    display_name: string;
+    email: string;
+    profile_photo_url: string | null;
+    location_text: string | null;
+    created_at: string;
+    phone: string | null;
+    seeker_profiles?: {
+      id: string;
+      experience_level: string | null;
+      living_situation: string | null;
+      has_allergies: boolean | null;
+      has_children: boolean | null;
+      has_other_pets: boolean | null;
+    } | null;
+  };
+}
+
+export interface AdoptionStatusHistory {
+  id: string;
+  adoption_id: string;
+  status: string;
+  notes?: string;
+  created_at: string | Date;
+}
+
+interface TimelineStep {
+  id: string;
+  title: string;
+  description: string;
+  status: "completed" | "current" | "pending" | "locked";
+  date?: string;
+  info?: string[];
+}
+
+// Logic to determine steps and status
+
 // Extended Adoption type with related data
 export interface AdoptionWithListing extends Adoption {
   listings: {
@@ -37,6 +107,13 @@ export interface AdoptionWithListing extends Adoption {
       id: string;
       name: string;
     };
+    users: {
+      id: string;
+      display_name: string;
+      email: string;
+      profile_photo_url: string | null;
+      location_text: string | null;
+    } | null;
     users?: {
       id: string;
       display_name: string;
@@ -76,7 +153,6 @@ interface UpdateAdoptionData {
   contract_signed?: boolean;
   payment_completed?: boolean;
   application_data?: any;
-  response_message?: string;
 }
 
 interface TimelineStep {
