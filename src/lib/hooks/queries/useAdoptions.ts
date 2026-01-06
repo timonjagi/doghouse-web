@@ -37,31 +37,23 @@ export interface AdoptionWithListing extends Adoption {
       id: string;
       name: string;
     };
-    users?: {
+  users?: {
       id: string;
       display_name: string;
       email: string;
       profile_photo_url: string | null;
       location_text: string | null;
-    };
-  };
-  users: {
-    id: string;
-    display_name: string;
-    email: string;
-    profile_photo_url: string | null;
-    location_text: string | null;
-    created_at: string;
-    phone: string | null;
-    seeker_profiles?: {
-      id: string;
-      experience_level: string | null;
-      living_situation: string | null;
-      has_allergies: boolean | null;
-      has_children: boolean | null;
-      has_other_pets: boolean | null;
-    } | null;
-  };
+      created_at: string;
+      phone: string | null;
+      seeker_profiles?: {
+        id: string;
+        experience_level: string | null;
+        living_situation: string | null;
+        has_allergies: boolean | null;
+        has_children: boolean | null;
+        has_other_pets: boolean | null;
+      };
+    }; | null;
 }
 
 export interface AdoptionStatusHistory {
