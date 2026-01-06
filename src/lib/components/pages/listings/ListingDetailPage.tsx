@@ -42,8 +42,8 @@ import {
   useDeleteListing,
   useIncrementListingViews,
   useListing,
-  useAdoptionsByUser,
-} from "../../hooks/queries/useAdoptions";
+} from "../../../hooks/queries/useListings";
+import { useAdoptionsByUser } from "../../../hooks/queries/useAdoptions";
 import { NextSeo } from "next-seo";
 import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import { Loader } from "lib/components/ui/Loader";
