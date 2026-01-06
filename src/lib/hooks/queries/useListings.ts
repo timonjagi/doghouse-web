@@ -3,6 +3,7 @@ import { supabase } from "../../supabase/client";
 import { queryKeys } from "../../queryKeys";
 import { Listing } from "../../db/schema";
 import { NotificationService } from "../../services/notificationService";
+import { AdoptionWithListing } from "./useAdoptions";
 
 interface CreateListingData {
   title: string;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Text,
@@ -21,37 +21,37 @@ import {
   Icon,
   Alert,
   AlertIcon,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   CheckCircleIcon,
   WarningIcon,
   PhoneIcon,
   ChatIcon,
-} from '@chakra-ui/icons';
-import { useRouter } from 'next/router';
-import { useUserProfile } from '../../../hooks/queries/useUserProfile';
+} from "@chakra-ui/icons";
+import { useRouter } from "next/router";
+import { useUserProfile } from "../../../hooks/queries/useUserProfile";
 import {
   useAdoption,
   getAvailableAdoptionActions,
   useAdoptionTimelineLogic,
   AdoptionWithListing,
   AdoptionStatusHistory,
-} from '../../../hooks/queries/useAdoptions';
-import { ADOPTION_ACTION_CONFIGS } from '../../../hooks/queries/useAdoptions';
-import { useTransactionsByApplication } from '../../../hooks/queries/useTransactions';
-import { NextSeo } from 'next-seo';
-import { Loader } from '../../ui/Loader';
-import { AdoptionTimeline } from './AdoptionTimeline';
-import { Gallery } from 'lib/components/ui/GalleryWithCarousel/Gallery';
-import { PaymentStatusModal } from '../payments/PaymentStatusModal';
-import AdoptionActionDialog from './AdoptionActionDialog';
-import { AdoptionActionList } from './AdoptionActionList';
-import { AdoptionActionModal } from './AdoptionActionModal';
-import { getPriorityAdoptionAction } from '../../../hooks/queries/useAdoptions';
-import { formatPrice } from 'lib/components/ui/PriceTag';
-import { PageHeaderWithTwoButtons } from 'lib/components/ui/PageHeaderWithTwoButtons';
-import { FiInfo, FiUser } from 'react-icons/fi';
-import { BsListCheck } from 'react-icons/bs';
+} from "../../../hooks/queries/useAdoptions";
+import { ADOPTION_ACTION_CONFIGS } from "../../../hooks/queries/useAdoptions";
+import { useTransactionsByApplication } from "../../../hooks/queries/useTransactions";
+import { NextSeo } from "next-seo";
+import { Loader } from "../../ui/Loader";
+import { AdoptionTimeline } from "./AdoptionTimeline";
+import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
+import { PaymentStatusModal } from "../payments/PaymentStatusModal";
+import AdoptionActionDialog from "./AdoptionActionDialog";
+import { AdoptionActionList } from "./AdoptionActionList";
+import { AdoptionActionModal } from "./AdoptionActionModal";
+import { getPriorityAdoptionAction } from "../../../hooks/queries/useAdoptions";
+import { formatPrice } from "lib/components/ui/PriceTag";
+import { PageHeaderWithTwoButtons } from "lib/components/ui/PageHeaderWithTwoButtons";
+import { FiInfo, FiUser } from "react-icons/fi";
+import { BsListCheck } from "react-icons/bs";
 
 interface AdoptionDetailPageProps {
   id: string;
@@ -62,14 +62,28 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   const { id, payment } = router.query;
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
   const toast = useToast();
-  const timelineRef = React.useRef<{ getCurrentStepButtons: () => any[] }>(null);
-  const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
+  const timelineRef = React.useRef<{ getCurrentStepButtons: () => any[] }>(
+    null
+  );
+  const {
+    isOpen: isModalOpen,
+    onOpen: onModalOpen,
+    onClose: onModalClose,
+  } = useDisclosure();
 
-  const { data: adoption, isLoading: adoptionLoading, error: adoptionError } = useAdoption(id as string);
-  const { data: transactions, isLoading: transactionsLoading, error: transactionsError } = useTransactionsByApplication(id as string);
+  const {
+    data: adoption,
+    isLoading: adoptionLoading,
+    error: adoptionError,
+  } = useAdoption(id as string);
+  const {
+    data: transactions,
+    isLoading: transactionsLoading,
+    error: transactionsError,
+  } = useTransactionsByApplication(id as string);
 
   const [pendingAction, setPendingAction] = useState<{
-    type: 'withdraw' | 'approve' | 'reject' | 'complete' | null;
+    type: "withdraw" | "approve" | "reject" | "complete" | null;
     status: string;
     title: string;
     message: string;
@@ -80,61 +94,72 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   // Payment modal states
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
-    type: 'reservation' | 'final';
+    type: "reservation" | "final";
     amount: number;
     description: string;
   }>({
     isOpen: false,
-    type: 'reservation',
+    type: "reservation",
     amount: 0,
-    description: '',
+    description: "",
   });
 
   const [statusModal, setStatusModal] = useState<{
     isOpen: boolean;
     paymentReference: string;
-    paymentType: 'reservation' | 'final';
+    paymentType: "reservation" | "final";
     expectedAmount: number;
   }>({
     isOpen: false,
-    paymentReference: '',
-    paymentType: 'reservation',
+    paymentReference: "",
+    paymentType: "reservation",
     expectedAmount: 0,
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'submitted': return 'blue';
-      case 'pending': return 'yellow';
-      case 'approved': return 'green';
-      case 'rejected': return 'red';
-      case 'completed': return 'purple';
-      default: return 'gray';
+      case "submitted":
+        return "blue";
+      case "pending":
+        return "yellow";
+      case "approved":
+        return "green";
+      case "rejected":
+        return "red";
+      case "completed":
+        return "purple";
+      default:
+        return "gray";
     }
   };
 
   const formatStatus = (status: string) => {
-    return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+    return status.charAt(0).toUpperCase() + status.slice(1).replace("_", " ");
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString as string).toLocaleDateString('en-KE', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+    return new Date(dateString as string).toLocaleDateString("en-KE", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   const handleActionClick = (action: any) => {
-    if (action.type.startsWith('check_payment_status')) {
-      const type = action.type === 'check_payment_status_reservation' ? 'reservation' : 'final';
+    if (action.type.startsWith("check_payment_status")) {
+      const type =
+        action.type === "check_payment_status_reservation"
+          ? "reservation"
+          : "final";
       setStatusModal({
         isOpen: true,
         paymentReference: action.payload?.reference,
         paymentType: type,
-        expectedAmount: type === 'reservation'
-          ? Number(adoption.listings.reservation_fee)
-          : Number(adoption.listings.price) - Number(adoption.listings.reservation_fee),
+        expectedAmount:
+          type === "reservation"
+            ? Number(adoption.listings.reservation_fee)
+            : Number(adoption.listings.price) -
+              Number(adoption.listings.reservation_fee),
       });
       return;
     }
@@ -142,52 +167,53 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
     onModalOpen();
   };
 
-
-
-
   // Handle action triggers from query params (e.g. redirected from inbox)
   useEffect(() => {
     if (!adoption) return;
 
-    if (payment === 'reservation') {
+    if (payment === "reservation") {
       setPaymentModal({
         isOpen: true,
-        type: 'reservation',
+        type: "reservation",
         amount: Number(adoption.listings.reservation_fee) || 0,
         description: `Reservation fee for ${adoption.listings.title}`,
       });
       // Clean up URL
-      const newUrl = router.pathname.replace('[id]', id as string);
+      const newUrl = router.pathname.replace("[id]", id as string);
       router.replace(newUrl, undefined, { shallow: true });
-    } else if (payment === 'final') {
-      const finalAmount = Number(adoption.listings.price) - Number(adoption.listings.reservation_fee);
+    } else if (payment === "final") {
+      const finalAmount =
+        Number(adoption.listings.price) -
+        Number(adoption.listings.reservation_fee);
       setPaymentModal({
         isOpen: true,
-        type: 'final',
+        type: "final",
         amount: finalAmount,
         description: `Final payment for ${adoption.listings.title}`,
       });
       // Clean up URL
-      const newUrl = router.pathname.replace('[id]', id as string);
+      const newUrl = router.pathname.replace("[id]", id as string);
       router.replace(newUrl, undefined, { shallow: true });
     } else if (router.query.payment_status && router.query.type) {
-      const type = router.query.type as 'reservation' | 'final';
+      const type = router.query.type as "reservation" | "final";
       setStatusModal({
         isOpen: true,
         paymentReference: router.query.payment_status as string,
         paymentType: type,
-        expectedAmount: type === 'reservation'
-          ? Number(adoption.listings.reservation_fee)
-          : Number(adoption.listings.price) - Number(adoption.listings.reservation_fee),
+        expectedAmount:
+          type === "reservation"
+            ? Number(adoption.listings.reservation_fee)
+            : Number(adoption.listings.price) -
+              Number(adoption.listings.reservation_fee),
       });
       // Clean up URL
-      const newUrl = router.pathname.replace('[id]', id as string);
+      const newUrl = router.pathname.replace("[id]", id as string);
       router.replace(newUrl, undefined, { shallow: true });
-    } else if (router.query.action === 'review') {
+    } else if (router.query.action === "review") {
       // Handle review flow trigger
-      console.log('Should open review flow');
+      console.log("Should open review flow");
       // Clean up URL
-      const newUrl = router.pathname.replace('[id]', id as string);
+      const newUrl = router.pathname.replace("[id]", id as string);
       router.replace(newUrl, undefined, { shallow: true });
     }
   }, [payment, adoption, id, router, router.query]);
@@ -195,11 +221,11 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   // Handle priority action modal trigger
   useEffect(() => {
     if (adoption && userProfile) {
-      const priorityAction = getPriorityAdoptionAction({
-        adoption: adoption as AdoptionWithListing,
+      const priorityAction = getPriorityAdoptionAction(
+        adoption as AdoptionWithListing,
         userProfile,
         transactions
-      });
+      );
       if (priorityAction) {
         // Open modal after a short delay to ensure components are ready
         const timer = setTimeout(() => onModalOpen(), 1000);
@@ -208,22 +234,28 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
     }
   }, [adoption?.id, userProfile?.id]);
 
-
   const handleStatusModalClose = () => {
-    setStatusModal(prev => ({ ...prev, isOpen: false }));
+    setStatusModal((prev) => ({ ...prev, isOpen: false }));
   };
 
   // Handle payment success callback from Paystack
   useEffect(() => {
-    if (payment === 'success' && adoption && !statusModal.isOpen && transactions) {
-      let paymentType: 'reservation' | 'final' = 'reservation';
+    if (
+      payment === "success" &&
+      adoption &&
+      !statusModal.isOpen &&
+      transactions
+    ) {
+      let paymentType: "reservation" | "final" = "reservation";
       let expectedAmount = Number(adoption.listings.reservation_fee) || 0;
 
       if (adoption.reservation_paid && !adoption.payment_completed) {
-        paymentType = 'final';
-        expectedAmount = Number(adoption.listings.price) - Number(adoption.listings.reservation_fee);
+        paymentType = "final";
+        expectedAmount =
+          Number(adoption.listings.price) -
+          Number(adoption.listings.reservation_fee);
       }
-      const transaction = transactions?.find(tx => tx.status === 'pending');
+      const transaction = transactions?.find((tx) => tx.status === "pending");
 
       if (transaction) {
         setStatusModal({
@@ -235,24 +267,25 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
       }
 
       // Clean up URL by removing the payment parameter
-      const newUrl = router.pathname.replace('[id]', id as string);
+      const newUrl = router.pathname.replace("[id]", id as string);
       router.replace(newUrl, undefined, { shallow: true });
     }
   }, [payment, adoption, transactions, statusModal, router, id]);
-
-
 
   if (profileLoading || adoptionLoading || transactionsLoading) {
     return <Loader />;
   }
 
-  const availableActions = adoption ? getAvailableAdoptionActions({
-    adoption,
-    userProfile,
-    transactions,
-  }) : [];
+  const availableActions = adoption
+    ? getAvailableAdoptionActions(adoption, userProfile, transactions)
+    : [];
 
   if (adoptionError || transactionsError) {
+    console.error("Adoption load error:", {
+      adoptionError,
+      transactionsError,
+      adoptionId: id,
+    });
     return (
       <Alert status="error">
         <AlertIcon />
@@ -267,8 +300,10 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
       <Container maxW="7xl" py={8}>
         <Center h="400px">
           <VStack spacing={4}>
-            <Text fontSize="lg" color="gray.500">Adoption not found</Text>
-            <Button onClick={() => router.push('/dashboard/adoptions')}>
+            <Text fontSize="lg" color="gray.500">
+              Adoption not found
+            </Text>
+            <Button onClick={() => router.push("/dashboard/adoptions")}>
               Back to Adoptions
             </Button>
           </VStack>
@@ -281,75 +316,114 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
 
   const getTitle = () => {
     if (adoption.listings.title) return adoption.listings.title;
-    if (adoption.listings.type === 'litter') {
+    if (adoption.listings.type === "litter") {
       //@ts-ignore
-      return `${adoption.listings.breeds?.name.charAt(0).toUpperCase() + adoption.listings.breeds?.name.slice(1)} Puppies`;
+      return `${
+        adoption.listings.breeds?.name.charAt(0).toUpperCase() +
+        adoption.listings.breeds?.name.slice(1)
+      } Puppies`;
     } else {
       //@ts-ignore
-      return `${adoption.listings.breeds?.name.charAt(0).toUpperCase() + adoption.listings.breeds?.name.slice(1)} ${adoption.listings.pet_age} old`;
+      return `${
+        adoption.listings.breeds?.name.charAt(0).toUpperCase() +
+        adoption.listings.breeds?.name.slice(1)
+      } ${adoption.listings.pet_age} old`;
     }
-  }
+  };
 
   return (
     <>
-      <NextSeo title={`Adoption for ${adoption.listings.title} - DogHouse Kenya`} />
+      <NextSeo
+        title={`Adoption for ${adoption.listings.title} - DogHouse Kenya`}
+      />
 
       <Container maxW="7xl" pb={{ base: 4, md: 24 }}>
         <Stack spacing={{ base: 8, md: 16 }}>
-
           <Stack spacing="6">
             <PageHeaderWithTwoButtons
               title={getTitle()}
-              description={`Applied ${formatDate(adoption.created_at.toString())}`}
+              description={`Applied ${formatDate(
+                adoption.created_at.toString()
+              )}`}
               badge={
                 <Badge colorScheme={getStatusColor(adoption.status)}>
                   {formatStatus(adoption.status)}
                 </Badge>
               }
-              buttonPrimary={availableActions && availableActions.length > 0 ? {
-                label: availableActions[0].label || availableActions[0].buttonLabel,
-                onClick: () => handleActionClick(availableActions[0]),
-                icon: availableActions[0].icon ? <Icon as={availableActions[0].icon} /> : undefined,
-                colorScheme: availableActions[0].colorScheme,
-                isDisabled: availableActions[0].disabled,
-                variant: availableActions[0].variant
-              } : undefined}
-              buttonSecondary={availableActions && availableActions.length > 1 ? {
-                label: availableActions[1].label || availableActions[1].buttonLabel,
-                onClick: () => handleActionClick(availableActions[1]),
-                icon: availableActions[1].icon ? <Icon as={availableActions[1].icon} /> : undefined,
-                colorScheme: availableActions[1].colorScheme,
-                isDisabled: availableActions[1].disabled,
-                variant: availableActions[1].variant
-              } : undefined}
+              buttonPrimary={
+                availableActions && availableActions.length > 0
+                  ? {
+                      label:
+                        availableActions[0].label ||
+                        availableActions[0].buttonLabel,
+                      onClick: () => handleActionClick(availableActions[0]),
+                      icon: availableActions[0].icon ? (
+                        <Icon as={availableActions[0].icon} />
+                      ) : undefined,
+                      colorScheme: availableActions[0].colorScheme,
+                      isDisabled: availableActions[0].disabled,
+                      variant: availableActions[0].variant,
+                    }
+                  : undefined
+              }
+              buttonSecondary={
+                availableActions && availableActions.length > 1
+                  ? {
+                      label:
+                        availableActions[1].label ||
+                        availableActions[1].buttonLabel,
+                      onClick: () => handleActionClick(availableActions[1]),
+                      icon: availableActions[1].icon ? (
+                        <Icon as={availableActions[1].icon} />
+                      ) : undefined,
+                      colorScheme: availableActions[1].colorScheme,
+                      isDisabled: availableActions[1].disabled,
+                      variant: availableActions[1].variant,
+                    }
+                  : undefined
+              }
             />
 
             <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
               <Stack spacing={4}>
                 <Gallery
-                  images={Array.from(adoption.listings.photos as string[]).map((photo) => ({ src: photo }))}
+                  images={Array.from(adoption.listings.photos as string[]).map(
+                    (photo) => ({ src: photo })
+                  )}
                   flex={1}
                   minW="50vw"
                 >
-                  <HStack spacing={3} mb={4} position="absolute" top="4" left="4" zIndex={1}>
-                    <Badge colorScheme={adoption.listings.type === 'litter' ? 'blue' : 'green'}>
-                      {adoption.listings.type === 'litter' ? 'Litter' : 'Single Pet'}
+                  <HStack
+                    spacing={3}
+                    mb={4}
+                    position="absolute"
+                    top="4"
+                    left="4"
+                    zIndex={1}
+                  >
+                    <Badge
+                      colorScheme={
+                        adoption.listings.type === "litter" ? "blue" : "green"
+                      }
+                    >
+                      {adoption.listings.type === "litter"
+                        ? "Litter"
+                        : "Single Pet"}
                     </Badge>
                   </HStack>
                 </Gallery>
               </Stack>
 
-              <Tabs variant='soft-rounded' colorScheme='brand' >
+              <Tabs variant="soft-rounded" colorScheme="brand">
                 <TabList
                   overflowY="hidden"
                   whiteSpace="nowrap"
                   css={{
-                    '&::-webkit-scrollbar': {
-                      display: 'none',
-                      scrollbarWidth: 'none',
-                    }
-                  }
-                  }
+                    "&::-webkit-scrollbar": {
+                      display: "none",
+                      scrollbarWidth: "none",
+                    },
+                  }}
                 >
                   <Tab>
                     <HStack>
@@ -366,7 +440,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                   <Tab>
                     <HStack>
                       <Icon as={FiUser} />
-                      <Text>{isOwner ? 'Applicant' : 'Breeder'}</Text>
+                      <Text>{isOwner ? "Applicant" : "Breeder"}</Text>
                     </HStack>
                   </Tab>
                 </TabList>
@@ -381,13 +455,17 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
                     />
                   </TabPanel>
                   <TabPanel px={0}>
-                    <ListingInfo adoption={adoption} />
+                    <ListingInfo adoption={adoption} router={router} />
                   </TabPanel>
                   <TabPanel px={0}>
                     {isOwner ? (
                       <ApplicantInfo adoption={adoption} router={router} />
                     ) : (
-                      <BreederInfo adoption={adoption} formatDate={formatDate} router={router} />
+                      <BreederInfo
+                        adoption={adoption}
+                        formatDate={formatDate}
+                        router={router}
+                      />
                     )}
                   </TabPanel>
                 </TabPanels>
@@ -420,11 +498,24 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
 };
 
 // Listing Information Component
-const ListingInfo = ({ adoption }) => {
+const ListingInfo = ({ adoption, router }) => {
   return (
     <VStack spacing={4} align="stretch">
       {/* Removed Gallery from here as it is now in main layout */}
       {/* Removed Divider */}
+
+      <Button
+        as="a"
+        href={`/listings/${adoption.listings.id}`}
+        variant="outline"
+        colorScheme="blue"
+        size="sm"
+        alignSelf="flex-start"
+        leftIcon={<FiInfo />}
+        mt={2}
+      >
+        View Full Listing
+      </Button>
 
       <SimpleGrid columns={2} spacing={4}>
         <Box>
@@ -437,37 +528,43 @@ const ListingInfo = ({ adoption }) => {
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Breed
           </Text>
-          <Text>{adoption.listings.breeds?.name || 'Unknown'}</Text>
+          <Text>{adoption.listings.breeds?.name || "Unknown"}</Text>
         </Box>
-        {adoption.listings.type === 'litter' && (
+        {adoption.listings.type === "litter" && (
           <>
             <Box>
               <Text fontSize="xs" color="gray.500" textTransform="uppercase">
                 Birth Date
               </Text>
-              <Text>{adoption.listings.birth_date ? new Date(adoption.listings.birth_date).toLocaleDateString() : 'Not specified'}</Text>
+              <Text>
+                {adoption.listings.birth_date
+                  ? new Date(adoption.listings.birth_date).toLocaleDateString()
+                  : "Not specified"}
+              </Text>
             </Box>
             <Box>
               <Text fontSize="xs" color="gray.500" textTransform="uppercase">
                 Puppies
               </Text>
-              <Text>{adoption.listings.number_of_puppies || 'Not specified'}</Text>
+              <Text>
+                {adoption.listings.number_of_puppies || "Not specified"}
+              </Text>
             </Box>
           </>
         )}
-        {adoption.listings.type === 'single_pet' && (
+        {adoption.listings.type === "single_pet" && (
           <>
             <Box>
               <Text fontSize="xs" color="gray.500" textTransform="uppercase">
                 Age
               </Text>
-              <Text>{adoption.listings.pet_age || 'Not specified'}</Text>
+              <Text>{adoption.listings.pet_age || "Not specified"}</Text>
             </Box>
             <Box>
               <Text fontSize="xs" color="gray.500" textTransform="uppercase">
                 Gender
               </Text>
-              <Text>{adoption.listings.pet_gender || 'Not specified'}</Text>
+              <Text>{adoption.listings.pet_gender || "Not specified"}</Text>
             </Box>
           </>
         )}
@@ -478,13 +575,18 @@ const ListingInfo = ({ adoption }) => {
 
           <Box>
             <Text>
-              {formatPrice(adoption.listings.price * (adoption.application_data?.quantity || 1))}
+              {formatPrice(
+                adoption.listings.price *
+                  (adoption.application_data?.quantity || 1)
+              )}
             </Text>
-            {adoption.listings.type === 'litter' && <Text fontSize="xs" color="muted">
-              {formatPrice(adoption.listings.price)} each x {adoption.application_data?.quantity || 1}
-            </Text>}
+            {adoption.listings.type === "litter" && (
+              <Text fontSize="xs" color="muted">
+                {formatPrice(adoption.listings.price)} each x{" "}
+                {adoption.application_data?.quantity || 1}
+              </Text>
+            )}
           </Box>
-
         </Box>
 
         <Box>
@@ -492,15 +594,21 @@ const ListingInfo = ({ adoption }) => {
             Reservation Fee
           </Text>
           <Box>
-            <Text>{formatPrice(adoption.listings.reservation_fee * (adoption.application_data?.quantity || 1))}</Text>
+            <Text>
+              {formatPrice(
+                adoption.listings.reservation_fee *
+                  (adoption.application_data?.quantity || 1)
+              )}
+            </Text>
 
-            {adoption.listings.type === 'litter' && <Text fontSize="xs" color="muted">
-              {formatPrice(adoption.listings.reservation_fee)} each x {adoption.application_data?.quantity || 1}
-            </Text>}
+            {adoption.listings.type === "litter" && (
+              <Text fontSize="xs" color="muted">
+                {formatPrice(adoption.listings.reservation_fee)} each x{" "}
+                {adoption.application_data?.quantity || 1}
+              </Text>
+            )}
           </Box>
         </Box>
-
-
       </SimpleGrid>
     </VStack>
   );
@@ -518,65 +626,74 @@ const ApplicantInfo = ({ adoption, router }) => {
             size="lg"
           />
           <VStack align="start" spacing={1}>
-            <Text fontWeight="bold" fontSize="lg">{adoption.users.display_name}</Text>
-            <Text color="gray.600">{adoption.users.email.replace(
-              adoption.users.email.split('@')[0],
-              adoption.users.email.split('@')[0].slice(0, 3) + '***'
-            )}</Text>
+            <Text fontWeight="bold" fontSize="lg">
+              {adoption.users.display_name}
+            </Text>
+            <Text color="gray.600">
+              {adoption.users.email.replace(
+                adoption.users.email.split("@")[0],
+                adoption.users.email.split("@")[0].slice(0, 3) + "***"
+              )}
+            </Text>
           </VStack>
         </HStack>
 
-
         <HStack spacing={4} pt={2}>
-          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline" isDisabled={!adoption?.reservation_paid}>
+          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
             Call Applicant
           </Button>
-          <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={!adoption?.reservation_paid}>
+          <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
             Message Applicant
-          </Button>
-          <Button leftIcon={<WarningIcon />} size="sm" variant="outline" onClick={() => router.push('/support')}>
-            Contact Support
           </Button>
         </HStack>
       </Stack>
-
 
       <SimpleGrid columns={2} spacing={4}>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Location
           </Text>
-          <Text>{adoption.users.location_text || 'Not specified'}</Text>
+          <Text>{adoption.users.location_text || "Not specified"}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Member Since
           </Text>
-          <Text>{new Date(adoption.users.created_at).toLocaleDateString()}</Text>
+          <Text>
+            {new Date(adoption.users.created_at).toLocaleDateString()}
+          </Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Experience Level
           </Text>
-          <Text>{adoption.users?.seeker_profiles?.experience_level || 'Not specified'}</Text>
+          <Text>
+            {adoption.users?.seeker_profiles?.experience_level ||
+              "Not specified"}
+          </Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Living Situation
           </Text>
-          <Text>{adoption.users?.seeker_profiles?.living_situation || 'Not specified'}</Text>
+          <Text>
+            {adoption.users?.seeker_profiles?.living_situation ||
+              "Not specified"}
+          </Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Children
           </Text>
-          <Text>{adoption.application_data?.has_children ? 'Yes' : 'No'}</Text>
+          <Text>{adoption.application_data?.has_children ? "Yes" : "No"}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Other Pets
           </Text>
-          <Text>{adoption.users?.seeker_profiles?.has_other_pets ? 'Yes' : 'No'}</Text>
+          <Text>
+            {adoption.users?.seeker_profiles?.has_other_pets ? "Yes" : "No"}
+          </Text>
         </Box>
       </SimpleGrid>
     </SimpleGrid>
@@ -587,35 +704,32 @@ const ApplicantInfo = ({ adoption, router }) => {
 const BreederInfo = ({ adoption, formatDate, router }) => {
   return (
     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-
-      <Stack spacing={4} >
+      <Stack spacing={4}>
         <HStack spacing={4}>
           <Avatar
             src={adoption.listings.users?.profile_photo_url || undefined}
-            name={adoption.listings.users?.display_name || 'Breeder'}
+            name={adoption.listings.users?.display_name || "Breeder"}
             size="lg"
           />
           <VStack align="start" spacing={1}>
             <Text fontWeight="bold" fontSize="lg">
-              {adoption.listings.users?.display_name || 'Breeder'}
+              {adoption.listings.users?.display_name || "Breeder"}
             </Text>
-            <Text color="gray.600">{adoption.listings.users?.email.replace(
-              adoption.listings.users?.email.split('@')[0],
-              adoption.listings.users?.email.split('@')[0].slice(0, 3) + '***'
-            )}</Text>
+            <Text color="gray.600">
+              {adoption.listings.users?.email.replace(
+                adoption.listings.users?.email.split("@")[0],
+                adoption.listings.users?.email.split("@")[0].slice(0, 3) + "***"
+              )}
+            </Text>
           </VStack>
         </HStack>
 
         <HStack spacing={4} pt={2}>
-
-          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline" isDisabled={adoption?.reservation_paid}>
+          <Button leftIcon={<PhoneIcon />} size="sm" variant="outline">
             Call Breeder
           </Button>
-          <Button leftIcon={<ChatIcon />} size="sm" variant="outline" isDisabled={adoption?.reservation_paid}>
+          <Button leftIcon={<ChatIcon />} size="sm" variant="outline">
             Message Breeder
-          </Button>
-          <Button leftIcon={<WarningIcon />} size="sm" variant="outline" onClick={() => router.push('/support')}>
-            Contact Support
           </Button>
         </HStack>
       </Stack>
@@ -625,7 +739,9 @@ const BreederInfo = ({ adoption, formatDate, router }) => {
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">
             Location
           </Text>
-          <Text>{adoption.listings?.users?.location_text || 'Not specified'}</Text>
+          <Text>
+            {adoption.listings?.users?.location_text || "Not specified"}
+          </Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500" textTransform="uppercase">

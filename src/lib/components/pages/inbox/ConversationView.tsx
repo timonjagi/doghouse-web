@@ -1,5 +1,11 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { useRouter } from 'next/router';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
+import { useRouter } from "next/router";
 import {
   Box,
   VStack,
@@ -19,6 +25,7 @@ import {
   Flex,
   useDisclosure,
   IconButton,
+  Tooltip,
   Drawer,
   DrawerBody,
   DrawerFooter,
@@ -26,17 +33,33 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-} from '@chakra-ui/react';
-import { CheckCircleIcon, ChatIcon, AttachmentIcon, CloseIcon } from '@chakra-ui/icons';
-import { IoSend } from 'react-icons/io5';
-import { useConversation, useSendMessage, useMarkConversationAsRead } from '../../../hooks/queries/useConversations';
-import { useConversationWithContext } from '../../../hooks/queries/useContextConversations';
-import { useRealtimeMessaging } from '../../../hooks/queries/useRealtimeMessaging';
-import { useCurrentUser } from '../../../hooks/queries/useAuth';
-import { useTypingIndicator, useTypingUsers, useTypingSubscription } from '../../../hooks/queries/useTypingIndicator';
-import { AdoptionActionList } from '../adoptions/AdoptionActionList';
-import { getPriorityAdoptionAction } from '../../../hooks/queries/useAdoptions';
-import FileAttachmentComponent from '../../ui/FileAttachment';
+} from "@chakra-ui/react";
+import {
+  CheckCircleIcon,
+  ChatIcon,
+  AttachmentIcon,
+  CloseIcon,
+} from "@chakra-ui/icons";
+import { IoSend } from "react-icons/io5";
+import {
+  useConversation,
+  useSendMessage,
+  useMarkConversationAsRead,
+} from "../../../hooks/queries/useConversations";
+import { useConversationWithContext } from "../../../hooks/queries/useContextConversations";
+import { useRealtimeMessaging } from "../../../hooks/queries/useRealtimeMessaging";
+import { useCurrentUser } from "../../../hooks/queries/useAuth";
+import {
+  useTypingIndicator,
+  useTypingUsers,
+  useTypingSubscription,
+} from "../../../hooks/queries/useTypingIndicator";
+import { AdoptionActionList } from "../adoptions/AdoptionActionList";
+import {
+  getPriorityAdoptionAction,
+  useAdoption,
+} from "../../../hooks/queries/useAdoptions";
+import FileAttachmentComponent from "../../ui/FileAttachment";
 
 interface ContextualInfoProps {
   contextData: any;
@@ -44,34 +67,67 @@ interface ContextualInfoProps {
 
 const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
   const router = useRouter();
-  const hoverBg = useColorModeValue('gray.50', 'gray.700');
+  const hoverBg = useColorModeValue("gray.50", "gray.700");
 
-  if (contextData.type === 'adoption') {
-    const { status, timeline, pet, seeker, breeder, price, reservation_fee, adoption } = contextData;
+  if (contextData.type === "adoption") {
+    const {
+      status,
+      timeline,
+      pet,
+      seeker,
+      breeder,
+      price,
+      reservation_fee,
+      adoption,
+    } = contextData;
+    const { data: adoptionDetail, isLoading: adoptionDetailLoading } =
+      useAdoption(adoption);
 
     return (
       <VStack spacing={3} align="stretch">
         <HStack justify="space-between" align="start">
           <VStack align="start" spacing={1}>
-            <HStack>
-              <Text fontWeight="semibold" fontSize="lg" >
-                {pet.name || 'Pet'}
-              </Text>
-              <Badge colorScheme={status === 'completed' ? 'green' : status === 'approved' ? 'blue' : 'yellow'}>
-                {status}
-              </Badge>
-            </HStack>
-            <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')}>
-              {pet.breed} • {pet.age} • {pet.gender}
+            <Text fontWeight="semibold" fontSize="lg">
+              {pet.name || "Pet"}
             </Text>
+            <Badge
+              colorScheme={
+                status === "completed"
+                  ? "green"
+                  : status === "approved"
+                  ? "blue"
+                  : "yellow"
+              }
+            >
+              {status}
+            </Badge>
+            {!adoptionDetail && adoption && (
+              <Button
+                as="a"
+                href={`/dashboard/adoptions/${adoption}`}
+                size="xs"
+                variant="ghost"
+                colorScheme="blue"
+                mt={1}
+              >
+                View Adoption Details
+              </Button>
+            )}
           </VStack>
 
           <VStack align="end" spacing={1}>
-            <Text fontWeight="semibold" fontSize="lg" color={useColorModeValue('gray.600', 'gray.400')}>
+            <Text
+              fontWeight="semibold"
+              fontSize="lg"
+              color={useColorModeValue("gray.600", "gray.400")}
+            >
               KES {price?.toLocaleString()}
             </Text>
             {reservation_fee && (
-              <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')}>
+              <Text
+                fontSize="sm"
+                color={useColorModeValue("gray.600", "gray.400")}
+              >
                 Reservation: KES {reservation_fee.toLocaleString()}
               </Text>
             )}
@@ -80,7 +136,9 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
 
         <Box>
           <HStack justify="space-between" mb={2}>
-            <Text fontSize="sm" fontWeight="medium">Adoption Progress</Text>
+            <Text fontSize="sm" fontWeight="medium">
+              Adoption Progress
+            </Text>
             <HStack spacing={2}>
               {timeline.submitted && <CheckCircleIcon color="green.500" />}
               {timeline.reserved && <CheckCircleIcon color="blue.500" />}
@@ -90,10 +148,15 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
           </HStack>
           <Progress
             value={
-              timeline.completed ? 100 :
-                timeline.paid ? 75 :
-                  timeline.reserved ? 50 :
-                    timeline.submitted ? 25 : 0
+              timeline.completed
+                ? 100
+                : timeline.paid
+                ? 75
+                : timeline.reserved
+                ? 50
+                : timeline.submitted
+                ? 25
+                : 0
             }
             colorScheme="blue"
             size="sm"
@@ -123,7 +186,7 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
     );
   }
 
-  if (contextData.type === 'support') {
+  if (contextData.type === "support") {
     const { subject, priority, category, ticket_id } = contextData;
 
     return (
@@ -139,11 +202,17 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
           </VStack>
 
           <VStack align="end" spacing={1}>
-            <Badge colorScheme={
-              priority === 'urgent' ? 'red' :
-                priority === 'high' ? 'orange' :
-                  priority === 'normal' ? 'blue' : 'gray'
-            }>
+            <Badge
+              colorScheme={
+                priority === "urgent"
+                  ? "red"
+                  : priority === "high"
+                  ? "orange"
+                  : priority === "normal"
+                  ? "blue"
+                  : "gray"
+              }
+            >
               {priority}
             </Badge>
             <Text fontSize="xs" color="gray.600">
@@ -168,25 +237,31 @@ interface ConversationViewProps {
   conversationId: string;
 }
 
-const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) => {
+const ConversationView: React.FC<ConversationViewProps> = ({
+  conversationId,
+}) => {
   // All hooks must be called before any conditional returns
   const router = useRouter();
   const toast = useToast();
 
   const { data: user } = useCurrentUser();
-  const { data: conversation, isLoading, error } = useConversation(conversationId);
+  const {
+    data: conversation,
+    isLoading,
+    error,
+  } = useConversation(conversationId);
   const { data: contextData } = useConversationWithContext(conversationId);
   const sendMessageMutation = useSendMessage();
   const markAsReadMutation = useMarkConversationAsRead();
 
-  const [messageText, setMessageText] = useState('');
+  const [messageText, setMessageText] = useState("");
   const [attachments, setAttachments] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
     isOpen: isAttachmentOpen,
     onOpen: onAttachmentOpen,
-    onClose: onAttachmentClose
+    onClose: onAttachmentClose,
   } = useDisclosure();
 
   useRealtimeMessaging({ userId: user?.id, conversationId });
@@ -196,7 +271,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   useTypingSubscription(conversationId);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   useEffect(() => {
@@ -220,36 +295,48 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
         attachments: attachments.length > 0 ? attachments : null,
       });
 
-      setMessageText('');
+      setMessageText("");
       setAttachments([]);
       toast({
-        title: 'Message sent',
-        status: 'success',
+        title: "Message sent",
+        status: "success",
         duration: 2000,
       });
     } catch (error) {
       toast({
-        title: 'Failed to send message',
-        description: 'Please try again',
-        status: 'error',
+        title: "Failed to send message",
+        description: "Please try again",
+        status: "error",
         duration: 3000,
       });
     }
-  }, [messageText, attachments, user?.id, conversationId, sendMessageMutation, toast]);
+  }, [
+    messageText,
+    attachments,
+    user?.id,
+    conversationId,
+    sendMessageMutation,
+    toast,
+  ]);
 
-  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  }, [handleSendMessage]);
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    },
+    [handleSendMessage]
+  );
 
   const formatMessageTime = useCallback((timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    const diffInMinutes = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60)
+    );
 
-    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 1) return "Just now";
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
 
     const diffInHours = Math.floor(diffInMinutes / 60);
@@ -265,21 +352,27 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
   const showContextualInfo = useMemo(() => {
     if (!contextData?.contextData?.adoption || !user) return false;
     const { adoption } = contextData.contextData;
-    return ['submitted', 'pending', 'approved', 'reserved'].includes(adoption.status);
+    return ["submitted", "pending", "approved", "reserved"].includes(
+      adoption.status
+    );
   }, [contextData?.contextData?.adoption, user]);
 
   const showAdoptionActions = useMemo(() => {
-    return showContextualInfo && conversation?.context_type === 'adoption';
+    return showContextualInfo && conversation?.context_type === "adoption";
   }, [showContextualInfo, conversation?.context_type]);
 
   const priorityAction = useMemo(() => {
     if (!contextData?.contextData?.adoption) return null;
-    return getPriorityAdoptionAction({
-      adoption: contextData.contextData.adoption,
-      userProfile: user,
-      transactions: contextData.contextData.transactions || [],
-    });
-  }, [contextData?.contextData?.adoption, user, contextData?.contextData?.transactions]);
+    return getPriorityAdoptionAction(
+      contextData.contextData.adoption,
+      user,
+      contextData.contextData.transactions || []
+    );
+  }, [
+    contextData?.contextData?.adoption,
+    user,
+    contextData?.contextData?.transactions,
+  ]);
 
   // Now handle loading and error states after all hooks
   if (isLoading) {
@@ -296,9 +389,10 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
       <Box p={8}>
         <Alert status="error">
           <AlertIcon />
-          Failed to load conversation. It may not exist or you may not have access.
+          Failed to load conversation. It may not exist or you may not have
+          access.
         </Alert>
-        <Button mt={4} onClick={() => router.push('/dashboard/inbox')}>
+        <Button mt={4} onClick={() => router.push("/dashboard/inbox")}>
           Back to Inbox
         </Button>
       </Box>
@@ -311,9 +405,9 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
       {showContextualInfo && contextData?.contextData && (
         <Box
           w="full"
-          bg={useColorModeValue('white', 'gray.800')}
+          bg={useColorModeValue("white", "gray.800")}
           borderBottom="1px"
-          borderColor={useColorModeValue('gray.200', 'gray.600')}
+          borderColor={useColorModeValue("gray.200", "gray.600")}
           p={4}
         >
           <Box maxW="6xl" mx="auto">
@@ -327,54 +421,59 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
         flex={1}
         w="full"
         overflowY="auto"
-        bg={useColorModeValue('gray.50', 'gray.900')}
+        bg={useColorModeValue("gray.50", "gray.900")}
         p={4}
       >
         <VStack spacing={4} align="stretch" maxW="6xl" mx="auto">
           {conversation.messages?.map((message: any, index: number) => {
             const isOwnMessage = message.sender_id === user?.id;
-            const showAvatar = !isOwnMessage && (
-              index === 0 ||
-              conversation.messages[index - 1].sender_id !== message.sender_id
-            );
+            const showAvatar =
+              !isOwnMessage &&
+              (index === 0 ||
+                conversation.messages[index - 1].sender_id !==
+                  message.sender_id);
 
             return (
               <Box
                 key={message.id}
-                alignSelf={isOwnMessage ? 'flex-end' : 'flex-start'}
+                alignSelf={isOwnMessage ? "flex-end" : "flex-start"}
                 maxW="70%"
               >
                 <HStack
                   spacing={2}
                   align="start"
-                  flexDirection={isOwnMessage ? 'row-reverse' : 'row'}
+                  flexDirection={isOwnMessage ? "row-reverse" : "row"}
                 >
                   {showAvatar && (
                     <Avatar
                       size="sm"
-                      name={message.users?.display_name || 'User'}
+                      name={message.users?.display_name || "User"}
                       src={message.users?.profile_photo_url}
                     />
                   )}
                   {!showAvatar && !isOwnMessage && <Box w="32px" />}
 
-                  <VStack align={isOwnMessage ? 'flex-end' : 'flex-start'} spacing={1}>
+                  <VStack
+                    align={isOwnMessage ? "flex-end" : "flex-start"}
+                    spacing={1}
+                  >
                     <Box
-                      bg={isOwnMessage
-                        ? useColorModeValue('blue.500', 'blue.600')
-                        : useColorModeValue('white', 'gray.700')
+                      bg={
+                        isOwnMessage
+                          ? useColorModeValue("blue.500", "blue.600")
+                          : useColorModeValue("white", "gray.700")
                       }
-                      color={isOwnMessage ? 'white' : 'inherit'}
+                      color={isOwnMessage ? "white" : "inherit"}
                       px={4}
                       py={2}
                       borderRadius="lg"
-                      border={isOwnMessage ? 'none' : '1px solid'}
-                      borderColor={useColorModeValue('gray.200', 'gray.600')}
+                      border={isOwnMessage ? "none" : "1px solid"}
+                      borderColor={useColorModeValue("gray.200", "gray.600")}
                       shadow="sm"
                     >
                       {!isOwnMessage && showAvatar && (
                         <Text fontSize="xs" fontWeight="semibold" mb={1}>
-                          {message.users?.display_name || 'User'}
+                          {message.users?.display_name || "User"}
                         </Text>
                       )}
                       <Text whiteSpace="pre-wrap">{message.content}</Text>
@@ -394,7 +493,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
                 <Box w="32px" />
                 <VStack align="flex-start" spacing={1}>
                   <Box
-                    bg={useColorModeValue('gray.100', 'gray.600')}
+                    bg={useColorModeValue("gray.100", "gray.600")}
                     px={4}
                     py={2}
                     borderRadius="lg"
@@ -403,8 +502,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
                     <Text fontSize="sm" color="gray.600">
                       {typingUsers.length === 1
                         ? `${typingUsers[0].displayName} is typing...`
-                        : `${typingUsers.length} people are typing...`
-                      }
+                        : `${typingUsers.length} people are typing...`}
                     </Text>
                   </Box>
                 </VStack>
@@ -422,9 +520,9 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
           w="full"
           px={4}
           py={2}
-          bg={useColorModeValue('white', 'gray.800')}
+          bg={useColorModeValue("white", "gray.800")}
           borderTop="1px"
-          borderColor={useColorModeValue('gray.200', 'gray.600')}
+          borderColor={useColorModeValue("gray.200", "gray.600")}
         >
           <Box maxW="6xl" mx="auto">
             <AdoptionActionList
@@ -440,9 +538,9 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
       {/* Message Input - Fixed at bottom */}
       <Box
         w="full"
-        bg={useColorModeValue('white', 'gray.800')}
+        bg={useColorModeValue("white", "gray.800")}
         borderTop="1px"
-        borderColor={useColorModeValue('gray.200', 'gray.600')}
+        borderColor={useColorModeValue("gray.200", "gray.600")}
         p={4}
       >
         <VStack spacing={3} maxW="6xl" mx="auto">
@@ -468,7 +566,11 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
                     size="xs"
                     variant="ghost"
                     ml={1}
-                    onClick={() => setAttachments(prev => prev.filter(a => a.id !== att.id))}
+                    onClick={() =>
+                      setAttachments((prev) =>
+                        prev.filter((a) => a.id !== att.id)
+                      )
+                    }
                   />
                 </Badge>
               ))}
@@ -481,7 +583,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
                 icon={<AttachmentIcon />}
                 onClick={onAttachmentOpen}
                 variant="ghost"
-                color={attachments.length > 0 ? 'blue.500' : 'gray.500'}
+                color={attachments.length > 0 ? "blue.500" : "gray.500"}
               />
               {attachments.length > 0 && (
                 <Badge
@@ -502,29 +604,45 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
                 </Badge>
               )}
             </Box>
-            <Textarea
-              value={messageText}
-              onChange={(e) => {
-                setMessageText(e.target.value);
-              }}
-              onKeyUp={handleKeyPress}
-              placeholder={priorityAction ? "Please complete the pending action above..." : "Type your message..."}
-              resize="none"
-              rows={1}
-              maxLength={1000}
-              bg={useColorModeValue('gray.50', 'gray.700')}
-              borderColor={useColorModeValue('gray.300', 'gray.600')}
-              isDisabled={!!priorityAction}
-            />
+            <Tooltip
+              label={
+                priorityAction
+                  ? "Please complete the pending action in the adoption details above before messaging"
+                  : undefined
+              }
+              hasArrow
+            >
+              <Textarea
+                value={messageText}
+                onChange={(e) => {
+                  setMessageText(e.target.value);
+                }}
+                onKeyUp={handleKeyPress}
+                placeholder={
+                  priorityAction
+                    ? "Please complete a pending action above..."
+                    : "Type your message..."
+                }
+                resize="none"
+                rows={1}
+                maxLength={1000}
+                bg={useColorModeValue("gray.50", "gray.700")}
+                borderColor={useColorModeValue("gray.300", "gray.600")}
+                isDisabled={!!priorityAction}
+              />
+            </Tooltip>
             <Button
               colorScheme="blue"
               onClick={handleSendMessage}
               isLoading={sendMessageMutation.isPending}
-              isDisabled={!!priorityAction || (!messageText.trim() && attachments.length === 0)}
+              isDisabled={
+                !!priorityAction ||
+                (!messageText.trim() && attachments.length === 0)
+              }
               size="md"
               px={6}
             >
-              <IoSend style={{ marginRight: '8px' }} />
+              <IoSend style={{ marginRight: "8px" }} />
               Send
             </Button>
           </HStack>
@@ -541,9 +659,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">
-            Attach Files
-          </DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Attach Files</DrawerHeader>
 
           <DrawerBody>
             <Box py={4}>
