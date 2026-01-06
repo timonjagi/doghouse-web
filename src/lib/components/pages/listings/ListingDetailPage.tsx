@@ -87,8 +87,27 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
     onClose: onApplicationClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isListingFormOpen,
+    onOpen: onListingFormOpen,
+    onClose: onListingFormClose,
+  } = useDisclosure();
+
   const { data: existingAdoptions, isLoading: checkExistingAdoptionLoading } =
     useAdoptionsByUser(user?.id);
+
+  const handleApply = () => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to apply for this listing.",
+        status: "error",
+        duration: 3000,
+      });
+      return;
+    }
+    onApplicationOpen();
+  };
 
   const checkForExistingAdoption = () => {
     if (!user || !listing) return;
@@ -157,20 +176,17 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
 
       // @ts-ignore - parents type is not properly defined
       const deletedSirePhotos = Array.from(
-        // @ts-ignore
-        (listing.parents?.sire?.photos as string[]) || []
+        ((listing as any).parents?.sire?.photos as string[]) || []
       );
 
       // @ts-ignore - parents type is not properly defined
       const deletedDamPhotos = Array.from(
-        // @ts-ignore
-        (listing.parents?.dam?.photos as string[]) || []
+        ((listing as any).parents?.dam?.photos as string[]) || []
       );
 
       // @ts-ignore - health type is not properly defined
       const deletedCerts = Array.from(
-        // @ts-ignore
-        (listing.health?.certificates as string[]) || []
+        ((listing as any).health?.certificates as string[]) || []
       );
 
       if (
@@ -251,12 +267,12 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
     if (listing.title) return listing.title;
     if (listing.type === "litter") {
       //@ts-ignore
-      return `${listing.breeds?.name} Puppies for Sale`;
+      return `${(listing as any).breeds?.name} Puppies for Sale`;
     } else {
       //@ts-ignore
       return `${
-        listing.breeds?.name.charAt(0).toUpperCase() +
-        listing.breeds?.name.slice(1)
+        (listing as any).breeds?.name.charAt(0).toUpperCase() +
+        (listing as any).breeds?.name.slice(1)
       } ${listing.pet_age} old for Sale`;
     }
   };
