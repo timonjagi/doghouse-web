@@ -39,6 +39,7 @@ import {
   ChatIcon,
   AttachmentIcon,
   CloseIcon,
+  ExternalLinkIcon,
 } from "@chakra-ui/icons";
 import { IoSend } from "react-icons/io5";
 import {
@@ -95,27 +96,27 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
                 status === "completed"
                   ? "green"
                   : status === "approved"
-                  ? "blue"
-                  : "yellow"
+                    ? "blue"
+                    : "yellow"
               }
             >
               {status}
             </Badge>
+          </VStack>
+
+          <VStack align="end" spacing={1}>
             {!adoptionDetail && adoption && (
               <Button
                 as="a"
-                href={`/dashboard/adoptions/${adoption}`}
+                href={`/dashboard/adoptions/${adoption.id}`}
                 size="xs"
                 variant="ghost"
                 colorScheme="blue"
-                mt={1}
+                rightIcon={<ExternalLinkIcon />}
               >
                 View Adoption Details
               </Button>
             )}
-          </VStack>
-
-          <VStack align="end" spacing={1}>
             <Text
               fontWeight="semibold"
               fontSize="lg"
@@ -151,12 +152,12 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
               timeline.completed
                 ? 100
                 : timeline.paid
-                ? 75
-                : timeline.reserved
-                ? 50
-                : timeline.submitted
-                ? 25
-                : 0
+                  ? 75
+                  : timeline.reserved
+                    ? 50
+                    : timeline.submitted
+                      ? 25
+                      : 0
             }
             colorScheme="blue"
             size="sm"
@@ -207,10 +208,10 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
                 priority === "urgent"
                   ? "red"
                   : priority === "high"
-                  ? "orange"
-                  : priority === "normal"
-                  ? "blue"
-                  : "gray"
+                    ? "orange"
+                    : priority === "normal"
+                      ? "blue"
+                      : "gray"
               }
             >
               {priority}
