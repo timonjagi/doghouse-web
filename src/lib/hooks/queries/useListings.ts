@@ -3,6 +3,7 @@ import { supabase } from "../../supabase/client";
 import { queryKeys } from "../../queryKeys";
 import { Listing } from "../../db/schema";
 import { NotificationService } from "../../services/notificationService";
+import { AdoptionWithListing } from "./useAdoptions";
 
 interface CreateListingData {
   title: string;
@@ -733,47 +734,5 @@ export const useDeleteListing = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
     },
-  });
-};
-
-// Query to get adoptions by user (seeker) - for checking existing adoptions before applying
-export const useAdoptionsByUser = (userId?: string) => {
-  return useQuery({
-    queryKey: queryKeys.adoptions.byUser(userId),
-    queryFn: async (): Promise<AdoptionWithListing[]> => {
-      if (!userId) return [];
-
-      const { data, error } = await supabase
-        .from("adoptions")
-        .select(
-          `
-          *,
-          listings (
-            id,
-            title,
-            type,
-            price,
-            photos,
-            owner_id,
-            breeds (
-              id,
-              name
-            )
-          ),
-          users (
-            id,
-            display_name,
-            email,
-            profile_photo_url
-          )
-        `
-        )
-        .eq("seeker_id", userId)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!userId,
   });
 };

@@ -55,11 +55,11 @@ export const AdoptionActionList: React.FC<AdoptionActionListProps> = ({
     transactions,
   });
 
-  const availableActions = getAvailableAdoptionActions({
+  const availableActions = getAvailableAdoptionActions(
     adoption,
     userProfile,
-    transactions,
-  });
+    transactions
+  );
 
   const handleActionClick = (action: any) => {
     if (action.type.startsWith("check_payment_status")) {

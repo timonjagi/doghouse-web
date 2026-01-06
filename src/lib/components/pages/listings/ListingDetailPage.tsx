@@ -155,18 +155,21 @@ const ListingDetailPage: React.FC<ListingDetailPageProps> = () => {
     try {
       const deletedPhotos = Array.from((listing.photos as string[]) || []);
 
-      //@ts-ignore
+      // @ts-ignore - parents type is not properly defined
       const deletedSirePhotos = Array.from(
+        // @ts-ignore
         (listing.parents?.sire?.photos as string[]) || []
       );
 
-      //@ts-ignore
+      // @ts-ignore - parents type is not properly defined
       const deletedDamPhotos = Array.from(
+        // @ts-ignore
         (listing.parents?.dam?.photos as string[]) || []
       );
 
-      //@ts-ignore
+      // @ts-ignore - health type is not properly defined
       const deletedCerts = Array.from(
+        // @ts-ignore
         (listing.health?.certificates as string[]) || []
       );
 

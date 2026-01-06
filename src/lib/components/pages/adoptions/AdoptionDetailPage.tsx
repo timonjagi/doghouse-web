@@ -221,11 +221,11 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   // Handle priority action modal trigger
   useEffect(() => {
     if (adoption && userProfile) {
-      const priorityAction = getPriorityAdoptionAction({
-        adoption: adoption as AdoptionWithListing,
+      const priorityAction = getPriorityAdoptionAction(
+        adoption as AdoptionWithListing,
         userProfile,
-        transactions,
-      });
+        transactions
+      );
       if (priorityAction) {
         // Open modal after a short delay to ensure components are ready
         const timer = setTimeout(() => onModalOpen(), 1000);
@@ -277,11 +277,7 @@ const AdoptionDetailPage: React.FC<AdoptionDetailPageProps> = () => {
   }
 
   const availableActions = adoption
-    ? getAvailableAdoptionActions({
-        adoption,
-        userProfile,
-        transactions,
-      })
+    ? getAvailableAdoptionActions(adoption, userProfile, transactions)
     : [];
 
   if (adoptionError || transactionsError) {

@@ -55,7 +55,10 @@ import {
   useTypingSubscription,
 } from "../../../hooks/queries/useTypingIndicator";
 import { AdoptionActionList } from "../adoptions/AdoptionActionList";
-import { getPriorityAdoptionAction } from "../../../hooks/queries/useAdoptions";
+import {
+  getPriorityAdoptionAction,
+  useAdoption,
+} from "../../../hooks/queries/useAdoptions";
 import FileAttachmentComponent from "../../ui/FileAttachment";
 
 interface ContextualInfoProps {
@@ -360,11 +363,11 @@ const ConversationView: React.FC<ConversationViewProps> = ({
 
   const priorityAction = useMemo(() => {
     if (!contextData?.contextData?.adoption) return null;
-    return getPriorityAdoptionAction({
-      adoption: contextData.contextData.adoption,
-      userProfile: user,
-      transactions: contextData.contextData.transactions || [],
-    });
+    return getPriorityAdoptionAction(
+      contextData.contextData.adoption,
+      user,
+      contextData.contextData.transactions || []
+    );
   }, [
     contextData?.contextData?.adoption,
     user,
