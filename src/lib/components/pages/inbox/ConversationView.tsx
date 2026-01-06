@@ -105,7 +105,7 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
           </VStack>
 
           <VStack align="end" spacing={1}>
-            {!adoptionDetail && adoption && (
+            {adoption && (
               <Button
                 as="a"
                 href={`/dashboard/adoptions/${adoption.id}`}
