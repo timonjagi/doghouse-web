@@ -120,22 +120,24 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
             <Text fontWeight="semibold" fontSize="lg">
               {getTitle()}
             </Text>
-            {getSubtext() && (
-              <Text fontSize="xs" color={textColor}>
-                {getSubtext()}
-              </Text>
-            )}
-            <Badge
-              colorScheme={
-                status === "completed"
-                  ? "green"
-                  : status === "approved"
-                    ? "blue"
-                    : "yellow"
-              }
-            >
-              {status}
-            </Badge>
+            <HStack spacing={2} align="center">
+              {getSubtext() && (
+                <Text fontSize="xs" color={textColor}>
+                  {getSubtext()}
+                </Text>
+              )}
+              <Badge
+                colorScheme={
+                  status === "completed"
+                    ? "green"
+                    : status === "approved"
+                      ? "blue"
+                      : "yellow"
+                }
+              >
+                {status}
+              </Badge>
+            </HStack>
           </VStack>
 
           <VStack align="end" spacing={1}>
