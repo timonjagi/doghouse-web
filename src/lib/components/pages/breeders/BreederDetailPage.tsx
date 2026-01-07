@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -25,41 +25,62 @@ import {
   useDisclosure,
   ModalCloseButton,
   ModalOverlay,
-} from '@chakra-ui/react';
-import { MdVerifiedUser } from 'react-icons/md';
-import { Loader } from 'lib/components/ui/Loader';
-import { useUserProfileById } from 'lib/hooks/queries/useUserProfile';
-import { useBreederProfile } from 'lib/hooks/queries/useBreederProfile';
-import { useUserBreedsFromUser } from 'lib/hooks/queries/useUserBreeds';
-import { useIncrementListingViews, useListingsByOwner } from 'lib/hooks/queries/useListings';
-import { useRouter } from 'next/router';
-import { CardContent, CardWithAvatar } from 'lib/components/ui/UserCardWithBackground';
-import { UserInfo } from 'lib/components/ui/UserInfo';
-import { FiBell, FiEdit, FiPlus, FiShield, FiShoppingBag, FiStar, FiUserPlus } from 'react-icons/fi';
-import { LuDog } from 'react-icons/lu';
-import { useCurrentUser } from 'lib/hooks/queries/useAuth';
-import { KennelForm } from '../../ui/KennelForm';
-import { BreedForm } from '../../ui/BreedForm';
-import { BreedList, UserBreedWithBreed } from 'lib/components/ui/BreedList';
-import { NotificationService } from 'lib/services/notificationService';
-import ListingList from 'lib/components/ui/ListingList';
-import { UserBreed } from 'lib/db/schema';
-import { EmptyView } from 'lib/components/ui/EmptyView';
-import ListingForm from '../listings/ListingForm';
+} from "@chakra-ui/react";
+import { MdVerifiedUser } from "react-icons/md";
+import { Loader } from "lib/components/ui/Loader";
+import { useUserProfileById } from "lib/hooks/queries/useUserProfile";
+import { useBreederProfile } from "lib/hooks/queries/useBreederProfile";
+import { useUserBreedsFromUser } from "lib/hooks/queries/useUserBreeds";
+import {
+  useIncrementListingViews,
+  useListingsByOwner,
+} from "lib/hooks/queries/useListings";
+import {
+  useIsSubscribedToBreeder,
+  useAddToWishlist,
+  useRemoveFromWishlist,
+} from "lib/hooks/queries/useWishlist";
+import { useRouter } from "next/router";
+import {
+  CardContent,
+  CardWithAvatar,
+} from "lib/components/ui/UserCardWithBackground";
+import { UserInfo } from "lib/components/ui/UserInfo";
+import {
+  FiBell,
+  FiEdit,
+  FiPlus,
+  FiShield,
+  FiShoppingBag,
+  FiStar,
+  FiUserPlus,
+} from "react-icons/fi";
+import { LuDog } from "react-icons/lu";
+import { useCurrentUser } from "lib/hooks/queries/useAuth";
+import { KennelForm } from "../../ui/KennelForm";
+import { BreedForm } from "../../ui/BreedForm";
+import { BreedList, UserBreedWithBreed } from "lib/components/ui/BreedList";
+import { NotificationService } from "lib/services/notificationService";
+import ListingList from "lib/components/ui/ListingList";
+import { UserBreed } from "lib/db/schema";
+import { EmptyView } from "lib/components/ui/EmptyView";
+import ListingForm from "../listings/ListingForm";
 
-interface BreederDetailPageProps {
-}
+interface BreederDetailPageProps {}
 
 const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
   const toast = useToast();
   const router = useRouter();
   const [breederId, setBreederId] = useState<string | null>(null);
 
-
   const { data: user } = useCurrentUser();
 
+  const { data: subscriptionData } = useIsSubscribedToBreeder(breederId);
+  const isSubscribed = subscriptionData?.isSubscribed || false;
+  const wishlistItemId = subscriptionData?.wishlistItemId;
 
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const addToWishlist = useAddToWishlist();
+  const removeFromWishlist = useRemoveFromWishlist();
 
   const handleSubscribeClick = async () => {
     if (!user?.id) {
@@ -73,46 +94,30 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
     }
 
     try {
-      if (isSubscribed) {
-        // Unsubscribe from all breeder-related topics
-        await Promise.all([
-          NotificationService.unsubscribeFromBreeder(user.id, breederId!),
-          // Also unsubscribe from user breed topics for this breeder's breeds
-          ...(breederBreeds?.map(b =>
-            NotificationService.unsubscribeFromBreedInterest(user.id, b.id)
-          ) || [])
-        ]);
-        setIsSubscribed(false);
+      if (isSubscribed && wishlistItemId) {
+        await removeFromWishlist.mutateAsync(wishlistItemId);
+
         toast({
           title: "Unsubscribed from breeder updates",
-          description: `You will no longer receive notifications from ${breederProfile?.kennel_name || breederUser?.display_name}.`,
+          description: `You will no longer receive notifications from ${
+            breederProfile?.kennel_name || breederUser?.display_name
+          }.`,
           status: "info",
           duration: 3000,
           isClosable: true,
         });
       } else {
-        // Subscribe to breeder activity
-        await NotificationService.subscribeToBreeder(
-          user.id,
-          breederId!,
-          breederProfile?.kennel_name || breederUser?.display_name
-        );
+        // Add breeder to wishlist
+        await addToWishlist.mutateAsync({
+          breeder_id: breederId!,
+          notify_when_available: true,
+        });
 
-        // Also subscribe to all user breed topics for this breeder's breeds
-        const subscriptionPromises = breederBreeds?.map(async (b) => {
-          await NotificationService.subscribeToBreedInterest(
-            user.id,
-            b.id,
-            b.breeds?.name || 'Unknown Breed'
-          );
-        }) || [];
-
-        await Promise.all(subscriptionPromises);
-
-        setIsSubscribed(true);
         toast({
           title: "Subscribed to breeder updates",
-          description: `You will be notified when ${breederProfile?.kennel_name || breederUser?.display_name} posts new content or adds new listings for their breeds.`,
+          description: `You will be notified when ${
+            breederProfile?.kennel_name || breederUser?.display_name
+          } posts new content or adds new listings for their breeds.`,
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -121,7 +126,8 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
     } catch (error) {
       toast({
         title: "Subscription failed",
-        description: "Please try again later.",
+        description:
+          "There was an error updating your subscription. Please try again.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -140,22 +146,40 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
     }
   }, [user, router.query]);
 
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   // Fetch breeder data
-  const { data: breederProfile, isLoading: breederLoading, error: breederError } = useBreederProfile(breederId as string);
-  const { data: breederUser, isLoading: breederUserLoading, error: breederUserError } = useUserProfileById(breederId as string);
+  const {
+    data: breederProfile,
+    isLoading: breederLoading,
+    error: breederError,
+  } = useBreederProfile(breederId as string);
+  const {
+    data: breederUser,
+    isLoading: breederUserLoading,
+    error: breederUserError,
+  } = useUserProfileById(breederId as string);
 
   // Fetch breeder's breeds and listings
-  const { data: breederBreeds, isLoading: breedsLoading } = useUserBreedsFromUser(breederId as string);
-  const { data: breederListings, isLoading: listingsLoading } = useListingsByOwner(breederId as string);
+  const { data: breederBreeds, isLoading: breedsLoading } =
+    useUserBreedsFromUser(breederId as string);
+  const { data: breederListings, isLoading: listingsLoading } =
+    useListingsByOwner(breederId as string);
 
-  const { isOpen: isListingFormOpen, onOpen: onListingFormOpen, onClose: onListingFormClose } = useDisclosure();
-  const { isOpen: isBreedFormOpen, onOpen: onBreedFormOpen, onClose: onBreedFormClose } = useDisclosure();
+  const {
+    isOpen: isListingFormOpen,
+    onOpen: onListingFormOpen,
+    onClose: onListingFormClose,
+  } = useDisclosure();
+  const {
+    isOpen: isBreedFormOpen,
+    onOpen: onBreedFormOpen,
+    onClose: onBreedFormClose,
+  } = useDisclosure();
 
   const incrementViewsMutation = useIncrementListingViews();
 
-  const isLoading = breederLoading || breederUserLoading || breedsLoading || listingsLoading;
+  const isLoading =
+    breederLoading || breederUserLoading || breedsLoading || listingsLoading;
   // Show loading state
   if (isLoading) {
     return <Loader />;
@@ -163,7 +187,6 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
   const isError = breederError || breederUserError;
   const isManaging = user?.id === breederId;
-
 
   // Show error state
   if (isError) {
@@ -174,7 +197,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
           <Box>
             <Text fontWeight="bold">Error loading breeder profile</Text>
             <Text fontSize="sm">
-              {isError?.message || 'Unable to load breeder information'}
+              {isError?.message || "Unable to load breeder information"}
             </Text>
           </Box>
         </Alert>
@@ -191,7 +214,8 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
           <Box>
             <Text fontWeight="bold">Breeder not found</Text>
             <Text fontSize="sm">
-              The breeder profile you're looking for doesn't exist or has been removed.
+              The breeder profile you're looking for doesn't exist or has been
+              removed.
             </Text>
           </Box>
         </Alert>
@@ -212,51 +236,68 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
         await incrementViewsMutation.mutateAsync(listingId);
       }
     } catch (error) {
-      console.error('Failed to increment views:', error);
+      console.error("Failed to increment views:", error);
     }
 
     // Navigate to detail page
-    return isManaging ? router.push(`/dashboard/kennel/listings/${listingId}`) : router.push(`/dashboard/listings/${listingId}`);
+    return isManaging
+      ? router.push(`/dashboard/kennel/listings/${listingId}`)
+      : router.push(`/dashboard/listings/${listingId}`);
   };
 
   const formatFacilityType = (facilityType: string) => {
-    return breederProfile.facility_type.charAt(0).toUpperCase() + breederProfile.facility_type.slice(1).replace('_', ' ').replace('facility', '')
-  }
+    return (
+      breederProfile.facility_type.charAt(0).toUpperCase() +
+      breederProfile.facility_type
+        .slice(1)
+        .replace("_", " ")
+        .replace("facility", "")
+    );
+  };
 
-  const activeListings = breederListings?.filter((listing) => listing.status !== "sold");
-  const pastListings = breederListings?.filter((listing) => listing.status === "sold");
+  const activeListings = breederListings?.filter(
+    (listing) => listing.status !== "sold"
+  );
+  const pastListings = breederListings?.filter(
+    (listing) => listing.status === "sold"
+  );
 
   return (
     <>
-
       <Container maxW="7xl" py={{ base: 4, md: 0 }}>
-
         <VStack spacing={2} align="stretch">
           <Box as="section" pt="20" pb="2" position="relative">
             <Box position="absolute" inset="0" height="32" bg="brand.600" />
 
             <CardWithAvatar
               maxW="2xl"
-
               avatarProps={{
                 src: breederUser?.profile_photo_url,
                 name: breederProfile?.kennel_name,
               }}
               action={
-                isManaging ? <Button
-                  variant="primary"
-                  size="sm"
-                  rightIcon={<FiEdit />}
-                  onClick={() => onOpen()}
-                >
-                  Edit
-                </Button> : (
+                isManaging ? (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    rightIcon={<FiEdit />}
+                    onClick={() => onOpen()}
+                  >
+                    Edit
+                  </Button>
+                ) : (
                   <Button
                     variant="primary"
                     size="sm"
                     rightIcon={<FiBell />}
                     isDisabled={!userBreedId}
-                    title={!userBreedId ? "No breeds available to subscribe to" : isSubscribed ? "Unsubscribe from breeder updates" : "Subscribe to breeder updates"}
+                    title={
+                      !userBreedId
+                        ? "No breeds available to subscribe to"
+                        : isSubscribed
+                        ? "Unsubscribe from breeder updates"
+                        : "Subscribe to breeder updates"
+                    }
                     onClick={handleSubscribeClick}
                   >
                     {isSubscribed ? "Unsubscribe" : "Subscribe"}
@@ -265,71 +306,102 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
               }
             >
               <CardContent>
-
                 <Heading size="md" fontWeight="bold" letterSpacing="tight">
                   {breederProfile && breederProfile?.kennel_name}
                 </Heading>
 
-                <HStack justifyContent={{ base: 'flex-start', sm: 'center' }} py="2">
+                <HStack
+                  justifyContent={{ base: "flex-start", sm: "center" }}
+                  py="2"
+                >
                   <Text color={useColorModeValue("gray.600", "gray.400")}>
-                    {breederProfile?.pet_types && Array.isArray(breederProfile.pet_types) && breederProfile.pet_types.length > 0
-                      ? breederProfile.pet_types.map((t: string) => t.charAt(0).toUpperCase() + t.slice(1)).join(', ')
-                      : 'Dog'} breeder
+                    {breederProfile?.pet_types &&
+                    Array.isArray(breederProfile.pet_types) &&
+                    breederProfile.pet_types.length > 0
+                      ? breederProfile.pet_types
+                          .map(
+                            (t: string) =>
+                              t.charAt(0).toUpperCase() + t.slice(1)
+                          )
+                          .join(", ")
+                      : "Dog"}{" "}
+                    breeder
                   </Text>
-                  <Badge colorScheme={breederProfile?.verified_at ? 'green' : 'gray'} size="sm">
+                  <Badge
+                    colorScheme={breederProfile?.verified_at ? "green" : "gray"}
+                    size="sm"
+                  >
                     <HStack>
-                      <Icon as={breederProfile?.verified_at ? MdVerifiedUser : FiShield} />
-                      <Text fontSize="sm">{breederProfile?.verified_at ? 'Verified' : 'Not verified'}</Text>
+                      <Icon
+                        as={
+                          breederProfile?.verified_at
+                            ? MdVerifiedUser
+                            : FiShield
+                        }
+                      />
+                      <Text fontSize="sm">
+                        {breederProfile?.verified_at
+                          ? "Verified"
+                          : "Not verified"}
+                      </Text>
                     </HStack>
                   </Badge>
                 </HStack>
 
                 <UserInfo
                   location={breederProfile?.kennel_location}
-                  website={breederProfile?.website || `pethouse.co.ke/u/${breederProfile?.kennel_name.replace(/\s+/g, '-').toLowerCase()}`}
-                  memberSince={new Date(
-                    breederUser?.created_at
-                  ).toDateString()}
+                  website={
+                    breederProfile?.website ||
+                    `pethouse.co.ke/u/${breederProfile?.kennel_name
+                      .replace(/\s+/g, "-")
+                      .toLowerCase()}`
+                  }
+                  memberSince={new Date(breederUser?.created_at).toDateString()}
                 />
               </CardContent>
             </CardWithAvatar>
-
           </Box>
-
 
           <Tabs variant="soft-rounded" colorScheme="brand">
             <TabList
               overflowY="hidden"
               whiteSpace="nowrap"
               css={{
-                '&::-webkit-scrollbar': {
-                  display: 'none',
+                "&::-webkit-scrollbar": {
+                  display: "none",
                 },
-                scrollbarWidth: 'none',
+                scrollbarWidth: "none",
               }}
             >
               <Tab>
-
                 <HStack spacing={2}>
                   <Icon as={LuDog} />
 
                   <Text>Breeds ({breederBreeds?.length || 0})</Text>
                 </HStack>
               </Tab>
-              <Tab><HStack><Icon as={FiShoppingBag} /><Text>Active Listings</Text></HStack></Tab>
-              <Tab><HStack><Icon as={FiShoppingBag} /><Text>Past Listings</Text></HStack></Tab>
-              {isManaging && <Tab>
-                <HStack spacing={2}>
-                  <Icon as={FiUserPlus} />
-
-                  <Text>
-                    Adoptions
-                  </Text>
+              <Tab>
+                <HStack>
+                  <Icon as={FiShoppingBag} />
+                  <Text>Active Listings</Text>
                 </HStack>
               </Tab>
-              }
               <Tab>
+                <HStack>
+                  <Icon as={FiShoppingBag} />
+                  <Text>Past Listings</Text>
+                </HStack>
+              </Tab>
+              {isManaging && (
+                <Tab>
+                  <HStack spacing={2}>
+                    <Icon as={FiUserPlus} />
 
+                    <Text>Adoptions</Text>
+                  </HStack>
+                </Tab>
+              )}
+              <Tab>
                 <HStack spacing={2}>
                   <Icon as={FiStar} />
 
@@ -343,9 +415,11 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
               <TabPanel px={0}>
                 <BreedList
                   breeds={breederBreeds}
-                  userRole={user?.role as 'seeker' | 'breeder' | 'admin'}
+                  userRole={user?.role as "seeker" | "breeder" | "admin"}
                   columns={{ base: 2, md: 3, lg: 4 }}
-                  onBreedClick={(userBreed: UserBreed) => handleBreedClick(userBreed)}
+                  onBreedClick={(userBreed: UserBreed) =>
+                    handleBreedClick(userBreed)
+                  }
                   onAdd={isManaging ? onBreedFormOpen : undefined}
                 />
               </TabPanel>
@@ -355,10 +429,20 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                 <ListingList
                   listings={activeListings}
                   onListingClick={handleListingClick}
-                  emptyMessage={isManaging ? "No active listings added" : "No active listings found"}
-                  emptyDescription={isManaging ? "Add listings to your kennel to display them here." : `Subscribe to ${breederProfile?.kennel_name} to get notified when they add new listings.`}
+                  emptyMessage={
+                    isManaging
+                      ? "No active listings added"
+                      : "No active listings found"
+                  }
+                  emptyDescription={
+                    isManaging
+                      ? "Add listings to your kennel to display them here."
+                      : `Subscribe to ${breederProfile?.kennel_name} to get notified when they add new listings.`
+                  }
                   showEmptyAction={true}
-                  onEmptyAction={isManaging ? onListingFormOpen : handleSubscribeClick}
+                  onEmptyAction={
+                    isManaging ? onListingFormOpen : handleSubscribeClick
+                  }
                   emptyActionLabel={isManaging ? "Add Listing" : "Subscribe"}
                   emptyActionIcon={isManaging ? <FiPlus /> : <FiBell />}
                   columns={{ base: 2, md: 3, lg: 4 }}
@@ -373,10 +457,20 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                 <ListingList
                   listings={pastListings}
                   onListingClick={handleListingClick}
-                  emptyMessage={isManaging ? "No past listings added" : "No past listings found"}
-                  emptyDescription={isManaging ? "Add listings to your kennel to display them here." : `Subscribe to ${breederProfile?.kennel_name} to get notified when they add new listings.`}
+                  emptyMessage={
+                    isManaging
+                      ? "No past listings added"
+                      : "No past listings found"
+                  }
+                  emptyDescription={
+                    isManaging
+                      ? "Add listings to your kennel to display them here."
+                      : `Subscribe to ${breederProfile?.kennel_name} to get notified when they add new listings.`
+                  }
                   showEmptyAction={true}
-                  onEmptyAction={isManaging ? onListingFormOpen : handleSubscribeClick}
+                  onEmptyAction={
+                    isManaging ? onListingFormOpen : handleSubscribeClick
+                  }
                   emptyActionLabel={isManaging ? "Add Listing" : "Subscribe"}
                   emptyActionIcon={isManaging ? <FiPlus /> : <FiBell />}
                   columns={{ base: 2, md: 3, lg: 4 }}
@@ -388,43 +482,34 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
               </TabPanel>
 
               {/* Breeder's Adoptions Tab */}
-              {isManaging && <TabPanel px={0}>
-                <EmptyView
-                  title="No adoptions found"
-                  description="Add a listing to your kennel to display them here."
-                  ctaText="Add Listing"
-                  ctaIcon={<FiPlus />}
-                  ctaAction={onListingFormOpen}
-                />
-              </TabPanel>}
+              {isManaging && (
+                <TabPanel px={0}>
+                  <EmptyView
+                    title="No adoptions found"
+                    description="Add a listing to your kennel to display them here."
+                    ctaText="Add Listing"
+                    ctaIcon={<FiPlus />}
+                    ctaAction={onListingFormOpen}
+                  />
+                </TabPanel>
+              )}
 
               {/* Reviews Tab */}
               <TabPanel px={0}>
-
                 <EmptyView
                   title="No reviews found"
                   description="No reviews found for this breeder."
-
                 />
-
               </TabPanel>
             </TabPanels>
           </Tabs>
         </VStack>
 
-        <Modal
-          isOpen={isOpen}
-          onClose={onClose}
-          size="md"
-
-          isCentered
-        >
+        <Modal isOpen={isOpen} onClose={onClose} size="md" isCentered>
           <ModalCloseButton />
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>
-              Update Kennel Details
-            </ModalHeader>
+            <ModalHeader>Update Kennel Details</ModalHeader>
             <ModalBody>
               <KennelForm
                 breederProfile={breederProfile}
@@ -435,7 +520,6 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
           </ModalContent>
         </Modal>
 
-
         <ListingForm
           isOpen={isListingFormOpen}
           onClose={onListingFormClose}
@@ -444,10 +528,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
           isEditing={false}
         />
 
-        <BreedForm
-          isOpen={isBreedFormOpen}
-          onClose={onBreedFormClose}
-        />
+        <BreedForm isOpen={isBreedFormOpen} onClose={onBreedFormClose} />
       </Container>
     </>
   );
