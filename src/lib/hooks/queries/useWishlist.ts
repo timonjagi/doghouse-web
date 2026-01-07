@@ -287,7 +287,8 @@ export const useIsSubscribedToBreeder = (breederId?: string) => {
       { breederId, userId: user?.id },
     ],
     queryFn: async () => {
-      if (!user?.id || !breederId) return { isSubscribed: false };
+      if (!user?.id || !breederId)
+        return { isSubscribed: false, wishlistItemId: null };
 
       const { data, error } = await supabase
         .from("wishlists")
@@ -297,7 +298,7 @@ export const useIsSubscribedToBreeder = (breederId?: string) => {
         .maybeSingle();
 
       if (error && error.code !== "PGRST116") throw error;
-      return { isSubscribed: !!data };
+      return { isSubscribed: !!data, wishlistItemId: data?.id || null };
     },
     enabled: !!user?.id && !!breederId,
   });

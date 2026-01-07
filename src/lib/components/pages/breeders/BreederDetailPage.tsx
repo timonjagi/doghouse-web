@@ -40,7 +40,6 @@ import {
   useAddToWishlist,
   useRemoveFromWishlist,
 } from "lib/hooks/queries/useWishlist";
-import { supabase } from "lib/supabase/client";
 import { useRouter } from "next/router";
 import {
   CardContent,
@@ -78,6 +77,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
   const { data: subscriptionData } = useIsSubscribedToBreeder(breederId);
   const isSubscribed = subscriptionData?.isSubscribed || false;
+  const wishlistItemId = subscriptionData?.wishlistItemId;
 
   const addToWishlist = useAddToWishlist();
   const removeFromWishlist = useRemoveFromWishlist();
@@ -94,18 +94,8 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
     }
 
     try {
-      if (isSubscribed) {
-        // Find the wishlist item to remove
-        const wishlistItem = await supabase
-          .from("wishlists")
-          .select("id")
-          .eq("user_id", user.id)
-          .eq("breeder_id", breederId)
-          .single();
-
-        if (wishlistItem.data) {
-          await removeFromWishlist.mutateAsync(wishlistItem.data.id);
-        }
+      if (isSubscribed && wishlistItemId) {
+        await removeFromWishlist.mutateAsync(wishlistItemId);
 
         toast({
           title: "Unsubscribed from breeder updates",
