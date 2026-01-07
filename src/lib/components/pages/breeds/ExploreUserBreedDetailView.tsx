@@ -29,7 +29,10 @@ import {
 import { DeleteIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 import { BreedForm } from "../../ui/BreedForm";
-import { useDeleteUserBreed, useUserBreed } from "lib/hooks/queries/useUserBreeds";
+import {
+  useDeleteUserBreed,
+  useUserBreed,
+} from "lib/hooks/queries/useUserBreeds";
 import { useListingsForUserBreed } from "lib/hooks/queries/useListings";
 import { Loader } from "lib/components/ui/Loader";
 import { BreedersList } from "../../ui/BreederList";
@@ -65,37 +68,43 @@ const ExploreUserBreedDetailView = () => {
     error: userBreedError,
   } = useUserBreed(userBreedId as string);
 
-  const { data: listingsForBreed, isLoading: isLoadingListings, error } = useListingsForUserBreed(userBreed?.id);
+  const {
+    data: listingsForBreed,
+    isLoading: isLoadingListings,
+    error,
+  } = useListingsForUserBreed(userBreed?.id);
 
-  const { data: breederProfile, isLoading: breederLoading, error: breederError } = useBreederProfile(userBreed?.user_id as string);
+  const {
+    data: breederProfile,
+    isLoading: breederLoading,
+    error: breederError,
+  } = useBreederProfile(userBreed?.user_id as string);
 
-  const { data: otherBreeders, isLoading: isLoadingOtherBreeders, error: otherBreedersError } = useBreedersForBreed(userBreed?.breeds.id);
+  const {
+    data: otherBreeders,
+    isLoading: isLoadingOtherBreeders,
+    error: otherBreedersError,
+  } = useBreedersForBreed(userBreed?.breeds.id);
 
+  const {
+    isOpen: isFormOpen,
+    onOpen: onFormOpen,
+    onClose: onFormClose,
+  } = useDisclosure();
 
-  const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
-
-  const activeListings = listingsForBreed?.filter((listing) => listing.status !== "sold");
-  const pastListings = listingsForBreed?.filter((listing) => listing.status === "sold");
+  const activeListings = listingsForBreed?.filter(
+    (listing) => listing.status !== "sold"
+  );
+  const pastListings = listingsForBreed?.filter(
+    (listing) => listing.status === "sold"
+  );
 
   const handleListingClick = (listingId: string) => {
     router.push(`/dashboard/listings/${listingId}`);
   };
 
-  const onAddToWishlist = () => {
-    toast({
-      title: "Added to wishlist",
-      description: "You will be notified when new listings are added.",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
-  }
-
-
   if (isLoadingListings || isLoadingUserBreed) {
-    return (
-      <Loader />
-    );
+    return <Loader />;
   }
 
   if (error || userBreedError) {
@@ -110,40 +119,72 @@ const ExploreUserBreedDetailView = () => {
 
   return (
     <>
-      <Container maxW="7xl" py={{ base: 4, md: 0 }} >
+      <Container maxW="7xl" py={{ base: 4, md: 0 }}>
         <VStack spacing={6} align="stretch">
-
           <PageHeaderWithTwoButtons
             title={userBreed?.breeds.name}
-            description={breederProfile ? `${breederProfile.kennel_name} - Professional breeder` : "Explore this breed"}
-            buttonPrimary={{
-              label: "Add to Wishlist",
-              onClick: onAddToWishlist,
-              icon: <FiHeart />,
-              colorScheme: "brand",
-            }}
+            description={
+              breederProfile
+                ? `${breederProfile.kennel_name} - Professional breeder`
+                : "Explore this breed"
+            }
+            actions={
+              <AddToWishlistButton
+                userBreedId={userBreed?.id}
+                notifyWhenAvailable={true}
+                withText={true}
+                variant="secondary"
+                colorScheme="brand"
+              />
+            }
           />
 
           <VStack align="stretch" spacing={{ base: 4, md: 6 }}>
-
             <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-              <Gallery images={userBreed?.images?.map((image) => ({ src: image, alt: userBreed.breeds.name })) || []} />
+              <Gallery
+                images={
+                  userBreed?.images?.map((image) => ({
+                    src: image,
+                    alt: userBreed.breeds.name,
+                  })) || []
+                }
+              />
 
-              <Tabs variant='soft-rounded' colorScheme='brand'>
+              <Tabs variant="soft-rounded" colorScheme="brand">
                 <TabList
                   overflowY="hidden"
                   whiteSpace="nowrap"
                   css={{
-                    '&::-webkit-scrollbar': {
-                      display: 'none',
+                    "&::-webkit-scrollbar": {
+                      display: "none",
                     },
-                    scrollbarWidth: 'none',
+                    scrollbarWidth: "none",
                   }}
                 >
-                  <Tab><HStack><Icon as={FiInfo} /><Text>Overview</Text></HStack></Tab>
-                  <Tab><HStack><Icon as={FiShoppingBag} /><Text>Active Listings</Text></HStack></Tab>
-                  <Tab><HStack><Icon as={FiShoppingBag} /><Text>Past Listings</Text></HStack></Tab>
-                  <Tab><HStack><Icon as={GiDogHouse} /><Text>Other Breeders</Text></HStack></Tab>
+                  <Tab>
+                    <HStack>
+                      <Icon as={FiInfo} />
+                      <Text>Overview</Text>
+                    </HStack>
+                  </Tab>
+                  <Tab>
+                    <HStack>
+                      <Icon as={FiShoppingBag} />
+                      <Text>Active Listings</Text>
+                    </HStack>
+                  </Tab>
+                  <Tab>
+                    <HStack>
+                      <Icon as={FiShoppingBag} />
+                      <Text>Past Listings</Text>
+                    </HStack>
+                  </Tab>
+                  <Tab>
+                    <HStack>
+                      <Icon as={GiDogHouse} />
+                      <Text>Other Breeders</Text>
+                    </HStack>
+                  </Tab>
                 </TabList>
 
                 <TabPanels>
@@ -162,14 +203,19 @@ const ExploreUserBreedDetailView = () => {
 
                   <TabPanel px={0}>
                     <ListingList
-                      listings={activeListings}
+                      listings={pastListings}
                       onListingClick={handleListingClick}
-                      emptyMessage={`No active ${userBreed?.breeds.name} listings found`}
+                      emptyMessage={`No past listings found for this breed`}
                       emptyDescription={`To get notified when new ${userBreed?.breeds.name}s become available, add ${breederProfile?.kennel_name}'s ${userBreed?.breeds.name} to wishlist.`}
-                      showEmptyAction={true}
-                      onEmptyAction={onAddToWishlist}
-                      emptyActionLabel="Add to Wishlist"
-                      emptyActionIcon={<FiHeart />}
+                      emptyActionComponent={
+                        <AddToWishlistButton
+                          userBreedId={userBreed?.id}
+                          notifyWhenAvailable={true}
+                          withText={true}
+                          variant="primary"
+                          colorScheme="brand"
+                        />
+                      }
                     />
                   </TabPanel>
 
@@ -196,29 +242,32 @@ const ExploreUserBreedDetailView = () => {
                       breed={otherBreeders}
                       emptyMessage={`No other ${userBreed?.breeds.name} breeders found`}
                       emptyDescription={`To get notified when new ${userBreed?.breeds.name} breeders are added, add ${userBreed?.breeds.name} to wishlist.`}
-                      emptyActionLabel={`Add to Wishlist`}
-                      emptyActionIcon={<FiHeart />}
-                      emptyAction={onAddToWishlist}
+                      emptyActionComponent={
+                        <AddToWishlistButton
+                          userBreedId={userBreed?.id}
+                          notifyWhenAvailable={true}
+                          withText={true}
+                          variant="primary"
+                          colorScheme="brand"
+                        />
+                      }
                       columns={{ base: 1, md: 2 }}
                       props={{
                         overflow: "scroll",
                         whiteSpace: "nowrap",
                         css: {
-                          '&::-webkit-scrollbar': {
-                            display: 'none',
+                          "&::-webkit-scrollbar": {
+                            display: "none",
                           },
-                          scrollbarWidth: 'none',
-                        }
+                          scrollbarWidth: "none",
+                        },
                       }}
                     />
                   </TabPanel>
                 </TabPanels>
               </Tabs>
-
             </SimpleGrid>
-
           </VStack>
-
 
           <BreedForm
             isOpen={isFormOpen}
@@ -227,10 +276,7 @@ const ExploreUserBreedDetailView = () => {
           />
 
           {!isMobile && <EthicalQuestionairreCard />}
-
         </VStack>
-
-
       </Container>
 
       {isMobile && <EthicalQuestionairreCard />}
