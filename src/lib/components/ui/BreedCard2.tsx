@@ -13,11 +13,29 @@ import Link from "next/link";
 import { ProductBadge } from "./ProductBadge";
 import { StarIcon } from "@chakra-ui/icons";
 import { GiDogHouse } from "react-icons/gi";
+import { AddToWishlistButton } from "./AddToWishlistButton";
 
 // eslint-disable-next-line
-export const BreedCard = ({ userBreed, }: any) => {
-
+export const BreedCard = ({
+  userBreed,
+  showWishlistButton = false,
+  userBreedId,
+  breedId,
+}: any) => {
   const breed = userBreed.breeds || userBreed;
+  const imageSrc = userBreed?.images?.[0] || breed?.featured_image_url;
+
+  const getDetailUrl = () => {
+    if (userBreed?.id) {
+      // This is a user breed, link to breeder detail page
+      return `/dashboard/breeders/${userBreed.user_id}/breeds/${userBreed.id}`;
+    } else {
+      // This is a general breed, link to breed detail page
+      return `/dashboard/breeds/${encodeURIComponent(
+        breed?.name?.toLowerCase().replaceAll(" ", "-") || ""
+      )}`;
+    }
+  };
 
   return (
     <Box
@@ -25,52 +43,41 @@ export const BreedCard = ({ userBreed, }: any) => {
       key={breed?.name}
       borderRadius="xl"
       overflow="hidden"
+      cursor="pointer"
     >
-      <Link
-        href={`/dashboard/breeds/${encodeURIComponent(breed?.name?.toLowerCase().replaceAll(" ", "-") || '')}`}
-      // as={`/breeds/${breed?.name.replaceAll(" ", "-")}`}
-      >
+      <Link href={getDetailUrl()}>
         <Box position="relative">
           <AspectRatio ratio={1}>
-
-            <Image
-              src={breed?.featured_image_url}
-              alt={breed?.name}
-              fallback={<Skeleton />}
-            />
+            <Image src={imageSrc} alt={breed?.name} fallback={<Skeleton />} />
           </AspectRatio>
 
-
+          {/* Wishlist button overlay */}
+          {showWishlistButton && (
+            <Box position="absolute" top={2} right={2} zIndex={10}>
+              <AddToWishlistButton
+                userBreedId={userBreedId}
+                breedId={breedId}
+                notifyWhenAvailable={true}
+                size="sm"
+                bg="white"
+                borderRadius="full"
+                boxShadow="sm"
+              />
+            </Box>
+          )}
         </Box>
-
-        {/* 
-
-        <Box
-          position="absolute"
-          bg="brand.100"
-          boxSize="full"
-        >
-          <ProductBadge />
-        </Box> */}
 
         <Box
           position="absolute"
           inset="0"
-          // bg gradient both top and bottom
           bgGradient="linear(to-b, transparent 40%, gray.900)"
-
-
           boxSize="full"
         />
 
         <Box
           position="absolute"
           inset="0"
-          // bg gradient both top right corner
-
           bgGradient="linear(to top right, transparent 50%, gray.900)"
-
-
           boxSize="full"
         />
         <Box
@@ -91,9 +98,7 @@ export const BreedCard = ({ userBreed, }: any) => {
             </Text>
           </Stack>
         </Box>
-
-
-      </Link >
-    </Box >
+      </Link>
+    </Box>
   );
 };
