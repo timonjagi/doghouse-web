@@ -61,7 +61,6 @@ import {
   useAdoption,
 } from "../../../hooks/queries/useAdoptions";
 import FileAttachmentComponent from "../../ui/FileAttachment";
-import { PageHeaderWithTwoButtons } from "../../ui/PageHeaderWithTwoButtons";
 
 interface ContextualInfoProps {
   contextData: any;
@@ -439,7 +438,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({
   }
 
   return (
-    <Flex direction="column" flex="1" w="full" h="full" overflow="hidden">
+    <Flex direction="column" flex="1" w="full" h="full">
       {/* Contextual Info - Fixed at top */}
       {showContextualInfo && contextData?.contextData && (
         <Box
@@ -450,29 +449,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({
           p={4}
         >
           <Box maxW="6xl" mx="auto">
-            <PageHeaderWithTwoButtons
-              title={
-                contextData.contextData.type === "adoption"
-                  ? "Adoption Details"
-                  : "Support Ticket"
-              }
-              description={
-                contextData.contextData.type === "adoption"
-                  ? `${contextData.contextData.adoption?.listings?.title || "Adoption"} - ${contextData.contextData.status}`
-                  : `${contextData.contextData.subject} - ${contextData.contextData.priority}`
-              }
-              buttonPrimary={{
-                label: "View Details",
-                onClick: () =>
-                  router.push(
-                    contextData.contextData.type === "adoption"
-                      ? `/dashboard/adoptions/${contextData.contextData.adoption}`
-                      : `/dashboard/support/${contextData.contextData.ticket_id}`
-                  ),
-                variant: "ghost",
-                colorScheme: "blue",
-              }}
-            />
+            <ContextualInfo contextData={contextData.contextData} />
           </Box>
         </Box>
       )}
