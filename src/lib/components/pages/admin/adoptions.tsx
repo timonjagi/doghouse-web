@@ -172,8 +172,8 @@ const AdminAdoptionsPage: React.FC = () => {
     return `Ksh. ${amount.toLocaleString()}`;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
+  const formatDate = (date: string | Date) => {
+    return new Date(date).toLocaleDateString();
   };
 
   const getStatusBadgeColor = (status: string) => {
@@ -514,9 +514,9 @@ const AdminAdoptionsPage: React.FC = () => {
                               >
                                 {adoption.status}
                               </Badge>
-                              {adoption.flagged && (
+                              {adoption.flagged ? (
                                 <Badge colorScheme="red">Flagged</Badge>
-                              )}
+                              ) : null}
                             </HStack>
                           </Td>
                           <Td>
@@ -773,12 +773,24 @@ const AdminAdoptionsPage: React.FC = () => {
                         : "N/A"}
                     </Text>
                     {selectedAdoptionDetails.listings?.breeds &&
-                      selectedAdoptionDetails.listings.breeds.length > 0 && (
+                      (Array.isArray(
+                        selectedAdoptionDetails.listings.breeds
+                      ) ? (
+                        selectedAdoptionDetails.listings.breeds.length > 0 && (
+                          <Text>
+                            <strong>Breed:</strong>{" "}
+                            {selectedAdoptionDetails.listings.breeds[0].name}
+                          </Text>
+                        )
+                      ) : (
                         <Text>
                           <strong>Breed:</strong>{" "}
-                          {selectedAdoptionDetails.listings.breeds[0].name}
+                          {
+                            (selectedAdoptionDetails.listings.breeds as any)
+                              .name
+                          }
                         </Text>
-                      )}
+                      ))}
                   </VStack>
                 </Box>
 

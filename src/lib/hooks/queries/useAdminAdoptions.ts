@@ -13,7 +13,7 @@ export interface AdminAdoption extends Adoption {
     breeds?: {
       id: string;
       name: string;
-    };
+    }[];
   };
   seeker_user: {
     id: string;
@@ -29,6 +29,8 @@ export interface AdminAdoption extends Adoption {
     profile_photo_url: string | null;
     phone: string | null;
   };
+  flagged: boolean;
+  admin_notes: string | null;
 }
 
 export interface AdoptionFilters {
@@ -68,14 +70,14 @@ export const useAdminAdoptions = (
             id,
             title,
             type,
-            price,
-            owner_id,
-            breeds (
-              id,
-              name
-            )
-          )
-        `,
+             price,
+             owner_id,
+             breeds (
+               id,
+               name
+             )
+           )
+         `,
         { count: "exact" }
       );
 

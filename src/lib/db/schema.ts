@@ -192,6 +192,10 @@ export const adoptions = pgTable("adoptions", {
   reservation_paid: boolean("reservation_paid").notNull().default(false),
   contract_signed: boolean("contract_signed").notNull().default(false),
   payment_completed: boolean("payment_completed").notNull().default(false),
+  flagged: boolean("flagged").notNull().default(false),
+  flag_reason: text("flag_reason"),
+  flagged_at: timestamp("flagged_at"),
+  admin_notes: text("admin_notes"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
