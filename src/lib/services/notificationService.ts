@@ -1,4 +1,4 @@
-import { supabase } from "lib/supabase/client";
+import { supabase } from "../supabase/client";
 
 export interface NotificationPayload {
   userId: string;
@@ -74,12 +74,616 @@ export class NotificationService {
       novu?: NovuNotificationPayload;
     }>
   ): Promise<void> {
-    // Implementation for sending multiple notifications
-    // This method is not fully implemented in the codebase
+    try {
+      const response = await fetch("/api/novu/send-notifications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notifications }),
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        console.error("Failed to send notifications:", result.error);
+      }
+    } catch (error) {
+      console.error("Failed to send notifications:", error);
+    }
   }
 
   /**
-   * Subscribe user to breed interest topic
+   * Send adoption status change notifications to relevant parties
+   */
+  static async sendAdoptionStatusNotification(
+    seekerId: string,
+    breederId: string,
+    status: string,
+    listingTitle: string,
+    adoptionId: string,
+    listingId: string
+  ): Promise<void> {
+    const notifications: Array<{
+      db: NotificationPayload;
+      novu?: NovuNotificationPayload;
+    }> = [];
+
+    switch (status) {
+      case "submitted":
+        // Notify breeder of new application
+        notifications.push(
+          {
+            db: {
+              userId: breederId,
+              type: "application_received",
+              title: "New Adoption Application Received",
+              body: `A new adoption application has been submitted for your listing "${listingTitle}".`,
+              targetType: "adoption",
+              targetId: adoptionId,
+              meta: { adoptionId, listingId, seekerId },
+            },
+            novu: {
+              workflowId: "adoption-submitted",
+              to: { subscriberId: breederId },
+              payload: {
+                adoptionId,
+                listingId,
+                listingTitle,
+                seekerId,
+                seekerName: "Seeker", // Will be overridden by hook
+                seekerAvatar: null,
+              },
+            },
+          },
+          // Notify seeker that application is under review
+          {
+            db: {
+              userId: seekerId,
+              type: "application_received",
+              title: "Adoption Under Review",
+              body: `Your adoption application for ${listingTitle} is now being reviewed by breeder`,
+              targetType: "application",
+              targetId: adoptionId,
+              meta: { adoptionId, listingId, status },
+            },
+            novu: {
+              workflowId: "adoption-submitted",
+              to: { subscriberId: seekerId },
+              payload: {
+                adoptionId,
+                listingId,
+                listingTitle,
+                seekerId,
+                status,
+                title: "Adoption Under Review",
+                body: `Your adoption application for ${listingTitle} is now being reviewed by the breeder`,
+              },
+            },
+          }
+        );
+
+        // Notify admin via broadcast (separate from the array)
+        await this.sendAdminBroadcastMessage(
+          "Adoption Application Submitted",
+          `A new adoption application has been submitted for "${listingTitle}" and is now under review`,
+          {
+            category: "user",
+            details: [
+              { label: "Listing", value: listingTitle },
+              { label: "Application ID", value: adoptionId },
+              { label: "Seeker ID", value: seekerId },
+              { label: "Breeder ID", value: breederId },
+            ],
+          }
+        );
+        break;
+
+      case "approved":
+        // Notify seeker of approval
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: "adoption_status_changed",
+            title: "Adoption Application Approved",
+            body: `Congratulations! Your adoption application for ${listingTitle} has been approved.`,
+            targetType: "application",
+            targetId: adoptionId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: "adoption-status-changed",
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: "Adoption Application Approved",
+              body: `Congratulations! Your adoption application for ${listingTitle} has been approved.`,
+            },
+          },
+        });
+
+        // Notify admin via broadcast (separate from the array)
+        await this.sendAdminBroadcastMessage(
+          "Adoption Status: Approved",
+          `Adoption application for "${listingTitle}" has been approved`,
+          {
+            category: "user",
+            details: [
+              { label: "Listing", value: listingTitle },
+              { label: "Application ID", value: adoptionId },
+              { label: "Seeker ID", value: seekerId },
+              { label: "Breeder ID", value: breederId },
+            ],
+          }
+        );
+        break;
+
+      case "rejected":
+        // Notify seeker of rejection
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: "adoption_status_changed",
+            title: "Adoption Application Not Approved",
+            body: `Your adoption application for ${listingTitle} was not approved at this time`,
+            targetType: "application",
+            targetId: adoptionId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: "adoption-status-changed",
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: "Adoption Application Not Approved",
+              body: `Your adoption application for ${listingTitle} was not approved at this time`,
+            },
+          },
+        });
+
+        // Notify admin via broadcast (separate from the array)
+        await this.sendAdminBroadcastMessage(
+          "Adoption Status: Rejected",
+          `Adoption application for "${listingTitle}" has been rejected`,
+          {
+            category: "user",
+            details: [
+              { label: "Listing", value: listingTitle },
+              { label: "Application ID", value: adoptionId },
+              { label: "Seeker ID", value: seekerId },
+              { label: "Breeder ID", value: breederId },
+            ],
+          }
+        );
+        break;
+
+      case "withdrawn":
+        // Notify breeder that seeker withdrew
+        if (breederId) {
+          notifications.push({
+            db: {
+              userId: breederId,
+              type: "adoption_status_changed",
+              title: "Adoption Application Withdrawn",
+              body: `The seeker has withdrawn their application for "${listingTitle}".`,
+              targetType: "application",
+              targetId: adoptionId,
+              meta: { adoptionId, listingId, status, seekerId },
+            },
+            novu: {
+              workflowId: "adoption-status-changed",
+              to: { subscriberId: breederId },
+              payload: {
+                adoptionId,
+                listingId,
+                listingTitle,
+                seekerId,
+                breederId,
+                status,
+                title: "Adoption Application Withdrawn",
+                body: `The seeker has withdrawn their application for "${listingTitle}".`,
+              },
+            },
+          });
+
+          // Notify admin via broadcast (separate from the array)
+          await this.sendAdminBroadcastMessage(
+            "Adoption Status: Withdrawn",
+            `Adoption application for "${listingTitle}" has been withdrawn by seeker`,
+            {
+              category: "user",
+              details: [
+                { label: "Listing", value: listingTitle },
+                { label: "Application ID", value: adoptionId },
+                { label: "Seeker ID", value: seekerId },
+                { label: "Breeder ID", value: breederId },
+              ],
+            }
+          );
+        }
+        break;
+
+      case "completed":
+        // Notify seeker of completion
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: "adoption_status_changed",
+            title: "Adoption Completed",
+            body: `Your adoption process for ${listingTitle} has been completed successfully`,
+            targetType: "application",
+            targetId: adoptionId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: "adoption-status-changed",
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: "Adoption Completed",
+              body: `Your adoption process for ${listingTitle} has been completed successfully`,
+            },
+          },
+        });
+
+        // Notify admin via broadcast (separate from the array)
+        await this.sendAdminBroadcastMessage(
+          "Adoption Status: Completed",
+          `Adoption process for "${listingTitle}" has been completed`,
+          {
+            category: "user",
+            details: [
+              { label: "Listing", value: listingTitle },
+              { label: "Application ID", value: adoptionId },
+              { label: "Seeker ID", value: seekerId },
+              { label: "Breeder ID", value: breederId },
+            ],
+          }
+        );
+        break;
+
+      default:
+        // Generic notification for other statuses
+        notifications.push({
+          db: {
+            userId: seekerId,
+            type: "adoption_status_changed",
+            title: "Adoption Status Updated",
+            body: `Your adoption status for ${listingTitle} has been updated to ${status}`,
+            targetType: "application",
+            targetId: adoptionId,
+            meta: { adoptionId, listingId, status },
+          },
+          novu: {
+            workflowId: "adoption-status-changed",
+            to: { subscriberId: seekerId },
+            payload: {
+              adoptionId,
+              listingId,
+              listingTitle,
+              seekerId,
+              status,
+              title: "Adoption Status Updated",
+              body: `Your adoption status for ${listingTitle} has been updated to ${status}`,
+            },
+          },
+        });
+    }
+
+    // Send all notifications
+    for (const notification of notifications) {
+      await this.sendNotification(notification.db, notification.novu);
+    }
+  }
+
+  /**
+   * Send payment confirmation notifications to all relevant parties
+   */
+  static async sendPaymentNotification(
+    seekerId: string,
+    breederId: string,
+    paymentType: "reservation" | "final",
+    listingTitle: string,
+    amount: number,
+    applicationId: string,
+    listingId: string,
+    transactionId: string
+  ): Promise<void> {
+    const notifications: Array<{
+      db: NotificationPayload;
+      novu?: NovuNotificationPayload;
+    }> = [];
+
+    const isReservation = paymentType === "reservation";
+    const commissionFee = amount * 0.1; // 10% commission
+    const earnings = amount - commissionFee;
+
+    // Notify seeker of payment confirmation
+    notifications.push({
+      db: {
+        userId: seekerId,
+        type: "payment_completed",
+        title: isReservation
+          ? "Reservation Payment Confirmed"
+          : "Final Payment Confirmed",
+        body: isReservation
+          ? `Your reservation payment for ${listingTitle} has been confirmed. The listing is now reserved for you.`
+          : `Your final payment for ${listingTitle} has been confirmed. Your adoption is now complete!`,
+        targetType: "application",
+        targetId: applicationId,
+        meta: { applicationId, listingId, paymentType, transactionId, amount },
+      },
+      novu: {
+        workflowId: "final-payment-completed", // Use the same workflow for both payment types
+        to: { subscriberId: seekerId },
+        payload: {
+          applicationId,
+          listingId,
+          listingTitle,
+          seekerId,
+          amount,
+          paymentType,
+        },
+      },
+    });
+
+    // Notify breeder of payment received
+    notifications.push({
+      db: {
+        userId: breederId,
+        type: "payment_received",
+        title: isReservation
+          ? "Reservation Payment Received"
+          : "Final Payment Received",
+        body: isReservation
+          ? `You have received a reservation payment of ₦${amount}. The listing is now reserved.`
+          : `You have received the final payment of ₦${amount}. Payout will be processed soon.`,
+        targetType: "application",
+        targetId: applicationId,
+        meta: {
+          applicationId,
+          paymentType,
+          transactionId,
+          amount,
+          earnings,
+        },
+      },
+      novu: {
+        workflowId: isReservation
+          ? "reservation-fee-paid"
+          : "final-payment-completed",
+        to: { subscriberId: breederId },
+        payload: {
+          applicationId,
+          listingId,
+          listingTitle,
+          seekerId,
+          breederId,
+          amount,
+          earnings,
+          paymentType,
+        },
+      },
+    });
+
+    // Notify admin of payment via broadcast (separate from the array)
+    await this.sendAdminBroadcastMessage(
+      isReservation
+        ? "Reservation Payment Processed"
+        : "Final Payment Processed",
+      isReservation
+        ? `Reservation payment of ₦${amount} processed for "${listingTitle}".`
+        : `Final payment of ₦${amount} processed for "${listingTitle}".`,
+      {
+        category: "user",
+        details: [
+          { label: "Application ID", value: applicationId },
+          { label: "Listing", value: listingTitle },
+          { label: "Amount", value: `₦${amount}` },
+          { label: "Seeker ID", value: seekerId },
+          { label: "Breeder ID", value: breederId },
+        ],
+      }
+    );
+
+    // Send all notifications
+    await this.sendNotifications(notifications);
+  }
+
+  /**
+   * Send payout processed notification
+   */
+  static async sendPayoutNotification(
+    breederId: string,
+    amount: number,
+    transferReference: string
+  ): Promise<void> {
+    await this.sendNotification(
+      {
+        userId: breederId,
+        type: "payout_processed",
+        title: "Payout Processed",
+        body: `Your payout of ₦${amount} has been processed successfully.`,
+        meta: { amount, transferReference },
+      },
+      {
+        workflowId: "payout-processed",
+        to: { subscriberId: breederId },
+        payload: {
+          amount,
+          transferReference,
+          breederId,
+        },
+      }
+    );
+  }
+
+  /**
+   * Send welcome notification for new users
+   */
+  static async sendWelcomeNotification(
+    userId: string,
+    firstName: string,
+    email: string
+  ): Promise<void> {
+    await this.sendNotification(
+      {
+        userId,
+        type: "welcome",
+        title: "Welcome to Pethouse!",
+        body: `Welcome to Pethouse, ${firstName}! We're excited to have you join our community.`,
+        meta: { firstName, email },
+      },
+      {
+        workflowId: "welcome-user",
+        to: { subscriberId: userId },
+        payload: {
+          userId,
+          firstName,
+          email,
+        },
+      }
+    );
+  }
+
+  /**
+   * Send admin notification for new user signup
+   */
+  static async sendNewUserSignupNotification(
+    userId: string,
+    firstName: string,
+    email: string,
+    role: string
+  ): Promise<void> {
+    // Send broadcast message to all admin users
+    await this.sendAdminBroadcastMessage(
+      "New User Signup",
+      `${firstName} (${email}) has signed up as a ${role}.`,
+      {
+        category: "user",
+        details: [
+          { label: "User ID", value: userId },
+          { label: "Name", value: firstName },
+          { label: "Email", value: email },
+          { label: "Role", value: role },
+        ],
+      }
+    );
+  }
+
+  /**
+   * Create a subscriber in Novu during onboarding
+   */
+  static async createSubscriber(
+    subscriberId: string,
+    userData: {
+      firstName: string;
+      lastName?: string;
+      email: string;
+      phone?: string;
+      data?: Record<string, any>;
+    }
+  ): Promise<void> {
+    try {
+      const response = await fetch("/api/novu/create-subscriber", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subscriberId,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          phone: userData.phone,
+          data: userData.data,
+        }),
+      });
+
+      // if (!response.ok) {
+      //   throw new Error('Subscriber creation failed');
+      // }
+    } catch (error) {
+      console.error("Failed to create subscriber:", error);
+      // Don't throw - subscriber creation is not critical for onboarding
+    }
+  }
+
+  /**
+   * Send admin notification for listing creation
+   */
+  static async sendListingCreatedNotification(
+    listingId: string,
+    listingTitle: string,
+    listingType: string,
+    breederId: string,
+    breederName: string
+  ): Promise<void> {
+    await this.sendAdminBroadcastMessage(
+      "New Listing Created",
+      `${breederName} created a new ${listingType} listing: ${listingTitle}`,
+      {
+        category: "user",
+        details: [
+          { label: "Listing ID", value: listingId },
+          { label: "Listing Title", value: listingTitle },
+          { label: "Listing Type", value: listingType },
+          { label: "Breeder ID", value: breederId },
+          { label: "Breeder Name", value: breederName },
+        ],
+      }
+    );
+  }
+
+  /**
+   * Send breeder notification for listing creation
+   */
+  static async sendListingCreatedToBreederNotification(
+    listingId: string,
+    listingTitle: string,
+    listingType: string,
+    breederId: string,
+    breederName: string
+  ): Promise<void> {
+    await this.sendNotification(
+      {
+        userId: breederId,
+        type: "listing_created",
+        title: "Listing Created Successfully",
+        body: `Your ${listingType} listing "${listingTitle}" has been created and is now live.`,
+        targetType: "listing",
+        targetId: listingId,
+        meta: {
+          listingId,
+          listingTitle,
+          listingType,
+          breederId,
+          breederName,
+        },
+      },
+      {
+        workflowId: "listing-created",
+        to: { subscriberId: breederId },
+        payload: {
+          listingId,
+          listingTitle,
+          listingType,
+          breederId,
+          breederName,
+        },
+      }
+    );
+  }
+
+  /**
+   * Subscribe user to breed interest topic (wishlist)
    * Uses server-side API route for topic subscription
    */
   static async subscribeToBreedInterest(
@@ -111,40 +715,6 @@ export class NotificationService {
         error
       );
       // Don't throw - topic subscription is not critical for core functionality
-    }
-  }
-
-  /**
-   * Unsubscribe user from breed interest topic
-   * Uses server-side API route for topic unsubscription
-   */
-  static async unsubscribeFromBreedInterest(
-    subscriberId: string,
-    breedId: string
-  ): Promise<void> {
-    try {
-      const response = await fetch("/api/novu/unsubscribe-topic", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subscriberId,
-          topicKey: `breed-${breedId}-interested`,
-        }),
-      });
-
-      // if (!response.ok) {
-      //   throw new Error('Breed interest unsubscription failed');
-      // }
-
-      console.log(
-        `Successfully unsubscribed ${subscriberId} from breed interest: ${breedId}`
-      );
-    } catch (error) {
-      console.error(
-        `Failed to unsubscribe ${subscriberId} from breed interest ${breedId}:`,
-        error
-      );
-      // Don't throw - topic unsubscription is not critical for core functionality
     }
   }
 
@@ -212,6 +782,40 @@ export class NotificationService {
     } catch (error) {
       console.error(
         `Failed to unsubscribe ${subscriberId} from breeder ${breederId}:`,
+        error
+      );
+      // Don't throw - topic unsubscription is not critical for core functionality
+    }
+  }
+
+  /**
+   * Unsubscribe user from breed interest topic
+   * Uses server-side API route for topic unsubscription
+   */
+  static async unsubscribeFromBreedInterest(
+    subscriberId: string,
+    breedId: string
+  ): Promise<void> {
+    try {
+      const response = await fetch("/api/novu/unsubscribe-topic", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subscriberId,
+          topicKey: `breed-${breedId}-interested`,
+        }),
+      });
+
+      // if (!response.ok) {
+      //   throw new Error('Breed interest unsubscription failed');
+      // }
+
+      console.log(
+        `Successfully unsubscribed ${subscriberId} from breed interest: ${breedId}`
+      );
+    } catch (error) {
+      console.error(
+        `Failed to unsubscribe ${subscriberId} from breed interest ${breedId}:`,
         error
       );
       // Don't throw - topic unsubscription is not critical for core functionality
@@ -687,303 +1291,6 @@ export class NotificationService {
       }
     } catch (error) {
       console.error("Database notification read status update error:", error);
-    }
-  }
-
-  /**
-   * Send adoption status notification to seeker and breeder
-   */
-  static async sendAdoptionStatusNotification(
-    seekerId: string,
-    breederId: string,
-    status: string,
-    listingTitle: string,
-    adoptionId: string,
-    listingId: string
-  ): Promise<void> {
-    try {
-      // Create database notifications
-      await this.sendNotification({
-        userId: seekerId,
-        type: "adoption_status_update",
-        title: `Adoption Status Update`,
-        body: `Your adoption application for "${listingTitle}" has been ${status}.`,
-        targetType: "adoption",
-        targetId: adoptionId,
-        meta: {
-          status,
-          listingTitle,
-          adoptionId,
-          listingId,
-        },
-      });
-
-      await this.sendNotification({
-        userId: breederId,
-        type: "adoption_status_update",
-        title: `Adoption Status Update`,
-        body: `Adoption application for "${listingTitle}" has been ${status}.`,
-        targetType: "adoption",
-        targetId: adoptionId,
-        meta: {
-          status,
-          listingTitle,
-          adoptionId,
-          listingId,
-        },
-      });
-
-      // Send Novu notifications
-      const novuResponse = await fetch("/api/novu/send-notification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workflowId: "adoption-status-changed",
-          to: [
-            { subscriberId: seekerId },
-            { subscriberId: breederId },
-            { subscriberId: process.env.NEXT_PUBLIC_ADMIN_USER_ID || "admin" },
-          ],
-          payload: {
-            status,
-            listingTitle,
-            adoptionId,
-            listingId,
-          },
-        }),
-      });
-
-      if (!novuResponse.ok) {
-        console.error("Failed to send Novu adoption status notification");
-      }
-    } catch (error) {
-      console.error("Failed to send adoption status notification:", error);
-    }
-  }
-
-  /**
-   * Send payment notification to all parties
-   */
-  static async sendPaymentNotification(
-    seekerId: string,
-    breederId: string,
-    paymentType: string,
-    itemType: string,
-    amount: number,
-    applicationId: string,
-    listingId?: string,
-    transactionId?: string
-  ): Promise<void> {
-    try {
-      // Create database notifications
-      await this.sendNotification({
-        userId: seekerId,
-        type: "payment_completed",
-        title: `Payment Completed`,
-        body: `Your ${paymentType} payment of $${amount} for ${itemType} has been processed.`,
-        targetType: "application",
-        targetId: applicationId,
-        meta: {
-          paymentType,
-          itemType,
-          amount,
-          applicationId,
-        },
-      });
-
-      await this.sendNotification({
-        userId: breederId,
-        type: "payment_completed",
-        title: `Payment Received`,
-        body: `You have received a ${paymentType} payment of $${amount} for ${itemType}.`,
-        targetType: "application",
-        targetId: applicationId,
-        meta: {
-          paymentType,
-          itemType,
-          amount,
-          applicationId,
-        },
-      });
-
-      // Send Novu notifications
-      const novuResponse = await fetch("/api/novu/send-notification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workflowId: "payment-completed",
-          to: [
-            { subscriberId: seekerId },
-            { subscriberId: breederId },
-            { subscriberId: process.env.NEXT_PUBLIC_ADMIN_USER_ID || "admin" },
-          ],
-          payload: {
-            paymentType,
-            itemType,
-            amount,
-            applicationId,
-          },
-        }),
-      });
-
-      if (!novuResponse.ok) {
-        console.error("Failed to send Novu payment notification");
-      }
-    } catch (error) {
-      console.error("Failed to send payment notification:", error);
-    }
-  }
-
-  /**
-   * Send payout notification to breeder
-   */
-  static async sendPayoutNotification(
-    breederId: string,
-    amount: number,
-    transferReference: string
-  ): Promise<void> {
-    try {
-      // Create database notification
-      await this.sendNotification({
-        userId: breederId,
-        type: "payout_completed",
-        title: `Payout Processed`,
-        body: `Your payout of $${amount} has been processed (Ref: ${transferReference}).`,
-        targetType: "payout",
-        targetId: transferReference,
-        meta: {
-          amount,
-          transferReference,
-        },
-      });
-
-      // Send Novu notification
-      const novuResponse = await fetch("/api/novu/send-notification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workflowId: "payout-completed",
-          to: [{ subscriberId: breederId }],
-          payload: {
-            amount,
-            transferReference,
-          },
-        }),
-      });
-
-      if (!novuResponse.ok) {
-        console.error("Failed to send Novu payout notification");
-      }
-    } catch (error) {
-      console.error("Failed to send payout notification:", error);
-    }
-  }
-
-  /**
-   * Send welcome notification to new user
-   */
-  static async sendWelcomeNotification(
-    userId: string,
-    displayName: string,
-    email: string
-  ): Promise<void> {
-    try {
-      // Create database notification
-      await this.sendNotification({
-        userId,
-        type: "welcome",
-        title: `Welcome to Pethouse, ${displayName}!`,
-        body: `Thank you for joining Pethouse. We're excited to help you find your perfect pet companion.`,
-        targetType: "welcome",
-        targetId: userId,
-        meta: {
-          displayName,
-          email,
-        },
-      });
-
-      // Send Novu notification
-      const novuResponse = await fetch("/api/novu/send-notification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workflowId: "welcome-user",
-          to: [{ subscriberId: userId }],
-          payload: {
-            displayName,
-            email,
-          },
-        }),
-      });
-
-      if (!novuResponse.ok) {
-        console.error("Failed to send Novu welcome notification");
-      }
-    } catch (error) {
-      console.error("Failed to send welcome notification:", error);
-    }
-  }
-
-  /**
-   * Send new user signup notification to admin
-   */
-  static async sendNewUserSignupNotification(
-    userId: string,
-    displayName: string,
-    email: string,
-    role?: string
-  ): Promise<void> {
-    try {
-      // Create database notification for admin
-      await this.sendNotification({
-        userId: process.env.NEXT_PUBLIC_ADMIN_USER_ID || "admin",
-        type: "new_user_signup",
-        title: `New User Signup: ${displayName}`,
-        body: `${displayName} (${email}) has joined Pethouse.`,
-        targetType: "user",
-        targetId: userId,
-        meta: {
-          userId,
-          displayName,
-          email,
-        },
-      });
-
-      // Send Novu notification to admin
-      const novuResponse = await fetch("/api/novu/send-notification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workflowId: "new-user-signup",
-          to: [
-            { subscriberId: process.env.NEXT_PUBLIC_ADMIN_USER_ID || "admin" },
-          ],
-          payload: {
-            userId,
-            displayName,
-            email,
-          },
-        }),
-      });
-
-      if (!novuResponse.ok) {
-        console.error("Failed to send Novu new user signup notification");
-      }
-    } catch (error) {
-      console.error("Failed to send new user signup notification:", error);
-    }
-  }
-
-  /**
-   * Create subscriber in Novu system
-   */
-  static async createSubscriber(userId: string, userData: any): Promise<void> {
-    try {
-      // This method should create/update subscriber in Novu
-      // Implementation depends on Novu setup
-      console.log(`Creating/updating subscriber ${userId} in Novu`);
-    } catch (error) {
-      console.error("Failed to create subscriber:", error);
     }
   }
 }
