@@ -293,6 +293,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({
 
   const [messageText, setMessageText] = useState("");
   const [attachments, setAttachments] = useState<any[]>([]);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -437,7 +438,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({
   }
 
   return (
-    <Flex direction="column" flex="1" w="full" h="full" overflow="hidden">
+    <Flex direction="column" flex="1" w="full" h="full">
       {/* Contextual Info - Fixed at top */}
       {showContextualInfo && contextData?.contextData && (
         <Box
@@ -572,13 +573,16 @@ const ConversationView: React.FC<ConversationViewProps> = ({
         </Box>
       )}
 
-      {/* Message Input - Fixed at bottom */}
+      {/* Message Input - Sticky at bottom */}
       <Box
         w="full"
         bg={useColorModeValue("white", "gray.800")}
         borderTop="1px"
         borderColor={useColorModeValue("gray.200", "gray.600")}
         p={4}
+        position="sticky"
+        bottom={0}
+        zIndex={10}
       >
         <VStack spacing={3} maxW="6xl" mx="auto">
           {attachments.length > 0 && (
@@ -647,26 +651,28 @@ const ConversationView: React.FC<ConversationViewProps> = ({
                   ? "Please complete the pending action in the adoption details above before messaging"
                   : undefined
               }
+              isOpen={isTooltipOpen}
+              onClose={() => setIsTooltipOpen(false)}
               hasArrow
             >
-              <Textarea
-                value={messageText}
-                onChange={(e) => {
-                  setMessageText(e.target.value);
-                }}
-                onKeyUp={handleKeyPress}
-                placeholder={
-                  priorityAction
-                    ? "Please complete a pending action above..."
-                    : "Type your message..."
-                }
-                resize="none"
-                rows={1}
-                maxLength={1000}
-                bg={useColorModeValue("gray.50", "gray.700")}
-                borderColor={useColorModeValue("gray.300", "gray.600")}
-                isDisabled={!!priorityAction}
-              />
+              <Box
+                onClick={() => priorityAction && setIsTooltipOpen(true)}
+                cursor={priorityAction ? "pointer" : "text"}
+                w="full"
+              >
+                <Textarea
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  onKeyUp={handleKeyPress}
+                  placeholder="Type your message..."
+                  resize="none"
+                  rows={1}
+                  maxLength={1000}
+                  bg={useColorModeValue("gray.50", "gray.700")}
+                  borderColor={useColorModeValue("gray.300", "gray.600")}
+                  isDisabled={!!priorityAction}
+                />
+              </Box>
             </Tooltip>
             <Button
               colorScheme="blue"

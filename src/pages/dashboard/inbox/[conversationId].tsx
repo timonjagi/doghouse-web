@@ -1,8 +1,8 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { useBreakpointValue } from '@chakra-ui/react';
-import InboxPage from '../../../lib/components/pages/inbox/InboxPage';
-import ConversationView from '../../../lib/components/pages/inbox/ConversationView';
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useBreakpointValue, Box } from "@chakra-ui/react";
+import InboxPage from "../../../lib/components/pages/inbox/InboxPage";
+import ConversationView from "../../../lib/components/pages/inbox/ConversationView";
 
 const ConversationPage = () => {
   const router = useRouter();
@@ -13,7 +13,7 @@ const ConversationPage = () => {
   const isMobile = useBreakpointValue({ base: true, lg: false });
 
   useEffect(() => {
-    if (conversationId && typeof conversationId === 'string') {
+    if (conversationId && typeof conversationId === "string") {
       setSelectedId(conversationId);
     }
   }, [conversationId]);
