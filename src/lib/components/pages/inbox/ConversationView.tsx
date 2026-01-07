@@ -61,6 +61,7 @@ import {
   useAdoption,
 } from "../../../hooks/queries/useAdoptions";
 import FileAttachmentComponent from "../../ui/FileAttachment";
+import { PageHeaderWithTwoButtons } from "../../ui/PageHeaderWithTwoButtons";
 
 interface ContextualInfoProps {
   contextData: any;
@@ -293,6 +294,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({
 
   const [messageText, setMessageText] = useState("");
   const [attachments, setAttachments] = useState<any[]>([]);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -448,7 +450,29 @@ const ConversationView: React.FC<ConversationViewProps> = ({
           p={4}
         >
           <Box maxW="6xl" mx="auto">
-            <ContextualInfo contextData={contextData.contextData} />
+            <PageHeaderWithTwoButtons
+              title={
+                contextData.contextData.type === "adoption"
+                  ? "Adoption Details"
+                  : "Support Ticket"
+              }
+              description={
+                contextData.contextData.type === "adoption"
+                  ? `${contextData.contextData.adoption?.listings?.title || "Adoption"} - ${contextData.contextData.status}`
+                  : `${contextData.contextData.subject} - ${contextData.contextData.priority}`
+              }
+              buttonPrimary={{
+                label: "View Details",
+                onClick: () =>
+                  router.push(
+                    contextData.contextData.type === "adoption"
+                      ? `/dashboard/adoptions/${contextData.contextData.adoption}`
+                      : `/dashboard/support/${contextData.contextData.ticket_id}`
+                  ),
+                variant: "ghost",
+                colorScheme: "blue",
+              }}
+            />
           </Box>
         </Box>
       )}
@@ -647,26 +671,28 @@ const ConversationView: React.FC<ConversationViewProps> = ({
                   ? "Please complete the pending action in the adoption details above before messaging"
                   : undefined
               }
+              isOpen={isTooltipOpen}
+              onClose={() => setIsTooltipOpen(false)}
               hasArrow
             >
-              <Textarea
-                value={messageText}
-                onChange={(e) => {
-                  setMessageText(e.target.value);
-                }}
-                onKeyUp={handleKeyPress}
-                placeholder={
-                  priorityAction
-                    ? "Please complete a pending action above..."
-                    : "Type your message..."
-                }
-                resize="none"
-                rows={1}
-                maxLength={1000}
-                bg={useColorModeValue("gray.50", "gray.700")}
-                borderColor={useColorModeValue("gray.300", "gray.600")}
-                isDisabled={!!priorityAction}
-              />
+              <Box
+                onClick={() => priorityAction && setIsTooltipOpen(true)}
+                cursor={priorityAction ? "pointer" : "text"}
+                w="full"
+              >
+                <Textarea
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  onKeyUp={handleKeyPress}
+                  placeholder="Type your message..."
+                  resize="none"
+                  rows={1}
+                  maxLength={1000}
+                  bg={useColorModeValue("gray.50", "gray.700")}
+                  borderColor={useColorModeValue("gray.300", "gray.600")}
+                  isDisabled={!!priorityAction}
+                />
+              </Box>
             </Tooltip>
             <Button
               colorScheme="blue"
