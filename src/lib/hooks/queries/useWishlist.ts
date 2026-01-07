@@ -62,10 +62,12 @@ export const useAddToWishlist = () => {
     mutationFn: async ({
       user_breed_id,
       breed_id,
+      breeder_id,
       notify_when_available = false,
     }: {
       user_breed_id?: string;
       breed_id?: string;
+      breeder_id?: string;
       notify_when_available?: boolean;
     }) => {
       if (!user?.id) {
@@ -78,6 +80,7 @@ export const useAddToWishlist = () => {
           user_id: user.id,
           user_breed_id,
           breed_id,
+          breeder_id,
           notify_when_available,
         })
         .select()
@@ -122,9 +125,24 @@ export const useAddToWishlist = () => {
               data.user_breed_id,
               breedName
             );
+          } else if (data.breeder_id) {
+            // Subscribe to breeder activity topic
+            const { data: breeder } = await supabase
+              .from("users")
+              .select("display_name")
+              .eq("id", data.breeder_id)
+              .single();
+
+            const breederName = breeder?.display_name || "Unknown Breeder";
+
+            await NotificationService.subscribeToBreeder(
+              user.id,
+              data.breeder_id,
+              breederName
+            );
           }
         } catch (error) {
-          console.error("Failed to subscribe to breed interest:", error);
+          console.error("Failed to subscribe to interest:", error);
         }
       }
     },
@@ -140,7 +158,7 @@ export const useRemoveFromWishlist = () => {
     mutationFn: async (id: string) => {
       const { data, error } = await supabase
         .from("wishlists")
-        .select("breed_id")
+        .select("breed_id, breeder_id")
         .eq("id", id)
         .single();
 
@@ -160,14 +178,21 @@ export const useRemoveFromWishlist = () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
 
       // Unsubscribe from appropriate interest topic
-      if (data.breed_id && user?.id) {
+      if (user?.id) {
         try {
-          await NotificationService.unsubscribeFromBreedInterest(
-            user.id,
-            data.breed_id
-          );
+          if (data.breed_id) {
+            await NotificationService.unsubscribeFromBreedInterest(
+              user.id,
+              data.breed_id
+            );
+          } else if (data.breeder_id) {
+            await NotificationService.unsubscribeFromBreeder(
+              user.id,
+              data.breeder_id
+            );
+          }
         } catch (error) {
-          console.error("Failed to unsubscribe from breed interest:", error);
+          console.error("Failed to unsubscribe from interest:", error);
         }
       }
     },
@@ -248,6 +273,33 @@ export const useWishlistCount = () => {
       return count || 0;
     },
     enabled: !!user?.id,
+  });
+};
+
+// Check if user is subscribed to a breeder
+export const useIsSubscribedToBreeder = (breederId?: string) => {
+  const { data: user } = useCurrentUser();
+
+  return useQuery({
+    queryKey: [
+      "breeder-subscription",
+      "check",
+      { breederId, userId: user?.id },
+    ],
+    queryFn: async () => {
+      if (!user?.id || !breederId) return { isSubscribed: false };
+
+      const { data, error } = await supabase
+        .from("wishlists")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("breeder_id", breederId)
+        .maybeSingle();
+
+      if (error && error.code !== "PGRST116") throw error;
+      return { isSubscribed: !!data };
+    },
+    enabled: !!user?.id && !!breederId,
   });
 };
 
