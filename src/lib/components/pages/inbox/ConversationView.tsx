@@ -596,13 +596,16 @@ const ConversationView: React.FC<ConversationViewProps> = ({
         </Box>
       )}
 
-      {/* Message Input - Fixed at bottom */}
+      {/* Message Input - Sticky at bottom */}
       <Box
         w="full"
         bg={useColorModeValue("white", "gray.800")}
         borderTop="1px"
         borderColor={useColorModeValue("gray.200", "gray.600")}
         p={4}
+        position="sticky"
+        bottom={0}
+        zIndex={10}
       >
         <VStack spacing={3} maxW="6xl" mx="auto">
           {attachments.length > 0 && (

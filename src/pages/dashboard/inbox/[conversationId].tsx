@@ -25,11 +25,7 @@ const ConversationPage = () => {
 
   // On mobile, show conversation directly
   if (isMobile && selectedId) {
-    return (
-      <Box h="100vh">
-        <ConversationView conversationId={selectedId} />
-      </Box>
-    );
+    return <ConversationView conversationId={selectedId} />;
   }
 
   // On desktop, show the full inbox with the conversation pre-selected
