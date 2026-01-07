@@ -69,6 +69,7 @@ interface ContextualInfoProps {
 const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
   const router = useRouter();
   const hoverBg = useColorModeValue("gray.50", "gray.700");
+  const textColor = useColorModeValue("gray.600", "gray.400");
 
   if (contextData.type === "adoption") {
     const {
@@ -84,13 +85,46 @@ const ContextualInfo: React.FC<ContextualInfoProps> = ({ contextData }) => {
     const { data: adoptionDetail, isLoading: adoptionDetailLoading } =
       useAdoption(adoption);
 
+    const getTitle = () => {
+      if (adoption?.listings?.title) return adoption.listings.title;
+      if (adoption?.listings?.type === "litter") {
+        return `${adoption.listings.breeds?.name || "Unknown Breed"} Puppies`;
+      } else {
+        return `${adoption.listings.breeds?.name || "Unknown Breed"} ${adoption.listings.pet_age || "Unknown Age"} old`;
+      }
+    };
+
+    const getSubtext = () => {
+      if (adoption?.listings?.type === "single_pet") {
+        return `${adoption.listings.pet_gender || "Unknown"} • ${adoption.listings.pet_age || "Unknown age"} old`;
+      } else if (adoption?.listings?.type === "litter") {
+        const getAgeInMonths = () => {
+          if (!adoption?.listings?.birth_date) return "Unknown";
+          const today = new Date();
+          const birthDate = new Date(adoption.listings.birth_date);
+          const age = Math.floor(
+            (today.getTime() - birthDate.getTime()) /
+              (1000 * 60 * 60 * 24 * 30.44)
+          );
+          return age;
+        };
+        return `${adoption.listings.number_of_puppies || 0} puppies • ${getAgeInMonths()} months old`;
+      }
+      return null;
+    };
+
     return (
       <VStack spacing={3} align="stretch">
         <HStack justify="space-between" align="start">
           <VStack align="start" spacing={1}>
             <Text fontWeight="semibold" fontSize="lg">
-              {pet.name || "Pet"}
+              {getTitle()}
             </Text>
+            {getSubtext() && (
+              <Text fontSize="xs" color={textColor}>
+                {getSubtext()}
+              </Text>
+            )}
             <Badge
               colorScheme={
                 status === "completed"
