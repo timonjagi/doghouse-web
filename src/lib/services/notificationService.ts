@@ -74,41 +74,8 @@ export class NotificationService {
       novu?: NovuNotificationPayload;
     }>
   ): Promise<void> {
-    try {
-      // Delete from breeder_subscriptions table
-      const { error: dbError } = await supabase
-        .from("breeder_subscriptions")
-        .delete()
-        .eq("user_id", subscriberId)
-        .eq("breeder_id", breederId);
-
-      if (dbError) {
-        console.error("Failed to delete breeder subscription:", dbError);
-      }
-
-      const response = await fetch("/api/novu/unsubscribe-topic", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subscriberId,
-          topicKey: `breeder-${breederId}-subscribers`,
-        }),
-      });
-
-      // if (!response.ok) {
-      //   throw new Error('Breeder unsubscription failed');
-      // }
-
-      console.log(
-        `Successfully unsubscribed ${subscriberId} from breeder: ${breederId}`
-      );
-    } catch (error) {
-      console.error(
-        `Failed to unsubscribe ${subscriberId} from breeder ${breederId}:`,
-        error
-      );
-      // Don't throw - topic unsubscription is not critical for core functionality
-    }
+    // Implementation for sending multiple notifications
+    // This method is not fully implemented in the codebase
   }
 
   /**
@@ -191,17 +158,6 @@ export class NotificationService {
     breederName: string
   ): Promise<void> {
     try {
-      // Insert into wishlists table with breeder_id
-      const { error: dbError } = await supabase.from("wishlists").insert({
-        user_id: subscriberId,
-        breeder_id: breederId,
-        notify_when_available: true,
-      });
-
-      if (dbError) {
-        console.error("Failed to save breeder subscription:", dbError);
-      }
-
       const response = await fetch("/api/novu/subscribe-topic", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -237,17 +193,6 @@ export class NotificationService {
     breederId: string
   ): Promise<void> {
     try {
-      // Delete from wishlists table where breeder_id matches
-      const { error: dbError } = await supabase
-        .from("wishlists")
-        .delete()
-        .eq("user_id", subscriberId)
-        .eq("breeder_id", breederId);
-
-      if (dbError) {
-        console.error("Failed to delete breeder subscription:", dbError);
-      }
-
       const response = await fetch("/api/novu/unsubscribe-topic", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -742,6 +687,303 @@ export class NotificationService {
       }
     } catch (error) {
       console.error("Database notification read status update error:", error);
+    }
+  }
+
+  /**
+   * Send adoption status notification to seeker and breeder
+   */
+  static async sendAdoptionStatusNotification(
+    seekerId: string,
+    breederId: string,
+    status: string,
+    listingTitle: string,
+    adoptionId: string,
+    listingId: string
+  ): Promise<void> {
+    try {
+      // Create database notifications
+      await this.sendNotification({
+        userId: seekerId,
+        type: "adoption_status_update",
+        title: `Adoption Status Update`,
+        body: `Your adoption application for "${listingTitle}" has been ${status}.`,
+        targetType: "adoption",
+        targetId: adoptionId,
+        meta: {
+          status,
+          listingTitle,
+          adoptionId,
+          listingId,
+        },
+      });
+
+      await this.sendNotification({
+        userId: breederId,
+        type: "adoption_status_update",
+        title: `Adoption Status Update`,
+        body: `Adoption application for "${listingTitle}" has been ${status}.`,
+        targetType: "adoption",
+        targetId: adoptionId,
+        meta: {
+          status,
+          listingTitle,
+          adoptionId,
+          listingId,
+        },
+      });
+
+      // Send Novu notifications
+      const novuResponse = await fetch("/api/novu/send-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workflowId: "adoption-status-changed",
+          to: [
+            { subscriberId: seekerId },
+            { subscriberId: breederId },
+            { subscriberId: process.env.NEXT_PUBLIC_ADMIN_USER_ID || "admin" },
+          ],
+          payload: {
+            status,
+            listingTitle,
+            adoptionId,
+            listingId,
+          },
+        }),
+      });
+
+      if (!novuResponse.ok) {
+        console.error("Failed to send Novu adoption status notification");
+      }
+    } catch (error) {
+      console.error("Failed to send adoption status notification:", error);
+    }
+  }
+
+  /**
+   * Send payment notification to all parties
+   */
+  static async sendPaymentNotification(
+    seekerId: string,
+    breederId: string,
+    paymentType: string,
+    itemType: string,
+    amount: number,
+    applicationId: string,
+    listingId?: string,
+    transactionId?: string
+  ): Promise<void> {
+    try {
+      // Create database notifications
+      await this.sendNotification({
+        userId: seekerId,
+        type: "payment_completed",
+        title: `Payment Completed`,
+        body: `Your ${paymentType} payment of $${amount} for ${itemType} has been processed.`,
+        targetType: "application",
+        targetId: applicationId,
+        meta: {
+          paymentType,
+          itemType,
+          amount,
+          applicationId,
+        },
+      });
+
+      await this.sendNotification({
+        userId: breederId,
+        type: "payment_completed",
+        title: `Payment Received`,
+        body: `You have received a ${paymentType} payment of $${amount} for ${itemType}.`,
+        targetType: "application",
+        targetId: applicationId,
+        meta: {
+          paymentType,
+          itemType,
+          amount,
+          applicationId,
+        },
+      });
+
+      // Send Novu notifications
+      const novuResponse = await fetch("/api/novu/send-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workflowId: "payment-completed",
+          to: [
+            { subscriberId: seekerId },
+            { subscriberId: breederId },
+            { subscriberId: process.env.NEXT_PUBLIC_ADMIN_USER_ID || "admin" },
+          ],
+          payload: {
+            paymentType,
+            itemType,
+            amount,
+            applicationId,
+          },
+        }),
+      });
+
+      if (!novuResponse.ok) {
+        console.error("Failed to send Novu payment notification");
+      }
+    } catch (error) {
+      console.error("Failed to send payment notification:", error);
+    }
+  }
+
+  /**
+   * Send payout notification to breeder
+   */
+  static async sendPayoutNotification(
+    breederId: string,
+    amount: number,
+    transferReference: string
+  ): Promise<void> {
+    try {
+      // Create database notification
+      await this.sendNotification({
+        userId: breederId,
+        type: "payout_completed",
+        title: `Payout Processed`,
+        body: `Your payout of $${amount} has been processed (Ref: ${transferReference}).`,
+        targetType: "payout",
+        targetId: transferReference,
+        meta: {
+          amount,
+          transferReference,
+        },
+      });
+
+      // Send Novu notification
+      const novuResponse = await fetch("/api/novu/send-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workflowId: "payout-completed",
+          to: [{ subscriberId: breederId }],
+          payload: {
+            amount,
+            transferReference,
+          },
+        }),
+      });
+
+      if (!novuResponse.ok) {
+        console.error("Failed to send Novu payout notification");
+      }
+    } catch (error) {
+      console.error("Failed to send payout notification:", error);
+    }
+  }
+
+  /**
+   * Send welcome notification to new user
+   */
+  static async sendWelcomeNotification(
+    userId: string,
+    displayName: string,
+    email: string
+  ): Promise<void> {
+    try {
+      // Create database notification
+      await this.sendNotification({
+        userId,
+        type: "welcome",
+        title: `Welcome to Pethouse, ${displayName}!`,
+        body: `Thank you for joining Pethouse. We're excited to help you find your perfect pet companion.`,
+        targetType: "welcome",
+        targetId: userId,
+        meta: {
+          displayName,
+          email,
+        },
+      });
+
+      // Send Novu notification
+      const novuResponse = await fetch("/api/novu/send-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workflowId: "welcome-user",
+          to: [{ subscriberId: userId }],
+          payload: {
+            displayName,
+            email,
+          },
+        }),
+      });
+
+      if (!novuResponse.ok) {
+        console.error("Failed to send Novu welcome notification");
+      }
+    } catch (error) {
+      console.error("Failed to send welcome notification:", error);
+    }
+  }
+
+  /**
+   * Send new user signup notification to admin
+   */
+  static async sendNewUserSignupNotification(
+    userId: string,
+    displayName: string,
+    email: string,
+    role?: string
+  ): Promise<void> {
+    try {
+      // Create database notification for admin
+      await this.sendNotification({
+        userId: process.env.NEXT_PUBLIC_ADMIN_USER_ID || "admin",
+        type: "new_user_signup",
+        title: `New User Signup: ${displayName}`,
+        body: `${displayName} (${email}) has joined Pethouse.`,
+        targetType: "user",
+        targetId: userId,
+        meta: {
+          userId,
+          displayName,
+          email,
+        },
+      });
+
+      // Send Novu notification to admin
+      const novuResponse = await fetch("/api/novu/send-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workflowId: "new-user-signup",
+          to: [
+            { subscriberId: process.env.NEXT_PUBLIC_ADMIN_USER_ID || "admin" },
+          ],
+          payload: {
+            userId,
+            displayName,
+            email,
+          },
+        }),
+      });
+
+      if (!novuResponse.ok) {
+        console.error("Failed to send Novu new user signup notification");
+      }
+    } catch (error) {
+      console.error("Failed to send new user signup notification:", error);
+    }
+  }
+
+  /**
+   * Create subscriber in Novu system
+   */
+  static async createSubscriber(userId: string, userData: any): Promise<void> {
+    try {
+      // This method should create/update subscriber in Novu
+      // Implementation depends on Novu setup
+      console.log(`Creating/updating subscriber ${userId} in Novu`);
+    } catch (error) {
+      console.error("Failed to create subscriber:", error);
     }
   }
 }
