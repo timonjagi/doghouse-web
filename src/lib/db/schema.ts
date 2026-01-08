@@ -31,6 +31,9 @@ export const users = pgTable("users", {
     .default(false),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
+  last_sign_in_at: timestamp("last_sign_in_at"),
+  email_confirmed_at: timestamp("email_confirmed_at"),
+  is_active: boolean("is_active").notNull().default(true),
 });
 
 // BREED CATALOG
@@ -81,6 +84,7 @@ export const breeder_profiles = pgTable("breeder_profiles", {
   facility_type: varchar("facility_type", { length: 100 }),
   verification_docs: jsonb("verification_docs"), // references to storage keys
   verified_at: timestamp("verified_at"),
+  verified: boolean("verified").notNull().default(false),
   rating: numeric("rating", { precision: 3, scale: 2 }).default("0"),
   review_count: integer("review_count").default(0),
   kennel_avatar_url: text("kennel_avatar_url"),
@@ -174,6 +178,9 @@ export const listings = pgTable("listings", {
   is_featured: boolean("is_featured").notNull().default(false),
   view_count: integer("view_count").notNull().default(0),
   tags: jsonb("tags").$default(() => "[]"), // flexible tagging system
+  flagged: boolean("flagged").notNull().default(false),
+  flagged_reason: text("flagged_reason"),
+  flagged_at: timestamp("flagged_at"),
 
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),

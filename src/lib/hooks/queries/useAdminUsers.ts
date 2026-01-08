@@ -9,6 +9,7 @@ export interface AdminUser {
   role: "seeker" | "breeder" | "admin" | null;
   profile_photo_url: string | null;
   created_at: string;
+  updated_at: string | null;
   last_sign_in_at: string | null;
   email_confirmed_at: string | null;
   phone: string | null;
@@ -67,6 +68,7 @@ export const useAdminUsers = (
           role,
           profile_photo_url,
           created_at,
+          updated_at,
           last_sign_in_at,
           email_confirmed_at,
           phone,
@@ -101,7 +103,15 @@ export const useAdminUsers = (
       }
 
       if (filters.verified !== undefined && filters.role === "breeder") {
-        query = query.eq("breeder_profiles.verified", filters.verified);
+        if (filters.verified) {
+          query = query
+            .eq("breeder_profiles.verified", true)
+            .not("breeder_profiles.verified_at", "is", null);
+        } else {
+          query = query
+            .eq("breeder_profiles.verified", false)
+            .is("breeder_profiles.verified_at", null);
+        }
       }
 
       if (filters.search) {
@@ -144,13 +154,12 @@ export const useUserStats = () => {
         .select("*", { count: "exact", head: true });
 
       // Get active users (signed in within last 30 days)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
+      // For now, consider all users as active since we don't have last_sign_in_at field tracking
       const { count: activeUsers } = await supabase
         .from("users")
-        .select("*", { count: "exact", head: true })
-        .gte("last_sign_in_at", thirtyDaysAgo.toISOString());
+        .select("*", { count: "exact", head: true });
+
+      // You could add a more sophisticated active user tracking later by using a separate activity_logs table
 
       // Get new users this month
       const firstDayOfMonth = new Date();
@@ -216,6 +225,7 @@ export const useAdminUserDetails = (userId: string) => {
           role,
           profile_photo_url,
           created_at,
+          updated_at,
           last_sign_in_at,
           email_confirmed_at,
           phone,

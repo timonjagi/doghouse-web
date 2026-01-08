@@ -195,6 +195,19 @@ export const queryKeys = {
       ["admin", "adoptions", filters].filter(Boolean) as any,
     analytics: (filters?: any): readonly string[] =>
       ["admin", "analytics", filters].filter(Boolean) as any,
+    breeds: (filters?: any, page?: number, limit?: number): readonly string[] =>
+      ["admin", "breeds", filters, page, limit].filter(Boolean) as any,
+    breedStats: (): readonly string[] => ["admin", "breed-stats"] as const,
+    breedDetails: (breedId: string): readonly string[] =>
+      ["admin", "breed-details", breedId] as const,
+    breedUserBreeds: (
+      breedId: string,
+      page?: number,
+      limit?: number
+    ): readonly string[] =>
+      ["admin", "breed-user-breeds", breedId, page, limit].filter(
+        Boolean
+      ) as any,
   },
 } as const;
 
