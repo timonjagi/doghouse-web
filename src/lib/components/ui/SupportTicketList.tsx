@@ -15,7 +15,7 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { FiMessageSquare, FiClock, FiAlertCircle } from "react-icons/fi";
-import { formatDistanceToNow } from "date-fns";
+import moment from "moment";
 import { SupportTicket } from "../../db/schema";
 
 interface SupportTicketListProps {
@@ -189,19 +189,14 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
                     <HStack spacing={1}>
                       <Icon as={FiClock} boxSize={4} color="gray.500" />
                       <Text fontSize="sm" color="gray.500">
-                        {formatDistanceToNow(new Date(ticket.created_at), {
-                          addSuffix: true,
-                        })}
+                        {moment(ticket.created_at).fromNow()}
                       </Text>
                     </HStack>
                   </HStack>
 
                   {ticket.last_reply_at && (
                     <Text fontSize="xs" color="gray.500">
-                      Last reply{" "}
-                      {formatDistanceToNow(new Date(ticket.last_reply_at), {
-                        addSuffix: true,
-                      })}
+                      Last reply {moment(ticket.last_reply_at).fromNow()}
                     </Text>
                   )}
                 </HStack>

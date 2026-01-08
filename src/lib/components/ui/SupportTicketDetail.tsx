@@ -19,7 +19,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { FiSend, FiPaperclip, FiDownload } from "react-icons/fi";
-import { format } from "date-fns";
+import moment from "moment";
 import {
   SupportTicket,
   SupportTicketComment,
@@ -179,14 +179,13 @@ export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
             <HStack spacing={4} fontSize="sm" color="gray.600">
               <Text>
                 Created{" "}
-                {format(new Date(ticket.created_at), "MMM d, yyyy 'at' h:mm a")}
+                {moment(ticket.created_at).format("MMM D, YYYY [at] h:mm a")}
               </Text>
               {ticket.last_reply_at && (
                 <Text>
                   Last reply{" "}
-                  {format(
-                    new Date(ticket.last_reply_at),
-                    "MMM d, yyyy 'at' h:mm a"
+                  {moment(ticket.last_reply_at).format(
+                    "MMM D, YYYY [at] h:mm a"
                   )}
                 </Text>
               )}
@@ -263,9 +262,8 @@ export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
                           </Badge>
                         )}
                         <Text fontSize="xs" color="gray.500">
-                          {format(
-                            new Date(comment.created_at),
-                            "MMM d, yyyy 'at' h:mm a"
+                          {moment(comment.created_at).format(
+                            "MMM D, YYYY [at] h:mm a"
                           )}
                         </Text>
                       </HStack>
