@@ -15,11 +15,12 @@ import {
   FiShoppingBag,
   FiHeart,
   FiUserCheck,
+  FiHelpCircle,
 } from "react-icons/fi";
 import { GiDogHouse } from "react-icons/gi";
 import { LuDog, LuSettings2 } from "react-icons/lu";
 
-export type UserRole = 'breeder' | 'seeker' | 'admin';
+export type UserRole = "breeder" | "seeker" | "admin";
 
 export interface NavSection {
   title: string;
@@ -47,15 +48,15 @@ export const navigationConfig: NavigationConfig = {
           label: "Overview",
           href: "/dashboard",
           icon: FiHome,
-          ariaLabel: "Dashboard home"
+          ariaLabel: "Dashboard home",
         },
         {
           label: "Inbox",
           href: "/dashboard/inbox",
           icon: FiMessageSquare,
-          ariaLabel: "Inbox"
+          ariaLabel: "Inbox",
         },
-      ]
+      ],
     },
     {
       title: "Manage",
@@ -64,15 +65,15 @@ export const navigationConfig: NavigationConfig = {
           label: "Kennel",
           href: "/dashboard/kennel",
           icon: GiDogHouse,
-          ariaLabel: "View kennel"
+          ariaLabel: "View kennel",
         },
         {
           label: "Matches",
           href: "/dashboard/matches",
           icon: FiUserCheck,
-          ariaLabel: "View matches"
+          ariaLabel: "View matches",
         },
-      ]
+      ],
     },
     {
       title: "Account",
@@ -81,159 +82,40 @@ export const navigationConfig: NavigationConfig = {
           label: "Profile",
           href: "/dashboard/account/profile",
           icon: FiUser,
-          ariaLabel: "View profile"
+          ariaLabel: "View profile",
         },
 
         {
           label: "Billing",
           href: "/dashboard/account/billing",
           icon: FiCreditCard,
-          ariaLabel: "View payment history"
-        }
-      ]
-    }
+          ariaLabel: "View payment history",
+        },
+        {
+          label: "Support",
+          href: "/dashboard/support",
+          icon: FiHelpCircle,
+          ariaLabel: "Support and help",
+        },
+      ],
+    },
   ],
-
-  seeker: [
-    {
-      title: "",
-      items: [
-        {
-          label: "Home",
-          href: "/dashboard",
-          icon: FiHome,
-          ariaLabel: "Dashboard home"
-        },
-        {
-          label: "Inbox",
-          href: "/dashboard/inbox",
-          icon: FiMessageSquare,
-          ariaLabel: "Inbox"
-        },
-      ]
-    },
-    {
-      title: "Explore",
-      items: [
-
-        {
-          label: "Search",
-          href: "/dashboard/search",
-          icon: FiSearch,
-          ariaLabel: "Browse breeds and listings"
-        },
-        {
-          label: "Wishlist",
-          href: "/dashboard/wishlist",
-          icon: FiHeart,
-          ariaLabel: "Browse listings"
-        },
-
-      ]
-    },
-    {
-      title: "Account",
-      items: [
-        {
-          label: "Profile",
-          href: "/dashboard/account/profile",
-          icon: FiUser,
-          ariaLabel: "View profile"
-        },
-        {
-          label: "Billing",
-          href: "/dashboard/account/billing",
-          icon: FiCreditCard,
-          ariaLabel: "View billing history"
-        },
-      ]
-    }
-  ],
-
-  admin: [
-    {
-      title: "Dashboard",
-      items: [
-        {
-          label: "Overview",
-          href: "/dashboard/admin",
-          icon: FiHome,
-          ariaLabel: "Dashboard home"
-        }
-      ]
-    },
-    {
-      title: "Manage",
-      items: [
-        {
-          label: "Users",
-          href: "/dashboard/admin/users",
-          icon: FiUsers,
-          ariaLabel: "Manage all users"
-        },
-        {
-          label: "Verification",
-          href: "/dashboard/admin/verification",
-          icon: FiShield,
-          ariaLabel: "Breeder verification"
-        },
-        {
-          label: "Payouts",
-          href: "/dashboard/admin/payouts",
-          icon: FiCreditCard,
-          ariaLabel: "Manage breeder payouts"
-        },
-
-      ]
-    },
-    {
-      title: "CONTENT",
-      items: [
-        {
-          label: "Breeds",
-          href: "/dashboard/admin/breeds",
-          icon: FiList,
-          ariaLabel: "Manage all listings"
-        },
-        {
-          label: "Listings",
-          href: "/dashboard/admin/listings",
-          icon: FiList,
-          ariaLabel: "Manage all listings"
-        },
-        {
-          label: "Adoptions",
-          href: "/dashboard/admin/adoptions",
-          icon: FiClipboard,
-          ariaLabel: "My applications"
-        },
-      ]
-    },
-    {
-      title: "ANALYTICS",
-      items: [
-        {
-          label: "Analytics",
-          href: "/dashboard/admin/analytics",
-          icon: FiBarChart,
-          ariaLabel: "Platform analytics"
-        },
-
-      ]
-    }
-  ]
 };
 
-// Helper function to get navigation config for a role
-export const getNavigationForRole = (role: UserRole | null | undefined): NavSection[] => {
+// Helper function to get navigation sections for a role
+export const getNavigationForRole = (
+  role: UserRole | null | undefined
+): NavSection[] => {
   if (!role || !navigationConfig[role]) {
-    return [];
+    return navigationConfig.seeker; // Default to seeker navigation
   }
   return navigationConfig[role];
 };
 
 // Helper function to get all navigation items for a role (flattened)
-export const getNavItemsForRole = (role: UserRole | null | undefined): NavItem[] => {
+export const getNavItemsForRole = (
+  role: UserRole | null | undefined
+): NavItem[] => {
   const sections = getNavigationForRole(role);
-  return sections.flatMap(section => section.items);
+  return sections.flatMap((section) => section.items);
 };

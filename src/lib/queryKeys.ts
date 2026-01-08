@@ -213,6 +213,41 @@ export const queryKeys = {
         Boolean
       ) as any,
   },
+
+  // Support system queries
+  support: {
+    faqs: {
+      all: (): readonly string[] => ["support", "faqs"] as const,
+      lists: (): readonly string[] => ["support", "faqs", "list"] as const,
+      list: (filters?: Record<string, unknown>): readonly string[] =>
+        ["support", "faqs", "list", filters].filter(Boolean) as any,
+      detail: (id: string): readonly string[] =>
+        ["support", "faqs", "detail", id] as const,
+      categories: (): readonly string[] =>
+        ["support", "faqs", "categories"] as const,
+      search: (query: string): readonly string[] =>
+        ["support", "faqs", "search", query] as const,
+    },
+    tickets: {
+      all: (): readonly string[] => ["support", "tickets"] as const,
+      lists: (): readonly string[] => ["support", "tickets", "list"] as const,
+      list: (filters?: Record<string, unknown>): readonly string[] =>
+        ["support", "tickets", "list", filters].filter(Boolean) as any,
+      detail: (id: string): readonly string[] =>
+        ["support", "tickets", "detail", id] as const,
+      user: (userId: string): readonly string[] =>
+        ["support", "tickets", "user", userId] as const,
+      comments: (ticketId: string): readonly string[] =>
+        ["support", "tickets", "comments", ticketId] as const,
+      attachments: (ticketId: string): readonly string[] =>
+        ["support", "tickets", "attachments", ticketId] as const,
+    },
+    categories: {
+      all: (): readonly string[] => ["support", "categories"] as const,
+      active: (): readonly string[] =>
+        ["support", "categories", "active"] as const,
+    },
+  },
 } as const;
 
 // Helper function to create custom query keys with consistent structure
