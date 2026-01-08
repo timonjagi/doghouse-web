@@ -1,6 +1,6 @@
 {
-  "id": "a33fbdd5-4985-40e4-98ab-e5048d70167c",
-  "prevId": "42857a07-6c69-4d1e-bb1d-05ed859803f6",
+  "id": "75e03980-a1c8-4d73-8eab-95a228287711",
+  "prevId": "8f7d5b49-f2a0-49c8-8665-a05e0c6c8b64",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -2116,6 +2116,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "breeder_id": {
+          "name": "breeder_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "notify_when_available": {
           "name": "notify_when_available",
           "type": "boolean",
@@ -2172,6 +2178,19 @@
           "tableTo": "user_breeds",
           "columnsFrom": [
             "user_breed_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "wishlists_breeder_id_users_id_fk": {
+          "name": "wishlists_breeder_id_users_id_fk",
+          "tableFrom": "wishlists",
+          "tableTo": "users",
+          "columnsFrom": [
+            "breeder_id"
           ],
           "columnsTo": [
             "id"
