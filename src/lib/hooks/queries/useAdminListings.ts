@@ -65,7 +65,7 @@ export const useAdminListings = (
   limit: number = 20
 ) => {
   return useQuery({
-    queryKey: ["admin", "listings", filters, page, limit],
+    queryKey: queryKeys.admin.listings(filters, page, limit),
     queryFn: async (): Promise<{ listings: AdminListing[]; total: number }> => {
       let query = supabase.from("listings").select(
         `

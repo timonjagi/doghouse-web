@@ -50,24 +50,16 @@ export const usePendingVerifications = (
     }> => {
       let query = supabase.from("breeder_profiles").select(
         `
+        *,
+        users (
           id,
-          user_id,
-          business_name,
-          license_number,
-          verification_docs,
-          verified,
-          verified_at,
-          created_at,
-          updated_at,
-          users (
-            id,
-            display_name,
-            email,
-            profile_photo_url,
-            phone,
-            location_text
-          )
-        `,
+          display_name,
+          email,
+          profile_photo_url,
+          phone,
+          location_text
+        )
+      `,
         { count: "exact" }
       );
 
@@ -174,15 +166,7 @@ export const useVerificationDetails = (requestId: string) => {
         .from("breeder_profiles")
         .select(
           `
-          id,
-          user_id,
-          business_name,
-          license_number,
-          verification_docs,
-          verified,
-          verified_at,
-          created_at,
-          updated_at,
+          *,
           users (
             id,
             display_name,

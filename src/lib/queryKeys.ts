@@ -189,8 +189,12 @@ export const queryKeys = {
       ["admin", "verification-details", requestId] as const,
     verificationStats: (): readonly string[] =>
       ["admin", "verification-stats"] as const,
-    listings: (filters?: any): readonly string[] =>
-      ["admin", "listings", filters].filter(Boolean) as any,
+    listings: (
+      filters?: any,
+      page?: number,
+      limit?: number
+    ): readonly string[] =>
+      ["admin", "listings", filters, page, limit].filter(Boolean) as any,
     adoptions: (filters?: any): readonly string[] =>
       ["admin", "adoptions", filters].filter(Boolean) as any,
     analytics: (filters?: any): readonly string[] =>

@@ -62,34 +62,23 @@ export const useAdminUsers = (
     queryFn: async (): Promise<{ users: AdminUser[]; total: number }> => {
       let query = supabase.from("users").select(
         `
+        *,
+        breeder_profiles (
           id,
-          display_name,
-          email,
-          role,
-          profile_photo_url,
-          created_at,
-          updated_at,
-          last_sign_in_at,
-          email_confirmed_at,
-          phone,
-          location_text,
-          is_active,
-          breeder_profiles (
-            id,
-            verified,
-            verified_at,
-            business_name,
-            license_number
-          ),
-          seeker_profiles (
-            id,
-            experience_level,
-            living_situation,
-            has_children,
-            has_allergies,
-            has_other_pets
-          )
-        `,
+          verified,
+          verified_at,
+          business_name,
+          license_number
+        ),
+        seeker_profiles (
+          id,
+          experience_level,
+          living_situation,
+          has_children,
+          has_allergies,
+          has_other_pets
+        )
+      `,
         { count: "exact" }
       );
 
