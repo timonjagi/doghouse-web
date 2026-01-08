@@ -86,37 +86,26 @@ export const useListings = (filters?: {
       const searchTerm = filters?.search?.toLowerCase();
 
       let query = supabase.from("listings").select(`
-        id,
-        title,
-        description,
-        type,
-        owner_id,
-        owner_type,
-        pet_type,
-        breed_id,
-        user_breed_id,
-        birth_date,
-        available_date,
-        number_of_puppies,
-        pet_name,
-        pet_age,
-        pet_gender,
-        price,
-        reservation_fee,
-        status,
-        photos,
-        location_text,
-        location_lat,
-        location_lng,
-        is_featured,
-        view_count,
-        tags,
-        created_at,
-        updated_at,
+        *,
         breeds (
           name
+        ),
+        users (
+          id,
+          display_name,
+          email,
+          profile_photo_url,
+          phone,
+          location_text
+        ),
+        user_breeds (
+          id,
+          title,
+          description,
+          images,
+          created_at
         )
-        `);
+      `);
 
       // Apply type filter
       if (filters?.type) {
@@ -234,32 +223,19 @@ export const usePopularListings = (limit: number = 6, petType?: string) => {
     queryFn: async (): Promise<any[]> => {
       // Get listings ordered by view_count (popularity) and recent activity
       let query = supabase.from("listings").select(`
-          id,
-          title,
-          description,
-          type,
-          pet_type,
-          price,
-          reservation_fee,
-          photos,
-          location_text,
-          status,
-          view_count,
-          created_at,
-          updated_at,
-          breeds (
-            name
-          ),
-          users (
-            display_name,
-            profile_photo_url,
-            breeder_profiles (
-              kennel_name,
-              kennel_location
-            )
+        *,
+        breeds (
+          name
+        ),
+        users (
+          display_name,
+          profile_photo_url,
+          breeder_profiles (
+            kennel_name,
+            kennel_location
           )
-        `);
-
+        )
+      `);
       if (petType) {
         query = query.eq("pet_type", petType);
       }
@@ -284,16 +260,14 @@ export const useNewListings = (limit: number = 6, petType?: string) => {
     queryFn: async (): Promise<any[]> => {
       // Get recently added listings
       let query = supabase.from("listings").select(`
-          id,
-          title,
-          description,
-          type,
-          pet_type,
-          price,
-          reservation_fee,
+        *,
+        breeds (
           photos,
           location_text,
           status,
+          flagged,
+          flagged_reason,
+          flagged_at,
           created_at,
           breeds (
             name
@@ -362,6 +336,9 @@ export const useListing = (id: string) => {
           is_featured,
           view_count,
           tags,
+          flagged,
+          flagged_reason,
+          flagged_at,
           created_at,
           updated_at,
           breeds (
@@ -440,6 +417,9 @@ export const useListingsByOwner = (ownerId: string) => {
           reservation_fee,
           status,
           photos,
+          flagged,
+          flagged_reason,
+          flagged_at,
           created_at,
           updated_at,
           breeds (
