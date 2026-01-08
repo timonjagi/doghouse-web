@@ -389,21 +389,19 @@ const AdminVerificationPage: React.FC = () => {
                               <Avatar
                                 size="sm"
                                 src={
-                                  request.users?.[0]?.profile_photo_url ||
-                                  undefined
+                                  request.users?.profile_photo_url || undefined
                                 }
                                 name={
-                                  request.users?.[0]?.display_name ||
-                                  request.users?.[0]?.email
+                                  request.users?.display_name ||
+                                  request.users?.email
                                 }
                               />
                               <VStack align="start" spacing={0}>
                                 <Text fontWeight="medium">
-                                  {request.users?.[0]?.display_name ||
-                                    "No name"}
+                                  {request.users?.display_name || "No name"}
                                 </Text>
                                 <Text fontSize="sm" color="gray.600">
-                                  {request.users?.[0]?.email}
+                                  {request.users?.email}
                                 </Text>
                               </VStack>
                             </HStack>
@@ -411,11 +409,15 @@ const AdminVerificationPage: React.FC = () => {
                           <Td>
                             <VStack align="start" spacing={0}>
                               <Text fontWeight="medium">
-                                {request.business_name || "No business name"}
+                                {request.kennel_name || "No kennel name"}
                               </Text>
                               <Text fontSize="sm" color="gray.600">
-                                License:{" "}
-                                {request.license_number || "Not provided"}
+                                Breeds:{" "}
+                                {request.user_breeds?.filter(
+                                  (b) => b.is_verified
+                                ).length || 0}{" "}
+                                verified / {request.user_breeds?.length || 0}{" "}
+                                total
                               </Text>
                             </VStack>
                           </Td>
@@ -547,21 +549,21 @@ const AdminVerificationPage: React.FC = () => {
                         <Avatar
                           size="lg"
                           src={
-                            selectedRequestDetails.users?.[0]
-                              ?.profile_photo_url || undefined
+                            selectedRequestDetails.users?.profile_photo_url ||
+                            undefined
                           }
                           name={
-                            selectedRequestDetails.users?.[0]?.display_name ||
-                            selectedRequestDetails.users?.[0]?.email
+                            selectedRequestDetails.users?.display_name ||
+                            selectedRequestDetails.users?.email
                           }
                         />
                         <VStack align="start">
                           <Heading size="md">
-                            {selectedRequestDetails.users?.[0]?.display_name ||
+                            {selectedRequestDetails.users?.display_name ||
                               "No name"}
                           </Heading>
                           <Text color="gray.600">
-                            {selectedRequestDetails.users?.[0]?.email}
+                            {selectedRequestDetails.users?.email}
                           </Text>
                           <Badge
                             colorScheme={getStatusBadgeColor(
@@ -576,30 +578,41 @@ const AdminVerificationPage: React.FC = () => {
 
                       <SimpleGrid columns={2} spacing={4}>
                         <Box>
-                          <Text fontWeight="bold">Business Name</Text>
+                          <Text fontWeight="bold">Kennel Name</Text>
                           <Text>
-                            {selectedRequestDetails.business_name ||
+                            {selectedRequestDetails.kennel_name ||
                               "Not provided"}
                           </Text>
                         </Box>
                         <Box>
-                          <Text fontWeight="bold">License Number</Text>
+                          <Text fontWeight="bold">Kennel Location</Text>
                           <Text>
-                            {selectedRequestDetails.license_number ||
+                            {selectedRequestDetails.kennel_location ||
                               "Not provided"}
+                          </Text>
+                        </Box>
+                        <Box>
+                          <Text fontWeight="bold">Breeds</Text>
+                          <Text>
+                            {selectedRequestDetails.user_breeds?.filter(
+                              (b) => b.is_verified
+                            ).length || 0}{" "}
+                            verified /{" "}
+                            {selectedRequestDetails.user_breeds?.length || 0}{" "}
+                            total
                           </Text>
                         </Box>
                         <Box>
                           <Text fontWeight="bold">Phone</Text>
                           <Text>
-                            {selectedRequestDetails.users?.[0]?.phone ||
+                            {selectedRequestDetails.users?.phone ||
                               "Not provided"}
                           </Text>
                         </Box>
                         <Box>
                           <Text fontWeight="bold">Location</Text>
                           <Text>
-                            {selectedRequestDetails.users?.[0]?.location_text ||
+                            {selectedRequestDetails.users?.location_text ||
                               "Not provided"}
                           </Text>
                         </Box>

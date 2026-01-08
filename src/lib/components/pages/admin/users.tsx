@@ -402,6 +402,12 @@ const AdminUsersPage: React.FC = () => {
                                 <Text fontSize="sm" color="gray.600">
                                   {user.email}
                                 </Text>
+                                {user.role === "breeder" &&
+                                  user.breeder_profiles?.[0]?.kennel_name && (
+                                    <Text fontSize="sm" color="gray.600">
+                                      {user.breeder_profiles[0].kennel_name}
+                                    </Text>
+                                  )}
                               </VStack>
                             </HStack>
                           </Td>
@@ -650,17 +656,17 @@ const AdminUsersPage: React.FC = () => {
                       selectedUserDetails.breeder_profiles?.[0] ? (
                         <VStack align="stretch" spacing={4}>
                           <Box>
-                            <Text fontWeight="bold">Business Name</Text>
+                            <Text fontWeight="bold">Kennel Name</Text>
                             <Text>
-                              {selectedUserDetails.breeder_profiles[0]
-                                .business_name || "Not provided"}
+                              {selectedUserDetails.breeder_profiles?.[0]
+                                ?.kennel_name || "Not provided"}
                             </Text>
                           </Box>
                           <Box>
-                            <Text fontWeight="bold">License Number</Text>
+                            <Text fontWeight="bold">Kennel Location</Text>
                             <Text>
-                              {selectedUserDetails.breeder_profiles[0]
-                                .license_number || "Not provided"}
+                              {selectedUserDetails.breeder_profiles?.[0]
+                                ?.kennel_location || "Not provided"}
                             </Text>
                           </Box>
                           <Box>

@@ -19,8 +19,13 @@ export interface AdminUser {
     id: string;
     verified: boolean;
     verified_at: string | null;
-    business_name: string | null;
-    license_number: string | null;
+    kennel_name: string | null;
+    kennel_location: string | null;
+    facility_type: string | null;
+    user_breeds?: {
+      id: string;
+      is_verified: boolean;
+    }[];
   }[];
   seeker_profiles?: {
     id: string;
@@ -67,8 +72,13 @@ export const useAdminUsers = (
           id,
           verified,
           verified_at,
-          business_name,
-          license_number
+          kennel_name,
+          kennel_location,
+          facility_type
+        ),
+        user_breeds (
+          id,
+          is_verified
         ),
         seeker_profiles (
           id,
@@ -105,7 +115,7 @@ export const useAdminUsers = (
 
       if (filters.search) {
         query = query.or(
-          `display_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%`
+          `display_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,breeder_profiles.kennel_name.ilike.%${filters.search}%`
         );
       }
 
@@ -223,11 +233,20 @@ export const useAdminUserDetails = (userId: string) => {
           breeder_profiles (
             id,
             verified,
-            business_name,
-            license_number,
+            kennel_name,
+            kennel_location,
+            facility_type,
             verification_docs,
             created_at,
             verified_at
+          ),
+          user_breeds (
+            id,
+            is_verified
+          ),
+          user_breeds (
+            id,
+            is_verified
           ),
           seeker_profiles (
             id,

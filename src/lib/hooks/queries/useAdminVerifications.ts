@@ -5,20 +5,25 @@ import { queryKeys } from "../../queryKeys";
 export interface BreederVerificationRequest {
   id: string;
   user_id: string;
-  business_name: string | null;
-  license_number: string | null;
+  kennel_name: string | null;
+  kennel_location: string | null;
+  facility_type: string | null;
   verification_docs: any;
   verified: boolean;
   verified_at: string | null;
   created_at: string;
   updated_at: string;
-  users: {
+  users?: {
     id: string;
     display_name: string | null;
     email: string;
     profile_photo_url: string | null;
     phone: string | null;
     location_text: string | null;
+  };
+  user_breeds?: {
+    id: string;
+    is_verified: boolean;
   }[];
 }
 
@@ -58,6 +63,10 @@ export const usePendingVerifications = (
           profile_photo_url,
           phone,
           location_text
+        ),
+        user_breeds (
+          id,
+          is_verified
         )
       `,
         { count: "exact" }
@@ -76,7 +85,7 @@ export const usePendingVerifications = (
 
       if (filters.search) {
         query = query.or(
-          `business_name.ilike.%${filters.search}%,license_number.ilike.%${filters.search}%,users.display_name.ilike.%${filters.search}%,users.email.ilike.%${filters.search}%`
+          `kennel_name.ilike.%${filters.search}%,users.display_name.ilike.%${filters.search}%,users.email.ilike.%${filters.search}%`
         );
       }
 
@@ -174,6 +183,10 @@ export const useVerificationDetails = (requestId: string) => {
             profile_photo_url,
             phone,
             location_text
+          ),
+          user_breeds (
+            id,
+            is_verified
           )
         `
         )
@@ -210,21 +223,66 @@ export const useVerificationActions = () => {
 
       switch (action) {
         case "approve":
-          const { error: approveError } = await supabase
+          // Get the breeder profile to get user_id
+          const { data: profile } = await supabase
             .from("breeder_profiles")
+            .select("user_id")
+            .eq("id", requestId)
+            .single();
+
+          if (!profile) throw new Error("Profile not found");
+
+          const { error: approveError } = await supabase
+            .from("user_breeds")
             .update({
-              verified: true,
-              verified_at: now,
+              is_verified: true,
               updated_at: now,
             })
-            .eq("id", requestId);
+            .eq("user_id", profile.user_id);
 
           if (approveError) throw approveError;
+
+          // Update breeder profile verified_at if all breeds are now verified
+          const { data: breeds } = await supabase
+            .from("user_breeds")
+            .select("is_verified")
+            .eq("user_id", profile.user_id);
+
+          const allVerified = breeds?.every((b) => b.is_verified);
+
+          if (allVerified) {
+            await supabase
+              .from("breeder_profiles")
+              .update({
+                verified: true,
+                verified_at: now,
+                updated_at: now,
+              })
+              .eq("id", requestId);
+          }
           break;
 
         case "reject":
-          // For rejection, we might want to add a rejection reason field
-          // For now, we'll update the verification_docs to include rejection info
+          // Get the breeder profile to get user_id
+          const { data: profile2 } = await supabase
+            .from("breeder_profiles")
+            .select("user_id")
+            .eq("id", requestId)
+            .single();
+
+          if (!profile2) throw new Error("Profile not found");
+
+          const { error: rejectError } = await supabase
+            .from("user_breeds")
+            .update({
+              is_verified: false,
+              updated_at: now,
+            })
+            .eq("user_id", profile2.user_id);
+
+          if (rejectError) throw rejectError;
+
+          // Update breeder profile
           const { data: currentProfile } = await supabase
             .from("breeder_profiles")
             .select("verification_docs")
@@ -238,15 +296,15 @@ export const useVerificationActions = () => {
             rejected: true,
           };
 
-          const { error: rejectError } = await supabase
+          await supabase
             .from("breeder_profiles")
             .update({
+              verified: false,
+              verified_at: null,
               verification_docs: updatedDocs,
               updated_at: now,
             })
             .eq("id", requestId);
-
-          if (rejectError) throw rejectError;
           break;
 
         case "request_info":
