@@ -394,6 +394,7 @@ export const wishlists = pgTable("wishlists", {
     .references(() => users.id),
   breed_id: uuid("breed_id").references(() => breeds.id),
   user_breed_id: uuid("user_breed_id").references(() => user_breeds.id), // optional - for saved breeds without listings
+  breeder_id: uuid("breeder_id").references(() => users.id), // optional - for subscribed breeders
   notify_when_available: boolean("notify_when_available")
     .notNull()
     .default(false),
