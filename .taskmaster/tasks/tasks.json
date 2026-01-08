@@ -1346,6 +1346,90 @@
             "testStrategy": "Test breeder search with pet type filters based on profile specialization, verify navigation maintains context, ensure search results are filtered correctly by pet type and show appropriate breeders."
           }
         ]
+      },
+      {
+        "id": 23,
+        "title": "Implement Admin CRUD and Moderation System",
+        "description": "Build comprehensive CRUD operations and moderation actions for all admin management panels including reusable modals, bulk operations, and content moderation framework.",
+        "details": "Create standardized admin action modals, implement full CRUD operations for users, listings, breeds, verifications, and payouts. Add content moderation system, bulk operations, audit logging, and admin action frameworks. Ensure all admin panels have complete management capabilities with proper confirmations and notifications.",
+        "testStrategy": "Test all CRUD operations across admin panels, verify modal interactions work correctly, test bulk operations and content moderation, ensure audit logging captures all admin actions, validate notification systems for admin operations.",
+        "priority": "high",
+        "dependencies": [14],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Admin Action Modals Framework",
+            "description": "Build standardized modal system for admin actions including confirmations, forms, and notifications",
+            "details": "Implement AdminActionModal, AdminFormModal, AdminConfirmModal components. Add action result notifications, loading states, and consistent styling. Create reusable modal patterns for CRUD operations.",
+            "status": "pending",
+            "testStrategy": "Test modal interactions, form validations, action confirmations, and notification system across different admin operations."
+          },
+          {
+            "id": 2,
+            "title": "Implement User Management CRUD Actions",
+            "description": "Add full CRUD operations for user management (create admin users, update profiles, deactivate accounts, role management)",
+            "details": "Add user creation forms, profile editing modals, role change dialogs, account deactivation/activation actions. Include bulk user operations and status management.",
+            "status": "pending",
+            "testStrategy": "Test user creation, profile updates, role changes, account status toggles, and bulk operations functionality."
+          },
+          {
+            "id": 3,
+            "title": "Build Listings Moderation and Flagging System",
+            "description": "Implement content moderation for listings including flagging, approval/rejection, and content management",
+            "details": "Add listing approval/rejection modals, content flagging system, inappropriate content removal, listing status management. Include bulk moderation actions and content filtering.",
+            "status": "pending",
+            "testStrategy": "Test listing approval/rejection workflows, flagging system, bulk moderation, and content filtering capabilities."
+          },
+          {
+            "id": 4,
+            "title": "Implement Breeder Verification CRUD and Moderation",
+            "description": "Build comprehensive verification management with document review, approval/rejection workflows, and status tracking",
+            "details": "Create verification approval/rejection modals, document viewer, status change actions, bulk verification processing, and verification history tracking.",
+            "status": "pending",
+            "testStrategy": "Test verification approval/rejection, document viewing, status changes, bulk operations, and history tracking."
+          },
+          {
+            "id": 5,
+            "title": "Implement Breed Management CRUD Operations",
+            "description": "Add full CRUD for breed catalog management with image handling and breed characteristics",
+            "details": "Create breed creation/editing forms, image upload management, breed characteristic editing, breed status management, and bulk breed operations.",
+            "status": "pending",
+            "testStrategy": "Test breed creation/editing, image management, characteristic updates, status changes, and bulk operations."
+          },
+          {
+            "id": 6,
+            "title": "Build Payout Management CRUD System",
+            "description": "Implement payout processing, approval, and management system with financial controls",
+            "details": "Add payout approval/rejection modals, payout scheduling, payment method management, payout history tracking, and bulk payout processing.",
+            "status": "pending",
+            "testStrategy": "Test payout approval/rejection, scheduling, bulk processing, history tracking, and financial accuracy."
+          },
+          {
+            "id": 7,
+            "title": "Implement Content Moderation Framework",
+            "description": "Build comprehensive content moderation system for user-generated content across the platform",
+            "details": "Create moderation queues, content approval/rejection workflows, user reporting system, automated content filtering, and moderation analytics.",
+            "status": "pending",
+            "testStrategy": "Test content moderation workflows, user reporting, automated filtering, and moderation analytics."
+          },
+          {
+            "id": 8,
+            "title": "Add Admin Bulk Operations System",
+            "description": "Implement bulk CRUD operations for efficient admin management across multiple entities",
+            "details": "Create bulk selection interfaces, bulk action modals, progress indicators, and rollback capabilities for failed operations. Support bulk operations for users, listings, breeds, and verifications.",
+            "status": "pending",
+            "testStrategy": "Test bulk selection, bulk action execution, progress tracking, and rollback functionality across different admin entities."
+          },
+          {
+            "id": 9,
+            "title": "Implement Admin Audit Logging System",
+            "description": "Add comprehensive audit logging for all admin actions and changes",
+            "details": "Create audit log tables, implement logging for all CRUD operations, admin actions, and system changes. Add audit log viewer for admin oversight and compliance.",
+            "status": "pending",
+            "testStrategy": "Test audit logging captures all admin actions, verify audit log viewer displays correctly, and ensure compliance with logging requirements."
+          }
+        ]
       }
     ],
     "metadata": {
