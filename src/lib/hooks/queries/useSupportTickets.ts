@@ -6,6 +6,7 @@ import {
   SupportTicketComment,
   SupportTicketAttachment,
 } from "../../db/schema";
+import { NotificationService } from "../../services/notificationService";
 
 // Query to get user's support tickets
 export const useSupportTickets = (userId?: string) => {
@@ -144,6 +145,14 @@ export const useCreateSupportTicket = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.support.tickets.user(newTicket.user_id),
       });
+
+      // Send ticket created notification
+      NotificationService.sendTicketCreatedNotification(
+        newTicket.id,
+        newTicket.subject,
+        newTicket.priority,
+        newTicket.user_id
+      );
     },
   });
 };
@@ -167,6 +176,15 @@ export const useAddTicketComment = () => {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("No authenticated user");
 
+      // Get ticket info for notification
+      const { data: ticket, error: ticketError } = await supabase
+        .from("support_tickets")
+        .select("subject, user_id, assigned_to")
+        .eq("id", ticketId)
+        .single();
+
+      if (ticketError) throw ticketError;
+
       const { data, error } = await supabase
         .from("support_ticket_comments")
         .insert({
@@ -186,15 +204,34 @@ export const useAddTicketComment = () => {
         .update({ last_reply_at: new Date().toISOString() })
         .eq("id", ticketId);
 
-      return data;
+      return { comment: data, ticket };
     },
-    onSuccess: (_, { ticketId }) => {
+    onSuccess: (result, variables) => {
+      const { comment, ticket } = result;
+
       queryClient.invalidateQueries({
-        queryKey: queryKeys.support.tickets.comments(ticketId),
+        queryKey: queryKeys.support.tickets.comments(variables.ticketId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.support.tickets.detail(ticketId),
+        queryKey: queryKeys.support.tickets.detail(variables.ticketId),
       });
+
+      // Determine recipient and send notification
+      const isAdminComment = comment.user_id !== ticket.user_id; // Assuming admin user IDs are different
+      const recipientId = isAdminComment
+        ? ticket.user_id
+        : ticket.assigned_to || ticket.user_id;
+
+      if (recipientId && recipientId !== comment.user_id) {
+        NotificationService.sendTicketCommentNotification(
+          variables.ticketId,
+          comment.id,
+          ticket.subject,
+          comment.user_id,
+          recipientId,
+          isAdminComment
+        );
+      }
     },
   });
 };
@@ -271,6 +308,15 @@ export const useUpdateTicketStatus = () => {
       status: string;
       resolution?: string;
     }) => {
+      // First get the current ticket to capture old status
+      const { data: currentTicket, error: fetchError } = await supabase
+        .from("support_tickets")
+        .select("status, subject, user_id")
+        .eq("id", ticketId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
       const updates: any = {
         status,
         updated_at: new Date().toISOString(),
@@ -289,15 +335,28 @@ export const useUpdateTicketStatus = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      return { ...data, oldStatus: currentTicket.status };
     },
-    onSuccess: (updatedTicket) => {
+    onSuccess: (result, variables) => {
+      const { oldStatus, ...updatedTicket } = result;
+
       queryClient.invalidateQueries({
         queryKey: queryKeys.support.tickets.detail(updatedTicket.id),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.support.tickets.user(updatedTicket.user_id),
       });
+
+      // Send status change notification if status actually changed
+      if (variables.status !== oldStatus) {
+        NotificationService.sendTicketStatusNotification(
+          updatedTicket.id,
+          updatedTicket.subject,
+          variables.status,
+          oldStatus,
+          updatedTicket.user_id
+        );
+      }
     },
   });
 };
@@ -313,6 +372,11 @@ export const useAssignTicket = () => {
       ticketId: string;
       assignedTo: string;
     }) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("No authenticated user");
+
       const { data, error } = await supabase
         .from("support_tickets")
         .update({
@@ -324,12 +388,22 @@ export const useAssignTicket = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      return { ticket: data, assignedBy: user.id };
     },
-    onSuccess: (updatedTicket) => {
+    onSuccess: (result) => {
+      const { ticket, assignedBy } = result;
+
       queryClient.invalidateQueries({
-        queryKey: queryKeys.support.tickets.detail(updatedTicket.id),
+        queryKey: queryKeys.support.tickets.detail(ticket.id),
       });
+
+      // Send assignment notification
+      NotificationService.sendTicketAssignedNotification(
+        ticket.id,
+        ticket.subject,
+        ticket.assigned_to,
+        assignedBy
+      );
     },
   });
 };

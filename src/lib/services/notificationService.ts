@@ -30,6 +30,10 @@ export enum NotificationType {
   PASSWORD_RESET = "password_reset",
   EMAIL_VERIFICATION = "email_verification",
   OTP_LOGIN = "otp_login",
+  TICKET_CREATED = "ticket_created",
+  TICKET_UPDATED = "ticket_updated",
+  TICKET_RESOLVED = "ticket_resolved",
+  TICKET_COMMENT_ADDED = "ticket_comment_added",
 }
 
 // Action types for notifications
@@ -1251,6 +1255,195 @@ export class NotificationService {
     } catch (error) {
       console.error("Failed to send breeder activity notification:", error);
     }
+  }
+
+  /**
+   * Send notification when a support ticket is created
+   */
+  static async sendTicketCreatedNotification(
+    ticketId: string,
+    subject: string,
+    priority: string,
+    userId: string
+  ): Promise<void> {
+    const isUrgent = priority === "urgent";
+    const isHigh = priority === "high";
+
+    // Send notification to ticket creator
+    await this.sendNotification(
+      {
+        userId,
+        type: NotificationType.TICKET_CREATED,
+        title: "Support Ticket Created",
+        body: `Your support ticket "${subject}" has been created successfully. We'll respond as soon as possible.`,
+        targetType: "ticket",
+        targetId: ticketId,
+        meta: { ticketId, subject, priority },
+      },
+      {
+        workflowId: "ticket-created",
+        to: { subscriberId: userId },
+        payload: {
+          ticketId,
+          subject,
+          priority,
+          title: "Support Ticket Created",
+          message: `Your support ticket "${subject}" has been created successfully.`,
+        },
+      }
+    );
+
+    // Send admin alert for urgent/high priority tickets
+    if (isUrgent || isHigh) {
+      await this.sendAdminBroadcastMessage(
+        "Urgent Support Ticket",
+        `${isUrgent ? "URGENT" : "High Priority"} support ticket: "${subject}"`,
+        {
+          category: "user",
+          priority: isUrgent ? "urgent" : "high",
+          details: [
+            { label: "Ticket ID", value: ticketId },
+            { label: "Subject", value: subject },
+            { label: "Priority", value: priority },
+            { label: "User ID", value: userId },
+          ],
+        }
+      );
+    }
+  }
+
+  /**
+   * Send notification when ticket status is updated
+   */
+  static async sendTicketStatusNotification(
+    ticketId: string,
+    subject: string,
+    newStatus: string,
+    oldStatus: string,
+    userId: string,
+    updatedBy?: string
+  ): Promise<void> {
+    if (newStatus === oldStatus) return; // No change
+
+    const statusMessages = {
+      open: "Your ticket has been opened",
+      in_progress: "We're working on your ticket",
+      waiting_for_user: "We need more information to help resolve your ticket",
+      resolved: "Your ticket has been resolved",
+      closed: "Your ticket has been closed",
+    };
+
+    const isResolution = newStatus === "resolved" || newStatus === "closed";
+
+    await this.sendNotification(
+      {
+        userId,
+        type: isResolution
+          ? NotificationType.TICKET_RESOLVED
+          : NotificationType.TICKET_UPDATED,
+        title: isResolution ? "Ticket Resolved" : "Ticket Status Updated",
+        body: `${
+          statusMessages[newStatus as keyof typeof statusMessages] ||
+          `Status changed to ${newStatus}`
+        }. Ticket: "${subject}"`,
+        targetType: "ticket",
+        targetId: ticketId,
+        meta: { ticketId, subject, newStatus, oldStatus, updatedBy },
+      },
+      {
+        workflowId: isResolution ? "ticket-resolved" : "ticket-updated",
+        to: { subscriberId: userId },
+        payload: {
+          ticketId,
+          subject,
+          newStatus,
+          oldStatus,
+          title: isResolution ? "Ticket Resolved" : "Ticket Status Updated",
+          message: `${
+            statusMessages[newStatus as keyof typeof statusMessages] ||
+            `Status changed to ${newStatus}`
+          }`,
+        },
+      }
+    );
+  }
+
+  /**
+   * Send notification when a comment is added to a ticket
+   */
+  static async sendTicketCommentNotification(
+    ticketId: string,
+    commentId: string,
+    subject: string,
+    commenterId: string,
+    recipientId: string,
+    isAdminComment: boolean = false
+  ): Promise<void> {
+    // Don't notify if user is commenting on their own ticket
+    if (commenterId === recipientId) return;
+
+    const notificationType = isAdminComment ? "Admin Response" : "New Comment";
+    const message = isAdminComment
+      ? `Admin responded to your ticket "${subject}"`
+      : `New comment on your ticket "${subject}"`;
+
+    await this.sendNotification(
+      {
+        userId: recipientId,
+        type: NotificationType.TICKET_COMMENT_ADDED,
+        title: notificationType,
+        body: message,
+        targetType: "ticket",
+        targetId: ticketId,
+        meta: { ticketId, commentId, subject, commenterId, isAdminComment },
+      },
+      {
+        workflowId: "ticket-comment-added",
+        to: { subscriberId: recipientId },
+        payload: {
+          ticketId,
+          commentId,
+          subject,
+          commenterId,
+          isAdminComment,
+          title: notificationType,
+          message,
+        },
+      }
+    );
+  }
+
+  /**
+   * Send admin notification for ticket assignment
+   */
+  static async sendTicketAssignedNotification(
+    ticketId: string,
+    subject: string,
+    assignedTo: string,
+    assignedBy: string
+  ): Promise<void> {
+    await this.sendNotification(
+      {
+        userId: assignedTo,
+        type: NotificationType.TICKET_UPDATED,
+        title: "Ticket Assigned",
+        body: `You have been assigned to ticket: "${subject}"`,
+        targetType: "ticket",
+        targetId: ticketId,
+        meta: { ticketId, subject, assignedBy },
+      },
+      {
+        workflowId: "ticket-assigned",
+        to: { subscriberId: assignedTo },
+        payload: {
+          ticketId,
+          subject,
+          assignedBy,
+          title: "Ticket Assigned",
+          message: `You have been assigned to ticket: "${subject}"`,
+        },
+      }
+    );
   }
 
   /**
