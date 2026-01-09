@@ -83,7 +83,8 @@ const SupportTicketPage: React.FC = () => {
   }
 
   // Check if user can view this ticket (must be the ticket owner or an admin)
-  const canViewTicket = ticket.user_id === currentUser.id || currentUser.role === 'admin';
+  const canViewTicket =
+    ticket.user_id === currentUser.id || currentUser.role === "admin";
   if (!canViewTicket) {
     return (
       <Container maxW="6xl" py={8}>
