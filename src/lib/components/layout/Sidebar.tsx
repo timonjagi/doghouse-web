@@ -326,10 +326,10 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
             <NavHeading>Support</NavHeading>
             <Stack spacing="1">
               <NavLink
-                href="/support"
+                href="/dashboard/support"
                 icon={FiHelpCircle}
-                isActive={router.pathname.includes("/support")}
-                onClick={() => handleNavClick("/support")}
+                isActive={router.pathname.includes("/dashboard/support")}
+                onClick={() => handleNavClick("/dashboard/support")}
               >
                 Help Center
               </NavLink>

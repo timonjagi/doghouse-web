@@ -95,7 +95,7 @@ const DashboardSupportPage = () => {
             </Box>
             <Button
               leftIcon={<FiPlus />}
-              colorScheme="blue"
+              colorScheme="brand"
               size="lg"
               onClick={onTicketModalOpen}
             >
@@ -130,14 +130,14 @@ const DashboardSupportPage = () => {
               onClose={handleBackToList}
             />
           ) : (
-            <Tabs variant="enclosed" colorScheme="blue">
+            <Tabs variant="enclosed" colorScheme="brand">
               <TabList>
                 <Tab>
                   <HStack spacing={2}>
                     <Icon as={FiFileText} />
                     <Text>My Tickets</Text>
                     {userTickets.length > 0 && (
-                      <Badge colorScheme="blue" borderRadius="full" px={2}>
+                      <Badge colorScheme="brand" borderRadius="full" px={2}>
                         {userTickets.length}
                       </Badge>
                     )}
@@ -182,7 +182,7 @@ const DashboardSupportPage = () => {
                           </Text>
                           <Button
                             leftIcon={<FiPlus />}
-                            colorScheme="blue"
+                            colorScheme="brand"
                             onClick={onTicketModalOpen}
                           >
                             Create Your First Ticket
@@ -247,7 +247,7 @@ const DashboardSupportPage = () => {
                             </Button>
                             <Button
                               leftIcon={<FiMessageSquare />}
-                              colorScheme="blue"
+                              colorScheme="brand"
                               onClick={onTicketModalOpen}
                             >
                               Create Ticket
