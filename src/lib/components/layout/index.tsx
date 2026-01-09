@@ -28,6 +28,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/explore/listings", layout: "headerfooter" },
     { path: "/explore/listings/[id]", layout: "headerfooter" },
     { path: "/contact", layout: "headerfooter" },
+    { path: "/support", layout: "headerfooter" },
     { path: "/about", layout: "headerfooter" },
     { path: "/blog", layout: "headerfooter" },
     { path: "/blog/[slug]", layout: "headerfooter" },
@@ -62,6 +63,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/account/settings", layout: "dashboard" },
     { path: "/dashboard/account/billing", layout: "dashboard" },
     { path: "/dashboard/account/preferences", layout: "dashboard" },
+    { path: "/dashboard/support", layout: "dashboard" },
 
     // Admin dashboard routes
     { path: "/dashboard/admin", layout: "dashboard" },

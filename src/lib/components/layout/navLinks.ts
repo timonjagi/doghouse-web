@@ -100,14 +100,145 @@ export const navigationConfig: NavigationConfig = {
       ],
     },
   ],
+
+  seeker: [
+    {
+      title: "",
+      items: [
+        {
+          label: "Home",
+          href: "/dashboard",
+          icon: FiHome,
+          ariaLabel: "Dashboard home",
+        },
+        {
+          label: "Inbox",
+          href: "/dashboard/inbox",
+          icon: FiMessageSquare,
+          ariaLabel: "Inbox",
+        },
+      ],
+    },
+    {
+      title: "Explore",
+      items: [
+        {
+          label: "Search",
+          href: "/dashboard/search",
+          icon: FiSearch,
+          ariaLabel: "Browse breeds and listings",
+        },
+        {
+          label: "Wishlist",
+          href: "/dashboard/wishlist",
+          icon: FiHeart,
+          ariaLabel: "Browse listings",
+        },
+      ],
+    },
+    {
+      title: "Account",
+      items: [
+        {
+          label: "Profile",
+          href: "/dashboard/account/profile",
+          icon: FiUser,
+          ariaLabel: "View profile",
+        },
+        {
+          label: "Billing",
+          href: "/dashboard/account/billing",
+          icon: FiCreditCard,
+          ariaLabel: "View billing history",
+        },
+        {
+          label: "Support",
+          href: "/dashboard/support",
+          icon: FiHelpCircle,
+          ariaLabel: "Support tickets and help",
+        },
+      ],
+    },
+  ],
+
+  admin: [
+    {
+      title: "Dashboard",
+      items: [
+        {
+          label: "Overview",
+          href: "/dashboard/admin",
+          icon: FiHome,
+          ariaLabel: "Dashboard home",
+        },
+      ],
+    },
+    {
+      title: "Manage",
+      items: [
+        {
+          label: "Users",
+          href: "/dashboard/admin/users",
+          icon: FiUsers,
+          ariaLabel: "Manage all users",
+        },
+        {
+          label: "Verification",
+          href: "/dashboard/admin/verification",
+          icon: FiShield,
+          ariaLabel: "Breeder verification",
+        },
+        {
+          label: "Payouts",
+          href: "/dashboard/admin/payouts",
+          icon: FiCreditCard,
+          ariaLabel: "Manage breeder payouts",
+        },
+      ],
+    },
+    {
+      title: "CONTENT",
+      items: [
+        {
+          label: "Breeds",
+          href: "/dashboard/admin/breeds",
+          icon: FiList,
+          ariaLabel: "Manage all listings",
+        },
+        {
+          label: "Listings",
+          href: "/dashboard/admin/listings",
+          icon: FiList,
+          ariaLabel: "Manage all listings",
+        },
+        {
+          label: "Adoptions",
+          href: "/dashboard/admin/adoptions",
+          icon: FiClipboard,
+          ariaLabel: "My applications",
+        },
+      ],
+    },
+    {
+      title: "ANALYTICS",
+      items: [
+        {
+          label: "Analytics",
+          href: "/dashboard/admin/analytics",
+          icon: FiBarChart,
+          ariaLabel: "Platform analytics",
+        },
+      ],
+    },
+  ],
 };
 
-// Helper function to get navigation sections for a role
+// Helper function to get navigation config for a role
 export const getNavigationForRole = (
   role: UserRole | null | undefined
 ): NavSection[] => {
   if (!role || !navigationConfig[role]) {
-    return navigationConfig.seeker; // Default to seeker navigation
+    return [];
   }
   return navigationConfig[role];
 };
