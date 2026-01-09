@@ -74,7 +74,7 @@ export const useTicketComments = (ticketId: string) => {
         .select(
           `
           *,
-          users!support_ticket_comments_user_id_fkey (
+          users (
             id,
             display_name,
             email,
