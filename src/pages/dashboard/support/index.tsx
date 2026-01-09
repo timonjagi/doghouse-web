@@ -22,8 +22,8 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { SupportTicketList } from "../../../lib/components/ui/SupportTicketList";
-import { SupportTicketDetail } from "../../../lib/components/ui/SupportTicketDetail";
 import { SupportTicketForm } from "../../../lib/components/ui/SupportTicketForm";
 import { SupportFAQ } from "../../../lib/components/ui/SupportFAQ";
 import { PageHeaderWithTwoButtons } from "../../../lib/components/ui/PageHeaderWithTwoButtons";
@@ -40,26 +40,22 @@ const DashboardSupportPage = () => {
     onOpen: onTicketModalOpen,
     onClose: onTicketModalClose,
   } = useDisclosure();
-  const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [showTicketSuccess, setShowTicketSuccess] = useState(false);
 
+  const router = useRouter();
   const { data: currentUser } = useCurrentUser();
   const { data: userTickets = [] } = useSupportTickets(currentUser?.id);
   const { data: allFAQs = [] } = useSupportFAQs();
   const { data: featuredFAQs = [] } = useFeaturedFAQs();
 
   const handleTicketClick = (ticket: any) => {
-    setSelectedTicket(ticket);
+    router.push(`/dashboard/support/${ticket.id}`);
   };
 
   const handleTicketCreated = () => {
     setShowTicketSuccess(true);
     setTimeout(() => setShowTicketSuccess(false), 5000);
     onTicketModalClose();
-  };
-
-  const handleBackToList = () => {
-    setSelectedTicket(null);
   };
 
   if (!currentUser) {
@@ -118,118 +114,111 @@ const DashboardSupportPage = () => {
           )}
 
           {/* Main Content */}
-          {selectedTicket ? (
-            <SupportTicketDetail
-              ticket={selectedTicket}
-              onClose={handleBackToList}
-            />
-          ) : (
-            <Tabs variant="enclosed" colorScheme="brand">
-              <TabList>
-                <Tab>
-                  <HStack spacing={2}>
-                    <Icon as={FiFileText} />
-                    <Text>My Tickets</Text>
-                    {userTickets.length > 0 && (
-                      <Badge colorScheme="brand" borderRadius="full" px={2}>
-                        {userTickets.length}
-                      </Badge>
-                    )}
-                  </HStack>
-                </Tab>
-                <Tab>
-                  <HStack spacing={2}>
-                    <Icon as={FiHelpCircle} />
-                    <Text>Help & FAQs</Text>
-                  </HStack>
-                </Tab>
-              </TabList>
+          <Tabs variant="enclosed" colorScheme="brand">
+            <TabList>
+              <Tab>
+                <HStack spacing={2}>
+                  <Icon as={FiFileText} />
+                  <Text>My Tickets</Text>
+                  {userTickets.length > 0 && (
+                    <Badge colorScheme="brand" borderRadius="full" px={2}>
+                      {userTickets.length}
+                    </Badge>
+                  )}
+                </HStack>
+              </Tab>
+              <Tab>
+                <HStack spacing={2}>
+                  <Icon as={FiHelpCircle} />
+                  <Text>Help & FAQs</Text>
+                </HStack>
+              </Tab>
+            </TabList>
 
-              <TabPanels>
-                {/* Tickets Tab */}
-                <TabPanel px={0}>
-                  <VStack spacing={6} align="stretch">
-                    <Box>
-                      <Text fontSize="xl" fontWeight="semibold" mb={4}>
-                        Your Support Tickets
-                      </Text>
+            <TabPanels>
+              {/* Tickets Tab */}
+              <TabPanel px={0}>
+                <VStack spacing={6} align="stretch">
+                  <Box>
+                    <Text fontSize="xl" fontWeight="semibold" mb={4}>
+                      Your Support Tickets
+                    </Text>
 
-                      <SupportTicketList
-                        tickets={userTickets}
-                        onTicketClick={handleTicketClick}
-                      />
-                    </Box>
-                  </VStack>
-                </TabPanel>
+                    <SupportTicketList
+                      tickets={userTickets}
+                      onTicketClick={handleTicketClick}
+                    />
+                  </Box>
+                </VStack>
+              </TabPanel>
 
-                {/* FAQs Tab */}
-                <TabPanel px={0}>
-                  <VStack spacing={6} align="stretch">
-                    <Box>
-                      <Text fontSize="xl" fontWeight="semibold" mb={4}>
-                        Frequently Asked Questions
-                      </Text>
+              {/* FAQs Tab */}
+              <TabPanel px={0}>
+                <VStack spacing={6} align="stretch">
+                  <Box>
+                    <Text fontSize="xl" fontWeight="semibold" mb={4}>
+                      Frequently Asked Questions
+                    </Text>
 
-                      <Text color="gray.600" mb={6}>
-                        Browse our most popular questions and answers. Can't
-                        find what you're looking for? Create a support ticket.
-                      </Text>
+                    <Text color="gray.600" mb={6}>
+                      Browse our most popular questions and answers. Can't find
+                      what you're looking for? Create a support ticket.
+                    </Text>
 
-                      {featuredFAQs.length > 0 ? (
-                        <VStack spacing={4} align="stretch">
-                          {featuredFAQs.map((faq) => (
-                            <SupportFAQ
-                              key={faq.id}
-                              faq={faq}
-                              showCategory={true}
-                              showVotes={true}
-                              showViewCount={true}
-                            />
-                          ))}
-                        </VStack>
-                      ) : (
-                        <Box textAlign="center" py={8}>
-                          <Icon
-                            as={FiHelpCircle}
-                            boxSize={8}
-                            color="gray.400"
-                            mb={4}
+                    {featuredFAQs.length > 0 ? (
+                      <VStack spacing={4} align="stretch">
+                        {featuredFAQs.map((faq) => (
+                          <SupportFAQ
+                            key={faq.id}
+                            faq={faq}
+                            showCategory={true}
+                            showVotes={true}
+                            showViewCount={true}
                           />
-                          <Text color="gray.600">
-                            No featured FAQs available at the moment
-                          </Text>
-                        </Box>
-                      )}
+                        ))}
+                      </VStack>
+                    ) : (
+                      <Box textAlign="center" py={8}>
+                        <Icon
+                          as={FiHelpCircle}
+                          boxSize={8}
+                          color="gray.400"
+                          mb={4}
+                        />
+                        <Text color="gray.600">
+                          No featured FAQs available at the moment
+                        </Text>
+                      </Box>
+                    )}
 
-                      {allFAQs.length > featuredFAQs.length && (
-                        <Box mt={6} textAlign="center">
-                          <Text fontSize="sm" color="gray.500" mb={3}>
-                            Need more help? Browse all FAQs or create a support
-                            ticket.
-                          </Text>
-                          <HStack spacing={3} justify="center">
-                            <Button
-                              variant="outline"
-                              onClick={() => window.open("/faqs", "_blank")}
-                            >
-                              Browse All FAQs
-                            </Button>
-                            <Button
-                              leftIcon={<FiMessageSquare />}
-                              colorScheme="brand"
-                              onClick={onTicketModalOpen}
-                            >
-                              Create Ticket
-                            </Button>
-                          </HStack>
-                        </Box>
-                      )}
-                    </Box>
-                  </VStack>
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          )}
+                    {allFAQs.length > featuredFAQs.length && (
+                      <Box mt={6} textAlign="center">
+                        <Text fontSize="sm" color="gray.500" mb={3}>
+                          Need more help? Browse all FAQs or create a support
+                          ticket.
+                        </Text>
+                        <HStack spacing={3} justify="center">
+                          <Button
+                            variant="outline"
+                            onClick={() => window.open("/faqs", "_blank")}
+                          >
+                            Browse All FAQs
+                          </Button>
+                          <Button
+                            leftIcon={<FiMessageSquare />}
+                            colorScheme="brand"
+                            onClick={onTicketModalOpen}
+                          >
+                            Create Ticket
+                          </Button>
+                        </HStack>
+                      </Box>
+                    )}
+                  </Box>
+                </VStack>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </VStack>
       </Container>
 
