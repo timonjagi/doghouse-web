@@ -262,13 +262,6 @@ export const useNewListings = (limit: number = 6, petType?: string) => {
       let query = supabase.from("listings").select(`
         *,
         breeds (
-          photos,
-          location_text,
-          status,
-          flagged,
-          flagged_reason,
-          flagged_at,
-          created_at,
           name
         ),
         users (
