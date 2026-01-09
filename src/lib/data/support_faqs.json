@@ -1,0 +1,122 @@
+[
+  {
+    "question": "How do I create an account on Pethouse?",
+    "answer": "To create an account on Pethouse, visit our website and click 'Sign Up'. You'll need to provide your email address, phone number, and create a password. You can sign up as either a pet seeker (someone looking to adopt) or a breeder (someone offering pets for adoption). After signing up, you'll receive a verification email to confirm your account.",
+    "category_name": "Account & Verification",
+    "view_count": 150,
+    "helpful_votes": 45,
+    "is_featured": true
+  },
+  {
+    "question": "How do I verify my breeder account?",
+    "answer": "Breeders must undergo verification to ensure trust and safety. You'll need to submit: 1) A valid KRA PIN or personal ID, 2) Proof of your kennel/facility (photos), and 3) Business documentation if applicable. Once submitted, our team reviews your documents within 24-48 hours. Verified breeders receive a badge on their profile and can list pets for adoption.",
+    "category_name": "Account & Verification",
+    "view_count": 89,
+    "helpful_votes": 32,
+    "is_featured": true
+  },
+  {
+    "question": "How do I update my profile information?",
+    "answer": "Go to your dashboard and click on 'Profile' in the left sidebar. You can update your display name, bio, profile photo, location, and contact preferences. For breeders, you can also update kennel information, pet types you offer, and verification documents. Changes are saved automatically.",
+    "category_name": "Account & Verification",
+    "view_count": 67,
+    "helpful_votes": 28,
+    "is_featured": false
+  },
+  {
+    "question": "How do I browse available pets?",
+    "answer": "You can browse pets by visiting the main listings page. Use filters to search by pet type (dogs, cats, birds, etc.), breed, age, location, and price range. You can also search by specific keywords. Each listing shows photos, basic information, and the breeder's location. Click on any listing to see full details and contact the breeder.",
+    "category_name": "Finding Pets",
+    "view_count": 203,
+    "helpful_votes": 67,
+    "is_featured": true
+  },
+  {
+    "question": "What does 'Wanted Listing' mean?",
+    "answer": "A 'Wanted Listing' is when a pet seeker posts what they're looking for instead of browsing existing listings. This helps match seekers with breeders who might have pets available soon. Include details like preferred breed, age, gender, and any special requirements. Breeders can respond directly via WhatsApp when they have matching pets available.",
+    "category_name": "Finding Pets",
+    "view_count": 124,
+    "helpful_votes": 41,
+    "is_featured": true
+  },
+  {
+    "question": "How does the matching system work?",
+    "answer": "Our intelligent matching system connects seekers with breeders based on your preferences. Set up your profile with preferred breeds, location, experience level, and living situation. When breeders list pets that match your criteria, you'll receive instant notifications. You can also save favorite breeds and get alerts when they become available.",
+    "category_name": "Finding Pets",
+    "view_count": 98,
+    "helpful_votes": 35,
+    "is_featured": false
+  },
+  {
+    "question": "How do I submit an adoption application?",
+    "answer": "When you find a pet you're interested in, click 'Apply to Adopt' on the listing. Fill out the application form with your contact information, living situation, experience with pets, and any questions for the breeder. You'll need to pay a refundable reservation fee to secure the pet while the breeder reviews your application.",
+    "category_name": "Applications & Adoption",
+    "view_count": 156,
+    "helpful_votes": 52,
+    "is_featured": true
+  },
+  {
+    "question": "What happens after I submit an application?",
+    "answer": "After submitting your application: 1) The breeder receives notification and reviews your details, 2) They may contact you via WhatsApp for additional questions, 3) If approved, you'll be asked to visit the kennel for a meet-and-greet, 4) Upon successful visit, you complete the adoption paperwork and payment. You'll receive status updates throughout the process.",
+    "category_name": "Applications & Adoption",
+    "view_count": 134,
+    "helpful_votes": 48,
+    "is_featured": true
+  },
+  {
+    "question": "How long does the adoption process take?",
+    "answer": "The adoption process typically takes 1-2 weeks, depending on the breeder's schedule and your availability. This includes application review, kennel visit, health checks for the pet, and paperwork completion. Some breeders may have waiting periods or specific requirements that could extend this timeline.",
+    "category_name": "Applications & Adoption",
+    "view_count": 87,
+    "helpful_votes": 31,
+    "is_featured": false
+  },
+  {
+    "question": "What is a reservation fee and is it refundable?",
+    "answer": "The reservation fee is a temporary hold on the pet while your application is being processed. It's typically 10-20% of the total adoption price and is set by each breeder. This fee is fully refundable if: 1) Your application is not approved, 2) You change your mind before the adoption is finalized, or 3) The pet is not available for any reason. The fee helps ensure serious inquiries only.",
+    "category_name": "Payments & Reservations",
+    "view_count": 178,
+    "helpful_votes": 59,
+    "is_featured": true
+  },
+  {
+    "question": "How do I pay for my adoption?",
+    "answer": "Payments are processed securely through our platform. After your application is approved and you've visited the pet, you'll receive a payment link. We accept M-Pesa, card payments, and bank transfers. The full adoption fee minus your reservation fee is due at this time. You'll receive a receipt and the pet's health records upon completion.",
+    "category_name": "Payments & Reservations",
+    "view_count": 112,
+    "helpful_votes": 38,
+    "is_featured": false
+  },
+  {
+    "question": "How does WhatsApp integration work?",
+    "answer": "Pethouse integrates with WhatsApp for seamless communication between breeders and seekers. When you express interest in a pet, you can click 'Contact via WhatsApp' to start a conversation. Breeders can also send you updates about your application status. All conversations are tracked in your dashboard for reference.",
+    "category_name": "Messaging & Communication",
+    "view_count": 145,
+    "helpful_votes": 49,
+    "is_featured": true
+  },
+  {
+    "question": "What notifications will I receive?",
+    "answer": "You'll receive notifications for: 1) New pets matching your preferences, 2) Updates on your adoption applications, 3) Messages from breeders, 4) Payment reminders, and 5) Platform updates. You can manage notification preferences in your dashboard to choose which types of alerts you want to receive and through which channels (email, SMS, push notifications, WhatsApp).",
+    "category_name": "Messaging & Communication",
+    "view_count": 76,
+    "helpful_votes": 26,
+    "is_featured": false
+  },
+  {
+    "question": "I'm having trouble logging in to my account",
+    "answer": "If you're having login issues: 1) Check that you're using the correct email and password, 2) Try the 'Forgot Password' link to reset your password, 3) Clear your browser cache and cookies, 4) Make sure you're using a supported browser. If problems persist, contact our support team with your email address and they'll help resolve the issue.",
+    "category_name": "Technical Issues",
+    "view_count": 93,
+    "helpful_votes": 34,
+    "is_featured": false
+  },
+  {
+    "question": "The website isn't loading properly on my device",
+    "answer": "For loading issues: 1) Try refreshing the page, 2) Clear your browser cache and cookies, 3) Make sure you're using a modern browser (Chrome, Firefox, Safari, Edge), 4) Check your internet connection, 5) Try accessing the site from a different device or network. If you're using an older browser or device, some features may not work properly.",
+    "category_name": "Technical Issues",
+    "view_count": 68,
+    "helpful_votes": 23,
+    "is_featured": false
+  }
+]
