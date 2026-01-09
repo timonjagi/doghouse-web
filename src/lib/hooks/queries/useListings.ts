@@ -261,24 +261,24 @@ export const useNewListings = (limit: number = 6, petType?: string) => {
       // Get recently added listings
       let query = supabase.from("listings").select(`
         *,
-        breeds (
-          photos,
-          location_text,
-          status,
-          flagged,
-          flagged_reason,
-          flagged_at,
-          created_at,
-          breeds (
-            name
-          ),
-          users (
-            display_name,
-            profile_photo_url,
-            breeder_profiles (
-              kennel_name,
-              kennel_location
-            )
+         breeds (
+           photos,
+           location_text,
+           status,
+           flagged,
+           flagged_reason,
+           flagged_at,
+           created_at,
+           name,
+           users (
+             display_name,
+             profile_photo_url,
+             breeder_profiles (
+               kennel_name,
+               kennel_location
+             )
+           )
+         )
           )
         `);
 
