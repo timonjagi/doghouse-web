@@ -11,11 +11,11 @@ import {
 import { FiArrowLeft } from "react-icons/fi";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { PageHeaderWithTwoButtons } from "../../../../lib/components/ui/PageHeaderWithTwoButtons";
-import { SupportTicketDetail } from "../../../../lib/components/ui/SupportTicketDetail";
-import { useSupportTicket } from "../../../../lib/hooks/queries/useSupportTickets";
-import { useCurrentUser } from "../../../../lib/hooks/queries/useAuth";
-import { Loader } from "../../../../lib/components/ui/Loader";
+import { PageHeaderWithTwoButtons } from "lib/components/ui/PageHeaderWithTwoButtons";
+import { SupportTicketDetail } from "lib/components/ui/SupportTicketDetail";
+import { useSupportTicket } from "lib/hooks/queries/useSupportTickets";
+import { useCurrentUser } from "lib/hooks/queries/useAuth";
+import { Loader } from "lib/components/ui/Loader";
 
 const getStatusColor = (status: string) => {
   switch (status) {
