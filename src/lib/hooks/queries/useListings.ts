@@ -100,9 +100,9 @@ export const useListings = (filters?: {
         ),
         user_breeds (
           id,
-          title,
-          description,
+          notes,
           images,
+          is_verified,
           created_at
         )
       `);
@@ -262,24 +262,16 @@ export const useNewListings = (limit: number = 6, petType?: string) => {
       let query = supabase.from("listings").select(`
         *,
         breeds (
-          photos,
-          location_text,
-          status,
-          flagged,
-          flagged_reason,
-          flagged_at,
-          created_at,
-          breeds (
-            name
-          ),
-          users (
-            display_name,
-            profile_photo_url,
-            breeder_profiles (
-              kennel_name,
-              kennel_location
-            )
+          name
+        ),
+        users (
+          display_name,
+          profile_photo_url,
+          breeder_profiles (
+            kennel_name,
+            kennel_location
           )
+        )
         `);
 
       if (petType) {

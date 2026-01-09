@@ -96,7 +96,7 @@
   "engines": {
     "node": ">=16.x.x"
   },
-  "packageManager": "yarn@1.22.19",
+  "packageManager": "bun@1.0.0",
   "overrides": {
     "minimatch": "10.0.1",
     "brace-expansion": "^2.0.1"
