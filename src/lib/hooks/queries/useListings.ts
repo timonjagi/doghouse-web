@@ -100,9 +100,9 @@ export const useListings = (filters?: {
         ),
         user_breeds (
           id,
-          title,
-          description,
+          notes,
           images,
+          is_verified,
           created_at
         )
       `);
