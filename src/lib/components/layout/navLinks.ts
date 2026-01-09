@@ -15,6 +15,7 @@ import {
   FiShoppingBag,
   FiHeart,
   FiUserCheck,
+  FiHelpCircle,
 } from "react-icons/fi";
 import { GiDogHouse } from "react-icons/gi";
 import { LuDog, LuSettings2 } from "react-icons/lu";
