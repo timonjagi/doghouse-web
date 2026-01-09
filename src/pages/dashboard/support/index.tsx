@@ -164,31 +164,6 @@ const DashboardSupportPage = () => {
                         tickets={userTickets}
                         onTicketClick={handleTicketClick}
                       />
-
-                      {userTickets.length === 0 && (
-                        <Box textAlign="center" py={12}>
-                          <Icon
-                            as={FiFileText}
-                            boxSize={12}
-                            color="gray.400"
-                            mb={4}
-                          />
-                          <Text fontSize="lg" color="gray.600" mb={2}>
-                            No support tickets yet
-                          </Text>
-                          <Text fontSize="sm" color="gray.500" mb={4}>
-                            Need help? Create your first support ticket to get
-                            assistance from our team.
-                          </Text>
-                          <Button
-                            leftIcon={<FiPlus />}
-                            colorScheme="brand"
-                            onClick={onTicketModalOpen}
-                          >
-                            Create Your First Ticket
-                          </Button>
-                        </Box>
-                      )}
                     </Box>
                   </VStack>
                 </TabPanel>
