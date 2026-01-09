@@ -28,6 +28,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/explore/listings", layout: "headerfooter" },
     { path: "/explore/listings/[id]", layout: "headerfooter" },
     { path: "/contact", layout: "headerfooter" },
+    { path: "/faqs", layout: "headerfooter" },
     { path: "/support", layout: "headerfooter" },
     { path: "/about", layout: "headerfooter" },
     { path: "/blog", layout: "headerfooter" },

@@ -96,8 +96,8 @@ const Header = () => {
                 </Button>
                 <IconButton
                   icon={<FiHelpCircle fontSize="1.25rem" />}
-                  aria-label="Help Center"
-                  onClick={() => router.push("/support")}
+                  aria-label="FAQs"
+                  onClick={() => router.push("/faqs")}
                 />
               </ButtonGroup>
 
