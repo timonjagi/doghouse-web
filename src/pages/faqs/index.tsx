@@ -169,23 +169,6 @@ const FAQPage = () => {
       {/* FAQ Content */}
       <Container maxW="5xl" bg="bg-surface" py={{ base: 8, md: 12 }}>
         <VStack spacing={8} align="stretch">
-          {/* Category Filter */}
-          <HStack spacing={4} align="stretch" flexWrap="wrap">
-            <Select
-              placeholder="All categories"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              maxW="200px"
-              bg="white"
-            >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Select>
-          </HStack>
-
           {/* FAQ Section */}
           <Box>
             <HStack justify="space-between" align="center" mb={6}>
@@ -201,41 +184,53 @@ const FAQPage = () => {
             </HStack>
 
             {displayedFAQs.length > 0 ? (
-              <SimpleGrid columns={{ base: 1, lg: 1 }} spacing={4}>
-                {displayedFAQs.map((faq) => (
-                  <SupportFAQ
-                    key={faq.id}
-                    faq={faq}
-                    showCategory={true}
-                    showVotes={false}
-                    showViewCount={true}
-                  />
-                ))}
-              </SimpleGrid>
+              <VStack spacing={6} align="stretch">
+                {/* Group FAQs by category */}
+                {categories.map((category) => {
+                  const categoryFAQs = displayedFAQs.filter(
+                    (faq) => faq.category_id === category.id
+                  );
+
+                  if (categoryFAQs.length === 0) return null;
+
+                  return (
+                    <Box key={category.id}>
+                      <Text
+                        fontSize="xl"
+                        fontWeight="semibold"
+                        mb={4}
+                        color="gray.700"
+                      >
+                        {category.name}
+                      </Text>
+                      <SimpleGrid columns={{ base: 1, lg: 1 }} spacing={4}>
+                        {categoryFAQs.map((faq) => (
+                          <SupportFAQ
+                            key={faq.id}
+                            faq={faq}
+                            showCategory={false}
+                            showVotes={false}
+                            showViewCount={true}
+                          />
+                        ))}
+                      </SimpleGrid>
+                    </Box>
+                  );
+                })}
+              </VStack>
             ) : (
               <Box textAlign="center" py={12}>
                 <Icon as={FiHelpCircle} boxSize={12} color="gray.400" mb={4} />
                 <Text fontSize="lg" color="gray.600" mb={2}>
                   {searchQuery
                     ? "No FAQs found matching your search"
-                    : "No FAQs available in this category"}
+                    : "No FAQs available"}
                 </Text>
-                <Text fontSize="sm" color="gray.500" mb={4}>
+                <Text fontSize="sm" color="gray.500">
                   {searchQuery
-                    ? "Try different keywords or browse all categories"
+                    ? "Try different keywords"
                     : "Check back later for more questions"}
                 </Text>
-                {selectedCategory && (
-                  <Text
-                    as="button"
-                    color="brand.500"
-                    fontWeight="semibold"
-                    onClick={() => setSelectedCategory("")}
-                    _hover={{ textDecoration: "underline" }}
-                  >
-                    Show All Categories
-                  </Text>
-                )}
               </Box>
             )}
           </Box>

@@ -131,10 +131,21 @@ export const useTrackFAQView = () => {
 
   return useMutation({
     mutationFn: async (faqId: string) => {
-      // Increment view count
-      const { error } = await supabase.rpc("increment_faq_view_count", {
-        faq_id: faqId,
-      });
+      // Increment view count using direct table update
+      const { data: currentFAQ, error: fetchError } = await supabase
+        .from("support_faqs")
+        .select("view_count")
+        .eq("id", faqId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const newViewCount = (currentFAQ.view_count || 0) + 1;
+
+      const { error } = await supabase
+        .from("support_faqs")
+        .update({ view_count: newViewCount })
+        .eq("id", faqId);
 
       if (error) throw error;
       return faqId;
@@ -163,10 +174,24 @@ export const useVoteFAQ = () => {
       faqId: string;
       isHelpful: boolean;
     }) => {
-      const { error } = await supabase.rpc("increment_faq_vote", {
-        faq_id: faqId,
-        vote_type: isHelpful ? "helpful" : "not_helpful",
-      });
+      // Get current vote counts
+      const { data: currentFAQ, error: fetchError } = await supabase
+        .from("support_faqs")
+        .select("helpful_votes, not_helpful_votes")
+        .eq("id", faqId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Increment the appropriate vote count
+      const updateData = isHelpful
+        ? { helpful_votes: (currentFAQ.helpful_votes || 0) + 1 }
+        : { not_helpful_votes: (currentFAQ.not_helpful_votes || 0) + 1 };
+
+      const { error } = await supabase
+        .from("support_faqs")
+        .update(updateData)
+        .eq("id", faqId);
 
       if (error) throw error;
       return faqId;

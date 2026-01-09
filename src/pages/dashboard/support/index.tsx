@@ -26,6 +26,7 @@ import { SupportTicketList } from "../../../lib/components/ui/SupportTicketList"
 import { SupportTicketDetail } from "../../../lib/components/ui/SupportTicketDetail";
 import { SupportTicketForm } from "../../../lib/components/ui/SupportTicketForm";
 import { SupportFAQ } from "../../../lib/components/ui/SupportFAQ";
+import { PageHeaderWithTwoButtons } from "../../../lib/components/ui/PageHeaderWithTwoButtons";
 import { useSupportTickets } from "../../../lib/hooks/queries/useSupportTickets";
 import {
   useSupportFAQs,
@@ -84,24 +85,17 @@ const DashboardSupportPage = () => {
       <Container maxW="6xl" py={8}>
         <VStack spacing={8} align="stretch">
           {/* Header */}
-          <HStack justify="space-between" align="center">
-            <Box>
-              <Text fontSize="3xl" fontWeight="bold" mb={2}>
-                Support Center
-              </Text>
-              <Text color="gray.600">
-                Get help with your account and manage support tickets
-              </Text>
-            </Box>
-            <Button
-              leftIcon={<FiPlus />}
-              colorScheme="brand"
-              size="lg"
-              onClick={onTicketModalOpen}
-            >
-              Create Support Ticket
-            </Button>
-          </HStack>
+          <PageHeaderWithTwoButtons
+            title="Support Center"
+            description="Get help with your account and manage support tickets"
+            buttonPrimary={{
+              label: "Create Support Ticket",
+              onClick: onTicketModalOpen,
+              icon: FiPlus,
+              colorScheme: "brand",
+            }}
+            flexDir={{ base: "column", md: "row" }}
+          />
 
           {/* Success Message */}
           {showTicketSuccess && (
@@ -216,7 +210,7 @@ const DashboardSupportPage = () => {
                           <HStack spacing={3} justify="center">
                             <Button
                               variant="outline"
-                              onClick={() => window.open("/support", "_blank")}
+                              onClick={() => window.open("/faqs", "_blank")}
                             >
                               Browse All FAQs
                             </Button>
