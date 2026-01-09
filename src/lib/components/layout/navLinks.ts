@@ -15,7 +15,6 @@ import {
   FiShoppingBag,
   FiHeart,
   FiUserCheck,
-  FiHelpCircle,
 } from "react-icons/fi";
 import { GiDogHouse } from "react-icons/gi";
 import { LuDog, LuSettings2 } from "react-icons/lu";
@@ -91,12 +90,6 @@ export const navigationConfig: NavigationConfig = {
           icon: FiCreditCard,
           ariaLabel: "View payment history",
         },
-        {
-          label: "Support",
-          href: "/dashboard/support",
-          icon: FiHelpCircle,
-          ariaLabel: "Support and help",
-        },
       ],
     },
   ],
@@ -150,12 +143,6 @@ export const navigationConfig: NavigationConfig = {
           href: "/dashboard/account/billing",
           icon: FiCreditCard,
           ariaLabel: "View billing history",
-        },
-        {
-          label: "Support",
-          href: "/dashboard/support",
-          icon: FiHelpCircle,
-          ariaLabel: "Support tickets and help",
         },
       ],
     },
