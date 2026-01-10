@@ -34,6 +34,7 @@ export enum NotificationType {
   TICKET_UPDATED = "ticket_updated",
   TICKET_RESOLVED = "ticket_resolved",
   TICKET_COMMENT_ADDED = "ticket_comment_added",
+  REVIEW_REQUEST = "review_request",
 }
 
 // Action types for notifications
@@ -338,6 +339,15 @@ export class NotificationService {
             },
           },
         });
+
+        // Send review request notification to seeker
+        await this.sendReviewRequestNotification(
+          seekerId,
+          "the breeder", // We could get the actual breeder name if needed
+          listingTitle,
+          adoptionId,
+          listingId
+        );
 
         // Notify admin via broadcast (separate from the array)
         await this.sendAdminBroadcastMessage(
@@ -1485,5 +1495,40 @@ export class NotificationService {
     } catch (error) {
       console.error("Database notification read status update error:", error);
     }
+  }
+
+  /**
+   * Send review request notification when adoption is completed
+   */
+  static async sendReviewRequestNotification(
+    seekerId: string,
+    breederName: string,
+    listingTitle: string,
+    adoptionId: string,
+    listingId: string
+  ): Promise<void> {
+    await this.sendNotification(
+      {
+        userId: seekerId,
+        type: NotificationType.REVIEW_REQUEST,
+        title: "Share Your Experience",
+        body: `Congratulations on completing your adoption! Please share your experience with ${breederName} to help other pet seekers.`,
+        targetType: "adoption",
+        targetId: adoptionId,
+        meta: { adoptionId, listingId, breederName, listingTitle },
+      },
+      {
+        workflowId: "review-request",
+        to: { subscriberId: seekerId },
+        payload: {
+          adoptionId,
+          listingId,
+          breederName,
+          listingTitle,
+          title: "Share Your Experience",
+          message: `Congratulations on completing your adoption! Please share your experience with ${breederName} to help other pet seekers.`,
+        },
+      }
+    );
   }
 }
