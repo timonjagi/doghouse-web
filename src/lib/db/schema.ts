@@ -424,6 +424,88 @@ export const transactions = pgTable("transactions", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// SUPPORT SYSTEM
+export const support_categories = pgTable("support_categories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  icon: varchar("icon", { length: 50 }),
+  sort_order: integer("sort_order").default(0),
+  is_active: boolean("is_active").notNull().default(true),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const support_faqs = pgTable("support_faqs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  category_id: uuid("category_id").references(() => support_categories.id),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  view_count: integer("view_count").default(0),
+  helpful_votes: integer("helpful_votes").default(0),
+  not_helpful_votes: integer("not_helpful_votes").default(0),
+  is_featured: boolean("is_featured").notNull().default(false),
+  is_active: boolean("is_active").notNull().default(true),
+  created_by: uuid("created_by").references(() => users.id), // admin user
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const support_tickets = pgTable("support_tickets", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  ticket_number: serial("ticket_number").notNull(), // auto-incrementing display number
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  subject: varchar("subject", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  category_id: uuid("category_id").references(() => support_categories.id),
+  priority: varchar("priority", { length: 20 }).notNull().default("normal"), // 'low' | 'normal' | 'high' | 'urgent'
+  status: varchar("status", { length: 20 }).notNull().default("open"), // 'open' | 'in_progress' | 'waiting_for_user' | 'resolved' | 'closed'
+  assigned_to: uuid("assigned_to").references(() => users.id), // admin user
+  resolution: text("resolution"),
+  tags: jsonb("tags").$default(() => "[]"),
+  metadata: jsonb("metadata"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+  resolved_at: timestamp("resolved_at"),
+  last_reply_at: timestamp("last_reply_at"),
+});
+
+export const support_ticket_comments = pgTable("support_ticket_comments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  ticket_id: uuid("ticket_id")
+    .notNull()
+    .references(() => support_tickets.id),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  content: text("content").notNull(),
+  is_internal: boolean("is_internal").notNull().default(false), // admin-only comments
+  attachments: jsonb("attachments").$default(() => "[]"), // array of attachment IDs
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const support_ticket_attachments = pgTable(
+  "support_ticket_attachments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ticket_id: uuid("ticket_id")
+      .notNull()
+      .references(() => support_tickets.id),
+    filename: varchar("filename", { length: 255 }).notNull(),
+    original_filename: varchar("original_filename", { length: 255 }).notNull(),
+    file_path: text("file_path").notNull(), // Supabase storage path
+    file_size: integer("file_size").notNull(),
+    mime_type: varchar("mime_type", { length: 100 }),
+    uploaded_by: uuid("uploaded_by")
+      .notNull()
+      .references(() => users.id),
+    created_at: timestamp("created_at").notNull().defaultNow(),
+  }
+);
+
 export type User = typeof users.$inferSelect;
 export type BreederProfile = typeof breeder_profiles.$inferSelect;
 export type SeekerProfile = typeof seeker_profiles.$inferSelect;
@@ -438,3 +520,9 @@ export type Notification = typeof notifications.$inferSelect;
 export type ActivityLog = typeof activity_logs.$inferSelect;
 export type Transaction = typeof transactions.$inferSelect;
 export type Wishlist = typeof wishlists.$inferSelect;
+export type SupportCategory = typeof support_categories.$inferSelect;
+export type SupportFAQ = typeof support_faqs.$inferSelect;
+export type SupportTicket = typeof support_tickets.$inferSelect;
+export type SupportTicketComment = typeof support_ticket_comments.$inferSelect;
+export type SupportTicketAttachment =
+  typeof support_ticket_attachments.$inferSelect;

@@ -1023,6 +1023,15 @@
             "details": "Add full-text search across FAQs and tickets, FAQ popularity tracking, ticket resolution analytics, user satisfaction ratings, and automated FAQ suggestions based on ticket content. Include admin analytics dashboard with charts and export functionality.",
             "status": "pending",
             "testStrategy": "Test search functionality across FAQs and tickets, verify analytics data accuracy, test FAQ suggestion system, and validate admin reporting features."
+          },
+          {
+            "id": 11,
+            "title": "Add Notification Integration for Support Tickets",
+            "description": "Implement comprehensive notification system for support tickets using existing NotificationService",
+            "dependencies": [1, 7],
+            "details": "Add support ticket notification types (TICKET_CREATED, TICKET_UPDATED, TICKET_RESOLVED, TICKET_COMMENT_ADDED) to NotificationService. Create methods for ticket notifications (sendTicketCreatedNotification, sendTicketStatusNotification, sendTicketCommentNotification). Integrate notifications into useCreateSupportTicket, useUpdateTicketStatus, and useAddTicketComment hooks. Add admin notifications for urgent/high-priority tickets. Implement topic-based notifications for ticket updates and status changes.",
+            "status": "completed",
+            "testStrategy": "Test ticket creation notifications, status change notifications, comment notifications, admin alerts for urgent tickets, and user notification preferences. Verify notifications are sent to correct recipients and display properly in notification system."
           }
         ]
       },
