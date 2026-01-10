@@ -926,13 +926,13 @@
       },
       {
         "id": 17,
-        "title": "Create Help and Support Page System with FAQs and Tickets",
-        "description": "Build comprehensive help and support system accessible from both @pages/support and @pages/dashboard/support with dynamic FAQ management and ticket creation functionality.",
-        "details": "Create a complete support ecosystem with: (1) Database schema for support_faqs, support_tickets, support_categories, support_ticket_comments, and support_ticket_attachments tables with proper RLS policies, (2) Reusable components for FAQ display, ticket forms, and support interfaces using Chakra UI and PageHeaderWithSearch, (3) Public support page at /pages/support with searchable FAQs for all users, (4) Dashboard support page at /pages/dashboard/support with ticket creation for logged-in users, (5) Role-based access (seekers can create tickets, breeders can view FAQs, admins can manage both), (6) Ticket status tracking with notifications, (7) File upload support for tickets, (8) Integration with existing notification system.",
-        "testStrategy": "Test complete support flows: public FAQ search and browsing, authenticated ticket creation, admin FAQ management, ticket status updates and notifications, role-based access controls, file uploads in tickets. Verify all functionality works across different user roles and both public and dashboard access points.",
-        "priority": "high",
-        "dependencies": [1, 2, 12],
-        "status": "completed",
+  "title": "Create Help and Support Page System with FAQs and Tickets",
+  "description": "Build comprehensive help and support system accessible from both @pages/support and @pages/dashboard/support with dynamic FAQ management and ticket creation functionality.",
+  "details": "Create a complete support ecosystem with: (1) Database schema for support_faqs, support_tickets, support_categories, support_ticket_comments, and support_ticket_attachments tables with proper RLS policies, (2) Reusable components for FAQ display, ticket forms, and support interfaces using Chakra UI and PageHeaderWithSearch, (3) Public support page at /pages/support with searchable FAQs for all users, (4) Dashboard support page at /pages/dashboard/support with ticket creation for logged-in users, (5) Role-based access (seekers can create tickets, breeders can view FAQs, admins can manage both), (6) Ticket status tracking with notifications, (7) File upload support for tickets, (8) Integration with existing notification system.",
+  "testStrategy": "Test complete support flows: public FAQ search and browsing, authenticated ticket creation, admin FAQ management, ticket status updates and notifications, role-based access controls, file uploads in tickets. Verify all functionality works across different user roles and both public and dashboard access points.",
+  "priority": "high",
+  "dependencies": [1, 2, 12],
+  "status": "done",
         "subtasks": [
           {
             "id": 1,
