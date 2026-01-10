@@ -15,6 +15,7 @@ export * from "./useCategories";
 export * from "./useConversations";
 export * from "./useListings";
 export * from "./useNotifications";
+export * from "./useInbox";
 export * from "./usePayments";
 export * from "./usePayouts";
 export * from "./useSeekerDashboard";
