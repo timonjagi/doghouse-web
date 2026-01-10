@@ -40,6 +40,10 @@ import {
   useAddToWishlist,
   useRemoveFromWishlist,
 } from "lib/hooks/queries/useWishlist";
+import {
+  useBreederReviews,
+  useBreederReviewStats,
+} from "lib/hooks/queries/useReviews";
 import { useRouter } from "next/router";
 import {
   CardContent,
@@ -164,6 +168,14 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
     useUserBreedsFromUser(breederId as string);
   const { data: breederListings, isLoading: listingsLoading } =
     useListingsByOwner(breederId as string);
+
+  // Fetch breeder reviews and stats
+  const { data: breederReviews, isLoading: reviewsLoading } = useBreederReviews(
+    breederId as string
+  );
+  const { data: reviewStats, isLoading: statsLoading } = useBreederReviewStats(
+    breederId as string
+  );
 
   const {
     isOpen: isListingFormOpen,
@@ -295,8 +307,8 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
                       !userBreedId
                         ? "No breeds available to subscribe to"
                         : isSubscribed
-                        ? "Unsubscribe from breeder updates"
-                        : "Subscribe to breeder updates"
+                          ? "Unsubscribe from breeder updates"
+                          : "Subscribe to breeder updates"
                     }
                     onClick={handleSubscribeClick}
                   >
@@ -404,8 +416,7 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
               <Tab>
                 <HStack spacing={2}>
                   <Icon as={FiStar} />
-
-                  <Text>Reviews</Text>
+                  <Text>Reviews ({breederReviews?.length || 0})</Text>
                 </HStack>
               </Tab>
             </TabList>
@@ -496,10 +507,134 @@ const BreederDetailPage: React.FC<BreederDetailPageProps> = () => {
 
               {/* Reviews Tab */}
               <TabPanel px={0}>
-                <EmptyView
-                  title="No reviews found"
-                  description="No reviews found for this breeder."
-                />
+                <VStack spacing={6} align="stretch">
+                  {/* Review Stats */}
+                  {reviewStats && (
+                    <Box p={4} bg="gray.50" borderRadius="md">
+                      <HStack spacing={4} justify="center">
+                        <VStack spacing={1}>
+                          <Text
+                            fontSize="2xl"
+                            fontWeight="bold"
+                            color="brand.600"
+                          >
+                            {reviewStats.average_rating.toFixed(1)}
+                          </Text>
+                          <HStack spacing={1}>
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Icon
+                                key={star}
+                                as={FiStar}
+                                color={
+                                  star <= Math.round(reviewStats.average_rating)
+                                    ? "yellow.400"
+                                    : "gray.300"
+                                }
+                                fill={
+                                  star <= Math.round(reviewStats.average_rating)
+                                    ? "yellow.400"
+                                    : "transparent"
+                                }
+                              />
+                            ))}
+                          </HStack>
+                          <Text fontSize="sm" color="gray.600">
+                            {reviewStats.total_reviews} review
+                            {reviewStats.total_reviews !== 1 ? "s" : ""}
+                          </Text>
+                        </VStack>
+                      </HStack>
+                    </Box>
+                  )}
+
+                  {/* Reviews List */}
+                  {reviewsLoading ? (
+                    <Loader />
+                  ) : breederReviews && breederReviews.length > 0 ? (
+                    <VStack spacing={4} align="stretch">
+                      {breederReviews.map((review) => (
+                        <Box
+                          key={review.id}
+                          p={4}
+                          borderWidth={1}
+                          borderRadius="md"
+                        >
+                          <VStack spacing={3} align="stretch">
+                            <HStack justify="space-between" align="start">
+                              <VStack spacing={1} align="start">
+                                <HStack>
+                                  <Text fontWeight="bold">
+                                    {review.is_anonymous
+                                      ? "Anonymous"
+                                      : review.reviewer.display_name}
+                                  </Text>
+                                  <HStack spacing={1}>
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <Icon
+                                        key={star}
+                                        as={FiStar}
+                                        w={4}
+                                        h={4}
+                                        color={
+                                          star <= review.rating
+                                            ? "yellow.400"
+                                            : "gray.300"
+                                        }
+                                        fill={
+                                          star <= review.rating
+                                            ? "yellow.400"
+                                            : "transparent"
+                                        }
+                                      />
+                                    ))}
+                                  </HStack>
+                                </HStack>
+                                <Text fontSize="sm" color="gray.600">
+                                  {new Date(
+                                    review.created_at
+                                  ).toLocaleDateString()}
+                                </Text>
+                              </VStack>
+                            </HStack>
+
+                            {review.title && (
+                              <Text fontWeight="semibold">{review.title}</Text>
+                            )}
+
+                            {review.comment && <Text>{review.comment}</Text>}
+
+                            {review.aspects &&
+                              Object.keys(review.aspects).length > 0 && (
+                                <Box>
+                                  <Text
+                                    fontSize="sm"
+                                    fontWeight="semibold"
+                                    mb={2}
+                                  >
+                                    Detailed Feedback:
+                                  </Text>
+                                  <VStack spacing={1} align="start">
+                                    {Object.entries(review.aspects).map(
+                                      ([key, value]) => (
+                                        <Text key={key} fontSize="sm">
+                                          {key}: {value}
+                                        </Text>
+                                      )
+                                    )}
+                                  </VStack>
+                                </Box>
+                              )}
+                          </VStack>
+                        </Box>
+                      ))}
+                    </VStack>
+                  ) : (
+                    <EmptyView
+                      title="No reviews yet"
+                      description="This breeder hasn't received any reviews yet. Be the first to leave a review after completing an adoption!"
+                    />
+                  )}
+                </VStack>
               </TabPanel>
             </TabPanels>
           </Tabs>

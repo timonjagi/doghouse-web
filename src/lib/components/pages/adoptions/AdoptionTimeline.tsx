@@ -24,6 +24,8 @@ import {
   useAdoptionTimelineLogic,
 } from "../../../hooks/queries/useAdoptions";
 import { AdoptionActionList } from "./AdoptionActionList";
+import { ReviewForm } from "../../ui/ReviewForm";
+import { useAdoptionReview } from "../../../hooks/queries/useReviews";
 
 interface AdoptionTimelineProps {
   adoption: AdoptionWithListing;
@@ -39,6 +41,9 @@ export const AdoptionTimeline = React.forwardRef<
   },
   AdoptionTimelineProps
 >((props, ref) => {
+  // Check if review exists for this adoption
+  const { data: existingReview } = useAdoptionReview(props.adoption?.id || "");
+
   // Use the logic hook - no actions passed here anymore
   const { steps, currentStepIndex } = useAdoptionTimelineLogic({
     adoption: props.adoption,
@@ -101,12 +106,22 @@ export const AdoptionTimeline = React.forwardRef<
             {/* Render Actions ONLY for the current step */}
             {step.status === "current" && (
               <Box mt={3}>
-                <AdoptionActionList
-                  adoption={props.adoption}
-                  userProfile={props.userProfile}
-                  transactions={props.transactions}
-                  variant="timeline"
-                />
+                {step.id === "leave_review" && !existingReview ? (
+                  <ReviewForm
+                    adoptionId={props.adoption?.id || ""}
+                    onReviewSubmitted={() => {
+                      // The timeline will automatically update when the review is created
+                      // due to React Query cache invalidation
+                    }}
+                  />
+                ) : (
+                  <AdoptionActionList
+                    adoption={props.adoption}
+                    userProfile={props.userProfile}
+                    transactions={props.transactions}
+                    variant="timeline"
+                  />
+                )}
               </Box>
             )}
           </Box>

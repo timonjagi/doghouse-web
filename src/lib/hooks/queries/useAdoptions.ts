@@ -12,6 +12,7 @@ import {
   EditIcon,
   ChatIcon,
 } from "@chakra-ui/icons";
+import { useAdoptionReview } from "./useReviews";
 
 // Interface for adoption with full listing data
 export interface AdoptionWithListing extends Adoption {
@@ -435,6 +436,9 @@ export const useAdoptionTimelineLogic = ({
   transactions?: any[];
   statusHistory?: AdoptionStatusHistory[];
 }) => {
+  // Check if review exists for this adoption
+  const { data: existingReview } = useAdoptionReview(adoption?.id || "");
+
   const getTimelineSteps = (): TimelineStep[] => {
     if (!adoption) return [];
 
@@ -463,8 +467,8 @@ export const useAdoptionTimelineLogic = ({
         status: adoption.reservation_paid
           ? "completed"
           : ["approved", "completed"].includes(adoption.status)
-          ? "current"
-          : "locked",
+            ? "current"
+            : "locked",
         info: adoption.reservation_paid ? ["Reservation fee paid"] : undefined,
       },
       {
@@ -474,8 +478,8 @@ export const useAdoptionTimelineLogic = ({
         status: adoption.contract_signed
           ? "completed"
           : adoption.reservation_paid
-          ? "current"
-          : "locked",
+            ? "current"
+            : "locked",
         info: adoption.contract_signed ? ["Contract signed"] : undefined,
       },
       {
@@ -485,8 +489,8 @@ export const useAdoptionTimelineLogic = ({
         status: adoption.payment_completed
           ? "completed"
           : adoption.contract_signed
-          ? "current"
-          : "locked",
+            ? "current"
+            : "locked",
         info: adoption.payment_completed
           ? ["Final payment completed"]
           : undefined,
@@ -498,6 +502,19 @@ export const useAdoptionTimelineLogic = ({
         status: adoption.status === "completed" ? "completed" : "locked",
       },
     ];
+
+    // Add review step only for seekers after adoption is completed
+    if (adoption.status === "completed" && userProfile?.role === "seeker") {
+      steps.push({
+        id: "leave_review",
+        title: "Leave a Review",
+        description: existingReview
+          ? "Thank you for your review! Your feedback helps other pet seekers."
+          : "Help other seekers by sharing your experience with this breeder.",
+        status: existingReview ? "completed" : "current",
+        info: existingReview ? ["Review submitted"] : undefined,
+      });
+    }
 
     return steps;
   };
