@@ -17,14 +17,21 @@ import {
   StepTitle,
   Stepper,
   useSteps,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  useDisclosure,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import {
   AdoptionWithListing,
   AdoptionStatusHistory,
   useAdoptionTimelineLogic,
 } from "../../../hooks/queries/useAdoptions";
 import { AdoptionActionList } from "./AdoptionActionList";
-import { ReviewForm } from "../../ui/ReviewForm";
 import { useAdoptionReview } from "../../../hooks/queries/useReviews";
 
 interface AdoptionTimelineProps {
@@ -41,8 +48,26 @@ export const AdoptionTimeline = React.forwardRef<
   },
   AdoptionTimelineProps
 >((props, ref) => {
+  const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   // Check if review exists for this adoption
   const { data: existingReview } = useAdoptionReview(props.adoption?.id || "");
+
+  // Check if we should show the review modal
+  React.useEffect(() => {
+    if (router.query.action === "review" && !existingReview) {
+      onOpen();
+    }
+  }, [router.query.action, existingReview, onOpen]);
+
+  // Close modal and clean up URL
+  const handleReviewModalClose = () => {
+    onClose();
+    // Remove the action query parameter
+    const { action, ...rest } = router.query;
+    router.replace({ query: rest }, undefined, { shallow: true });
+  };
 
   // Use the logic hook - no actions passed here anymore
   const { steps, currentStepIndex } = useAdoptionTimelineLogic({
@@ -129,6 +154,21 @@ export const AdoptionTimeline = React.forwardRef<
           <StepSeparator />
         </Step>
       ))}
+
+      {/* Review Modal */}
+      <Modal isOpen={isOpen} onClose={handleReviewModalClose} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Leave a Review</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <ReviewForm
+              adoptionId={props.adoption?.id || ""}
+              onReviewSubmitted={handleReviewModalClose}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Stepper>
   );
 });

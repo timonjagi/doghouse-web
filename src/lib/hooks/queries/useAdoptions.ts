@@ -12,7 +12,6 @@ import {
   EditIcon,
   ChatIcon,
 } from "@chakra-ui/icons";
-import { useAdoptionReview } from "./useReviews";
 
 // Interface for adoption with full listing data
 export interface AdoptionWithListing extends Adoption {
@@ -414,11 +413,155 @@ export const ADOPTION_ACTION_CONFIGS = {
     disabled: false,
   },
   edit: {
-    label: "Edit Application",
-    buttonLabel: "Edit Application",
+  },
+  contact_support: {
+    label: "Contact Support",
+    buttonLabel: "Contact Support",
     variant: "outline",
+    colorScheme: "blue",
+    icon: ChatIcon,
+    requiresPayment: false,
+    disabled: false,
+  },
+  leave_review: {
+    label: "Leave Review",
+    buttonLabel: "Leave Review",
+    variant: "solid",
+    colorScheme: "purple",
+    icon: StarIcon,
+    requiresPayment: false,
+    disabled: false,
+    label: "Edit Application",
+  },
+  contact_support: {
+    label: "Contact Support",
+    buttonLabel: "Contact Support",
+    variant: "outline",
+    colorScheme: "blue",
+    icon: ChatIcon,
+    requiresPayment: false,
+    disabled: false,
+  },
+  leave_review: {
+    label: "Leave Review",
+    buttonLabel: "Leave Review",
+    variant: "solid",
+    colorScheme: "purple",
+    icon: StarIcon,
+    requiresPayment: false,
+    disabled: false,
+    buttonLabel: "Edit Application",
+  },
+  contact_support: {
+    label: "Contact Support",
+    buttonLabel: "Contact Support",
+    variant: "outline",
+    colorScheme: "blue",
+    icon: ChatIcon,
+    requiresPayment: false,
+    disabled: false,
+  },
+  leave_review: {
+    label: "Leave Review",
+    buttonLabel: "Leave Review",
+    variant: "solid",
+    colorScheme: "purple",
+    icon: StarIcon,
+    requiresPayment: false,
+    disabled: false,
+    variant: "outline",
+  },
+  contact_support: {
+    label: "Contact Support",
+    buttonLabel: "Contact Support",
+    variant: "outline",
+    colorScheme: "blue",
+    icon: ChatIcon,
+    requiresPayment: false,
+    disabled: false,
+  },
+  leave_review: {
+    label: "Leave Review",
+    buttonLabel: "Leave Review",
+    variant: "solid",
+    colorScheme: "purple",
+    icon: StarIcon,
+    requiresPayment: false,
+    disabled: false,
     colorScheme: "gray",
+  },
+  contact_support: {
+    label: "Contact Support",
+    buttonLabel: "Contact Support",
+    variant: "outline",
+    colorScheme: "blue",
+    icon: ChatIcon,
+    requiresPayment: false,
+    disabled: false,
+  },
+  leave_review: {
+    label: "Leave Review",
+    buttonLabel: "Leave Review",
+    variant: "solid",
+    colorScheme: "purple",
+    icon: StarIcon,
+    requiresPayment: false,
+    disabled: false,
     icon: EditIcon,
+  },
+  contact_support: {
+    label: "Contact Support",
+    buttonLabel: "Contact Support",
+    variant: "outline",
+    colorScheme: "blue",
+    icon: ChatIcon,
+    requiresPayment: false,
+    disabled: false,
+  },
+  leave_review: {
+    label: "Leave Review",
+    buttonLabel: "Leave Review",
+    variant: "solid",
+    colorScheme: "purple",
+    icon: StarIcon,
+    requiresPayment: false,
+    disabled: false,
+    requiresPayment: false,
+  },
+  contact_support: {
+    label: "Contact Support",
+    buttonLabel: "Contact Support",
+    variant: "outline",
+    colorScheme: "blue",
+    icon: ChatIcon,
+    requiresPayment: false,
+    disabled: false,
+  },
+  leave_review: {
+    label: "Leave Review",
+    buttonLabel: "Leave Review",
+    variant: "solid",
+    colorScheme: "purple",
+    icon: StarIcon,
+    requiresPayment: false,
+    disabled: false,
+    disabled: false,
+  },
+  contact_support: {
+    label: "Contact Support",
+    buttonLabel: "Contact Support",
+    variant: "outline",
+    colorScheme: "blue",
+    icon: ChatIcon,
+    requiresPayment: false,
+    disabled: false,
+  },
+  leave_review: {
+    label: "Leave Review",
+    buttonLabel: "Leave Review",
+    variant: "solid",
+    colorScheme: "purple",
+    icon: StarIcon,
     requiresPayment: false,
     disabled: false,
   },
@@ -436,8 +579,6 @@ export const useAdoptionTimelineLogic = ({
   transactions?: any[];
   statusHistory?: AdoptionStatusHistory[];
 }) => {
-  // Check if review exists for this adoption
-  const { data: existingReview } = useAdoptionReview(adoption?.id || "");
 
   const getTimelineSteps = (): TimelineStep[] => {
     if (!adoption) return [];
@@ -503,17 +644,6 @@ export const useAdoptionTimelineLogic = ({
       },
     ];
 
-    // Add review step only for seekers after adoption is completed
-    if (adoption.status === "completed" && userProfile?.role === "seeker") {
-      steps.push({
-        id: "leave_review",
-        title: "Leave a Review",
-        description: existingReview
-          ? "Thank you for your review! Your feedback helps other pet seekers."
-          : "Help other seekers by sharing your experience with this breeder.",
-        status: existingReview ? "completed" : "current",
-        info: existingReview ? ["Review submitted"] : undefined,
-      });
     }
 
     return steps;
@@ -559,6 +689,7 @@ export const getAvailableAdoptionActions = (
       case "rejected":
         actions.push("message");
         break;
+      case "completed":
     }
   }
 
@@ -579,8 +710,6 @@ export const getAvailableAdoptionActions = (
         }
         break;
       case "completed":
-        actions.push("message");
-        break;
     }
   }
 
