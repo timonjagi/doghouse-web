@@ -647,7 +647,7 @@ export const useAdoptionTimelineLogic = ({
     }
 
     return steps;
-  };
+  }
 
   const steps = getTimelineSteps();
   const currentStepIndex = steps.findIndex((step) => step.status === "current");
