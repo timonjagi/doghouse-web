@@ -282,14 +282,6 @@ const AdminTestimonialsPage: React.FC = () => {
             </TabList>
 
             <TabPanels>
-          <Tabs variant="soft-rounded" colorScheme="brand">
-            <TabList>
-              <Tab>Testimonials</Tab>
-              <Tab>Reviews Moderation</Tab>
-              <Tab>Analytics</Tab>
-            </TabList>
-
-            <TabPanels>
               {/* Testimonials Tab */}
               <TabPanel px={0}>
                 {/* Stats Cards */}
