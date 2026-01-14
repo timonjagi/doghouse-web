@@ -9,6 +9,7 @@ import {
   Text,
   Divider,
   Icon,
+  useColorModeValue as mode,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -207,6 +208,10 @@ export const SignupForm = () => {
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            bg={mode('white', 'gray.700')}
+            borderColor={mode('gray.300', 'gray.600')}
+            _hover={{ borderColor: mode('gray.400', 'gray.500') }}
+            _focus={{ borderColor: 'brand.500', boxShadow: mode('0 0 0 1px var(--chakra-colors-brand-500)', '0 0 0 1px var(--chakra-colors-brand-500)') }}
           />
         </FormControl>
 
@@ -220,6 +225,10 @@ export const SignupForm = () => {
             placeholder="Create a password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            bg={mode('white', 'gray.700')}
+            borderColor={mode('gray.300', 'gray.600')}
+            _hover={{ borderColor: mode('gray.400', 'gray.500') }}
+            _focus={{ borderColor: 'brand.500', boxShadow: mode('0 0 0 1px var(--chakra-colors-brand-500)', '0 0 0 1px var(--chakra-colors-brand-500)') }}
           />
         </FormControl>
 
@@ -233,6 +242,10 @@ export const SignupForm = () => {
             placeholder="Confirm your password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            bg={mode('white', 'gray.700')}
+            borderColor={mode('gray.300', 'gray.600')}
+            _hover={{ borderColor: mode('gray.400', 'gray.500') }}
+            _focus={{ borderColor: 'brand.500', boxShadow: mode('0 0 0 1px var(--chakra-colors-brand-500)', '0 0 0 1px var(--chakra-colors-brand-500)') }}
           />
         </FormControl>
 

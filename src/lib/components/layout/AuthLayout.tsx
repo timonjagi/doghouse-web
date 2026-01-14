@@ -1,4 +1,4 @@
-import { Box, useBreakpointValue, Flex } from '@chakra-ui/react';
+import { Box, useBreakpointValue, Flex, useColorModeValue as mode } from '@chakra-ui/react';
 import React, { ReactNode } from 'react'
 import Footer from './Footer';
 import Header from './Header';
@@ -32,7 +32,7 @@ function AuthLayout({ children, sidebarContent, showSidebar = true }: AuthLayout
   return (
     <Flex h="100vh">
       {/* Main content */}
-      <Box flex="1" overflow="auto" bg="white">
+      <Box flex="1" overflow="auto" bg={mode('white', 'gray.800')}>
         <Flex justify="center" align="center" h="full">
           {children}
         </Flex>
