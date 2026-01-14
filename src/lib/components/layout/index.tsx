@@ -18,7 +18,6 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/login", layout: "auth" },
     { path: "/signup", layout: "auth" },
     { path: "/onboarding", layout: "auth" },
-    { path: "/partners", layout: "auth" },
   ];
 
   const headerFooterRoutes: any = [
@@ -36,6 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/blog/[slug]", layout: "headerfooter" },
     { path: "/terms", layout: "headerfooter" },
     { path: "/privacy", layout: "headerfooter" },
+    { path: "/partners", layout: "auth" },
   ];
 
   const dashboardRoutes = [
