@@ -49,7 +49,7 @@ const ExplorePage = () => {
       <Container maxW="5xl" bg="bg-surface" h="full" pb={{ base: 0, md: 4 }} px={0}>
         <Box position="relative">
           <Image
-            src="/images/images/hero_2.png"
+            src="/images/hero_2.png"
             alt="Lovely Image"
             objectFit="cover"
             width="100%"
@@ -88,10 +88,10 @@ const ExplorePage = () => {
           </Box>
         </Box>
         <ExploreOverview />
+        <EthicalQuestionairreCard />
 
       </Container>
 
-      <EthicalQuestionairreCard />
 
     </>
 

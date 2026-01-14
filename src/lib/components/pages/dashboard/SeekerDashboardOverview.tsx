@@ -37,7 +37,7 @@ const SeekerDashboardOverview: React.FC = () => {
 
       <Box position="relative">
         <Image
-          src="/images/images/hero_2.png"
+          src="/images/hero_2.png"
           alt="Lovely Image"
           objectFit="cover"
           width="100%"
