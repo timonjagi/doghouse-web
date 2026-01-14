@@ -29,10 +29,14 @@ import {
   ListIcon,
   Badge,
   useColorModeValue,
+  Input,
+  Checkbox,
 } from "@chakra-ui/react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import { useAdoptionConversation } from "../../../hooks/queries/useContextConversations";
 import { useInitiatePayment } from "../../../hooks/queries/usePayments";
+import { Rating } from "../../ui/Rating";
+import { useCreateReview } from "../../../hooks/queries/useReviews";
 
 interface AdoptionActionDialogProps {
   isOpen: boolean;
@@ -55,6 +59,7 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
   const toast = useToast();
   const updateAdoptionMutation = useUpdateAdoption();
   const initiatePaymentMutation = useInitiatePayment();
+  const createReviewMutation = useCreateReview();
   const timelineLogic = useAdoptionTimelineLogic({
     adoption: adoption,
     userProfile,
@@ -64,9 +69,20 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
 
   const [responseMessage, setResponseMessage] = React.useState("");
 
+  // Review form state
+  const [rating, setRating] = React.useState(0);
+  const [reviewTitle, setReviewTitle] = React.useState("");
+  const [reviewComment, setReviewComment] = React.useState("");
+  const [isAnonymous, setIsAnonymous] = React.useState(false);
+
   const handleClose = () => {
     setPendingAction(null);
     setResponseMessage("");
+    // Reset review form state
+    setRating(0);
+    setReviewTitle("");
+    setReviewComment("");
+    setIsAnonymous(false);
     onClose();
   };
 
@@ -178,8 +194,42 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
         return;
 
       case "leave_review":
-        router.push(`${startUrl}?action=review`);
-        handleClose();
+        try {
+          if (rating === 0) {
+            toast({
+              title: "Rating required",
+              description: "Please select a star rating for the breeder.",
+              status: "error",
+              duration: 3000,
+            });
+            return;
+          }
+
+          await createReviewMutation.mutateAsync({
+            adoption_id: adoption.id,
+            rating,
+            title: reviewTitle.trim() || undefined,
+            comment: reviewComment.trim() || undefined,
+            is_anonymous: isAnonymous,
+          });
+
+          toast({
+            title: "Review submitted!",
+            description:
+              "Thank you for sharing your experience. Your feedback helps other pet seekers.",
+            status: "success",
+            duration: 5000,
+          });
+
+          handleClose();
+        } catch (error: any) {
+          toast({
+            title: "Failed to submit review",
+            description: error.message || "Please try again later.",
+            status: "error",
+            duration: 3000,
+          });
+        }
         return;
 
       case "contact_support":
@@ -221,7 +271,9 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
   };
 
   const isLoading =
-    updateAdoptionMutation.isPending || initiatePaymentMutation.isPending;
+    updateAdoptionMutation.isPending ||
+    initiatePaymentMutation.isPending ||
+    createReviewMutation.isPending;
   const isPaymentAction = ["pay_reservation", "complete_payment"].includes(
     pendingAction?.type
   );
@@ -230,6 +282,7 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
     "contact_applicant",
     "contact_support",
   ].includes(pendingAction?.type);
+  const isReviewAction = pendingAction?.type === "leave_review";
   const { amount, description: paymentDesc } = getPaymentDetails();
 
   return (
@@ -238,7 +291,7 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
       isOpen={isOpen}
       leastDestructiveRef={undefined}
       onClose={handleClose}
-      size={isPaymentAction ? "lg" : "md"}
+      size={isPaymentAction || isReviewAction ? "lg" : "md"}
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
@@ -287,35 +340,94 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
                 </Box>
               )}
 
+              {/* Review Form */}
+              {isReviewAction && (
+                <VStack spacing={4} align="stretch">
+                  <FormControl>
+                    <FormLabel fontSize="sm" fontWeight="medium">
+                      Rating *
+                    </FormLabel>
+                    <Rating score={rating} interactive onChange={setRating} size="lg" />
+                    {rating > 0 && (
+                      <Text fontSize="xs" color="gray.600" mt={1}>
+                        {rating === 1 && "Poor"}
+                        {rating === 2 && "Fair"}
+                        {rating === 3 && "Good"}
+                        {rating === 4 && "Very Good"}
+                        {rating === 5 && "Excellent"}
+                      </Text>
+                    )}
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel fontSize="sm" fontWeight="medium">
+                      Review Title (Optional)
+                    </FormLabel>
+                    <Input
+                      placeholder="Summarize your experience..."
+                      value={reviewTitle}
+                      onChange={(e) => setReviewTitle(e.target.value)}
+                      maxLength={100}
+                      size="sm"
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel fontSize="sm" fontWeight="medium">
+                      Your Review
+                    </FormLabel>
+                    <Textarea
+                      placeholder="Tell others about your experience with this breeder..."
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      rows={4}
+                      maxLength={1000}
+                      size="sm"
+                    />
+                    <Text fontSize="xs" color="gray.500" mt={1}>
+                      {reviewComment.length}/1000 characters
+                    </Text>
+                  </FormControl>
+
+                  <Checkbox
+                    isChecked={isAnonymous}
+                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                    size="sm"
+                  >
+                    Submit anonymously
+                  </Checkbox>
+                </VStack>
+              )}
+
               {/* Message Controls (for status updates OR contact actions) */}
               {(isContactAction ||
                 ["approve", "reject", "complete"].includes(
                   pendingAction?.type
                 )) && (
-                <FormControl>
-                  <FormLabel fontSize="sm" fontWeight="medium">
-                    {isContactAction
-                      ? "Initial Message"
-                      : "Response Message (Optional)"}
-                  </FormLabel>
-                  <Textarea
-                    value={responseMessage}
-                    onChange={(e) => setResponseMessage(e.target.value)}
-                    placeholder={
-                      isContactAction
-                        ? "Type your message here..."
-                        : pendingAction?.type === "approve"
-                        ? "Add a welcome message for the applicant..."
-                        : pendingAction?.type === "reject"
-                        ? "Add a reason for rejection..."
-                        : "Add a message for the applicant..."
-                    }
-                    rows={isContactAction ? 5 : 3}
-                    size="sm"
-                    borderRadius="md"
-                  />
-                </FormControl>
-              )}
+                  <FormControl>
+                    <FormLabel fontSize="sm" fontWeight="medium">
+                      {isContactAction
+                        ? "Initial Message"
+                        : "Response Message (Optional)"}
+                    </FormLabel>
+                    <Textarea
+                      value={responseMessage}
+                      onChange={(e) => setResponseMessage(e.target.value)}
+                      placeholder={
+                        isContactAction
+                          ? "Type your message here..."
+                          : pendingAction?.type === "approve"
+                            ? "Add a welcome message for the applicant..."
+                            : pendingAction?.type === "reject"
+                              ? "Add a reason for rejection..."
+                              : "Add a message for the applicant..."
+                      }
+                      rows={isContactAction ? 5 : 3}
+                      size="sm"
+                      borderRadius="md"
+                    />
+                  </FormControl>
+                )}
 
               {pendingAction?.dialogBody && (
                 <Text
@@ -422,10 +534,13 @@ const AdoptionActionDialog: React.FC<AdoptionActionDialogProps> = ({
               loadingText={
                 isPaymentAction ? "Initializing..." : "Submitting..."
               }
+              isDisabled={isReviewAction && (!rating || !reviewComment.trim())}
             >
               {isPaymentAction
                 ? `Pay Ksh. ${amount.toLocaleString()}`
-                : pendingAction?.confirmText || "Confirm"}
+                : isReviewAction
+                  ? "Submit Review"
+                  : pendingAction?.confirmText || "Confirm"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

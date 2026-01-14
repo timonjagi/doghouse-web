@@ -205,6 +205,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiClipboard,
           ariaLabel: "My applications",
         },
+        {
+          label: "Testimonials",
+          href: "/dashboard/admin/testimonials",
+          icon: FiMessageSquare,
+          ariaLabel: "Manage testimonials",
+        },
       ],
     },
     {
