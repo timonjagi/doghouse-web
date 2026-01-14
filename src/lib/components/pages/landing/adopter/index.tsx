@@ -13,6 +13,7 @@ import { Testimonials } from "./Testimonials";
 import WhyDoghouse from "./WhyDoghouse";
 import { CtaWithImage } from "./CtaWithImage";
 import { Cta } from "./Cta";
+import { LandingFAQs } from "lib/components/ui/LandingFAQs";
 
 const Home = () => {
   return (
@@ -39,6 +40,10 @@ const Home = () => {
         {/* 
         <Testimonials /> */}
 
+        <LandingFAQs
+          title="Common Questions from Seekers"
+          description="Everything you need to know about finding and adopting your next pet through Pethouse Kenya."
+        />
 
         <Cta />
         {/* <LogoGrid /> */}

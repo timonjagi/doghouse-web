@@ -13,6 +13,7 @@ import {
   Badge,
   Icon,
   useToast,
+  useColorModeValue as mode,
 } from "@chakra-ui/react";
 import { FiThumbsUp, FiThumbsDown, FiEye } from "react-icons/fi";
 import { SupportFAQ as SupportFAQType } from "../../db/schema";
@@ -88,12 +89,12 @@ export const SupportFAQ: React.FC<SupportFAQProps> = ({
   };
 
   return (
-    <Box borderWidth="1px" borderRadius="md" p={4} bg="white">
+    <Box borderWidth="1px" borderRadius="md" p={4} bg={mode("white", "gray.800")}>
       <Accordion allowToggle>
         <AccordionItem border="none">
           <AccordionButton
             onClick={handleView}
-            _hover={{ bg: "gray.50" }}
+            _hover={{ bg: mode("gray.50", "gray.700") }}
             px={0}
             py={2}
           >
@@ -117,7 +118,7 @@ export const SupportFAQ: React.FC<SupportFAQProps> = ({
                 </Text>
 
                 {showViewCount && faq.view_count > 0 && (
-                  <HStack spacing={1} color="gray.500" fontSize="sm">
+                  <HStack spacing={1} color={mode("gray.500", "gray.400")} fontSize="sm">
                     <Icon as={FiEye} />
                     <Text>{faq.view_count} views</Text>
                   </HStack>
@@ -129,13 +130,13 @@ export const SupportFAQ: React.FC<SupportFAQProps> = ({
 
           <AccordionPanel pb={4}>
             <VStack align="start" spacing={4}>
-              <Text color="gray.700" whiteSpace="pre-wrap">
+              <Text color={mode("gray.700", "gray.300")} whiteSpace="pre-wrap">
                 {faq.answer}
               </Text>
 
               {showVotes && (
                 <HStack spacing={4}>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color={mode("gray.600", "gray.400")}>
                     Was this helpful?
                   </Text>
                   <HStack spacing={2}>

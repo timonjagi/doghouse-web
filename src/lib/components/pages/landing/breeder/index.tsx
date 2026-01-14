@@ -11,6 +11,9 @@ import { OurPets } from "./Breeds";
 import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
 import WhyDoghouse from "./WhyDoghouse";
+import { LandingFAQs } from "lib/components/ui/LandingFAQs";
+import { Cta } from "../adopter/Cta"; // Using the adopter CTA since it's more updated for partners
+import { LogoGrid } from "./LogoGrid";
 
 const Home = () => {
   return (
@@ -35,12 +38,19 @@ const Home = () => {
 
         <WhyDoghouse />
 
+        <LogoGrid />
+
         <Testimonials />
 
-        {/* <Cta /> */}
+        <LandingFAQs
+          title="Common Questions from Partners"
+          description="Everything you need to know about managing your kennel or shelter and connecting with seekers on Pethouse Kenya."
+        />
+
+        <Cta />
 
         {/* <CtaWithImage /> */}
-        {/* <LogoGrid /> */}
+
 
         <Blog />
       </Flex>
