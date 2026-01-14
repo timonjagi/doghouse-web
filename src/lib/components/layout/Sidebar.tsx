@@ -31,8 +31,8 @@ import { Logo } from "./Logo";
 import { NavButton } from "./NavButton";
 import { NavSection, getNavigationForRole } from "./navLinks";
 import { User } from "@supabase/supabase-js";
-import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
-import { useWishlistCount } from "lib/hooks/queries/useWishlist";
+import { useCurrentUser, useUnreadInboxCount, useUserProfile } from "lib/hooks/queries";
+import { useUnreadBreedMatchCount } from "lib/hooks/queries/useNotifications";
 import { UserProfile } from "../auth/UserProfileCard";
 import NextLink from "next/link";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
@@ -231,7 +231,8 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const { data: user, isLoading: userLoading } = useCurrentUser();
   const { data: profile, isLoading: profileLoading } = useUserProfile();
-  const { data: wishlistCount } = useWishlistCount();
+  const { data: breedMatchCount } = useUnreadBreedMatchCount();
+  const { data: unreadInboxCount } = useUnreadInboxCount();
 
   // Wait for auth check to complete before deciding which sidebar to show
   const isAuthLoading = userLoading || (user && profileLoading);
@@ -297,14 +298,23 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
                     isActive={router.pathname === item.href}
                     onClick={() => handleNavClick(item.href)}
                     badge={
-                      item.label === "Wishlist" && wishlistCount ? (
+                      item.label === "Wishlist" && breedMatchCount ? (
                         <Badge
-                          colorScheme="red"
+                          colorScheme="brand"
                           borderRadius="full"
                           variant="solid"
                           fontSize="xs"
                         >
-                          {wishlistCount}
+                          {breedMatchCount}
+                        </Badge>
+                      ) : item.label === "Inbox" && unreadInboxCount ? (
+                        <Badge
+                          colorScheme="brand"
+                          borderRadius="full"
+                          variant="solid"
+                          fontSize="xs"
+                        >
+                          {unreadInboxCount}
                         </Badge>
                       ) : undefined
                     }

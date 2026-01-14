@@ -147,6 +147,8 @@ export const queryKeys = {
     unread: (): readonly string[] => ["notifications", "unread"] as const,
     unreadCount: (userId?: string): readonly string[] =>
       ["notifications", "unread-count", userId].filter(Boolean) as any,
+    unreadBreedMatchCount: (userId?: string): readonly string[] =>
+      ["notifications", "unread-breed-match-count", userId].filter(Boolean) as any,
   },
 
   // Conversation related queries
