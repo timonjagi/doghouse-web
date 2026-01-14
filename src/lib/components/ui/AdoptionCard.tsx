@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   VStack,
@@ -9,21 +9,21 @@ import {
   Skeleton,
   useColorModeValue,
   Icon,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   CheckCircleIcon,
   WarningIcon,
   TimeIcon,
   CalendarIcon,
-} from '@chakra-ui/icons';
-import { AdoptionWithListing } from '../../hooks/queries/useAdoptions';
-import { useRouter } from 'next/router';
-import { FiUser } from 'react-icons/fi';
-import { PriceTag } from './PriceTag';
+} from "@chakra-ui/icons";
+import { AdoptionWithListing } from "../../hooks/queries/useAdoptions";
+import { useRouter } from "next/router";
+import { FiUser } from "react-icons/fi";
+import { PriceTag } from "./PriceTag";
 
 interface AdoptionCardProps {
   adoption: AdoptionWithListing;
-  userRole: 'seeker' | 'breeder';
+  userRole: "seeker" | "breeder";
 }
 
 export const AdoptionCard: React.FC<AdoptionCardProps> = ({
@@ -34,36 +34,46 @@ export const AdoptionCard: React.FC<AdoptionCardProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'submitted': return 'blue';
-      case 'pending': return 'yellow';
-      case 'approved': return 'green';
-      case 'rejected': return 'red';
-      case 'completed': return 'purple';
-      default: return 'gray';
+      case "submitted":
+        return "blue";
+      case "pending":
+        return "yellow";
+      case "approved":
+        return "green";
+      case "rejected":
+        return "red";
+      case "completed":
+        return "purple";
+      default:
+        return "gray";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'approved': return <CheckCircleIcon />;
-      case 'rejected': return <WarningIcon />;
-      case 'submitted':
-      case 'pending': return <TimeIcon />;
-      case 'completed': return <CheckCircleIcon color="purple.500" />;
-      default: return <CalendarIcon />;
+      case "approved":
+        return <CheckCircleIcon />;
+      case "rejected":
+        return <WarningIcon />;
+      case "submitted":
+      case "pending":
+        return <TimeIcon />;
+      case "completed":
+        return <CheckCircleIcon color="purple.500" />;
+      default:
+        return <CalendarIcon />;
     }
   };
 
   const formatStatus = (status: string) => {
-    return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+    return status.charAt(0).toUpperCase() + status.slice(1).replace("_", " ");
   };
-
 
   const handleViewDetails = () => {
     router.push(`/dashboard/adoptions/${adoption.id}`);
   };
 
-  const breedName = adoption.listings.breeds?.name || 'Unknown Breed';
+  const breedName = adoption.listings.breeds?.name || "Unknown Breed";
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
   return (
@@ -79,7 +89,7 @@ export const AdoptionCard: React.FC<AdoptionCardProps> = ({
       _hover={{
         transform: "translateY(-2px)",
         shadow: "md",
-        borderColor: "gray.200"
+        borderColor: "gray.200",
       }}
     >
       {/* Main Photo */}
@@ -91,7 +101,7 @@ export const AdoptionCard: React.FC<AdoptionCardProps> = ({
           w="full"
           h="200px"
           fallback={<Skeleton width="100%" height="100%" />}
-          fallbackSrc='/images/logo_white.png'
+          fallbackSrc="/images/logo_white.png"
           loading="lazy"
         />
 
@@ -108,21 +118,21 @@ export const AdoptionCard: React.FC<AdoptionCardProps> = ({
         </Text>
 
         <Text fontSize="sm" color="gray.600" noOfLines={2}>
-          {`${adoption.listings.type === 'litter' ? 'Litter' : 'Pet'} • ${breedName}`}
+          {`${
+            adoption.listings.type === "litter" ? "Litter" : "Pet"
+          } • ${breedName}`}
         </Text>
 
-        {userRole === 'breeder' && adoption.users && (
+        {userRole === "breeder" && (adoption as any).users && (
           <HStack align="center" spacing={1}>
             <Icon as={FiUser} boxSize={4} color="gray.500" />
             <Text fontSize="sm" color="gray.500">
-              {adoption.users.display_name}
+              {(adoption as any).users.display_name}
             </Text>
-
           </HStack>
         )}
 
-        <PriceTag price={adoption.listings.price} currency='KES' />
-
+        <PriceTag price={adoption.listings.price} currency="KES" />
       </VStack>
     </Box>
   );

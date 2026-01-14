@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
+import { NotificationService } from '../../services/notificationService';
+import { useUpdateAdoption } from './useAdoptions';
 
 export interface PaymentInitParams {
   amount: number;
@@ -174,6 +176,7 @@ export const useInitiatePayment = () => {
 // Mutation to verify payment
 export const useVerifyPayment = (applicationId?: string) => {
   const queryClient = useQueryClient();
+  const updateAdoptionMutation = useUpdateAdoption();
 
   return useMutation({
     mutationFn: async (reference: string): Promise<PaymentVerificationResponse> => {
@@ -215,10 +218,8 @@ export const useVerifyPayment = (applicationId?: string) => {
               .select()
               .single();
 
-            console.log('updted txn', txn)
-
             if (txError) throw txError;
-            // Update application fields based on payment type
+            // Update application fields using the useUpdateAdoption hook (which handles notifications)
             const updateData: any = {};
             if (paymentType === 'reservation') {
               updateData.reservation_paid = true;
@@ -228,86 +229,23 @@ export const useVerifyPayment = (applicationId?: string) => {
             }
 
             if (Object.keys(updateData).length > 0) {
-              console.log(updateData)
-              const { data: app, error: appError } = await supabase
-                .from('applications')
-                .update({
-                  ...updateData,
-                  updated_at: new Date().toISOString(),
-                })
-                .eq('id', applicationId)
-                .select()
-                .single();
+              // Use the updateAdoption hook which will handle status change notifications automatically
+              await updateAdoptionMutation.mutateAsync({
+                id: applicationId,
+                updates: updateData
+              });
 
-              if (appError) throw appError;
-
-              console.log('updated application', app)
-
-              // Create notifications for payment completion
-              try {
-                let seekerTitle = '';
-                let seekerBody = '';
-                let breederTitle = '';
-                let breederBody = '';
-
-                if (paymentType === 'reservation') {
-                  seekerTitle = 'Reservation Payment Confirmed';
-                  seekerBody = `Your reservation payment for ${app.listings?.title || 'the listing'} has been confirmed. The listing is now reserved for you.`;
-                  breederTitle = 'Reservation Payment Received';
-                  breederBody = `You have received a reservation payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}.`;
-                } else if (paymentType === 'final') {
-                  seekerTitle = 'Final Payment Confirmed';
-                  seekerBody = `Your final payment for ${app.listings?.title || 'the listing'} has been confirmed. Your adoption is now complete!`;
-                  breederTitle = 'Final Payment Received';
-                  breederBody = `You have received the final payment for ${app.listings?.title || 'your listing'} from ${app.users?.display_name || 'a seeker'}. Payout will be processed soon.`;
-                }
-
-                // Notify seeker
-                if (seekerTitle && seekerBody) {
-                  await supabase
-                    .from('notifications')
-                    .insert({
-                      user_id: app.seeker_id,
-                      type: 'payment_completed',
-                      title: seekerTitle,
-                      body: seekerBody,
-                      target_type: 'application',
-                      target_id: app.listing_id,
-                      meta: {
-                        applicationId: app.id,
-                        listingId: app.listing_id,
-                        paymentType,
-                        transactionId: txn.id,
-                        amount: txn.amount,
-                      },
-                    });
-                }
-
-                // Notify breeder
-                if (breederTitle && breederBody) {
-                  await supabase
-                    .from('notifications')
-                    .insert({
-                      user_id: app.listings?.owner_id,
-                      type: 'payment_received',
-                      title: breederTitle,
-                      body: breederBody,
-                      target_type: 'application',
-                      target_id: app.listing_id,
-                      meta: {
-                        applicationId: app.id,
-                        listingId: app.listing_id,
-                        paymentType,
-                        transactionId: txn.id,
-                        amount: txn.amount,
-                        earnings: txn.amount - txn.commission_fee,
-                      },
-                    });
-                }
-              } catch (notificationError) {
-                console.error('Failed to create payment notifications:', notificationError);
-                // Don't fail the payment if notification creation fails
-              }
+              // Payment-specific notifications for all parties (seeker, breeder, admin)
+              await NotificationService.sendPaymentNotification(
+                txn.seeker_id,
+                txn.breeder_id,
+                paymentType,
+                'Listing', // Will be replaced with actual title if available
+                txn.amount,
+                applicationId,
+                txn.meta?.listing_id || '',
+                txn.id
+              );
             }
           }
         } catch (error) {

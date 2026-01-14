@@ -8,26 +8,20 @@ import {
   HStack,
   useBreakpointValue,
   IconButton,
-  Button,
-  Circle,
   Badge,
-  DrawerCloseButton,
-  DrawerHeader,
   useToast,
   Spacer,
 } from "@chakra-ui/react";
-import { MdDarkMode, MdLightMode } from "react-icons/md";
-import { useColorMode } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { FiBell, FiCheck, FiMenu } from "react-icons/fi";
+import { FiMenu } from "react-icons/fi";
 
 import { Logo } from "./Logo";
-import { NotificationsDrawer } from "./NotificationsDrawer";
 import { SearchInput } from "./SearchInput";
 import { Sidebar } from "./Sidebar";
 import { useEffect, useMemo, useState } from "react";
 import * as searchService from "lib/services/searchService";
-import { useCurrentUser, useUserProfileById, useUnreadNotificationsCount, useNotifications, useMarkAllNotificationsAsRead } from "lib/hooks/queries";
+import { useCurrentUser, useUserProfileById } from "lib/hooks/queries";
+
 
 const HeaderWithSearch = ({ rightElement }) => {
   const isDesktop = useBreakpointValue({
@@ -102,31 +96,6 @@ const HeaderWithSearch = ({ rightElement }) => {
     }
   };
 
-  const { data: unreadCount } = useUnreadNotificationsCount(userProfile?.id);
-
-  const { data: notifications, isLoading, error } = useNotifications(userProfile?.id);
-  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
-
-  const handleMarkAllAsRead = async () => {
-    if (!userProfile?.id) return;
-
-    try {
-      await markAllAsReadMutation.mutateAsync(userProfile.id);
-      toast({
-        title: 'All notifications marked as read',
-        status: 'success',
-        duration: 2000,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error updating notifications',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-      });
-    }
-  };
-
 
   return (
     <Box
@@ -188,7 +157,9 @@ const HeaderWithSearch = ({ rightElement }) => {
 
         {!showSearchBar && <Spacer />}
 
-        {rightElement}
+        <HStack spacing={2}>
+          {rightElement}
+        </HStack>
       </Flex>
 
 

@@ -14,9 +14,15 @@ import {
   useToast,
   Text,
   Box,
+  Switch,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useCreateUserBreed, useUpdateUserBreed, useDeleteUserBreed, useBreedImageUpload } from "../../hooks/queries/useUserBreeds";
+import {
+  useCreateUserBreed,
+  useUpdateUserBreed,
+  useDeleteUserBreed,
+  useBreedImageUpload,
+} from "../../hooks/queries/useUserBreeds";
 import { useCurrentUser } from "../../hooks/queries/useAuth";
 import { useDropZone } from "../../hooks/useDropZone";
 import { Dropzone } from "./Dropzone";
@@ -24,6 +30,7 @@ import { supabase } from "lib/supabase/client";
 import breedsData from "../../data/breeds_with_group_and_traits.json";
 import { Select } from "chakra-react-select";
 import { UserBreed } from "../../db/schema";
+import { PetTypePicker } from "./PetTypePicker";
 
 interface BreedFormProps {
   isOpen: boolean;
@@ -34,10 +41,11 @@ interface BreedFormProps {
 export const BreedForm = ({
   isOpen,
   onClose,
-  editingBreed
+  editingBreed,
 }: BreedFormProps) => {
   const toast = useToast();
   const [selectedBreed, setSelectedBreed] = useState<any>(null);
+  const [selectedPetType, setSelectedPetType] = useState<string>("dog");
   const [breedImages, setBreedImages] = useState<File[] | string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,32 +54,43 @@ export const BreedForm = ({
 
   useEffect(() => {
     if (editingBreed) {
-      const breed = breedsData.find((breed) => breed.name === editingBreed.breeds?.name);
+      const breed = breedsData.find(
+        (breed) => breed.name === editingBreed.breeds?.name
+      );
 
       if (breed) {
         setSelectedBreed(breed);
       }
 
-      setBreedImages(editingBreed.images as string[] || []);
+      if (editingBreed.pet_type) {
+        setSelectedPetType(editingBreed.pet_type);
+      }
 
+      setBreedImages((editingBreed.images as string[]) || []);
     }
   }, [editingBreed]);
   // Get current user for image upload
   const { data: currentUser } = useCurrentUser();
 
-  const breedOptions = breedsData.map((breed) => ({
-    label: breed.name,
-    value: breed.name, // Use name as value for selection
-    breed: breed,
-  }));
+  const breedOptions = breedsData
+    .filter((breed) => {
+      // If we have a way to filter breedsData by pet type, do it here.
+      // For now, breedsData is all dogs.
+      return selectedPetType === "dog";
+    })
+    .map((breed) => ({
+      label: breed.name,
+      value: breed.name, // Use name as value for selection
+      breed: breed,
+    }));
 
   // Image upload hook
   const { uploadImages, uploading } = useBreedImageUpload({
-    userId: currentUser?.id || '',
-    breedId: selectedBreed?.id || '',
+    userId: currentUser?.id || "",
+    breedId: selectedBreed?.id || "",
     onUploadComplete: (urls) => {
-      console.log('Images uploaded successfully:', urls);
-    }
+      console.log("Images uploaded successfully:", urls);
+    },
   });
 
   // Dropzone hook for file selection
@@ -79,7 +98,7 @@ export const BreedForm = ({
     selectedImages: breedImages,
     setSelectedImages: setBreedImages,
     maxFiles: 5,
-    acceptedTypes: ['image/jpeg', 'image/png', 'image/webp']
+    acceptedTypes: ["image/jpeg", "image/png", "image/webp"],
   });
 
   const onSelectBreed = (selectedOption: any) => {
@@ -106,9 +125,9 @@ export const BreedForm = ({
 
     try {
       const { data: dbBreed, error: findError } = await supabase
-        .from('breeds')
-        .select('id')
-        .eq('name', selectedBreed.name)
+        .from("breeds")
+        .select("id")
+        .eq("name", selectedBreed.name)
         .single();
 
       if (findError) throw new Error(`Breed not found: ${selectedBreed.name}`);
@@ -116,7 +135,8 @@ export const BreedForm = ({
       // Create new breed association
       const newUserBreed = await createUserBreed.mutateAsync({
         breed_id: dbBreed.id,
-        is_owner: true
+        is_owner: true,
+        pet_type: selectedPetType,
       });
 
       const uploadedUrls = await uploadImages(selectedImages as File[]);
@@ -124,13 +144,15 @@ export const BreedForm = ({
       if (uploadedUrls.length > 0 && newUserBreed?.id) {
         await updateUserBreed.mutateAsync({
           id: newUserBreed.id,
-          updates: { images: uploadedUrls }
+          updates: { images: uploadedUrls },
         });
       }
 
       toast({
         title: "Success",
-        description: `Breed ${editingBreed ? 'updated' : 'added'} successfully.`,
+        description: `Breed ${
+          editingBreed ? "updated" : "added"
+        } successfully.`,
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -148,18 +170,22 @@ export const BreedForm = ({
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   const handleUpdate = async () => {
     setIsSubmitting(true);
 
-    const retainedPhotos = (selectedImages as any[]).filter((image) => typeof image === 'string');
+    const retainedPhotos = (selectedImages as any[]).filter(
+      (image) => typeof image === "string"
+    );
 
     const deletedPhotos = editingBreed.images.filter((image: string) => {
-      !retainedPhotos.includes(image)
+      !retainedPhotos.includes(image);
     });
 
-    const newPhotos = (selectedImages as any[]).filter((image) => image instanceof File);
+    const newPhotos = (selectedImages as any[]).filter(
+      (image) => image instanceof File
+    );
 
     try {
       let uploadedUrls = [];
@@ -169,17 +195,19 @@ export const BreedForm = ({
 
       if (deletedPhotos.length > 0) {
         const { error: deleteError } = await supabase.storage
-          .from('breed-images')
+          .from("breed-images")
           .remove(deletedPhotos);
 
-        if (deleteError) throw new Error(`Failed to delete images: ${deleteError.message}`);
+        if (deleteError)
+          throw new Error(`Failed to delete images: ${deleteError.message}`);
       }
 
       await updateUserBreed.mutateAsync({
         id: editingBreed.id,
         updates: {
           images: [...retainedPhotos, ...uploadedUrls],
-        }
+          pet_type: selectedPetType,
+        },
       });
 
       toast({
@@ -190,8 +218,6 @@ export const BreedForm = ({
         isClosable: true,
       });
       onClose();
-
-
     } catch (error) {
       console.error("Error updating breed:", error);
       toast({
@@ -200,28 +226,39 @@ export const BreedForm = ({
         status: "error",
         duration: 5000,
         isClosable: true,
-      })
+      });
     } finally {
       setIsSubmitting(false);
     }
-
-
-  }
+  };
 
   return (
-    <Modal isCentered isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
+    <Modal
+      isCentered
+      isOpen={isOpen}
+      onClose={onClose}
+      size="xl"
+      scrollBehavior="inside"
+    >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>
-          {editingBreed ? 'Edit Breed' : 'Add Breed '}
-        </ModalHeader>
+        <ModalHeader>{editingBreed ? "Edit Breed" : "Add Breed "}</ModalHeader>
         <ModalCloseButton />
 
         <ModalBody>
           <VStack spacing={6} align="stretch">
             <Text color="gray.600">
-              {editingBreed ? 'Edit' : 'Select'} the breed you offer and add photos
+              {editingBreed ? "Edit" : "Select"} the breed you offer and add
+              photos
             </Text>
+
+            <FormControl>
+              <FormLabel fontWeight="semibold">Pet Type</FormLabel>
+              <PetTypePicker
+                value={selectedPetType}
+                onChange={(types) => setSelectedPetType(types[0])}
+              />
+            </FormControl>
 
             <FormControl>
               <FormLabel htmlFor="breed" fontWeight="semibold">
@@ -231,7 +268,11 @@ export const BreedForm = ({
                 placeholder="Select breed..."
                 colorScheme="brand"
                 options={breedOptions}
-                value={selectedBreed ? { label: selectedBreed.name, value: selectedBreed.id } : null}
+                value={
+                  selectedBreed
+                    ? { label: selectedBreed.name, value: selectedBreed.id }
+                    : null
+                }
                 onChange={onSelectBreed}
                 isDisabled={editingBreed}
               />
@@ -252,13 +293,11 @@ export const BreedForm = ({
                 maxUploads={4}
               />
             </Box>
-
           </VStack>
         </ModalBody>
 
         <ModalFooter>
           <HStack spacing={3}>
-
             <Button variant="ghost" onClick={onClose}>
               Cancel
             </Button>
@@ -268,7 +307,7 @@ export const BreedForm = ({
               isLoading={isSubmitting}
               loadingText="Saving..."
             >
-              {editingBreed ? 'Update Breed' : 'Add Breed '}
+              {editingBreed ? "Update Breed" : "Add Breed "}
             </Button>
           </HStack>
         </ModalFooter>

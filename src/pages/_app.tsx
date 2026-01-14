@@ -5,10 +5,12 @@ import { DefaultSeo } from "next-seo";
 import { RecoilRoot } from "recoil";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { NovuProvider } from "@novu/react";
 
 import defaultSEOConfig from "../../next-seo.config";
 import { Chakra } from "lib/components/Chakra";
 import Layout from "lib/components/layout/index";
+import NovuWrapper from "lib/components/NovuWrapper";
 
 import "lib/styles/globals.css";
 
@@ -45,9 +47,11 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           </Head>
           <DefaultSeo {...defaultSEOConfig} />
 
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <NovuWrapper>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </NovuWrapper>
         </Chakra>
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>

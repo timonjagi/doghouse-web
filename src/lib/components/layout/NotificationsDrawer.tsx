@@ -1,82 +1,87 @@
-import React from 'react';
 import {
   Box,
   VStack,
-  Heading,
+  Flex,
+  useColorModeValue as mode,
   Text,
-  Button,
+  Badge,
+  HStack,
   Spinner,
   Alert,
   AlertIcon,
-  useToast,
-  Link,
-  Flex,
-  useColorModeValue as mode,
 } from '@chakra-ui/react';
-import { FiBell, FiCheck } from 'react-icons/fi';
 import { useRouter } from 'next/router';
+import { Notification } from '../../db/schema';
+import { useMarkNotificationAsRead } from '../../hooks/queries';
 
-import {
-  useNotifications,
-  useMarkNotificationAsRead,
-  useMarkAllNotificationsAsRead,
-  useUnreadNotificationsCount,
-} from '../../../lib/hooks/queries/useNotifications';
-import { Notification, User } from '../../db/schema';
-import { NotificationCard } from '../ui/NotificationCard';
 interface NotificationsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  notifications: Notification[];
-  isLoading: boolean;
-  error: any;
-  unreadCount: number;
+  notifications?: Notification[];
+  isLoading?: boolean;
+  error?: any;
 }
 
 export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
   isOpen,
   onClose,
-  notifications,
-  isLoading,
+  notifications = [],
+  isLoading = false,
   error,
-  unreadCount,
 }) => {
   const router = useRouter();
-
   const markAsReadMutation = useMarkNotificationAsRead();
 
-
   const handleNotificationClick = async (notification: Notification) => {
-    // Mark as read if not already read
+    // Mark as read
     if (!notification.is_read) {
       await markAsReadMutation.mutateAsync(notification.id);
     }
 
-    // Navigate based on notification type and data
-    if (notification.type === 'payment_completed' || notification.type === 'payment_received') {
-      // For payment notifications, navigate to transactions page
-      router.push('/dashboard/account/billing');
-    } else if ((notification.meta as any)?.applicationId) {
-      // For application status changes, navigate to applications page
-      router.push(`/dashboard/adoptions/${(notification.meta as any).applicationId}`);
-    } else if ((notification.meta as any)?.listingId) {
-      router.push(`/dashboard/listings/${(notification.meta as any).listingId}`);
+    // Navigate to target if available
+    if (notification.target_type && notification.target_id) {
+      let path = '';
+      switch (notification.target_type) {
+        case 'adoption':
+        case 'application':
+          path = `/dashboard/adoptions/${notification.target_id}`;
+          break;
+        case 'listing':
+          path = `/listings/${notification.target_id}`;
+          break;
+        case 'conversation':
+          path = `/dashboard/inbox/${notification.target_id}`;
+          break;
+        case 'user':
+          path = `/dashboard/profile`;
+          break;
+        default:
+          path = '/dashboard/notifications';
+      }
+
+      if (path) {
+        router.push(path);
+        onClose();
+      }
     }
-
-    // Close the drawer
-    onClose();
   };
 
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
 
-  const handleViewAll = () => {
-    router.push('/dashboard/account/notifications');
-    onClose();
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+
+    return date.toLocaleDateString();
   };
-
-
-
-  // Get only the latest 5 notifications for the drawer
-  const latestNotifications = notifications?.slice(0, 5) || [];
 
   return (
     <Flex
@@ -94,51 +99,53 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
         <Box flex={1} overflowY="auto">
           {isLoading ? (
             <Box p={8} textAlign="center">
-              <Spinner size="lg" color="blue.500" />
-              <Text mt={4}>Loading notifications...</Text>
+              <Spinner size="lg" />
+              <Text mt={4} color="gray.500">Loading notifications...</Text>
             </Box>
           ) : error ? (
-            <Alert status="error" m={4}>
-              <AlertIcon />
-              <Box>
-                <Text fontWeight="bold">Error loading notifications</Text>
-                <Text fontSize="sm">{error.message}</Text>
-              </Box>
-            </Alert>
-          ) : !notifications || notifications.length === 0 ? (
-            <Box textAlign="center" py={12} px={6}>
-              <FiBell size={48} color={mode('gray', 'gray')} />
-              <Heading size="sm" color={mode('gray.600', 'gray.400')} mt={4}>
-                No notifications yet
-              </Heading>
-              <Text color={mode('gray.500', 'gray.500')} mt={2} fontSize="sm">
-                You'll receive notifications about your applications and listings here.
-              </Text>
+            <Box p={4}>
+              <Alert status="error">
+                <AlertIcon />
+                Failed to load notifications
+              </Alert>
+            </Box>
+          ) : notifications.length === 0 ? (
+            <Box p={4} textAlign="center">
+              <Text color="gray.500">No notifications</Text>
             </Box>
           ) : (
-            <VStack spacing={0} align="stretch" p={4}>
-              {latestNotifications.map((notification) => (
-                <NotificationCard
+            <VStack spacing={0} align="stretch">
+              {notifications.map((notification) => (
+                <Box
                   key={notification.id}
-                  notification={notification}
-                  onClick={handleNotificationClick}
-                />
-              ))}
-
-              {/* View All Link */}
-              {notifications.length > 5 && (
-                <Box p={4} borderTop="1px solid" borderColor={mode('gray.200', 'gray.600')}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    width="full"
-                    onClick={handleViewAll}
-                    color="brand.500"
-                  >
-                    View All Notifications ({notifications.length})
-                  </Button>
+                  p={4}
+                  borderBottom="1px"
+                  borderColor={mode('gray.200', 'gray.600')}
+                  cursor="pointer"
+                  _hover={{ bg: mode('gray.50', 'gray.700') }}
+                  onClick={() => handleNotificationClick(notification)}
+                  bg={notification.is_read ? 'transparent' : mode('blue.50', 'blue.900')}
+                >
+                  <HStack spacing={3} align="start">
+                    {!notification.is_read && (
+                      <Badge colorScheme="blue" borderRadius="full" w={2} h={2} flexShrink={0} />
+                    )}
+                    <Box flex={1}>
+                      <HStack justify="space-between" mb={1}>
+                        <Text fontWeight={notification.is_read ? 'normal' : 'bold'} fontSize="sm">
+                          {notification.title || 'Notification'}
+                        </Text>
+                        <Text fontSize="xs" color="gray.500">
+                          {formatTime(notification.created_at.toString())}
+                        </Text>
+                      </HStack>
+                      <Text fontSize="sm" color={mode('gray.600', 'gray.400')}>
+                        {notification.body || 'Notification content'}
+                      </Text>
+                    </Box>
+                  </HStack>
                 </Box>
-              )}
+              ))}
             </VStack>
           )}
         </Box>

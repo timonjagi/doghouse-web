@@ -49,22 +49,14 @@ const Header = () => {
       position="sticky"
       top="0"
     >
-      <Container
-
-      >
+      <Container>
         <Flex justify="space-between" py={{ base: 2, md: 3 }} align="center">
           <Logo color="on-accent" />
-
 
           {isDesktop ? (
             <HStack spacing="4">
               <ButtonGroup variant="ghost-on-accent" spacing="1">
-
-                <Button
-                  rounded="full"
-                  as={Link}
-                  href="/"
-                >
+                <Button rounded="full" as={Link} href="/">
                   Home
                 </Button>
 
@@ -104,15 +96,23 @@ const Header = () => {
                 </Button>
                 <IconButton
                   icon={<FiHelpCircle fontSize="1.25rem" />}
-                  aria-label="Help Center"
+                  aria-label="FAQs"
+                  onClick={() => router.push("/faqs")}
                 />
-
               </ButtonGroup>
 
               <ButtonGroup variant="ghost-on-accent" spacing="1">
                 <IconButton
-                  icon={colorMode === 'light' ? <MdDarkMode fontSize="1.25rem" /> : <MdLightMode fontSize="1.25rem" />}
-                  aria-label={`Switch to ${colorMode === 'light' ? 'dark' : 'light'} mode`}
+                  icon={
+                    colorMode === "light" ? (
+                      <MdDarkMode fontSize="1.25rem" />
+                    ) : (
+                      <MdLightMode fontSize="1.25rem" />
+                    )
+                  }
+                  aria-label={`Switch to ${
+                    colorMode === "light" ? "dark" : "light"
+                  } mode`}
                   onClick={toggleColorMode}
                 />
                 {/* {user && (
@@ -142,10 +142,7 @@ const Header = () => {
                   </HStack>
                 )}
               </ButtonGroup>
-
             </HStack>
-
-
           ) : (
             <Flex align="center">
               {/* <IconButton
@@ -156,10 +153,22 @@ const Header = () => {
                 mr={3}
               /> */}
 
-              <ButtonGroup variant="ghost-on-accent" spacing="2" alignItems="center">
+              <ButtonGroup
+                variant="ghost-on-accent"
+                spacing="2"
+                alignItems="center"
+              >
                 <IconButton
-                  icon={colorMode === 'light' ? <FiMoon fontSize="1.25rem" /> : <FiSun fontSize="1.25rem" />}
-                  aria-label={`Switch to ${colorMode === 'light' ? 'dark' : 'light'} mode`}
+                  icon={
+                    colorMode === "light" ? (
+                      <FiMoon fontSize="1.25rem" />
+                    ) : (
+                      <FiSun fontSize="1.25rem" />
+                    )
+                  }
+                  aria-label={`Switch to ${
+                    colorMode === "light" ? "dark" : "light"
+                  } mode`}
                   onClick={toggleColorMode}
                   colorScheme="brand-on-accent"
                   variant="ghost-on-accent"
@@ -170,7 +179,6 @@ const Header = () => {
                   aria-label="Open Menu"
                   onClick={onToggle}
                 />
-
               </ButtonGroup>
               <Drawer
                 isOpen={isOpen}

@@ -43,6 +43,28 @@ export const useUnreadNotificationsCount = (userId?: string) => {
   });
 };
 
+// Query to get unread breed match notifications count
+export const useUnreadBreedMatchCount = (userId?: string) => {
+  return useQuery({
+    queryKey: queryKeys.notifications.unreadBreedMatchCount(userId),
+    queryFn: async (): Promise<number> => {
+      if (!userId) return 0;
+
+      const { count, error } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('is_read', false)
+        .eq('type', 'breed_match_found');
+
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!userId,
+    refetchInterval: 1000 * 30, // Refetch every 30 seconds
+  });
+};
+
 // Mutation to mark notification as read
 export const useMarkNotificationAsRead = () => {
   const queryClient = useQueryClient();
@@ -70,7 +92,7 @@ export const useMarkAllNotificationsAsRead = () => {
     mutationFn: async (userId: string) => {
       const { error } = await supabase
         .from('notifications')
-        .update({ read: true })
+        .update({ is_read: true })
         .eq('user_id', userId)
         .eq('is_read', false);
 

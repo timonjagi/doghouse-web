@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { supabase } from "lib/supabase/client";
 import { GoogleIcon } from "./ProviderIcons";
+import { useCreateUserProfile } from "lib/hooks/queries/useUserProfile";
 
 export const SignupForm = () => {
   const toast = useToast();
@@ -22,6 +23,8 @@ export const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const createUserProfileMutation = useCreateUserProfile();
 
   const handleEmailSignup = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -127,6 +130,8 @@ export const SignupForm = () => {
               duration: 5000,
             });
           }
+
+
 
           // Redirect to onboarding instead of login
           router.push("/onboarding");

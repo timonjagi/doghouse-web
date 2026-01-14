@@ -29,7 +29,7 @@ import { useState, useMemo } from "react";
 import { SortbySelect } from "lib/components/ui/SortBySelect";
 import { MdFilterList } from "react-icons/md";
 import { useRouter } from "next/router";
-import { BreedCard } from "lib/components/ui/BreedCard";
+import { BreedCard } from "lib/components/ui/BreedCard2";
 import { EmptyView } from "./EmptyView";
 import * as searchService from "lib/services/searchService";
 import { UserBreed, Breed } from "lib/db/schema";
@@ -41,7 +41,7 @@ export type UserBreedWithBreed = UserBreed & {
 
 interface BreedListProps {
   breeds: UserBreedWithBreed[];
-  userRole?: 'breeder' | 'seeker' | 'admin';
+  userRole?: "breeder" | "seeker" | "admin";
   onEditBreed?: () => void;
 
   // Display options
@@ -56,6 +56,7 @@ interface BreedListProps {
 
   // Custom handlers
   onBreedClick?: (userBreed: UserBreedWithBreed) => void;
+  onAdd?: () => void;
 
   // Empty state
   emptyMessage?: string;
@@ -63,7 +64,7 @@ interface BreedListProps {
 
 export const BreedList = ({
   breeds,
-  userRole = 'seeker',
+  userRole = "seeker",
   onEditBreed,
   columns = { base: 1, md: 2, lg: 4 },
   spacing = 6,
@@ -72,14 +73,17 @@ export const BreedList = ({
   showResultsCount = true,
   showSort = true,
   onBreedClick,
-  emptyMessage
+  onAdd,
+  emptyMessage,
 }: BreedListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const { isOpen, onToggle, onClose, onOpen } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, md: false });
-  const [showFiltersPanel, setShowFiltersPanel] = useState(isMobile ? false : true);
-  const bgColor = useColorModeValue('white', 'gray.800');
+  const [showFiltersPanel, setShowFiltersPanel] = useState(
+    isMobile ? false : true
+  );
+  const bgColor = useColorModeValue("white", "gray.800");
 
   const router = useRouter();
 
@@ -89,11 +93,14 @@ export const BreedList = ({
       const breed = userBreed.breeds;
       if (!breed) return false;
 
-      const matchesSearch = !showSearch || !searchTerm ||
+      const matchesSearch =
+        !showSearch ||
+        !searchTerm ||
         breed.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         breed.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesGroup = !showFilters || !selectedGroup || breed.group === selectedGroup;
+      const matchesGroup =
+        !showFilters || !selectedGroup || breed.group === selectedGroup;
 
       return matchesSearch && matchesGroup;
     });
@@ -113,9 +120,13 @@ export const BreedList = ({
   const handleBreedClick = (userBreed: UserBreedWithBreed) => {
     if (onBreedClick) {
       onBreedClick(userBreed);
-    } else if (userRole === 'seeker') {
-      router.push(`/dashboard/breeds/${userBreed.breeds?.name?.replace(/\s+/g, '-').toLowerCase()}`);
-    } else if (userRole === 'breeder') {
+    } else if (userRole === "seeker") {
+      router.push(
+        `/dashboard/breeds/${userBreed.breeds?.name
+          ?.replace(/\s+/g, "-")
+          .toLowerCase()}`
+      );
+    } else if (userRole === "breeder") {
       router.push(`/dashboard/breeds/${userBreed.id}`);
     }
   };
@@ -127,10 +138,20 @@ export const BreedList = ({
   if (breeds.length === 0) {
     return (
       <EmptyView
-        title={userRole === 'seeker' ? 'No breeds found' : 'No breeds available'}
-        description={userRole === 'seeker' ? 'Clear your search criteria to find breeds.' : 'Check back later for new listings.'}
-        ctaText={userRole === 'seeker' ? 'Clear Search' : 'Add Breed'}
-        ctaAction={userRole === 'seeker' ? () => searchService.resetSearchAndFilters() : () => router.push('/dashboard/breeds/add')}
+        title={
+          userRole === "seeker" ? "No breeds found" : "No breeds available"
+        }
+        description={
+          userRole === "seeker"
+            ? "Clear your search criteria to find breeds."
+            : "Check back later for new listings."
+        }
+        ctaText={userRole === "seeker" ? "Clear Search" : "Add Breed"}
+        ctaAction={
+          userRole === "seeker"
+            ? () => searchService.resetSearchAndFilters()
+            : () => router.push("/dashboard/breeds/add")
+        }
       />
     );
   }
@@ -150,7 +171,9 @@ export const BreedList = ({
             <Select
               placeholder="All Groups"
               value={selectedGroup}
-              onChange={(e) => { setSelectedGroup(e.target.value); }}
+              onChange={(e) => {
+                setSelectedGroup(e.target.value);
+              }}
               maxW="200px"
             >
               {breedGroups.map((group) => (
@@ -184,31 +207,59 @@ export const BreedList = ({
             </Text>
           )}
           {showSort && (
-            <SortbySelect
-              width="120px"
-              defaultValue="23"
-              placeholder="Sort"
-            />
+            <SortbySelect width="120px" defaultValue="23" placeholder="Sort" />
           )}
         </HStack>
       )}
 
-      {filteredBreeds.length > 0 ? (
+      {filteredBreeds.length > 0 || (onAdd && !searchTerm && !selectedGroup) ? (
         <SimpleGrid columns={columns} spacing={spacing}>
           {filteredBreeds.map((userBreed) => (
             <BreedCard
               key={userBreed.id}
               userBreed={userBreed}
-              userRole={userRole}
               onClick={() => handleBreedClick(userBreed)}
             />
           ))}
+
+          {onAdd && (
+            <Card
+              height="100%"
+              minH="300px"
+              cursor="pointer"
+              onClick={onAdd}
+              borderStyle="dashed"
+              borderWidth="2px"
+              borderColor="gray.300"
+              _hover={{ borderColor: "brand.500", shadow: "md" }}
+              bg="transparent"
+            >
+              <CardBody
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <IconButton
+                  aria-label="Add breed"
+                  icon={<SearchIcon transform="rotate(45deg)" />} // Using SearchIcon rotated as plus for now, or fetch FiPlus
+                  fontSize="3xl"
+                  variant="ghost"
+                  colorScheme="brand"
+                  isRound
+                  onClick={onAdd}
+                  mb={4}
+                />
+                <Text fontWeight="bold" fontSize="lg" color="gray.600">
+                  Add New Breed
+                </Text>
+              </CardBody>
+            </Card>
+          )}
         </SimpleGrid>
       ) : (
         <Center py={12}>
-          <Text color="gray.500">
-            No breeds found matching your criteria.
-          </Text>
+          <Text color="gray.500">No breeds found matching your criteria.</Text>
         </Center>
       )}
 
@@ -227,7 +278,10 @@ export const BreedList = ({
               setSelectedGroup={setSelectedGroup}
               breedGroups={breedGroups}
               isMobile={isMobile}
-              clearFilters={() => { setSelectedGroup(''); onClose() }}
+              clearFilters={() => {
+                setSelectedGroup("");
+                onClose();
+              }}
               onClose={onClose}
             />
           </DrawerContent>
@@ -247,12 +301,29 @@ interface FilterProps {
   onClose?: () => void;
 }
 
-const Filters = ({ bgColor, selectedGroup, setSelectedGroup, breedGroups, isMobile, clearFilters, onClose }: FilterProps) => {
+const Filters = ({
+  bgColor,
+  selectedGroup,
+  setSelectedGroup,
+  breedGroups,
+  isMobile,
+  clearFilters,
+  onClose,
+}: FilterProps) => {
   return (
-    <Card minW="200px" maxW={{ base: '100%', md: '300px' }} bg={bgColor} mr={{ base: 0, md: 4 }} borderRadius="lg" boxShadow="none">
-      <CardHeader >
+    <Card
+      minW="200px"
+      maxW={{ base: "100%", md: "300px" }}
+      bg={bgColor}
+      mr={{ base: 0, md: 4 }}
+      borderRadius="lg"
+      boxShadow="none"
+    >
+      <CardHeader>
         <HStack justify="space-between" align="center">
-          <Text fontSize="lg" fontWeight="semibold">Filters</Text>
+          <Text fontSize="lg" fontWeight="semibold">
+            Filters
+          </Text>
           <Button variant="ghost" size="sm" onClick={clearFilters}>
             Clear
           </Button>
@@ -261,11 +332,16 @@ const Filters = ({ bgColor, selectedGroup, setSelectedGroup, breedGroups, isMobi
       <CardBody>
         <Stack spacing={4}>
           <Stack>
-            <Text fontWeight="semibold" fontSize="md">Breed Group</Text>
+            <Text fontWeight="semibold" fontSize="md">
+              Breed Group
+            </Text>
             <Select
               placeholder="All Groups"
               value={selectedGroup}
-              onChange={(e) => { setSelectedGroup(e.target.value); if (isMobile) onClose(); }}
+              onChange={(e) => {
+                setSelectedGroup(e.target.value);
+                if (isMobile) onClose();
+              }}
             >
               {breedGroups.map((group) => (
                 <option key={group} value={group}>
@@ -277,5 +353,5 @@ const Filters = ({ bgColor, selectedGroup, setSelectedGroup, breedGroups, isMobi
         </Stack>
       </CardBody>
     </Card>
-  )
+  );
 };

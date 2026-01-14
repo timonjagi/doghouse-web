@@ -111,7 +111,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
                       bg={`${getContextColor(conversation.contextType)}.500`}
                       color="white"
                     >
-                      {getContextIcon(conversation.contextType)}
+                      {/* {getContextIcon(conversation.contextType)} */}
                     </Avatar>
                     {!conversation.isRead && (
                       <Box
@@ -138,22 +138,23 @@ const ConversationList: React.FC<ConversationListProps> = ({
                         >
                           {conversation.title}
                         </Text>
-                        {conversation.contextType && (
-                          <Badge
-                            size="xs"
-                            colorScheme={getContextColor(conversation.contextType)}
-                            variant="subtle"
-                            fontSize="xs"
-                          >
-                            {conversation.contextType}
-                          </Badge>
-                        )}
+
                       </HStack>
                       <Text fontSize="xs" color="gray.500" flexShrink={0}>
                         {new Date(conversation.timestamp).toLocaleDateString()}
                       </Text>
                     </HStack>
 
+                    {conversation.contextType && (
+                      <Badge
+                        size="xs"
+                        colorScheme={getContextColor(conversation.contextType)}
+                        variant="subtle"
+                        fontSize="xs"
+                      >
+                        {conversation.contextType}
+                      </Badge>
+                    )}
                     <Text fontSize="xs" color="gray.600" noOfLines={1}>
                       {conversation.preview}
                     </Text>

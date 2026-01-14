@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from 'lib/supabase/client';
+import { supabaseServer as supabase } from 'lib/supabase/server';
 import * as https from 'https';
 import { config } from 'dotenv';
 config({ path: '.env.local' });

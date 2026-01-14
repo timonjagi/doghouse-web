@@ -3,7 +3,7 @@ import * as React from 'react'
 import { useRouter } from 'next/router'
 import { NavAction } from './NavAction'
 import { items } from './NavItemIcons'
-import { useCurrentUser, useUnreadNotificationsCount, useUserProfileById } from 'lib/hooks/queries'
+import { useCurrentUser, useUnreadNotificationsCount, useUnreadConversationsCount, useUserProfileById } from 'lib/hooks/queries'
 
 export const MobileBottomNav = () => {
   const router = useRouter()
@@ -24,7 +24,8 @@ export const MobileBottomNav = () => {
   React.useEffect(() => {
     setCurrentRoute(router.pathname);
   }, [router.pathname])
-  const { data: unreadCount } = useUnreadNotificationsCount(profile?.id);
+  const { data: unreadNotificationsCount } = useUnreadNotificationsCount(profile?.id);
+  const { data: unreadMessagesCount } = useUnreadConversationsCount(user?.id);
 
   // Don't render anything while auth is loading to prevent flash
   if (isAuthLoading) {
@@ -42,29 +43,35 @@ export const MobileBottomNav = () => {
       zIndex={10}
     >
       <SimpleGrid columns={5} padding="2">
-        {navItems.map((item, index) => (
-          <NavAction.Mobile
-            key={index}
-            label={item.label}
-            icon={item.icon}
-            href={item.href}
-            isActive={currentRoute === item.href}
-          >
-            {unreadCount > 0 && item.href.includes('inbox') && (
-              <Badge
-                rounded="full"
-                variant="subtle"
-                colorScheme="brand"
-                size="sm"
-                position="absolute"
-                top="-3"
-                right="-3"
-              >
-                {unreadCount}
-              </Badge>
-            )}
-          </NavAction.Mobile>
-        ))}
+        {navItems.map((item, index) => {
+          const isInbox = item.href.includes('inbox');
+          const badgeCount = isInbox ? unreadMessagesCount : 0;
+
+          return (
+            <NavAction.Mobile
+              key={index}
+              label={item.label}
+              icon={item.icon}
+              href={item.href}
+              isActive={currentRoute === item.href}
+              badge={
+                badgeCount > 0 ? (
+                  <Badge
+                    rounded="full"
+                    variant="subtle"
+                    colorScheme="brand"
+                    size="sm"
+                    position="absolute"
+                    top="-3"
+                    right="-3"
+                  >
+                    {badgeCount}
+                  </Badge>
+                ) : undefined
+              }
+            />
+          );
+        })}
       </SimpleGrid>
     </Box>
   )

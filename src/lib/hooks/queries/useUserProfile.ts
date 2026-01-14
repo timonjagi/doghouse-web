@@ -3,6 +3,7 @@ import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { User } from '../../db/schema';
 import { useCurrentUser } from './useAuth';
+import { NotificationService } from '../../services/notificationService';
 
 interface UpdateProfileData {
   display_name?: string;
@@ -86,6 +87,59 @@ export const useUpdateUserProfile = () => {
   });
 };
 
+// Mutation to create basic user profile (used during signup)
+export const useCreateUserProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userData: {
+      id: string;
+      email: string;
+      display_name?: string;
+      role?: string;
+    }) => {
+      const { data, error } = await supabase
+        .from('users')
+        .insert([
+          {
+            id: userData.id,
+            email: userData.email,
+            display_name: userData.display_name || userData.email.split('@')[0],
+            role: userData.role || 'seeker',
+            is_verified: false,
+            onboarding_completed: false,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: async (data) => {
+      // Send welcome and admin notifications using the service
+      await Promise.all([
+        NotificationService.sendWelcomeNotification(
+          data.id,
+          data.display_name || data.email.split('@')[0],
+          data.email
+        ),
+        NotificationService.sendNewUserSignupNotification(
+          data.id,
+          data.display_name || data.email.split('@')[0],
+          data.email,
+          data.role || 'seeker'
+        ),
+      ]);
+
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile(data.id) });
+    },
+  });
+
+};
+
 // Mutation to upload profile photo
 export const useUploadProfilePhoto = () => {
   const queryClient = useQueryClient();
@@ -108,17 +162,17 @@ export const useUploadProfilePhoto = () => {
         .from('profile-photos')
         .getPublicUrl(`user-${user.id}/${fileName}`);
 
+      return publicUrl;
+    },
+    onSuccess: async (avatarUrl) => {
       // Update user profile with new avatar URL
       const { error: updateError } = await supabase
         .from('users')
-        .update({ profile_photo_url: publicUrl })
+        .update({ profile_photo_url: avatarUrl })
         .eq('id', user.id);
 
       if (updateError) throw updateError;
 
-      return publicUrl;
-    },
-    onSuccess: (avatarUrl) => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.users.currentProfile(user?.id) });

@@ -7,7 +7,7 @@ import { formatPrice } from './PriceTag'
 import { SizePicker } from './SizePicker'
 import { FilterPopoverButton, FilterPopoverContent } from './FilterPopover'
 import { useFilterState } from './useFilterState'
-import PetTypePicker from './PetTypePicker'
+import { PetTypePicker } from './PetTypePicker'
 import { useRouter } from 'next/router'
 import * as searchService from 'lib/services/searchService'
 

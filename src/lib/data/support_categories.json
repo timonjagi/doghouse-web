@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Account & Verification",
+    "description": "Questions about creating accounts, verification, and profile management",
+    "icon": "FiUser",
+    "sort_order": 1
+  },
+  {
+    "name": "Finding Pets",
+    "description": "Questions about browsing listings, breeds, and discovering available pets",
+    "icon": "FiSearch",
+    "sort_order": 2
+  },
+  {
+    "name": "Applications & Adoption",
+    "description": "Questions about the adoption process, applications, and what happens next",
+    "icon": "FiFileText",
+    "sort_order": 3
+  },
+  {
+    "name": "Payments & Reservations",
+    "description": "Questions about reservation fees, payment process, and refunds",
+    "icon": "FiDollarSign",
+    "sort_order": 4
+  },
+  {
+    "name": "Messaging & Communication",
+    "description": "Questions about WhatsApp integration, in-app messaging, and notifications",
+    "icon": "FiMessageCircle",
+    "sort_order": 5
+  },
+  {
+    "name": "Technical Issues",
+    "description": "Questions about login problems, page errors, and account access",
+    "icon": "FiSettings",
+    "sort_order": 6
+  }
+]

@@ -37,20 +37,10 @@ import Link from "next/link";
 
 const AccountPage = () => {
   const { data: user, isLoading, error } = useCurrentUser();
-  const { data: profile, isLoading: profileLoading, error: profileError } = useUserProfileById(user?.id as string);
+  const { data: userProfile, isLoading: profileLoading, error: profileError } = useUserProfileById(user?.id as string);
 
   const router = useRouter();
   const toast = useToast();
-
-  const userProfile = profile || user ? {
-    id: user.id,
-    display_name: user.user_metadata?.display_name,
-    avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.profile_photo_url,
-    profile_photo_url: user.user_metadata?.avatar_url || user.user_metadata?.profile_photo_url,
-    email: user.email,
-    role: user.user_metadata?.role,
-    location_text: user.user_metadata?.location_text || user.user_metadata?.location,
-  } : null;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
@@ -80,11 +70,11 @@ const AccountPage = () => {
     return 0;
   };
   // Show loading state while fetching user profile
-  if (isLoading) {
+  if (isLoading || profileLoading) {
     return <Loader />;
   }
 
-  if (error || (!isLoading && !user)) {
+  if (error || profileError || !user || !userProfile) {
     return (
       <Container maxW="6xl" py={8}>
         <Alert status="error">
