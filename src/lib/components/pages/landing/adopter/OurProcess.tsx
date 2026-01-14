@@ -8,6 +8,7 @@ import {
   Center,
   useBreakpointValue,
   Image,
+  useColorModeValue as mode,
 } from "@chakra-ui/react";
 import * as React from "react";
 import { useState } from "react";
@@ -57,13 +58,13 @@ const ProcessStep = (props: any) => {
       {...stackProps}
     >
       <Center
-        color="ierted"
+        color="white"
         flexShrink={0}
         boxSize={{
           base: 8,
           lg: 12,
         }}
-        bg={isActive ? "brand.600" : "accent"}
+        bg={isActive ? mode("brand.600", "brand.500") : mode("accent", "gray.700")}
         borderRadius="lg"
         fontSize={{
           base: "xl",
@@ -71,7 +72,7 @@ const ProcessStep = (props: any) => {
         }}
         transition="background-color 0.2s"
       >
-        <Icon as={step.icon} fontSize="1.25rem" color="on-accent" />
+        <Icon as={step.icon} fontSize="1.25rem" color="white" />
       </Center>
       <Stack
         spacing={{

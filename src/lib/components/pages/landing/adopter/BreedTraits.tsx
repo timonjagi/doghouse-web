@@ -7,6 +7,7 @@ import {
   Square,
   Stack,
   Text,
+  useColorModeValue as mode,
 } from "@chakra-ui/react";
 import { FaDog, FaCat, FaDove } from "react-icons/fa";
 import { GiRabbit } from "react-icons/gi";
@@ -111,8 +112,8 @@ export default function BreedTraits() {
                     base: "32",
                     lg: "48",
                   }}
-                  bg="accent"
-                  color="inverted"
+                  bg={mode("accent", "brand.500")}
+                  color={mode("white", "white")}
                   borderRadius="lg"
                 >
                   <Icon
