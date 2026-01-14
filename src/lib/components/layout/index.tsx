@@ -18,6 +18,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/login", layout: "auth" },
     { path: "/signup", layout: "auth" },
     { path: "/onboarding", layout: "auth" },
+    { path: "/partners", layout: "auth" },
   ];
 
   const headerFooterRoutes: any = [
@@ -107,7 +108,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">
       {layout === "auth" && (
-        <AuthLayout sidebarContent={<AuthSidebarContent role={userRole} />}>
+        <AuthLayout sidebarContent={matchedRoute !== 'onboarding' && <AuthSidebarContent role={userRole} />}>
           {children}
         </AuthLayout>
       )}
