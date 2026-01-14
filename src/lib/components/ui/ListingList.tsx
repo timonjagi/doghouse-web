@@ -29,7 +29,7 @@ import {
   useColorModeValue,
   IconButton,
 } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { AddIcon, SearchIcon } from '@chakra-ui/icons';
 import { MdFilterList } from 'react-icons/md';
 import ListingCard from 'lib/components/ui/ListingCard';
 import { Select } from 'chakra-react-select';
@@ -266,7 +266,7 @@ export const ListingList: React.FC<ListingListProps> = ({
           {onAdd && (
             <Card
               height="100%"
-              minH="380px"
+              aspectRatio="1/1"
               cursor="pointer"
               onClick={onAdd}
               borderStyle="dashed"
@@ -278,7 +278,7 @@ export const ListingList: React.FC<ListingListProps> = ({
               <CardBody display="flex" flexDirection="column" alignItems="center" justifyContent="center">
                 <IconButton
                   aria-label="Add listing"
-                  icon={<SearchIcon transform="rotate(45deg)" />}
+                  icon={<AddIcon />}
                   fontSize="3xl"
                   variant="ghost"
                   colorScheme="brand"

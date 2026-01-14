@@ -24,7 +24,7 @@ export const BreedCard = ({
   onClick,
 }: any) => {
   const breed = userBreed.breeds || userBreed;
-  const imageSrc = userBreed?.images?.[0] || breed?.featured_image_url;
+  const imageSrc = breed?.images?.[0] || breed?.featured_image_url;
 
   const getDetailUrl = () => {
     if (userBreed?.id) {

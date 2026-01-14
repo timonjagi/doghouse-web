@@ -195,7 +195,9 @@ const UnifiedSearchPage = () => {
   }
 
   const handleBreedClick = (breedName: string) => {
-    router.push(`/dashboard/breeds/${encodeURIComponent(breedName)}`)
+    router.push(`/dashboard/breeds/${encodeURIComponent(
+      breedName?.toLowerCase().replaceAll(" ", "-") || ""
+    )}`)
   }
 
   const bgColor = useColorModeValue('white', 'gray.800');
