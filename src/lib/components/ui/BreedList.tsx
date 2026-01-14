@@ -24,7 +24,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { SearchIcon } from "@chakra-ui/icons";
+import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 import { useState, useMemo } from "react";
 import { SortbySelect } from "lib/components/ui/SortBySelect";
 import { MdFilterList } from "react-icons/md";
@@ -225,7 +225,7 @@ export const BreedList = ({
           {onAdd && (
             <Card
               height="100%"
-              minH="300px"
+              aspectRatio="1/1"
               cursor="pointer"
               onClick={onAdd}
               borderStyle="dashed"
@@ -242,7 +242,7 @@ export const BreedList = ({
               >
                 <IconButton
                   aria-label="Add breed"
-                  icon={<SearchIcon transform="rotate(45deg)" />} // Using SearchIcon rotated as plus for now, or fetch FiPlus
+                  icon={<AddIcon />}
                   fontSize="3xl"
                   variant="ghost"
                   colorScheme="brand"

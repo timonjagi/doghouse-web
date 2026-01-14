@@ -9,6 +9,7 @@ import {
   Text,
   Divider,
   Icon,
+  useColorModeValue as mode,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -105,14 +106,23 @@ export const SignupForm = () => {
         }
 
         if (signInData.user) {
-          // Create basic user profile using the hook
-          try {
-            await createUserProfileMutation.mutateAsync({
-              id: signInData.user.id,
-              email: email,
-              role: 'seeker', // Default role
-            });
-          } catch (profileError) {
+          // Get role from query parameters if available
+          const roleParam = router.query.role as string;
+          const userRole = roleParam === 'breeder' ? 'breeder' : roleParam === 'seeker' ? 'seeker' : null;
+
+          // Create basic user profile in the users table while authenticated
+          const { error: profileError } = await supabase
+            .from('users')
+            .insert([
+              {
+                id: signInData.user.id,
+                email: email,
+                is_verified: false,
+                role: userRole, // Include role if specified
+              },
+            ]);
+
+          if (profileError) {
             console.error('Error creating user profile:', profileError);
             toast({
               title: "Profile creation warning",
@@ -198,6 +208,10 @@ export const SignupForm = () => {
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            bg={mode('white', 'gray.700')}
+            borderColor={mode('gray.300', 'gray.600')}
+            _hover={{ borderColor: mode('gray.400', 'gray.500') }}
+            _focus={{ borderColor: 'brand.500', boxShadow: mode('0 0 0 1px var(--chakra-colors-brand-500)', '0 0 0 1px var(--chakra-colors-brand-500)') }}
           />
         </FormControl>
 
@@ -211,6 +225,10 @@ export const SignupForm = () => {
             placeholder="Create a password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            bg={mode('white', 'gray.700')}
+            borderColor={mode('gray.300', 'gray.600')}
+            _hover={{ borderColor: mode('gray.400', 'gray.500') }}
+            _focus={{ borderColor: 'brand.500', boxShadow: mode('0 0 0 1px var(--chakra-colors-brand-500)', '0 0 0 1px var(--chakra-colors-brand-500)') }}
           />
         </FormControl>
 
@@ -224,6 +242,10 @@ export const SignupForm = () => {
             placeholder="Confirm your password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            bg={mode('white', 'gray.700')}
+            borderColor={mode('gray.300', 'gray.600')}
+            _hover={{ borderColor: mode('gray.400', 'gray.500') }}
+            _focus={{ borderColor: 'brand.500', boxShadow: mode('0 0 0 1px var(--chakra-colors-brand-500)', '0 0 0 1px var(--chakra-colors-brand-500)') }}
           />
         </FormControl>
 

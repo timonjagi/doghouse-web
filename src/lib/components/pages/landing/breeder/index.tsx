@@ -7,10 +7,13 @@ import { Blog } from "./Blog";
 import BreedTraits from "./BreedTraits";
 import Hero from "./Hero";
 import { Process } from "./OurProcess";
-import { OurBreeds } from "./Breeds";
+import { OurPets } from "./Breeds";
 import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
 import WhyDoghouse from "./WhyDoghouse";
+import { LandingFAQs } from "lib/components/ui/LandingFAQs";
+import { Cta } from "./Cta";
+import { LogoGrid } from "./LogoGrid";
 
 const Home = () => {
   return (
@@ -27,7 +30,7 @@ const Home = () => {
 
         <BreedTraits />
 
-        <OurBreeds />
+        {/* <OurPets /> */}
 
         <Process />
 
@@ -35,12 +38,19 @@ const Home = () => {
 
         <WhyDoghouse />
 
-        <Testimonials />
+        <LogoGrid />
 
-        {/* <Cta /> */}
+        {/* <Testimonials /> */}
+
+        <LandingFAQs
+          title="Common Questions from Partners"
+          description="Everything you need to know about managing your kennel or shelter and connecting with seekers on Pethouse Kenya."
+        />
+
+        <Cta />
 
         {/* <CtaWithImage /> */}
-        {/* <LogoGrid /> */}
+
 
         <Blog />
       </Flex>

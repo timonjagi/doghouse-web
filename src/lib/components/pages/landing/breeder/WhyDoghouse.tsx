@@ -9,28 +9,27 @@ import {
   Image,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { FaHeartbeat } from "react-icons/fa";
-import { MdBlock, } from "react-icons/md";
-import { GrUserExpert } from "react-icons/gr";
+import { GiDogHouse } from "react-icons/gi";
+import { FiUserCheck, FiCreditCard } from "react-icons/fi";
 
 export const steps = [
   {
-    name: "Health Guarantee",
+    name: "Kennel & Shelter Management",
     description:
-      "Our health guarantee ensures that every puppy is thoroughly vetted and comes with a clean bill of health. We're committed to providing you with a happy and healthy companion.",
-    icon: FaHeartbeat,
+      "All-in-one platform to manage your listings, adoptions, and communications with ease.",
+    icon: GiDogHouse,
   },
   {
-    name: "No Puppy Mills",
+    name: "Verified Seekers",
     description:
-      "We're dedicated to animal welfare and only work with reputable breeders who prioritize the health and well-being of their puppies. No puppy mills or irresponsible breeding practices here!",
-    icon: MdBlock,
+      "We pre-screen and verify potential adopters to ensure your pets are going to responsible, loving homes.",
+    icon: FiUserCheck,
   },
   {
-    name: "Expert Advice",
+    name: "Secure Transactions",
     description:
-      "Our expert team of dog experts will provide you with personalized advice on the best breed for you, your lifestyle, and your needs. We're here to guide you every step of the way.",
-    icon: GrUserExpert,
+      "Our secure payment system handles deposits and Final payments, protecting both you and the adopter.",
+    icon: FiCreditCard,
   },
 ];
 
@@ -114,8 +113,7 @@ const WhyDoghouse = () => {
               }}
               color="muted"
             >
-              Finding a quality dog breed can be difficult, but Pethouse makes
-              it easy to find the perfect pup for your needs
+              Whether you're a professional breeder or a dedicated shelter, Pethouse provides the tools you need to manage your animals and find them the perfect homes.
             </Text>
           </Stack>
           <Stack

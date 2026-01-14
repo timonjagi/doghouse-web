@@ -89,6 +89,15 @@ const Header = () => {
                 <Button
                   rounded="full"
                   as={Link}
+                  aria-current={pathname.includes("partners") ? "page" : false}
+                  href="/partners"
+                >
+                  Partners
+                </Button>
+
+                <Button
+                  rounded="full"
+                  as={Link}
                   aria-current={pathname.includes("contact") ? "page" : false}
                   href="/contact"
                 >
@@ -110,9 +119,8 @@ const Header = () => {
                       <MdLightMode fontSize="1.25rem" />
                     )
                   }
-                  aria-label={`Switch to ${
-                    colorMode === "light" ? "dark" : "light"
-                  } mode`}
+                  aria-label={`Switch to ${colorMode === "light" ? "dark" : "light"
+                    } mode`}
                   onClick={toggleColorMode}
                 />
                 {/* {user && (
@@ -158,6 +166,13 @@ const Header = () => {
                 spacing="2"
                 alignItems="center"
               >
+
+                <IconButton
+                  icon={<FiHelpCircle fontSize="1.25rem" />}
+                  aria-label="FAQs"
+                  onClick={() => router.push("/faqs")}
+                />
+
                 <IconButton
                   icon={
                     colorMode === "light" ? (
@@ -166,13 +181,13 @@ const Header = () => {
                       <FiSun fontSize="1.25rem" />
                     )
                   }
-                  aria-label={`Switch to ${
-                    colorMode === "light" ? "dark" : "light"
-                  } mode`}
+                  aria-label={`Switch to ${colorMode === "light" ? "dark" : "light"
+                    } mode`}
                   onClick={toggleColorMode}
                   colorScheme="brand-on-accent"
                   variant="ghost-on-accent"
                 />
+
 
                 <ToggleButton
                   isOpen={isOpen}
@@ -198,7 +213,7 @@ const Header = () => {
           )}
         </Flex>
       </Container>
-    </Box>
+    </Box >
   );
 };
 

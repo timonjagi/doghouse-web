@@ -7,32 +7,31 @@ import {
   Square,
   Stack,
   Text,
+  useColorModeValue as mode,
 } from "@chakra-ui/react";
-import { BsShieldShaded } from "react-icons/bs";
-import { GiFamilyHouse } from "react-icons/gi";
-import { MdApartment, MdSick } from "react-icons/md";
+import { FaDog, FaCat, FaDove } from "react-icons/fa";
+import { GiRabbit } from "react-icons/gi";
 
 const features = [
   {
-    name: "Apartment Dogs",
-    description: "Breeds well-suited for apartment living due to their calm nature and low exercise needs.",
-    icon: MdApartment,
+    name: "Dogs",
+    description: "Loyal companions for all lifestyles, from active protectors to gentle family friends.",
+    icon: FaDog,
   },
   {
-    name: "Family Dogs",
-    description: "Breeds perfect for families with children as they are gentle, loving, and patient.",
-    icon: GiFamilyHouse,
+    name: "Cats",
+    description: "Independent yet affectionate friends, perfect for apartment living and cozy homes.",
+    icon: FaCat,
   },
   {
-    name: "Guard Dogs",
-    description: "Breeds naturally protective of their family and territory, making them great watchdogs.",
-    icon: BsShieldShaded,
+    name: "Rodents",
+    description: "Small, low-maintenance pets highlighting unique personalities and gentle temperaments.",
+    icon: GiRabbit,
   },
-
   {
-    name: "Hypoallergenic Dogs",
-    description: "Breeds with low-shedding or single-layered coats, making them ideal for people with allergies.",
-    icon: MdSick,
+    name: "Birds",
+    description: "Intelligent and vibrant companions that bring melody and charm to your home.",
+    icon: FaDove,
   },
 ];
 
@@ -68,10 +67,10 @@ export default function BreedTraits() {
                 fontWeight="semibold"
                 color="accent"
               >
-                Breeds
+                Pet Categories
               </Text>
               <Heading size={{ base: "sm", md: "md" }}>
-                Choose From 100+ Dog Breeds
+                Choose From Multiple Pet Types
               </Heading>
             </Stack>
             <Text
@@ -83,7 +82,7 @@ export default function BreedTraits() {
               maxW="3xl"
             >
               We are passionate about matching you with the right pet, whether
-              you&apos;re looking for an obedient family pet or a guard dog.
+              you're looking for an obedient small animal or a large companion.
             </Text>
           </Stack>
           <SimpleGrid
@@ -113,8 +112,8 @@ export default function BreedTraits() {
                     base: "32",
                     lg: "48",
                   }}
-                  bg="accent"
-                  color="inverted"
+                  bg={mode("accent", "brand.500")}
+                  color={mode("white", "white")}
                   borderRadius="lg"
                 >
                   <Icon

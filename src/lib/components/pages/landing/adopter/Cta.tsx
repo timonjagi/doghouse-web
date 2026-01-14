@@ -7,6 +7,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import Link from "next/link";
 
 export const Cta = () => {
   return (
@@ -14,18 +15,26 @@ export const Cta = () => {
       <Container py={{ base: '16', md: '24' }}>
         <Stack spacing={{ base: '8', md: '10' }}>
           <Stack spacing={{ base: '4', md: '5' }} align="center">
-            <Heading size={useBreakpointValue({ base: 'md', md: 'lg' })}>Ready to Start your Journey?</Heading>
+            <Heading size={useBreakpointValue({ base: 'md', md: 'lg' })}>Are you a Breeder or Shelter?</Heading>
             <Text color="on-accent-muteed" maxW="2xl" textAlign="center" fontSize="xl">
-              No credit card is required. You&apos;ll be ready to go within a
-              few minutes. Let&apos;s go.
+              Join our network of trusted partners. Manage your kennel or shelter efficiently and connect with loving families looking for their next pet.
             </Text>
           </Stack>
           <Stack spacing="3" direction={{ base: 'column', sm: 'row' }} justify="center">
-            <Button colorScheme="brand"
-              size="lg">
-              Get Started
+            <Button
+              as={Link}
+              href="/signup?role=breeder"
+              colorScheme="on-accent"
+              size="lg"
+            >
+              Start for Free
             </Button>
-            <Button variant="brand-on-accent" size="lg">
+            <Button
+              as={Link}
+              href="/partners"
+              variant="brand-on-accent"
+              size="lg"
+            >
               Learn more
             </Button>
           </Stack>

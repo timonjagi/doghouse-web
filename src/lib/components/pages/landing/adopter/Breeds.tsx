@@ -16,47 +16,55 @@ import {
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 
-export const OurBreeds = () => {
-  const breeds = [
+export const OurPets = () => {
+  const pets = [
     {
       name: "Golden Retriever",
-      breedGroup: "sporting",
+      category: "Dogs",
       image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=dogs",
     },
     {
-      name: "Boerboel",
-      breedGroup: "working",
-      image: "images/breeds/doghousekenya_boerboel_1.jpg",
+      name: "Persian Cat",
+      category: "Cats",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=cats",
     },
     {
-      name: "Great Dane",
-      breedGroup: "working",
-      image: "images/breeds/doghousekenya_great_dane_1.jpg",
+      name: "Holland Lop Rabbit",
+      category: "Rodents",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=rodents",
     },
     {
-      name: "Maltese",
-      breedGroup: "toy",
-      image: "images/breeds/doghousekenya_maltese_1.jpg",
+      name: "African Grey Parrot",
+      category: "Birds",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=birds",
     },
     {
       name: "Siberian Husky",
-      breedGroup: "working",
+      category: "Dogs",
       image: "images/breeds/doghousekenya_siberian_husky_1.jpg",
+      exploreUrl: "/explore?category=dogs",
     },
     {
-      name: "Rottweiler",
-      breedGroup: "working",
-      image: "images/breeds/doghousekenya_rotweiler_1.jpg",
+      name: "Maine Coon",
+      category: "Cats",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=cats",
     },
     {
-      name: "Cocker Spaniel",
-      breedGroup: "sporting",
-      image: "images/breeds/doghousekenya_spaniel_1.jpg",
+      name: "Syrian Hamster",
+      category: "Rodents",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=rodents",
     },
     {
-      name: "Saint Bernard",
-      breedGroup: "working",
-      image: "images/breeds/doghousekenya_st_bernard_1.jpg",
+      name: "Cockatiel",
+      category: "Birds",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=birds",
     },
   ];
 
@@ -75,7 +83,7 @@ export const OurBreeds = () => {
                 mb={{ base: "3", md: "0" }}
                 color="white"
               >
-                Our Breeds
+                Our Pets
               </Heading>
               <HStack spacing={{ base: "2", md: "3" }}>
                 <Text
@@ -97,21 +105,18 @@ export const OurBreeds = () => {
               columns={{ base: 2, md: 3, lg: 4 }}
               gap={{ base: "4", md: "6", lg: "8" }}
             >
-              {breeds.map((breed) => (
+              {pets.map((pet) => (
                 <Box
                   position="relative"
-                  key={breed.name}
+                  key={pet.name}
                   borderRadius="xl"
                   overflow="hidden"
                 >
-                  <Link
-                    href={`/breeds?breedName=${breed.name}`}
-                    as={`/breeds/${breed.name.replaceAll(" ", "-")}`}
-                  >
+                  <Link href={pet.exploreUrl}>
                     <AspectRatio ratio={1}>
                       <Image
-                        src={breed.image}
-                        alt={breed.name}
+                        src={pet.image}
+                        alt={pet.name}
                         fallback={<Skeleton />}
                       />
                     </AspectRatio>
@@ -136,7 +141,7 @@ export const OurBreeds = () => {
                           fontWeight="semibold"
                           pb={0}
                         >
-                          {breed.name}
+                          {pet.name}
                         </Text>
 
                         <Text
@@ -145,7 +150,7 @@ export const OurBreeds = () => {
                           fontWeight="light"
                           pt={0}
                         >
-                          {breed.breedGroup} group
+                          {pet.category}
                         </Text>
                       </Stack>
                     </Box>

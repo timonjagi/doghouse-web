@@ -158,11 +158,11 @@ const ExploreOverview: React.FC = () => {
                             href:
                               page === "explore"
                                 ? `/explore/breeds/${encodeURIComponent(
-                                    breed?.name || ""
-                                  )}`
+                                  breed?.name || ""
+                                )}`
                                 : `/dashboard/breeds/${encodeURIComponent(
-                                    breed?.name || ""
-                                  )}`,
+                                  breed?.name || ""
+                                )}`,
                           })),
                         },
                         products: (popularBreeds || []).map((breed) => ({
@@ -170,11 +170,11 @@ const ExploreOverview: React.FC = () => {
                           href:
                             page === "explore"
                               ? `/explore/breeds/${encodeURIComponent(
-                                  breed?.name || ""
-                                )}`
+                                breed?.name || ""
+                              )}`
                               : `/dashboard/breeds/${encodeURIComponent(
-                                  breed?.name || ""
-                                )}`,
+                                breed?.name || ""
+                              )}`,
                           imageUrl: breed?.featured_image_url,
                         })),
                       }}
@@ -193,11 +193,11 @@ const ExploreOverview: React.FC = () => {
                             href:
                               page === "explore"
                                 ? `/explore/breeds/${encodeURIComponent(
-                                    breed?.name || ""
-                                  )}`
+                                  breed?.name || ""
+                                )}`
                                 : `/dashboard/search?q=${encodeURIComponent(
-                                    breed?.name || ""
-                                  )}`,
+                                  breed?.name || ""
+                                )}`,
                           })),
                         },
                         products: popularBreeds.map((breed) => ({
@@ -205,11 +205,11 @@ const ExploreOverview: React.FC = () => {
                           href:
                             page === "explore"
                               ? `/explore/breeds/${encodeURIComponent(
-                                  breed.name
-                                )}`
+                                breed.name
+                              )}`
                               : `/dashboard/search?q=${encodeURIComponent(
-                                  breed.name
-                                )}`,
+                                breed.name
+                              )}`,
                           imageUrl: breed.featured_image_url,
                         })),
                       }}
@@ -241,11 +241,11 @@ const ExploreOverview: React.FC = () => {
                             href:
                               page === "explore"
                                 ? `/explore/breeds/${encodeURIComponent(
-                                    breed.name
-                                  )}`
+                                  breed.name
+                                )}`
                                 : `/dashboard/breeds/${encodeURIComponent(
-                                    breed.name
-                                  )}`,
+                                  breed.name
+                                )}`,
                           })),
                         },
                         products: (popularListings || []).map((listing) => ({

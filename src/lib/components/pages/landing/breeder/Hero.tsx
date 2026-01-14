@@ -29,7 +29,7 @@ export default function Hero() {
         >
           <Box maxW="xl">
             <Heading as="h1" size="3xl" fontWeight="bold">
-              Find Your Perfect Furry Friend
+              Empowering Quality Breeders & Shelters
             </Heading>
             <Text
               fontSize={{
@@ -39,8 +39,7 @@ export default function Hero() {
               mt="4"
               maxW="lg"
             >
-              Discover your ideal furry companion and start a journey of love
-              and companionship
+              Streamline your kennel or shelter management and connect with a verified network of pet seekers.
             </Text>
             <Stack
               direction={{
@@ -52,7 +51,7 @@ export default function Hero() {
             >
               <Button
                 as={Link}
-                href="/breeds"
+                href="/signup?role=breeder"
                 variant="primary"
                 color="brand.500"
                 backgroundColor="brand.500"
@@ -64,7 +63,7 @@ export default function Hero() {
                 fontSize="md"
                 fontWeight="bold"
               >
-                <Text color="white">View Breeds</Text>
+                <Text color="white">Join as Breeder</Text>
               </Button>
               <HStack
                 as={Link}

@@ -22,21 +22,21 @@ import { ImProfile } from "react-icons/im";
 
 export const steps = [
   {
-    name: "Submit Your Application",
+    name: "Set Up Your Profile",
     description:
-      "Tell us about yourself, your lifestyle, and your preferred dog breed to help us understand your unique needs",
+      "Create your kennel or shelter profile, showcase your facilities, and list your available animals with detailed information and photos",
     icon: ImProfile,
   },
   {
-    name: "Meet Your New Pet",
+    name: "Match with Seekers",
     description:
-      "If a dog is available, we'll schedule a visit for you to meet your new furry friend and spend time with them to see if it's the perfect match",
+      "Review applications from verified pet seekers. Use our matching algorithm to find families that are truly ready for your specific animals",
     icon: GoListOrdered,
   },
   {
-    name: "Finalize the Adoption",
+    name: "Finalize the Placement",
     description:
-      "Once you've found your perfect match, we'll guide you through the adoption process",
+      "Communicate securely, arrange meet-and-greets, and finalize the adoption through our secure platform with confidence",
     icon: BsCheckCircleFill,
   },
 ];
@@ -91,14 +91,14 @@ const ProcessStep = (props: any) => {
 };
 
 const features = [
-  "Breed Recommendations",
-  "Tailored Matches",
-  "Personalized Offers",
-  "Secure Reservations",
-  "Exclusive Network",
-  "Community Support",
-  "Expert Advice",
-  "24/7 Customer Support",
+  "Kennel Management",
+  "Shelter CRM",
+  "Verified Adopters",
+  "Secure Payments",
+  "Direct Messaging",
+  "Waitlist Management",
+  "Health Record Tracking",
+  "Analytics Dashboard",
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -145,8 +145,7 @@ const FeatureCard = (props: any) => {
                 What&apos;s included
               </Text>
               <Text color="muted">
-                Personalized assistance to help you find your perfect dog and
-                make all necessary arrangements, with a satisfaction guarantee
+                Comprehensive tools to help you manage your breeding business or shelter operations, connect with qualified adopters, and handle transactions securely.
               </Text>
             </Stack>
             <SimpleGrid
@@ -220,7 +219,7 @@ export const Process = () => (
                 md: "md",
               })}
             >
-              Our Adoption Process
+              Our Partner Process
             </Heading>
 
             <Text
@@ -231,8 +230,7 @@ export const Process = () => (
               maxW="3xl"
               color="muted"
             >
-              From personalized recommendations to secure reservations,
-              we&apos;ve got you covered at every step.
+              We provide a structured path for breeders and shelters to find the right homes for their pets, ensuring quality and security at every step.
             </Text>
           </Stack>
         </Stack>

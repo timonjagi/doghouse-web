@@ -54,7 +54,13 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
     }
   }
   return (
-    <Card variant="outline" _hover={{ shadow: "md", transform: "translateY(-2px)" }} transition="all 0.2s">
+    <Card
+      variant="outline"
+      _hover={{ shadow: "md", transform: "translateY(-2px)" }}
+      transition="all 0.2s"
+      as={Link}
+      href={`/dashboard/breeders/${breeder.id}`}
+    >
       <CardBody>
         <Stack spacing={6}>
           <Stack
@@ -120,35 +126,6 @@ export const BreederCard: React.FC<BreederCardProps> = ({ breeder, showActions =
               </Badge>
             ))}
           </HStack>
-
-          {showActions && (
-            <ButtonGroup>
-
-              <Tooltip label="Get notified when this breeder posts new content">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  leftIcon={<FiBell />}
-                  isDisabled={!currentUser}
-                  title={!currentUser ? "Sign in to subscribe" : "Subscribe to breeder updates"}
-                  onClick={onSubscribe}
-                >
-                  Subscribe
-                </Button>
-              </Tooltip>
-
-              <Button
-                size="sm"
-                variant="primary"
-                w="full"
-                as={Link}
-                href={`/dashboard/breeders/${breeder.id}`}
-                rightIcon={<Icon as={FiArrowRight} />}
-              >
-                View Profile
-              </Button>
-            </ButtonGroup>
-          )}
         </Stack>
       </CardBody>
     </Card>

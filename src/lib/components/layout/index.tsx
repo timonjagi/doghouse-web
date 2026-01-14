@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { DashboardLayout } from "./SidebarLayout";
 import { HeaderFooterLayout } from "./HeaderFooterLayout";
 import AuthLayout from "./AuthLayout";
+import { AuthSidebarContent } from "./AuthSidebarContent";
 
 type LayoutProps = {
   children: ReactNode;
@@ -34,6 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/blog/[slug]", layout: "headerfooter" },
     { path: "/terms", layout: "headerfooter" },
     { path: "/privacy", layout: "headerfooter" },
+    { path: "/partners", layout: "headerfooter" },
   ];
 
   const dashboardRoutes = [
@@ -64,6 +66,8 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard/account/billing", layout: "dashboard" },
     { path: "/dashboard/account/preferences", layout: "dashboard" },
     { path: "/dashboard/support", layout: "dashboard" },
+    { path: "/dashboard/support/[id]", layout: "dashboard" },
+
 
     // Admin dashboard routes
     { path: "/dashboard/admin", layout: "dashboard" },
@@ -98,10 +102,18 @@ const Layout = ({ children }: LayoutProps) => {
 
   const { layout } = matchedRoute;
 
+  // Get role from query parameters for auth routes (signup)
+  const roleParam = router.query.role as string;
+  const userRole = roleParam === 'breeder' ? 'breeder' : roleParam === 'seeker' ? 'seeker' : null;
+
   // switch case
   return (
     <Box margin="0 auto" w="full" h="100vh" transition="0.5s ease-out">
-      {layout === "auth" && <AuthLayout>{children}</AuthLayout>}
+      {layout === "auth" && (
+        <AuthLayout sidebarContent={matchedRoute !== 'onboarding' && <AuthSidebarContent role={userRole} />}>
+          {children}
+        </AuthLayout>
+      )}
       {layout === "dashboard" && <DashboardLayout>{children}</DashboardLayout>}
       {layout === "headerfooter" && (
         <HeaderFooterLayout>{children}</HeaderFooterLayout>
