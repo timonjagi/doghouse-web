@@ -29,7 +29,7 @@ const Home = () => {
 
         <BreedTraits />
 
-        <OurPets />
+        {/* <OurPets /> */}
 
         <Process />
 
