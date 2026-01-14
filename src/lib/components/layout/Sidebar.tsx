@@ -56,6 +56,7 @@ const LOGGED_OUT_NAV = {
       items: [
         { label: "About", href: "/about", icon: FiBriefcase },
         { label: "Contact", href: "/contact", icon: FiInfo },
+        { label: "Partners", href: "/partners", icon: FiBriefcase },
       ],
     },
     {

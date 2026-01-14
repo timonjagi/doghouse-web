@@ -73,6 +73,12 @@ export const navigationConfig: NavigationConfig = {
           icon: FiUserCheck,
           ariaLabel: "View matches",
         },
+        {
+          label: "Adoptions",
+          href: "/dashboard/adoptions",
+          icon: LuDog,
+          ariaLabel: "View adoptions",
+        },
       ],
     },
     {
@@ -128,6 +134,13 @@ export const navigationConfig: NavigationConfig = {
           icon: FiHeart,
           ariaLabel: "Browse listings",
         },
+        {
+          label: "Adoptions",
+          href: "/dashboard/adoptions",
+          icon: LuDog,
+          ariaLabel: "View adoptions",
+        },
+
       ],
     },
     {
