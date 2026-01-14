@@ -412,15 +412,27 @@ export const ADOPTION_ACTION_CONFIGS = {
     requiresPayment: false,
     disabled: false,
   },
-  edit: {
-    label: "Edit Application",
-    buttonLabel: "Edit Application",
+  contact_support: {
+    label: "Contact Support",
+    buttonLabel: "Contact Support",
     variant: "outline",
-    colorScheme: "gray",
-    icon: EditIcon,
+    colorScheme: "blue",
+    icon: ChatIcon,
     requiresPayment: false,
     disabled: false,
   },
+  leave_review: {
+    label: "Leave Review",
+    buttonLabel: "Leave Review",
+    variant: "solid",
+    colorScheme: "purple",
+    icon: StarIcon,
+    requiresPayment: false,
+    disabled: false,
+  },
+
+
+
 } as const;
 
 // Hook for adoption timeline logic
@@ -435,6 +447,7 @@ export const useAdoptionTimelineLogic = ({
   transactions?: any[];
   statusHistory?: AdoptionStatusHistory[];
 }) => {
+
   const getTimelineSteps = (): TimelineStep[] => {
     if (!adoption) return [];
 
@@ -463,8 +476,8 @@ export const useAdoptionTimelineLogic = ({
         status: adoption.reservation_paid
           ? "completed"
           : ["approved", "completed"].includes(adoption.status)
-          ? "current"
-          : "locked",
+            ? "current"
+            : "locked",
         info: adoption.reservation_paid ? ["Reservation fee paid"] : undefined,
       },
       {
@@ -474,8 +487,8 @@ export const useAdoptionTimelineLogic = ({
         status: adoption.contract_signed
           ? "completed"
           : adoption.reservation_paid
-          ? "current"
-          : "locked",
+            ? "current"
+            : "locked",
         info: adoption.contract_signed ? ["Contract signed"] : undefined,
       },
       {
@@ -485,8 +498,8 @@ export const useAdoptionTimelineLogic = ({
         status: adoption.payment_completed
           ? "completed"
           : adoption.contract_signed
-          ? "current"
-          : "locked",
+            ? "current"
+            : "locked",
         info: adoption.payment_completed
           ? ["Final payment completed"]
           : undefined,
@@ -500,7 +513,7 @@ export const useAdoptionTimelineLogic = ({
     ];
 
     return steps;
-  };
+  }
 
   const steps = getTimelineSteps();
   const currentStepIndex = steps.findIndex((step) => step.status === "current");
@@ -528,19 +541,22 @@ export const getAvailableAdoptionActions = (
   if (isSeeker) {
     switch (adoption.status) {
       case "submitted":
-        actions.push("withdraw", "message");
+        actions.push("withdraw", "contact_support");
         break;
       case "approved":
         if (!adoption.reservation_paid) {
-          actions.push("reserve");
+          actions.push("reserve", "contact_support");
         }
-        actions.push("message", "withdraw");
+        actions.push("message", "contact_support");
         break;
       case "pending":
-        actions.push("message", "withdraw");
+        actions.push("withdraw", "contact_support");
         break;
       case "rejected":
-        actions.push("message");
+        actions.push("message", "contact_support");
+        break;
+      case "completed":
+        actions.push("leave_review", "contact_support");
         break;
     }
   }
@@ -549,20 +565,20 @@ export const getAvailableAdoptionActions = (
     switch (adoption.status) {
       case "submitted":
       case "pending":
-        actions.push("approve", "reject", "message");
+        actions.push("approve", "reject");
         break;
       case "approved":
-        actions.push("message");
+        actions.push("message", "contact_support");
         if (
           adoption.reservation_paid &&
           adoption.contract_signed &&
           !adoption.payment_completed
         ) {
-          actions.push("complete");
+          actions.push("complete", "contact_support");
         }
         break;
       case "completed":
-        actions.push("message");
+        actions.push("leave_review", "contact_support");
         break;
     }
   }
@@ -570,7 +586,7 @@ export const getAvailableAdoptionActions = (
   return actions
     .map((action) => ({
       ...ADOPTION_ACTION_CONFIGS[
-        action as keyof typeof ADOPTION_ACTION_CONFIGS
+      action as keyof typeof ADOPTION_ACTION_CONFIGS
       ],
       action,
     }))

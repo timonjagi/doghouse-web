@@ -506,6 +506,48 @@ export const support_ticket_attachments = pgTable(
   }
 );
 
+// REVIEWS SYSTEM
+export const reviews = pgTable("reviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  adoption_id: uuid("adoption_id")
+    .notNull()
+    .references(() => adoptions.id),
+  reviewer_id: uuid("reviewer_id")
+    .notNull()
+    .references(() => users.id), // seeker who completed adoption
+  breeder_id: uuid("breeder_id")
+    .notNull()
+    .references(() => users.id), // breeder being reviewed
+  rating: integer("rating").notNull(), // 1-5 star rating
+  title: varchar("title", { length: 255 }),
+  comment: text("comment"),
+  aspects: jsonb("aspects").$default(() => "{}"), // specific ratings for communication, health, etc.
+  is_anonymous: boolean("is_anonymous").notNull().default(false),
+  is_featured: boolean("is_featured").notNull().default(false),
+  helpful_votes: integer("helpful_votes").default(0),
+  flagged: boolean("flagged").notNull().default(false),
+  flag_reason: text("flag_reason"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// TESTIMONIALS (admin-managed for landing page)
+export const testimonials = pgTable("testimonials", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  author_name: varchar("author_name", { length: 255 }).notNull(),
+  author_role: varchar("author_role", { length: 100 }), // 'seeker', 'breeder', 'verified_breeder'
+  author_location: varchar("author_location", { length: 255 }),
+  author_avatar_url: text("author_avatar_url"),
+  content: text("content").notNull(),
+  rating: integer("rating"), // optional 1-5 rating
+  is_featured: boolean("is_featured").notNull().default(false),
+  sort_order: integer("sort_order").default(0),
+  is_active: boolean("is_active").notNull().default(true),
+  created_by: uuid("created_by").references(() => users.id), // admin user
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export type User = typeof users.$inferSelect;
 export type BreederProfile = typeof breeder_profiles.$inferSelect;
 export type SeekerProfile = typeof seeker_profiles.$inferSelect;
@@ -526,3 +568,5 @@ export type SupportTicket = typeof support_tickets.$inferSelect;
 export type SupportTicketComment = typeof support_ticket_comments.$inferSelect;
 export type SupportTicketAttachment =
   typeof support_ticket_attachments.$inferSelect;
+export type Review = typeof reviews.$inferSelect;
+export type Testimonial = typeof testimonials.$inferSelect;

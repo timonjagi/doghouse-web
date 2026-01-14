@@ -18,6 +18,7 @@ import {
   Stepper,
   useSteps,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import {
   AdoptionWithListing,
   AdoptionStatusHistory,
@@ -39,6 +40,8 @@ export const AdoptionTimeline = React.forwardRef<
   },
   AdoptionTimelineProps
 >((props, ref) => {
+  const router = useRouter();
+
   // Use the logic hook - no actions passed here anymore
   const { steps, currentStepIndex } = useAdoptionTimelineLogic({
     adoption: props.adoption,

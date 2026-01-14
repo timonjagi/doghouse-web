@@ -214,6 +214,35 @@ export const queryKeys = {
       ) as any,
   },
 
+  // Reviews system queries
+  reviews: {
+    all: (): readonly string[] => ["reviews"] as const,
+    lists: (): readonly string[] => ["reviews", "list"] as const,
+    list: (filters?: Record<string, unknown>): readonly string[] =>
+      ["reviews", "list", filters].filter(Boolean) as any,
+    detail: (id: string): readonly string[] =>
+      ["reviews", "detail", id] as const,
+    byAdoption: (adoptionId: string): readonly string[] =>
+      ["reviews", "adoption", adoptionId] as const,
+    byBreeder: (breederId: string): readonly string[] =>
+      ["reviews", "breeder", breederId] as const,
+    bySeeker: (seekerId: string): readonly string[] =>
+      ["reviews", "seeker", seekerId] as const,
+    breederStats: (breederId: string): readonly string[] =>
+      ["reviews", "breeder-stats", breederId] as const,
+  },
+
+  // Testimonials system queries
+  testimonials: {
+    all: (): readonly string[] => ["testimonials"] as const,
+    lists: (): readonly string[] => ["testimonials", "list"] as const,
+    list: (filters?: Record<string, unknown>): readonly string[] =>
+      ["testimonials", "list", filters].filter(Boolean) as any,
+    detail: (id: string): readonly string[] =>
+      ["testimonials", "detail", id] as const,
+    featured: (): readonly string[] => ["testimonials", "featured"] as const,
+  },
+
   // Support system queries
   support: {
     faqs: {
