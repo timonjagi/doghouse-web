@@ -12,7 +12,7 @@ import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
 import WhyDoghouse from "./WhyDoghouse";
 import { LandingFAQs } from "lib/components/ui/LandingFAQs";
-import { Cta } from "../adopter/Cta"; // Using the adopter CTA since it's more updated for partners
+import { Cta } from "./Cta";
 import { LogoGrid } from "./LogoGrid";
 
 const Home = () => {
@@ -30,7 +30,7 @@ const Home = () => {
 
         <BreedTraits />
 
-        <OurPets />
+        {/* <OurPets /> */}
 
         <Process />
 
@@ -40,7 +40,7 @@ const Home = () => {
 
         <LogoGrid />
 
-        <Testimonials />
+        {/* <Testimonials /> */}
 
         <LandingFAQs
           title="Common Questions from Partners"

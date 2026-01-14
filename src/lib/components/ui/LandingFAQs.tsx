@@ -28,7 +28,7 @@ export const LandingFAQs: React.FC<LandingFAQsProps> = ({
 
   return (
     <Box as="section" py={{ base: "16", md: "24" }} bg={mode("gray.50", "gray.900")}>
-      <Container maxW="5xl">
+      <Container maxW="7xl">
         <Stack spacing={{ base: "12", md: "16" }}>
           <Stack spacing="4" textAlign="center">
             <Heading

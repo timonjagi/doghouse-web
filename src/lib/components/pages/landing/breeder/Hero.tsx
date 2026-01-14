@@ -63,7 +63,7 @@ export default function Hero() {
                 fontSize="md"
                 fontWeight="bold"
               >
-                <Text color="white">Join as Partner</Text>
+                <Text color="white">Join as Breeder</Text>
               </Button>
               <HStack
                 as={Link}
