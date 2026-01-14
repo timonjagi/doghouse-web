@@ -94,7 +94,7 @@ const DashboardHome = () => {
       case 'breeder':
         return <BreederDashboardOverview />;
       case 'seeker':
-        return <SeekerExploreOverview />;
+        return <SeekerDashboardOverview profile={profile} />;
       case 'admin':
         return <AdminDashboardOverview />;
       default:
@@ -109,6 +109,7 @@ const DashboardHome = () => {
       <NextSeo title="Dashboard" />
 
       {renderRoleSpecificDashboardOverview()}
+
       <Modal
         onClose={onClose}
         isOpen={showWelcomeModal}

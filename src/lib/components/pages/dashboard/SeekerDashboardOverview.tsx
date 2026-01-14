@@ -3,12 +3,12 @@ import React from 'react';
 import SeekerExploreOverview from 'lib/components/ui/ExploreOverview';
 import EthicalQuestionairreCard from 'lib/components/ui/EthicalQuestionairreCard';
 
-const SeekerDashboardOverview: React.FC = () => {
+const SeekerDashboardOverview: React.FC<{ profile: any }> = ({ profile }) => {
 
   return (
     <Stack>
-      {/* 
-      <Box bg="bg-accent-subtle" px="4" py="5" borderRadius="lg">
+
+      {!profile?.profile_completed && <Box bg="bg-accent-subtle" px="4" py="5" borderRadius="lg">
         <Stack spacing="4">
           <Stack spacing="1">
             <Text fontSize="sm" fontWeight="medium" color="on-accent">
@@ -33,8 +33,8 @@ const SeekerDashboardOverview: React.FC = () => {
             </Button>
           </HStack>
         </Stack>
-      </Box> */}
-
+      </Box>
+      }
       <Box position="relative">
         <Image
           src="/images/hero_2.png"

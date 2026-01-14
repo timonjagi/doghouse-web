@@ -35,7 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/blog/[slug]", layout: "headerfooter" },
     { path: "/terms", layout: "headerfooter" },
     { path: "/privacy", layout: "headerfooter" },
-    { path: "/partners", layout: "auth" },
+    { path: "/partners", layout: "headerfooter" },
   ];
 
   const dashboardRoutes = [
