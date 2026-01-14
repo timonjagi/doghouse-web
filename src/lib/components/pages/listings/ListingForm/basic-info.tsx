@@ -14,6 +14,7 @@ import {
 import { ListingFormData } from '.';
 import { RadioCard } from 'lib/components/ui/RadioCard';
 import { RadioCardGroup } from 'lib/components/ui/RadioCardGroup';
+import { PetTypePicker } from 'lib/components/ui/PetTypePicker';
 
 interface BasicInfoStepProps {
   data: ListingFormData;
@@ -22,6 +23,12 @@ interface BasicInfoStepProps {
 
 export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, updateData }) => {
   const bgColor = useColorModeValue('gray.50', 'gray.700');
+
+  React.useEffect(() => {
+    if (!data.pet_type) {
+      updateData({ pet_type: 'dog' });
+    }
+  }, []);
 
 
   return (
@@ -39,6 +46,15 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, updateData }
           <VStack spacing={6} align="stretch">
 
 
+
+
+            <FormControl isRequired>
+              <FormLabel>Pet Type</FormLabel>
+              <PetTypePicker
+                value={data.pet_type || 'dog'}
+                onChange={(types) => updateData({ pet_type: types[0] })}
+              />
+            </FormControl>
 
             <FormControl isRequired>
               <FormLabel>Listing Type</FormLabel>

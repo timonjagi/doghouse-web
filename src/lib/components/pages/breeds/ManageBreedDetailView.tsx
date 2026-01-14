@@ -28,6 +28,7 @@ import {
 import { DeleteIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 import { BreedForm } from "../../ui/BreedForm";
+import ListingForm from "../listings/ListingForm";
 import { useDeleteUserBreed, useUserBreed } from "lib/hooks/queries/useUserBreeds";
 import { useListingsForUserBreed } from "lib/hooks/queries/useListings";
 import { Loader } from "lib/components/ui/Loader";
@@ -37,6 +38,7 @@ import { Gallery } from "lib/components/ui/GalleryWithCarousel/Gallery";
 import ListingList from "lib/components/ui/ListingList";
 import { PageHeaderWithTwoButtons } from "lib/components/ui/PageHeaderWithTwoButtons";
 import { useBreedersForBreed } from "lib/hooks/queries";
+import { useCurrentUser } from "lib/hooks/queries/useAuth";
 
 interface Breed {
   id: string;
@@ -50,6 +52,7 @@ const ManageBreedDetailView = () => {
   const router = useRouter();
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const toast = useToast();
+  const { data: user } = useCurrentUser();
 
   const { id } = router.query;
   const {
@@ -62,6 +65,7 @@ const ManageBreedDetailView = () => {
 
 
   const { isOpen: isFormOpen, onOpen: onFormOpen, onClose: onFormClose } = useDisclosure();
+  const { isOpen: isListingFormOpen, onOpen: onListingFormOpen, onClose: onListingFormClose } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
 
   const deleteUserBreed = useDeleteUserBreed();
@@ -160,8 +164,9 @@ const ManageBreedDetailView = () => {
                     emptyMessage="No Listings Added"
                     emptyDescription="Add a listing to your breed."
                     showEmptyAction={true}
-                    onEmptyAction={onFormOpen}
+                    onEmptyAction={onListingFormOpen}
                     emptyActionLabel="Add Listing"
+                    onAdd={onListingFormOpen}
                   />
                 </TabPanel>
 
@@ -186,6 +191,15 @@ const ManageBreedDetailView = () => {
           isOpen={isFormOpen}
           onClose={onFormClose}
           editingBreed={userBreed}
+        />
+
+        <ListingForm
+          isOpen={isListingFormOpen}
+          onClose={onListingFormClose}
+          userBreeds={[userBreed]} // Pass the current breed as the only option
+          userProfile={user || null} // Optional, depending on form needs
+          isEditing={false}
+          preselectedBreedId={userBreed?.id}
         />
       </VStack>
 

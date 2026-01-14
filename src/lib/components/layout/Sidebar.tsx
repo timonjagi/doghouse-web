@@ -11,16 +11,28 @@ import {
   useColorModeValue as mode,
   Progress,
   Divider,
+  Badge,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { FiArrowUpRight, FiBook, FiBriefcase, FiHelpCircle, FiHome, FiInfo, FiSearch, FiSettings, FiX } from "react-icons/fi";
+import {
+  FiArrowUpRight,
+  FiBook,
+  FiBriefcase,
+  FiHelpCircle,
+  FiHome,
+  FiInfo,
+  FiSearch,
+  FiSettings,
+  FiX,
+} from "react-icons/fi";
 import { ColumnHeader, ColumnIconButton } from "./Column";
 import { Logo } from "./Logo";
 import { NavButton } from "./NavButton";
 import { NavSection, getNavigationForRole } from "./navLinks";
 import { User } from "@supabase/supabase-js";
 import { useCurrentUser, useUserProfile } from "lib/hooks/queries";
+import { useWishlistCount } from "lib/hooks/queries/useWishlist";
 import { UserProfile } from "../auth/UserProfileCard";
 import NextLink from "next/link";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
@@ -31,10 +43,11 @@ import CompleteProfileCard from "../ui/CompleteProfileCard";
 const LOGGED_OUT_NAV = {
   main: [
     { label: "Home", href: "/", icon: FiHome },
-    { label: 'Explore', href: '/explore', icon: FiSearch },
+    { label: "Explore", href: "/explore", icon: FiSearch },
     {
-      label: "Blog", href: "/blog", icon: FiBook
-
+      label: "Blog",
+      href: "/blog",
+      icon: FiBook,
     },
   ],
   sections: [
@@ -48,11 +61,36 @@ const LOGGED_OUT_NAV = {
     {
       title: "Socials",
       items: [
-        { label: "Whatsapp", href: "https://wa.me/+254789949979", icon: FaWhatsapp, isExternal: true },
-        { label: "Facebook", href: "https://www.facebook.com/doghousekenya", icon: FaFacebook, isExternal: true },
-        { label: "Twitter", href: "https://twitter.com/doghousekenya", icon: FaTwitter, isExternal: true },
-        { label: "Instagram", href: "https://instagram.com/doghousekenya", icon: FaInstagram, isExternal: true },
-        { label: "TikTok", href: "https://tiktok.com/@doghousekenya", icon: BsTiktok, isExternal: true },
+        {
+          label: "Whatsapp",
+          href: "https://wa.me/+254789949979",
+          icon: FaWhatsapp,
+          isExternal: true,
+        },
+        {
+          label: "Facebook",
+          href: "https://www.facebook.com/doghousekenya",
+          icon: FaFacebook,
+          isExternal: true,
+        },
+        {
+          label: "Twitter",
+          href: "https://twitter.com/doghousekenya",
+          icon: FaTwitter,
+          isExternal: true,
+        },
+        {
+          label: "Instagram",
+          href: "https://instagram.com/doghousekenya",
+          icon: FaInstagram,
+          isExternal: true,
+        },
+        {
+          label: "TikTok",
+          href: "https://tiktok.com/@doghousekenya",
+          icon: BsTiktok,
+          isExternal: true,
+        },
       ],
     },
   ],
@@ -87,7 +125,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   );
 };
 
-
 // ============================================
 // NavLink Component (based on Navigation.jsx)
 // ============================================
@@ -98,9 +135,18 @@ interface NavLinkProps {
   isExternal?: boolean;
   isActive?: boolean;
   onClick?: () => void;
+  badge?: React.ReactNode;
 }
 
-const NavLink = ({ children, href, icon, isExternal, isActive, onClick }: NavLinkProps) => (
+const NavLink = ({
+  children,
+  href,
+  icon,
+  isExternal,
+  isActive,
+  onClick,
+  badge,
+}: NavLinkProps) => (
   <Link
     as={NextLink}
     href={href}
@@ -124,8 +170,13 @@ const NavLink = ({ children, href, icon, isExternal, isActive, onClick }: NavLin
           {children}
         </Text>
       </HStack>
+      {badge}
       {isExternal && (
-        <Icon as={FiArrowUpRight} boxSize="4" color={mode("brand.600", "brand.400")} />
+        <Icon
+          as={FiArrowUpRight}
+          boxSize="4"
+          color={mode("brand.600", "brand.400")}
+        />
       )}
     </HStack>
   </Link>
@@ -146,7 +197,9 @@ const NavHeading = ({ children, variant = "default" }: NavHeadingProps) => (
     fontWeight="semibold"
     px="2"
     lineHeight="1.25"
-    color={variant === "on-accent" ? "on-accent-muted" : mode("gray.600", "gray.400")}
+    color={
+      variant === "on-accent" ? "on-accent-muted" : mode("gray.600", "gray.400")
+    }
   >
     {children}
   </Text>
@@ -178,11 +231,14 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const { data: user, isLoading: userLoading } = useCurrentUser();
   const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const { data: wishlistCount } = useWishlistCount();
 
   // Wait for auth check to complete before deciding which sidebar to show
   const isAuthLoading = userLoading || (user && profileLoading);
 
-  const [navigationSections, setNavigationSections] = useState<NavSection[]>([]);
+  const [navigationSections, setNavigationSections] = useState<NavSection[]>(
+    []
+  );
 
   useEffect(() => {
     const role = profile?.role || user?.user_metadata?.role;
@@ -211,11 +267,10 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
         },
       }}
     >
-      <Stack spacing="3" >
+      <Stack spacing="3">
         <ColumnHeader>
           <HStack spacing="3" justify="space-between" w="full">
-
-            <Logo color={mode('on-brand', 'on-accent')} />
+            <Logo color={mode("on-brand", "on-accent")} />
 
             <ColumnIconButton
               onClick={onClose}
@@ -234,7 +289,6 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
             <Stack key={section.title} spacing="3">
               {section.title && <NavHeading>{section.title}</NavHeading>}
               <Stack spacing="1">
-
                 {section.items.map((item) => (
                   <NavLink
                     key={item.href}
@@ -242,6 +296,18 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
                     icon={item.icon}
                     isActive={router.pathname === item.href}
                     onClick={() => handleNavClick(item.href)}
+                    badge={
+                      item.label === "Wishlist" && wishlistCount ? (
+                        <Badge
+                          colorScheme="red"
+                          borderRadius="full"
+                          variant="solid"
+                          fontSize="xs"
+                        >
+                          {wishlistCount}
+                        </Badge>
+                      ) : undefined
+                    }
                   >
                     {item.label}
                   </NavLink>
@@ -249,26 +315,21 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
               </Stack>
             </Stack>
           ))}
-
-
         </Stack>
-
-
       </Stack>
 
       {/* User Profile at bottom */}
       <Box p="3">
         <Stack spacing="3">
-
           {/* Extra links */}
           <Stack spacing="3">
             <NavHeading>Support</NavHeading>
             <Stack spacing="1">
               <NavLink
-                href="/help-center"
+                href="/dashboard/support"
                 icon={FiHelpCircle}
-                isActive={router.pathname.includes("/help-center")}
-                onClick={() => handleNavClick("/help-center")}
+                isActive={router.pathname.includes("/dashboard/support")}
+                onClick={() => handleNavClick("/dashboard/support")}
               >
                 Help Center
               </NavLink>
@@ -284,8 +345,13 @@ const LoggedInSidebar: React.FC<LoggedInSidebarProps> = ({ onClose }) => {
           </Stack>
           <Divider />
 
-          {!profile?.profile_photo_url && <CompleteProfileCard onUpdateProfileClick={() => router.push("/dashboard/account/profile")} />}
-
+          {!profile?.profile_photo_url && (
+            <CompleteProfileCard
+              onUpdateProfileClick={() =>
+                router.push("/dashboard/account/profile")
+              }
+            />
+          )}
 
           <UserProfile profile={profile || undefined} onClose={onClose} />
         </Stack>
@@ -333,8 +399,7 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
       <Box flex="1" overflow="auto">
         <Stack spacing="8" py="6" px="4">
           <HStack spacing="3" justify="space-between" w="full">
-
-            <Logo color={mode('on-brand', 'on-accent')} />
+            <Logo color={mode("on-brand", "on-accent")} />
 
             <ColumnIconButton
               onClick={onClose}
@@ -355,7 +420,9 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
                 key={item.href}
                 label={item.label}
                 icon={item.icon}
-                aria-current={router.pathname === item.href ? "page" : undefined}
+                aria-current={
+                  router.pathname === item.href ? "page" : undefined
+                }
                 onClick={() => handleNavClick(item.href)}
               />
             ))}
@@ -372,7 +439,9 @@ const LoggedOutSidebar: React.FC<LoggedOutSidebarProps> = ({ onClose }) => {
                     label={item.label}
                     icon={item.icon}
                     isExternal={item.isExternal}
-                    aria-current={router.pathname === item.href ? "page" : undefined}
+                    aria-current={
+                      router.pathname === item.href ? "page" : undefined
+                    }
                     onClick={() =>
                       item.isExternal
                         ? handleExternalClick(item.href)

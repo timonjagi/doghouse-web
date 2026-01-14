@@ -33,10 +33,7 @@
             "id": 3,
             "title": "Implement Supabase User Authentication and Session Management",
             "description": "Replace the decommissioned Firebase logic with Supabase for user sign-up, sign-in, sign-out, and session management. This includes creating a Supabase client and integrating it into the auth UI and server-side logic.",
-            "dependencies": [
-              1,
-              2
-            ],
+            "dependencies": [1, 2],
             "details": "Create Supabase clients in `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts`. Update `src/pages/signup/index.tsx` to use `supabase.auth.signUp`. On successful sign-up, insert a record into the public `users` table with the user's `id`, `email`, and selected `role`. Update the login page `src/pages/login/index.tsx`  to use `supabase.auth.signInWithPassword`. Implement session management using Supabase's cookie-based helpers for Next.js.",
             "status": "done",
             "testStrategy": "Test the full sign-up flow for both a 'seeker' and a 'breeder'. Verify that `auth.users` and the public `users` table are populated correctly in Supabase. Test login and logout functionality. Ensure user sessions persist across page reloads."
@@ -45,10 +42,7 @@
             "id": 4,
             "title": "Configure Initial Row-Level Security (RLS) Policies",
             "description": "Implement the initial set of Row-Level Security (RLS) policies on core database tables like 'users' and 'litters' to enforce data access rules, ensuring users can only access and modify their own data.",
-            "dependencies": [
-              1,
-              3
-            ],
+            "dependencies": [1, 3],
             "details": "In the Supabase SQL editor, enable RLS for the `users` and `litters` tables. For `users`, create policies allowing users to SELECT and UPDATE only their own record (`uid() = id`). For `litters`, allow breeders to CUD their own litters (`uid() = breeder_id`) and all authenticated users to SELECT litters. Policies must be created using SQL statements in a new Supabase migration file.",
             "status": "done",
             "testStrategy": "Log in as a user and use a client-side query to fetch all users; it should only return the current user's data. As a breeder, verify you can create/edit your litters. As a seeker, verify you can read litters but cannot create or edit them. Attempting to update another user's data should result in an RLS violation error."
@@ -71,9 +65,7 @@
         "details": "Install React Query and its devtools. Configure a global QueryClientProvider in the main app layout. Create a centralized factory for query keys to ensure consistency. Set up a Zustand store for managing global UI state and the user session.",
         "testStrategy": "Verify that the React Query devtools are visible in development mode. Create a simple test component that uses a query hook to fetch data and confirms the data is cached and available. Test that a Zustand store can be updated and its state is accessible from different components.",
         "priority": "high",
-        "dependencies": [
-          1
-        ],
+        "dependencies": [1],
         "status": "done",
         "subtasks": [
           {
@@ -89,9 +81,7 @@
             "id": 2,
             "title": "Configure QueryClientProvider globally",
             "description": "Initialize a new `QueryClient` instance with default options and wrap the entire Next.js application with `QueryClientProvider`.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Create a `QueryClient` instance, potentially in a new file like `src/lib/queryClient.ts` or `src/utils/queryClient.ts`. Configure default options such as `staleTime` and `cacheTime`. Then, integrate `QueryClientProvider` in the root layout file (e.g., `src/app/layout.tsx` or a custom `_app.tsx` if using pages directory) to make React Query available throughout the app. Also, include `ReactQueryDevtools` for development environments.",
             "status": "done",
             "testStrategy": "Verify that React Query Devtools are visible in the browser during development. Create a temporary page with a basic `useQuery` call to ensure the provider is correctly set up and no errors occur."
@@ -100,9 +90,7 @@
             "id": 3,
             "title": "Create a centralized query key factory",
             "description": "Implement a utility file that provides a structured and consistent way to define query keys for different data entities.",
-            "dependencies": [
-              2
-            ],
+            "dependencies": [2],
             "details": "Create a new file, for example, `src/lib/queryKeys.ts`, which exports an object or functions to generate unique and descriptive query keys. For instance, `queryKeys.users.all`, `queryKeys.users.detail(userId)`, `queryKeys.profile.all`, `queryKeys.litters.all`, `queryKeys.litters.byBreeder(breederId)`. This ensures type safety and avoids key collisions.",
             "status": "done",
             "testStrategy": "Write unit tests for the query key factory to ensure it generates correct and consistent key structures. Ensure that keys are deterministic for the same inputs."
@@ -120,10 +108,7 @@
             "id": 5,
             "title": "Develop custom React Query hooks for Supabase integration",
             "description": "Create reusable custom hooks that abstract common data fetching patterns from Supabase using React Query.",
-            "dependencies": [
-              2,
-              3
-            ],
+            "dependencies": [2, 3],
             "details": "Develop custom hooks (e.g., `useUserProfile`, `useLitters`, `useBreederProfiles`) in a directory like `src/hooks/queries`. These hooks will encapsulate the logic of fetching data from Supabase using the Supabase client and `useQuery`, `useMutation` from React Query. Utilize the centralized query key factory (from subtask 3) for defining query keys within these hooks.",
             "status": "done",
             "testStrategy": "Implement a simple component that uses one of the new custom hooks (e.g., `useUserProfile`). Verify that data is fetched and displayed correctly. Use React Query Devtools to confirm caching and query states (loading, success, error) are managed as expected. Simulate a data update to test `useMutation` if implemented."
@@ -137,10 +122,7 @@
         "details": "Refactor the components in `src/lib/pages/onboarding/` to use Supabase for user session management and data persistence. Replace `useAuthState` with a Supabase equivalent and update the logic that saves user profile information (`name`, `location`, `roles`, `user_breeds`) to write to the new PostgreSQL tables.",
         "testStrategy": "Complete the onboarding flow as a new user. Verify that the user's role, contact details, and initial breed preferences are correctly saved to the 'users' and 'user_breeds' tables in Supabase. Ensure the user session is correctly managed by Supabase throughout the flow.",
         "priority": "high",
-        "dependencies": [
-          1,
-          2
-        ],
+        "dependencies": [1, 2],
         "status": "done",
         "subtasks": [
           {
@@ -165,9 +147,7 @@
             "id": 3,
             "title": "Create Role-Specific React Query Hooks",
             "description": "Develop hooks for wanted listings, enhanced user profiles, and breed image uploads.",
-            "dependencies": [
-              2
-            ],
+            "dependencies": [2],
             "details": "Create useWantedListings, useCreateWantedListing, useUploadBreedImage, and enhanced useUpdateUserProfile hooks.",
             "status": "done",
             "testStrategy": "Test hooks individually to ensure they properly interact with the updated database schema."
@@ -176,9 +156,7 @@
             "id": 3,
             "title": "Integrate 'useUserProfile' Hook into DashboardLayout",
             "description": "Modify the main `DashboardLayout.tsx` component to use the new `useUserProfile` hook. This component will be responsible for fetching the user's role and passing it down to its children, specifically the Sidebar.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "In `src/lib/components/layout/DashboardLayout.tsx`, call the `useUserProfile` hook to get the user's role. Pass the retrieved role as a prop to the `<Sidebar />` component. Handle loading states by displaying a layout-level skeleton or spinner.",
             "status": "in_progress",
             "testStrategy": "Add a `console.log` in `DashboardLayout.tsx` to print the role received from the hook. Log in as a Seeker and verify that 'Seeker' is logged. Check that the layout shows a loading state while the profile is being fetched."
@@ -187,10 +165,7 @@
             "id": 4,
             "title": "Refactor Sidebar.tsx to Render Links Dynamically",
             "description": "Update `Sidebar.tsx` to accept the user's role as a prop and dynamically render the appropriate navigation links based on the configuration created in the previous subtask.",
-            "dependencies": [
-              2,
-              3
-            ],
+            "dependencies": [2, 3],
             "details": "Modify `src/lib/components/layout/Sidebar.tsx` to accept a `role` prop. Use this prop to look up the correct array of links from the `navLinks` configuration. Map over the retrieved array to render the `<Link>` components. If the `role` prop is null or undefined, render a skeleton version of the navigation.",
             "status": "done",
             "testStrategy": "Log in as a Seeker and verify the sidebar shows 'Browse', 'Matches', and 'Applications'. Log in as a Breeder and see 'My Breeds', 'My Listings', 'Applications'. Log in as an Admin and see 'Verification', 'Users', 'Listings', 'Analytics'."
@@ -204,9 +179,7 @@
         "details": "Build a complete listings ecosystem including: smart router that redirects by role, multi-step creation flow with image upload, management interface for breeders, discovery interface for seekers, detail pages, and edit functionality.",
         "testStrategy": "Test complete user flows: breeders create and manage listings, seekers browse and filter listings, both roles view details, breeders edit their listings. Verify all CRUD operations work correctly.",
         "priority": "high",
-        "dependencies": [
-          5
-        ],
+        "dependencies": [5],
         "status": "completed",
         "subtasks": [
           {
@@ -231,9 +204,7 @@
             "id": 3,
             "title": "Implement Breeder Listing Management Interface",
             "description": "Create comprehensive management dashboard for breeders to view, edit, and manage their listings.",
-            "dependencies": [
-              2
-            ],
+            "dependencies": [2],
             "details": "Build listing cards with photos, status management, edit functionality, and proper access control. Include confirmation dialogs for status changes and visual indicators for listing states.",
             "status": "completed",
             "testStrategy": "As a breeder, view all listings, edit existing ones, change status, and verify all changes persist correctly in the database."
@@ -248,130 +219,124 @@
             "testStrategy": "As a seeker, browse listings, test all filter combinations, verify search works, and confirm responsive design on different screen sizes."
           },
           {
-            "id": 5,
-            "title": "Implement Listing Detail Pages",
-            "description": "Create rich detail pages that adapt based on user role with different actions and information display.",
-            "dependencies": [
-              3,
-              4
-            ],
-            "details": "Build detail pages with image galleries, comprehensive listing information, role-based action buttons, and proper navigation. Include photo galleries and metadata display.",
-            "status": "completed",
-            "testStrategy": "View listing details as both breeder and seeker. Verify different actions are shown based on role and all information displays correctly."
-          },
-          {
-            "id": 6,
-            "title": "Implement Edit Listing Functionality",
-            "description": "Create complete edit flow that reuses creation components but pre-populates with existing data.",
-            "dependencies": [
-              5
-            ],
-            "details": "Build edit interface that loads existing listing data, allows modifications across all steps, and updates the database. Include ownership validation and proper form pre-population.",
-            "status": "completed",
-            "testStrategy": "Edit an existing listing as a breeder, modify various fields and photos, save changes, and verify all updates persist correctly."
-          }
-        ]
-      },
-      {
-        "id": 7,
-        "title": "Implement Applications Page (Complete flow for both breeders and seekers)",
-        "description": "Create unified applications page. For breeders: manage applications for their listings. For seekers: submit and track applications.",
-        "details": "Build role-aware applications page using applications table and existing hooks. Include application forms, status tracking, and management interfaces.",
-        "testStrategy": "Test as seeker: submit applications. Test as breeder: manage received applications.",
-        "priority": "high",
-        "dependencies": [
-          6
-        ],
-        "status": "completed",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Role-Aware Applications Page Component",
-            "description": "Build main applications page that adapts based on user role.",
-            "dependencies": [],
-            "details": "Create src/lib/pages/dashboard/adoptions.tsx with role-based content.",
-            "status": "completed",
-            "testStrategy": "Verify page loads correctly for both roles."
-          },
-          {
-            "id": 2,
-            "title": "Implement Seeker Application Submission",
-            "description": "For seekers: submit applications for listings with detailed forms.",
-            "dependencies": [
-              1
-            ],
-            "details": "Integrate with useApplications hook and create comprehensive application forms.",
-            "status": "completed",
-            "testStrategy": "As a seeker, submit applications and verify they appear in database."
-          },
-          {
-            "id": 3,
-            "title": "Implement Breeder Application Management",
-            "description": "For breeders: view, approve, reject applications for their listings.",
-            "dependencies": [
-              1
-            ],
-            "details": "Create application management interface with status updates and communication features.",
-            "status": "completed",
-            "testStrategy": "As a breeder, view and manage applications, verify status changes work correctly."
-          },
-          {
-            "id": 4,
-            "title": "Implement Application Status Tracking Infrastructure",
-            "description": "Create comprehensive status tracking with timeline and notifications.",
-            "dependencies": [
-              1,
-              2,
-              3
-            ],
-            "details": "Build status tracking system with timeline views, status change notifications, and proper data persistence.",
-            "status": "completed",
-            "testStrategy": "Verify status changes trigger notifications and timeline updates correctly."
-          },
-          {
-            "id": 5,
-            "title": "Implement Notifications Infrastructure",
-            "description": "Create complete notifications system with hooks, queries, UI components, and triggers.",
-            "dependencies": [
-              4
-            ],
-            "details": "Build notifications hooks, queries, page, drawer component, and automatic triggers for application events.",
-            "status": "completed",
-            "testStrategy": "Test notification creation, display, and navigation for both application submission and status changes."
-          }
-        ]
-      },
-      {
-        "id": 8,
-        "title": "Implement Billing & Payment System with Paystack",
-        "description": "Create comprehensive payment processing system with Paystack integration, reservation fees, commission tracking, and billing dashboard.",
-        "details": "Build complete payment infrastructure using Paystack for multi-channel payments (M-Pesa, cards, bank transfers), reservation fee processing (deducted from final price), 10% platform commission system, transaction tracking, and billing management dashboard for users to view payment history and earnings.",
-        "testStrategy": "Test complete payment flow: reservation payments, final payments, commission calculations, transaction tracking, and billing dashboard functionality across multiple payment channels.",
-        "priority": "high",
-        "dependencies": [
-          7
-        ],
-        "status": "in_progress",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Update applications table schema",
-            "description": "Add reservation_paid, contract_signed, payment_complete boolean flags to applications table",
-            "dependencies": [],
-            "details": "Add three boolean columns to applications table in db/schema.ts and create migration file for existing database.",
-            "status": "completed",
-            "testStrategy": "Run migration and verify new columns exist in Supabase applications table."
-          },
-          {
-            "id": 2,
-            "title": "Create database migration for application fields",
-            "description": "Generate and apply Drizzle migration for new application table columns",
-            "dependencies": [
-              1
-            ],
-            "details": "Use drizzle-kit generate to create migration file, then apply with drizzle-kit push.",
-            "status": "completed",
-            "testStrategy": "Verify migration completes successfully and new columns are added to database."
+            "id": 15,
+            "title": "Implement Comprehensive Wishlist Functionality with Novu Topic-Based Notifications",
+            "description": "Build complete wishlist system enabling seekers to save listings and breeds, receive topic-based notifications for availability, and allow breeders to view matched seekers based on their wishlist preferences.",
+            "details": "Implement a fully-functional wishlist system using the existing database schema (wishlists table) and the useWishlist.ts hook. The implementation spans multiple pages and includes: (1) Connect existing 'Add to Wishlist' placeholder buttons across breed detail pages and listing pages to actual wishlist functionality with proper button state transitions, (2) Add wishlist icons with counts to navigation and listing cards, (3) Implement topic-based notifications when wishlisted breeds become available using Novu topics (breed-{breedId}-interested), (4) Build breeder matches page showing seekers who have wishlisted their breeds/listings, (5) Automatic topic subscriptions during onboarding for breed preferences. The wishlists table supports saving both listings (listing_id) and user_breeds (user_breed_id) with optional notification preferences (notify_when_available).",
+            "testStrategy": "Test complete wishlist flows: As a seeker, add items to wishlist from breed detail pages and listing pages, verify button transitions from 'Add to Wishlist' to 'Added to Wishlist', check wishlist count updates in navigation, view wishlist page showing all saved items, toggle notification settings, remove items. As a breeder, view matches page showing seekers who have wishlisted their breeds/listings. Verify topic-based notifications are sent when wishlisted breeds become available using NotificationService.sendBreedMatchNotification().",
+            "priority": "high",
+            "dependencies": [2, 6, 12],
+            "status": "pending",
+            "subtasks": [
+              {
+                "id": 1,
+                "title": "Enhance useWishlist Hook with User ID Filtering and Counts",
+                "description": "Update the useWishlist.ts hook to properly filter by authenticated user, add a useWishlistCount hook for navigation badge, and ensure the useIsInWishlist hook returns the wishlist item ID for removal.",
+                "dependencies": [],
+                "details": "Modify src/lib/hooks/queries/useWishlist.ts to: (1) Add user_id filtering in useWishlist query to ensure users only see their own wishlist items, (2) Create useWishlistCount hook that returns total count for navigation badge display, (3) Enhance useIsInWishlist to return the wishlist item ID along with the boolean status so items can be removed directly, (4) Add breed_id support to useAddToWishlist for saving entire breeds (not just user_breeds or listings).",
+                "status": "done",
+                "testStrategy": "Test that useWishlist only returns current user's items. Verify useWishlistCount returns accurate total. Test useIsInWishlist returns both status and item ID for removal functionality."
+              },
+              {
+                "id": 2,
+                "title": "Create Reusable AddToWishlistButton Component",
+                "description": "Build a reusable button component that handles add/remove wishlist functionality with proper state transitions and loading states.",
+                "dependencies": [1],
+                "details": "Create src/lib/components/ui/AddToWishlistButton.tsx that: (1) Accepts listing_id, user_breed_id, or breed_id as props, (2) Uses useIsInWishlist to determine current state, (3) Toggles between 'Add to Wishlist' (heart outline) and 'Added to Wishlist' (filled heart) states, (4) Shows loading spinner during add/remove operations, (5) Uses useAddToWishlist and useRemoveFromWishlist mutations, (6) Displays toast notifications on success/error, (7) Supports different sizes and variants for use in cards vs detail pages.",
+                "status": "done",
+                "testStrategy": "Render AddToWishlistButton in isolation, verify state transitions work correctly, test loading states during mutations, verify toast notifications appear."
+              },
+              {
+                "id": 3,
+                "title": "Integrate Wishlist Button in PublicBreedDetailPage",
+                "description": "Replace the placeholder onAddToWishlist toast function in PublicBreedDetailPage.tsx with actual AddToWishlistButton component functionality.",
+                "dependencies": [2],
+                "details": "Update src/lib/components/pages/breeds/PublicBreedDetailPage.tsx to: (1) Replace the onAddToWishlist toast-only function with actual wishlist integration, (2) Use AddToWishlistButton in PageHeaderWithTwoButtons for the primary action, (3) Update empty state actions in ListingList and BreedersList to use the actual wishlist functionality, (4) Pass breed_id to save the breed to wishlist for topic-based notifications when new listings/breeders are added.",
+                "status": "done",
+                "testStrategy": "Navigate to a breed detail page, click Add to Wishlist, verify item appears in wishlist page, verify button state changes to 'Added to Wishlist', click again to remove, verify removal."
+              },
+              {
+                "id": 4,
+                "title": "Integrate Wishlist Button in ExploreUserBreedDetailView",
+                "description": "Replace the placeholder onAddToWishlist toast function in ExploreUserBreedDetailView.tsx with actual wishlist functionality.",
+                "dependencies": [2],
+                "details": "Update src/lib/components/pages/breeds/ExploreUserBreedDetailView.tsx to: (1) Replace onAddToWishlist toast function with AddToWishlistButton integration, (2) Add a header action button for adding the user_breed to wishlist, (3) Update empty state actions in ListingList and BreedersList to use actual wishlist functionality, (4) Pass user_breed_id to save for notifications when new listings become available from this breeder's breed.",
+                "status": "done",
+                "testStrategy": "Navigate to a breeder's breed detail view, test add/remove wishlist functionality in header and empty states, verify wishlist page reflects changes."
+              },
+              {
+                "id": 5,
+                "title": "Add Wishlist Button to Listing Detail and Listing Cards",
+                "description": "Add AddToWishlistButton to listing detail pages and listing cards where seekers browse listings.",
+                "dependencies": [2],
+                "details": "Update listing-related components: (1) Add AddToWishlistButton to listing detail page (src/lib/pages/listings or similar), (2) Add wishlist heart icon button to ListingCard component, (3) Ensure listing_id is passed for saving specific listings, (4) Handle sold/unavailable listings gracefully (maybe disable wishlist for sold items).",
+                "status": "done",
+                "testStrategy": "Browse listings as seeker, add listing to wishlist from card and detail page, verify persistence and button state transitions."
+              },
+              {
+                "id": 6,
+                "title": "Add Wishlist Count Badge to Navigation",
+                "description": "Display a badge showing the total wishlist item count in the navigation sidebar for seekers.",
+                "dependencies": [1],
+                "details": "Update navigation components: (1) Use useWishlistCount hook in Sidebar or navigation component, (2) Display badge with count next to Wishlist nav item for seekers, (3) Update badge in real-time when items are added/removed, (4) Only show badge when count > 0, (5) Ensure badge styling matches existing navigation design.",
+                "status": "done",
+                "testStrategy": "As seeker, verify wishlist navigation item shows badge with correct count, add/remove items and verify count updates in real-time."
+              },
+              {
+                "id": 7,
+                "title": "Implement Notification Triggers in useListings and useUserBreeds Hooks",
+                "description": "Add notification triggers to useListings and useUserBreeds hooks to automatically send topic-based notifications when wishlisted breeds become available.",
+                "dependencies": [1, 12],
+                "details": "Update src/lib/hooks/queries/useListings.ts and src/lib/hooks/queries/useUserBreeds.ts: (1) When a new listing is created successfully, check if any seekers have wishlisted that breed, (2) Call NotificationService.sendBreedMatchNotification() with the breed_id, listing details, and breeder info, (3) Use the existing breed-{breedId}-interested topic system for automatic subscriber notification, (4) Include listing link and breed information in notification payload, (5) Ensure notifications are sent asynchronously without blocking the listing creation flow.",
+                "status": "done",
+                "testStrategy": "As seeker, add breed to wishlist during onboarding. As breeder, create new listing for that breed using useListings hook. Verify NotificationService.sendBreedMatchNotification() is triggered and seeker receives topic-based notification with direct link to the new listing."
+              },
+              {
+                "id": 8,
+                "title": "Enhance Wishlist Page with Better UX",
+                "description": "Improve the existing WishlistPage component with better organization, filtering, and actions.",
+                "dependencies": [1],
+                "details": "Enhance src/lib/components/pages/wishlist/index.tsx: (1) Add tabs or sections for Listings, Breeds, User Breeds, (2) Add bulk notification toggle (enable/disable all), (3) Add sorting options (recently added, availability), (4) Improve empty state with better CTAs, (5) Add quick links to browse more content, (6) Show breeder info for user_breeds listings, (7) Better handling of unavailable/sold items.",
+                "status": "done",
+                "testStrategy": "Navigate to wishlist page, verify sections display correctly, test notification toggles, test sorting, verify sold items display appropriately."
+              },
+              {
+                "id": 9,
+                "title": "Implement Breeder Matches Page Based on Wishlist Data",
+                "description": "Build the matches page for breeders showing seekers who have wishlisted their breeds/listings, enabling outreach opportunities.",
+                "dependencies": [1, 7],
+                "details": "Implement src/lib/components/pages/matches/matches.tsx: (1) Create useBreederMatches hook that queries wishlists table for items matching breeder's breeds/listings, (2) Join with users table to get seeker information (display_name, profile_photo, location), (3) Group matches by breed/listing for organization, (4) Show seeker contact preferences and profile summary, (5) Add 'Contact' CTA linking to messaging/inbox, (6) Show when seeker added to wishlist (created_at), (7) Display notification preference status, (8) Include filters for breed, recency, notification status.",
+                "status": "done",
+                "testStrategy": "As seeker, wishlist a breeder's breed. As that breeder, navigate to Matches page, verify the seeker appears in matches with their profile info and contact options."
+              },
+              {
+                "id": 10,
+                "title": "Add Wishlist Quick Actions to Breeder Profile Cards",
+                "description": "Enable seekers to add entire breeder's breeds to wishlist directly from breeder cards in search/browse results.",
+                "dependencies": [2],
+                "details": "Update breeder card components (BreederCard, BreederCard2, etc.): (1) Add wishlist icon button to save all of breeder's breeds, (2) Indicate wishlisted status on breeder cards, (3) Link to breeder detail page for more granular selection.",
+                "status": "pending",
+                "testStrategy": "Browse breeders as seeker, use quick wishlist action on breeder card, verify selected breeds appear in wishlist."
+              },
+              {
+                "id": 10,
+                "title": "Add Wishlist Quick Actions to Breeder Profile Cards",
+                "description": "Enable seekers to add entire breeder's breeds to wishlist directly from breeder cards in search/browse results.",
+                "dependencies": [2],
+                "details": "Update breeder card components (BreederCard, BreederCard2, etc.): (1) Add wishlist icon button to save all of breeder's breeds, (2) Indicate wishlisted status on breeder cards, (3) Link to breeder detail page for more granular selection.",
+                "status": "pending",
+                "testStrategy": "Browse breeders as seeker, use quick wishlist action on breeder card, verify selected breeds appear in wishlist."
+              },
+              {
+                "id": 11,
+                "title": "Update BreederDetailPage Subscribe Button to Use Topic Subscriptions",
+                "description": "Replace placeholder subscribe functionality in BreederDetailPage with actual Novu topic subscription system.",
+                "dependencies": [12],
+                "details": "Update src/lib/components/pages/breeders/BreederDetailPage.tsx: (1) Replace handleSubscribeClick toast with NotificationService.subscribeToBreeder() call, (2) Subscribe user to breeder-{breederId}-subscribers topic for activity notifications, (3) Update button state to show subscribed/unsubscribed status, (4) Add unsubscribe functionality, (5) Show confirmation when subscription is successful.",
+                "status": "pending",
+                "testStrategy": "As seeker, click Subscribe on breeder profile, verify topic subscription occurs, test unsubscribe functionality, confirm breeder activity notifications are received."
+              }
+            ]
           },
           {
             "id": 3,
@@ -386,9 +351,7 @@
             "id": 4,
             "title": "Integrate Paystack Payment Gateway",
             "description": "Set up Paystack API integration with support for multiple Kenyan payment channels",
-            "dependencies": [
-              3
-            ],
+            "dependencies": [3],
             "details": "Configure Paystack credentials, implement transaction initialization, handle webhooks for payment confirmations, support M-Pesa, cards, bank transfers.",
             "status": "completed",
             "testStrategy": "Test payment initiation across different channels and verify webhook confirmations work correctly."
@@ -397,9 +360,7 @@
             "id": 5,
             "title": "Implement Reservation Payment Flow",
             "description": "Create reservation payment system using Paystack with 24-hour expiry",
-            "dependencies": [
-              4
-            ],
+            "dependencies": [4],
             "details": "Build reservation payment UI, integrate with Paystack transactions, handle expiry logic, implement refund processing for expired reservations.",
             "status": "completed",
             "testStrategy": "Test reservation payment flow, expiry handling, and refund processing for both successful and failed payments."
@@ -408,9 +369,7 @@
             "id": 6,
             "title": "Implement Commission & Payout System",
             "description": "Build 10% platform commission system with Paystack payout integration",
-            "dependencies": [
-              5
-            ],
+            "dependencies": [5],
             "details": "Implement commission calculation logic, track earnings/payouts in transactions table, create payout scheduling system using Paystack transfers for breeders after commission deduction.",
             "status": "completed",
             "testStrategy": "Verify commission calculations, payout tracking, and ensure breeders receive correct amounts after platform fees."
@@ -419,9 +378,7 @@
             "id": 7,
             "title": "Create Billing Dashboard",
             "description": "Build comprehensive billing dashboards for seekers and breeders",
-            "dependencies": [
-              6
-            ],
+            "dependencies": [6],
             "details": "Create billing pages for seekers (payment history) and breeders (earnings, payouts), implement transaction filtering and export functionality with Paystack transaction data.",
             "status": "completed",
             "testStrategy": "Test billing dashboard for both seeker and breeder roles, verify transaction history, filtering, and data accuracy."
@@ -430,9 +387,7 @@
             "id": 8,
             "title": "Implement Payment Security & Compliance",
             "description": "Add payment security measures leveraging Paystack's compliance features",
-            "dependencies": [
-              7
-            ],
+            "dependencies": [7],
             "details": "Implement payment verification, webhook signature validation, secure transaction logging, leverage Paystack's PCI compliance and fraud detection.",
             "status": "pending",
             "testStrategy": "Test security measures, verify webhook validation, and ensure secure payment processing."
@@ -441,9 +396,7 @@
             "id": 9,
             "title": "Connect ApplicationTimeline action buttons to Paystack",
             "description": "Integrate payment handlers with existing ApplicationTimeline component",
-            "dependencies": [
-              5
-            ],
+            "dependencies": [5],
             "details": "Connect 'Pay Reservation Fee' and 'Complete Payment' buttons to usePayments hook, implement proper loading states and error handling.",
             "status": "completed",
             "testStrategy": "Test payment button integration in application timeline for both reservation and final payments."
@@ -452,9 +405,7 @@
             "id": 10,
             "title": "Build payment modals and status displays",
             "description": "Create payment initiation modals and real-time status components",
-            "dependencies": [
-              9
-            ],
+            "dependencies": [9],
             "details": "Build PaymentModal, PaymentStatusModal components with Paystack integration, implement real-time payment status updates. Refactor usePayments hook to follow patterns in other hooks and pass application data from components.",
             "status": "completed",
             "testStrategy": "Test payment modals and verify real-time status updates work correctly."
@@ -463,9 +414,7 @@
             "id": 11,
             "title": "Add billing navigation and dashboard routes",
             "description": "Add billing sections to sidebar navigation and create dashboard routes",
-            "dependencies": [
-              7
-            ],
+            "dependencies": [7],
             "details": "Update navLinks configuration to include billing sections, create /dashboard/billing and /dashboard/payouts routes.",
             "status": "completed",
             "testStrategy": "Test navigation to billing sections and verify dashboard routes load correctly."
@@ -474,137 +423,121 @@
             "id": 12,
             "title": "Implement real-time payment status updates",
             "description": "Add real-time updates for payment status changes via webhooks",
-            "dependencies": [
-              10
-            ],
+            "dependencies": [10],
             "details": "Implement webhook handlers to update application status in real-time, add status polling for pending payments.",
             "status": "pending",
             "testStrategy": "Test real-time status updates and verify application timeline reflects payment changes immediately."
           },
           {
-            "id": 13,
-            "title": "Create admin payment oversight features",
-            "description": "Add payment analytics and management to admin dashboard",
-            "dependencies": [
-              7
-            ],
-            "details": "Create admin payment analytics dashboard with transaction overview, payment method breakdown, commission tracking, and payment management tools.",
-            "status": "completed",
-            "testStrategy": "Test admin payment oversight features and verify analytics data accuracy."
-          },
-          {
-            "id": 14,
-            "title": "Add payout status tracking (separate from payment status)",
-            "description": "Implement separate payout status tracking to distinguish between payment completion and breeder payout",
-            "dependencies": [
-              7
-            ],
-            "details": "Add payout_status field to transactions table, update payment verification logic to set payout_status to 'pending', update billing dashboards to show separate payment and payout statuses, add payment notifications for both seekers and breeders.",
-            "status": "completed",
-            "testStrategy": "Test payment flow and verify payout status is properly tracked separately from payment status. Check billing dashboards show correct status indicators."
-          }
-        ]
-      },
-      {
-        "id": 9,
-        "title": "Develop User Profile Management Component",
-        "description": "Create a shared component for users of all roles to view and edit their profile information, including bio, photo, location, and contact details using Chakra UI.",
-        "details": "Build a profile management system using the existing useUserProfile hook. Create components under account/profile structure with Chakra UI styling. Implement profile photo upload to Supabase Storage and form validation with Zod.",
-        "testStrategy": "Log in as a user, navigate to /account/profile, change the bio and display name, and verify the changes persist after a page refresh. Test the image upload functionality and confirm the new image is displayed. Check the Supabase Storage bucket to ensure the file was uploaded.",
-        "priority": "high",
-        "dependencies": [
-          1,
-          2,
-          3
-        ],
-        "status": "done",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Profile Page Structure",
-            "description": "Create the main profile page components under account/profile structure.",
-            "dependencies": [],
-            "details": "Create `src/pages/account/profile/index.tsx` and `src/lib/pages/account/profile/index.tsx`. Use the existing useUserProfile hook to fetch current user data. Implement proper loading and error states with Chakra UI components.",
-            "status": "done",
-            "testStrategy": "Navigate to /account/profile while logged in. Verify the page loads without errors and displays user data from useUserProfile hook."
-          },
-          {
-            "id": 2,
-            "title": "Build ProfileForm Component with Chakra UI",
-            "description": "Develop the main profile form component using Chakra UI components.",
-            "dependencies": [
-              1
-            ],
-            "details": "Create `src/lib/pages/account/profile/ProfileForm.tsx` with Chakra UI form components (Input, Textarea, Button, FormControl). Include fields for display name, bio, and location.",
-            "status": "done",
-            "testStrategy": "Render the ProfileForm component. Verify all Chakra UI components display correctly and form validation works as expected."
-          },
-          {
-            "id": 3,
-            "title": "Implement ProfilePhotoUpload Component",
-            "description": "Create photo upload component with drag-and-drop functionality.",
-            "dependencies": [
-              2
-            ],
-            "details": "Create `src/lib/pages/account/profile/ProfilePhotoUpload.tsx` with Chakra UI styling. Implement drag-and-drop upload, image preview, and Supabase Storage integration. Show current profile photo and allow replacement.",
-            "status": "done",
-            "testStrategy": "Test photo upload functionality. Verify drag-and-drop works, preview displays correctly, and images are uploaded to Supabase Storage."
-          },
-          {
-            "id": 4,
-            "title": "Create useUpdateProfile Hook",
-            "description": "Build a React Query mutation hook for profile updates.",
-            "dependencies": [
-              2
-            ],
-            "details": "Create `src/lib/hooks/queries/useUpdateProfile.ts` following existing hook patterns. Handle both text field updates and photo URL updates. Include proper error handling and success callbacks.",
-            "status": "done",
-            "testStrategy": "Test the useUpdateProfile hook with mock data. Verify it properly updates the database and invalidates relevant queries."
-          }
-        ]
-      },
-      {
-        "id": 10,
-        "title": "Implement Role-Specific Dashboard Overview Pages",
-        "description": "Create comprehensive role-specific dashboard overview pages with relevant CTAs, summaries, and graphs for breeders, seekers, and admins.",
-        "details": "Transform the existing overview page into role-aware dashboards that display key metrics, quick actions, and relevant data visualizations based on each user's role and immediate interests upon logging in. Include charts for key metrics, summary cards, and contextual CTAs.",
-        "testStrategy": "Test each role dashboard: breeders see listing metrics and quick actions, seekers see match/application summaries, admins see platform overview stats. Verify all CTAs work correctly and data displays accurately.",
-        "priority": "high",
-        "dependencies": [
-          1,
-          2,
-          6,
-          7,
-          8
-        ],
-        "status": "pending",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create Breeder Dashboard Overview",
-            "description": "Build breeder-specific dashboard with litter metrics, application summaries, matching seekers, and quick management CTAs.",
-            "dependencies": [],
-            "details": "Create breeder overview showing: active listings count, pending applications, recent inquiries, earnings summary, potential matches (seekers who recently viewed listings), quick actions (add listing, view applications, manage breeds, contact matches). Include charts for application trends and listing performance.",
+            "id": 15,
+            "title": "Implement Comprehensive Wishlist Functionality with Novu Topic-Based Notifications",
+            "description": "Build complete wishlist system enabling seekers to save listings and breeds, receive topic-based notifications for availability, and allow breeders to view matched seekers based on their wishlist preferences.",
+            "details": "Implement a fully-functional wishlist system using the existing database schema (wishlists table) and the useWishlist.ts hook. The implementation spans multiple pages and includes: (1) Connect existing 'Add to Wishlist' placeholder buttons across breed detail pages and listing pages to actual wishlist functionality with proper button state transitions, (2) Add wishlist icons with counts to navigation and listing cards, (3) Implement topic-based notifications when wishlisted breeds become available using Novu topics (breed-{breedId}-interested), (4) Build breeder matches page showing seekers who have wishlisted their breeds/listings, (5) Automatic topic subscriptions during onboarding for breed preferences. The wishlists table supports saving both listings (listing_id) and user_breeds (user_breed_id) with optional notification preferences (notify_when_available).",
+            "testStrategy": "Test complete wishlist flows: As a seeker, add items to wishlist from breed detail pages and listing pages, verify button transitions from 'Add to Wishlist' to 'Added to Wishlist', check wishlist count updates in navigation, view wishlist page showing all saved items, toggle notification settings, remove items. As a breeder, view matches page showing seekers who have wishlisted their breeds/listings. Verify topic-based notifications are sent when wishlisted breeds become available using NotificationService.sendBreedMatchNotification().",
+            "priority": "high",
+            "dependencies": [2, 6, 12],
             "status": "pending",
-            "testStrategy": "Log in as breeder and verify dashboard shows relevant metrics, potential matches section, charts display correctly, and all CTAs navigate to appropriate pages."
-          },
-          {
-            "id": 2,
-            "title": "Create Seeker Dashboard Overview",
-            "description": "Build seeker-specific dashboard with match summaries, application tracking, recommended listings, and discovery CTAs.",
-            "dependencies": [],
-            "details": "Create seeker overview showing: active applications, new matches, recommended listings (intelligent matches based on preferences), saved searches, recent activity, quick actions (browse listings, view matches, submit applications, contact breeders). Include charts for application status distribution and match activity.",
-            "status": "pending",
-            "testStrategy": "Log in as seeker and verify dashboard shows application status, match notifications, recommended listings, and discovery CTAs work correctly."
-          },
-          {
-            "id": 3,
-            "title": "Create Admin Dashboard Overview",
-            "description": "Build admin-specific dashboard with platform metrics, pending tasks, and management CTAs.",
-            "dependencies": [],
-            "details": "Create admin overview showing: pending verifications, platform stats (users, listings, applications), recent activity, system alerts, quick actions (verify breeders, view reports, manage users). Include charts for user growth, revenue trends, and engagement metrics.",
-            "status": "pending",
-            "testStrategy": "Log in as admin and verify dashboard shows platform overview, pending tasks are highlighted, and management CTAs work correctly."
+            "subtasks": [
+              {
+                "id": 1,
+                "title": "Enhance useWishlist Hook with User ID Filtering and Counts",
+                "description": "Update the useWishlist.ts hook to properly filter by authenticated user, add a useWishlistCount hook for navigation badge, and ensure the useIsInWishlist hook returns the wishlist item ID for removal.",
+                "dependencies": [],
+                "details": "Modify src/lib/hooks/queries/useWishlist.ts to: (1) Add user_id filtering in useWishlist query to ensure users only see their own wishlist items, (2) Create useWishlistCount hook that returns total count for navigation badge display, (3) Enhance useIsInWishlist to return the wishlist item ID along with the boolean status so items can be removed directly, (4) Add breed_id support to useAddToWishlist for saving entire breeds (not just user_breeds or listings).",
+                "status": "pending",
+                "testStrategy": "Test that useWishlist only returns current user's items. Verify useWishlistCount returns accurate total. Test useIsInWishlist returns both status and item ID for removal functionality."
+              },
+              {
+                "id": 2,
+                "title": "Create Reusable AddToWishlistButton Component",
+                "description": "Build a reusable button component that handles add/remove wishlist functionality with proper state transitions and loading states.",
+                "dependencies": [1],
+                "details": "Create src/lib/components/ui/AddToWishlistButton.tsx that: (1) Accepts listing_id, user_breed_id, or breed_id as props, (2) Uses useIsInWishlist to determine current state, (3) Toggles between 'Add to Wishlist' (heart outline) and 'Added to Wishlist' (filled heart) states, (4) Shows loading spinner during add/remove operations, (5) Uses useAddToWishlist and useRemoveFromWishlist mutations, (6) Displays toast notifications on success/error, (7) Supports different sizes and variants for use in cards vs detail pages.",
+                "status": "pending",
+                "testStrategy": "Render AddToWishlistButton in isolation, verify state transitions work correctly, test loading states during mutations, verify toast notifications appear."
+              },
+              {
+                "id": 3,
+                "title": "Integrate Wishlist Button in PublicBreedDetailPage",
+                "description": "Replace the placeholder onAddToWishlist toast function in PublicBreedDetailPage.tsx with actual AddToWishlistButton component functionality.",
+                "dependencies": [2],
+                "details": "Update src/lib/components/pages/breeds/PublicBreedDetailPage.tsx to: (1) Replace the onAddToWishlist toast-only function with actual wishlist integration, (2) Use AddToWishlistButton in PageHeaderWithTwoButtons for the primary action, (3) Update empty state actions in ListingList and BreedersList to use the actual wishlist functionality, (4) Pass breed_id to save the breed to wishlist for topic-based notifications when new listings/breeders are added.",
+                "status": "pending",
+                "testStrategy": "Navigate to a breed detail page, click Add to Wishlist, verify item appears in wishlist page, verify button state changes to 'Added to Wishlist', click again to remove, verify removal."
+              },
+              {
+                "id": 4,
+                "title": "Integrate Wishlist Button in ExploreUserBreedDetailView",
+                "description": "Replace the placeholder onAddToWishlist toast function in ExploreUserBreedDetailView.tsx with actual wishlist functionality.",
+                "dependencies": [2],
+                "details": "Update src/lib/components/pages/breeds/ExploreUserBreedDetailView.tsx to: (1) Replace onAddToWishlist toast function with AddToWishlistButton integration, (2) Add a header action button for adding the user_breed to wishlist, (3) Update empty state actions in ListingList and BreedersList to use actual wishlist functionality, (4) Pass user_breed_id to save for notifications when new listings become available from this breeder's breed.",
+                "status": "pending",
+                "testStrategy": "Navigate to a breeder's breed detail view, test add/remove wishlist functionality in header and empty states, verify wishlist page reflects changes."
+              },
+              {
+                "id": 5,
+                "title": "Add Wishlist Button to Listing Detail and Listing Cards",
+                "description": "Add AddToWishlistButton to listing detail pages and listing cards where seekers browse listings.",
+                "dependencies": [2],
+                "details": "Update listing-related components: (1) Add AddToWishlistButton to listing detail page (src/lib/pages/listings or similar), (2) Add wishlist heart icon button to ListingCard component, (3) Ensure listing_id is passed for saving specific listings, (4) Handle sold/unavailable listings gracefully (maybe disable wishlist for sold items).",
+                "status": "pending",
+                "testStrategy": "Browse listings as seeker, add listing to wishlist from card and detail page, verify persistence and button state transitions."
+              },
+              {
+                "id": 6,
+                "title": "Add Wishlist Count Badge to Navigation",
+                "description": "Display a badge showing the total wishlist item count in the navigation sidebar for seekers.",
+                "dependencies": [1],
+                "details": "Update navigation components: (1) Use useWishlistCount hook in Sidebar or navigation component, (2) Display badge with count next to Wishlist nav item for seekers, (3) Update badge in real-time when items are added/removed, (4) Only show badge when count > 0, (5) Ensure badge styling matches existing navigation design.",
+                "status": "pending",
+                "testStrategy": "As seeker, verify wishlist navigation item shows badge with correct count, add/remove items and verify count updates in real-time."
+              },
+              {
+                "id": 7,
+                "title": "Implement Topic-Based Wishlist Availability Notifications",
+                "description": "Create Novu topic-based notification triggers when wishlisted breeds become available using NotificationService.sendBreedMatchNotification().",
+                "dependencies": [1, 12],
+                "details": "Implement topic-based wishlist notifications: (1) When a new listing is created, check if any seekers have wishlisted that breed, (2) Use NotificationService.sendBreedMatchNotification() to send notifications to the breed-{breedId}-interested topic, (3) Notifications are automatically sent to all subscribers of that breed's interest topic, (4) Integrate with existing notification popup system for display, (5) Notifications include direct links to the new listing for easy navigation.",
+                "status": "pending",
+                "testStrategy": "As seeker, add breed to wishlist during onboarding (which subscribes to breed-{breedId}-interested topic). As breeder, create new listing for that breed. Verify seeker receives topic-based notification about new listing via NotificationService.sendBreedMatchNotification()."
+              },
+              {
+                "id": 8,
+                "title": "Enhance Wishlist Page with Better UX",
+                "description": "Improve the existing WishlistPage component with better organization, filtering, and actions.",
+                "dependencies": [1],
+                "details": "Enhance src/lib/components/pages/wishlist/index.tsx: (1) Add tabs or sections for Listings, Breeds, User Breeds, (2) Add bulk notification toggle (enable/disable all), (3) Add sorting options (recently added, availability), (4) Improve empty state with better CTAs, (5) Add quick links to browse more content, (6) Show breeder info for user_breeds listings, (7) Better handling of unavailable/sold items.",
+                "status": "pending",
+                "testStrategy": "Navigate to wishlist page, verify sections display correctly, test notification toggles, test sorting, verify sold items display appropriately."
+              },
+              {
+                "id": 9,
+                "title": "Implement Breeder Matches Page Based on Wishlist Data",
+                "description": "Build the matches page for breeders showing seekers who have wishlisted their breeds/listings, enabling outreach opportunities.",
+                "dependencies": [1, 7],
+                "details": "Implement src/lib/components/pages/matches/matches.tsx: (1) Create useBreederMatches hook that queries wishlists table for items matching breeder's breeds/listings, (2) Join with users table to get seeker information (display_name, profile_photo, location), (3) Group matches by breed/listing for organization, (4) Show seeker contact preferences and profile summary, (5) Add 'Contact' CTA linking to messaging/inbox, (6) Show when seeker added to wishlist (created_at), (7) Display notification preference status, (8) Include filters for breed, recency, notification status.",
+                "status": "pending",
+                "testStrategy": "As seeker, wishlist a breeder's breed. As that breeder, navigate to Matches page, verify the seeker appears in matches with their profile info and contact options."
+              },
+              {
+                "id": 10,
+                "title": "Add Wishlist Quick Actions to Breeder Profile Cards",
+                "description": "Enable seekers to add entire breeder's breeds to wishlist directly from breeder cards in search/browse results.",
+                "dependencies": [2],
+                "details": "Update breeder card components (BreederCard, BreederCard2, etc.): (1) Add wishlist icon button to save all of breeder's breeds, (2) Indicate wishlisted status on breeder cards, (3) Link to breeder detail page for more granular selection.",
+                "status": "pending",
+                "testStrategy": "Browse breeders as seeker, use quick wishlist action on breeder card, verify selected breeds appear in wishlist."
+              },
+              {
+                "id": 11,
+                "title": "Update BreederDetailPage Subscribe Button to Use Topic Subscriptions",
+                "description": "Replace placeholder subscribe functionality in BreederDetailPage with actual Novu topic subscription system.",
+                "dependencies": [12],
+                "details": "Update src/lib/components/pages/breeders/BreederDetailPage.tsx: (1) Replace handleSubscribeClick toast with NotificationService.subscribeToBreeder() call, (2) Subscribe user to breeder-{breederId}-subscribers topic for activity notifications, (3) Update button state to show subscribed/unsubscribed status, (4) Add unsubscribe functionality, (5) Show confirmation when subscription is successful.",
+                "status": "pending",
+                "testStrategy": "As seeker, click Subscribe on breeder profile, verify topic subscription occurs, test unsubscribe functionality, confirm breeder activity notifications are received."
+              }
+            ]
           },
           {
             "id": 4,
@@ -619,9 +552,7 @@
             "id": 5,
             "title": "Create Dashboard Data Hooks",
             "description": "Build React Query hooks to fetch dashboard-specific data for each role.",
-            "dependencies": [
-              4
-            ],
+            "dependencies": [4],
             "details": "Create useDashboardStats hooks for each role that aggregate relevant metrics from multiple data sources (applications, listings, users, transactions). Implement proper caching and error handling.",
             "status": "pending",
             "testStrategy": "Test data hooks return correct aggregated data, verify caching works, and error states are handled properly."
@@ -639,11 +570,7 @@
             "id": 7,
             "title": "Add Dashboard Personalization Features",
             "description": "Implement dashboard customization and personalization options.",
-            "dependencies": [
-              1,
-              2,
-              3
-            ],
+            "dependencies": [1, 2, 3],
             "details": "Add ability to reorder dashboard widgets, hide/show specific metrics, and save dashboard preferences. Include welcome messages and contextual tips based on user activity.",
             "status": "pending",
             "testStrategy": "Test dashboard customization saves correctly, verify personalization persists across sessions, and ensure tips display contextually."
@@ -657,11 +584,8 @@
         "details": "Refactor existing Firebase chat components (ChatBox, ChatHeader, ChatInputBox, ChatSidebar, SingleChat) to use Supabase real-time messaging. Create conversations and messages tables with proper RLS policies. Implement unified inbox interface for conversations and platform communications.",
         "testStrategy": "Test real-time messaging between verified users, verify conversation creation/deletion, ensure proper message threading and delivery, test unified inbox displays conversations correctly.",
         "priority": "high",
-        "dependencies": [
-          1,
-          2
-        ],
-        "status": "pending",
+        "dependencies": [1, 2],
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
@@ -676,9 +600,7 @@
             "id": 2,
             "title": "Refactor Chat Components to Supabase",
             "description": "Convert Firebase-based chat components to use Supabase real-time subscriptions and database operations.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Update ChatBox, ChatHeader, ChatInputBox, ChatSidebar, SingleChat components to use Supabase client, implement real-time message subscriptions, add conversation management features.",
             "status": "pending",
             "testStrategy": "Test real-time messaging between users, verify conversation creation/deletion, ensure proper message threading and delivery."
@@ -687,9 +609,7 @@
             "id": 3,
             "title": "Enhance Inbox UI with Unified Communications",
             "description": "Create comprehensive inbox interface for conversations and platform communications.",
-            "dependencies": [
-              2
-            ],
+            "dependencies": [2],
             "details": "Update inbox to display conversations in unified timeline. Add real-time indicators, search/filtering, conversation categorization, and proper navigation between chat and other communications.",
             "status": "pending",
             "testStrategy": "Test unified inbox displays conversations correctly, verify real-time updates work, ensure proper categorization and search functionality."
@@ -703,80 +623,62 @@
         "details": "Create comprehensive notifications service with database storage, multi-channel dispatch (email, SMS, WhatsApp, push), admin-configurable rules, and automated notifications for platform events. Integrate with applications, payments, matching, and admin systems.",
         "testStrategy": "Test multi-channel notification delivery, verify admin rule configuration, test automated notifications for platform events, ensure user preferences are respected.",
         "priority": "high",
-        "dependencies": [
-          1,
-          2,
-          7,
-          8,
-          13
-        ],
-        "status": "pending",
+        "dependencies": [1, 2, 7, 8, 13],
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
-            "title": "Database Schema Updates for Notifications",
-            "description": "Create enhanced notifications, notification_types, and notification_rules tables.",
+            "title": "Implement Novu Integration for In-App & Push Notifications",
+            "description": "Set up Novu client and workflows for real-time in-app and push notifications.",
             "dependencies": [],
-            "details": "Enhance notifications table with delivery tracking, add notification_types table for predefined categories, add notification_rules table for admin configuration with proper relationships and RLS policies.",
-            "status": "pending",
-            "testStrategy": "Run migrations and verify notification-related tables are created with correct relationships and RLS policies."
+            "details": "Configure Novu client in the application, create workflows for adoption-status-changed, message-received, reservation-fee-paid, final-payment-completed. Implement subscriber management for users.",
+            "status": "completed",
+            "testStrategy": "Verify Novu workflows are triggered correctly, notifications appear in-app and as push notifications on supported devices."
           },
           {
             "id": 2,
-            "title": "Build Notifications Service Core",
-            "description": "Create comprehensive NotificationService with database storage and multi-channel dispatch capabilities.",
-            "dependencies": [
-              1
-            ],
-            "details": "Implement NotificationService class with DatabaseService, DispatchService, TemplateService, and RulesEngine. Support in-app, email, SMS, WhatsApp, and push notification delivery.",
-            "status": "pending",
-            "testStrategy": "Test notification creation, storage, and delivery through different channels. Verify service architecture handles various notification types."
+            "title": "Build Centralized NotificationService",
+            "description": "Create comprehensive NotificationService class with database storage and Novu dispatch capabilities.",
+            "dependencies": [1],
+            "details": "Implement NotificationService class with methods for adoption status notifications, payment notifications, message notifications. Handle both database storage and Novu workflow triggering with proper correlation IDs.",
+            "status": "completed",
+            "testStrategy": "Test notification creation and storage in database, verify Novu workflow triggering, ensure proper data correlation between database and Novu notifications."
           },
           {
             "id": 3,
-            "title": "Implement Multi-Channel Dispatch System",
-            "description": "Build email, SMS, WhatsApp, and push notification delivery systems with proper integrations.",
-            "dependencies": [
-              2
-            ],
-            "details": "Integrate SendGrid for email, Africa's Talking/Twilio for SMS, WhatsApp Business API for WhatsApp messaging, and web push API for browser notifications. Implement delivery tracking and error handling for all channels.",
-            "status": "pending",
-            "testStrategy": "Test each delivery channel individually (email, SMS, WhatsApp, push), verify delivery confirmations, and ensure proper fallback mechanisms for failed deliveries."
+            "title": "Implement Notification Popup Provider",
+            "description": "Create React context provider for managing notification popups and real-time updates.",
+            "dependencies": [1, 2],
+            "details": "Build NotificationPopupProvider with Novu hook integration, implement popup display logic, add mark-as-read functionality, handle different notification types with appropriate actions.",
+            "status": "completed",
+            "testStrategy": "Test notification popup display, verify real-time updates, test mark-as-read functionality, ensure different notification types show appropriate actions."
           },
           {
             "id": 4,
-            "title": "Create Notification Types & Rules Configuration",
-            "description": "Build comprehensive system for defining notification types and admin-configurable rules.",
-            "dependencies": [
-              2
-            ],
-            "details": "Define taxonomy of notification types (application updates, payments, matches, announcements), create admin interface for rule configuration, implement user preference management.",
-            "status": "pending",
-            "testStrategy": "Test admin rule configuration, verify notification type definitions, ensure user preferences are respected in delivery decisions."
+            "title": "Create Notification Drawer Component",
+            "description": "Build comprehensive notification drawer with list view, filtering, and management capabilities.",
+            "dependencies": [2, 3],
+            "details": "Implement NotificationsDrawer component with Novu notifications integration, add proper styling with Chakra UI, implement click handlers for notification actions, show read/unread states.",
+            "status": "completed",
+            "testStrategy": "Test notification drawer display, verify notification list shows correctly, test click actions work properly, ensure read/unread states are displayed accurately."
           },
           {
             "id": 5,
-            "title": "Integrate with Platform Systems",
-            "description": "Connect notifications service with applications, payments, matching, and admin systems.",
-            "dependencies": [
-              2,
-              3,
-              4
-            ],
-            "details": "Implement automated notifications for application status changes, payment confirmations, new matches, and admin announcements. Ensure proper integration with existing workflows.",
-            "status": "pending",
-            "testStrategy": "Test end-to-end notification flows for key platform events, verify proper triggering and delivery across all integrated systems."
+            "title": "Integrate Notifications with Platform Events",
+            "description": "Connect notification system with applications, payments, and messaging events.",
+            "dependencies": [2],
+            "details": "Update useAdoptions hook to use NotificationService for adoption status changes, update usePayments hook for payment confirmations, update message hooks for conversation notifications. Ensure proper party routing (seeker/breeder/admin).",
+            "status": "completed",
+            "testStrategy": "Test end-to-end notification flows: adoption submissions, status changes, payment confirmations, message notifications. Verify correct recipients receive appropriate notifications."
           },
           {
             "id": 6,
-            "title": "Refactor Notification Dispatch in Business Logic Hooks",
-            "description": "Update hooks like useApplications, useListings, and usePayments to use the new NotificationService for dispatching notifications instead of direct Supabase calls.",
-            "dependencies": [
-              2
-            ],
-            "details": "Refactor notification dispatch logic in src/lib/hooks/queries/useApplications.ts, src/lib/hooks/queries/useListings.ts, and src/lib/hooks/queries/usePayments.ts to use the centralized NotificationService instead of direct supabase.from('notifications').insert() calls.",
-            "status": "pending",
-            "testStrategy": "Verify that all existing notification dispatch functionality still works correctly after refactoring, and that business logic hooks now use the centralized NotificationService for consistent notification handling."
+            "title": "Implement Admin Notification Oversight",
+            "description": "Add admin notifications for all platform activities requiring oversight.",
+            "dependencies": [5],
+            "details": "Configure NotificationService to send admin notifications for adoption submissions, status changes, payment processing, and other key platform events. Use admin subscriber ID in Novu workflows.",
+            "status": "completed",
+            "testStrategy": "Verify admin receives notifications for all major platform events, test notification delivery to admin subscriber, ensure admin can view all platform activity through notifications."
           }
         ]
       },
@@ -787,11 +689,7 @@
         "details": "This task involves building the frontend and backend components for the breeder verification process. It will serve as a prerequisite for the admin verification panel (Task 11).\n\n1.  **Data Model**: Create a new table in Supabase named `breeder_verifications` with columns for `id`, `user_id` (foreign key to `auth.users`), `status` (enum: 'unverified', 'pending', 'approved', 'rejected'), `documents` (JSONB array of file info), `submitted_at`, `reviewed_at`, and `notes` (for admin feedback).\n\n2.  **API & State Management**: Develop a new hook, `useBreederVerification`, that handles fetching the user's verification status from the new table and manages the application submission process. This hook should encapsulate all API calls to Supabase for this feature.\n\n3.  **UI Development**: \n    - Create a new page at `/account/verification`.\n    - Use Chakra UI to build the application form, ensuring a consistent look and feel with the User Profile page (Task 9).\n    - The page should conditionally render content based on the breeder's verification status: an application form for 'unverified'/'rejected' users, and a status display for 'pending'/'approved' users.\n\n4.  **File Uploads**:\n    - Implement a secure file upload component for necessary documents (e.g., kennel club registrations, health clearances).\n    - Utilize Supabase Storage, creating a new, secured bucket named `breeder-verification-docs`.\n    - Leverage patterns from existing file upload implementations for validation (file size, type) and upload logic, similar to the component seen in the codebase for chat attachments.",
         "testStrategy": "1.  **Unverified Breeder Flow**: Log in as a breeder, navigate to `/account/verification`. Confirm the application form is displayed. Fill out the form, upload several documents (e.g., PDF, JPG), and submit. Verify the UI updates to a 'Pending' status. Check the `breeder_verifications` table in Supabase for a new 'pending' record and confirm the files exist in the `breeder-verification-docs` storage bucket.\n\n2.  **File Validation**: Attempt to upload a file larger than the defined limit (e.g., >5MB) and an unsupported file type (e.g., .exe). Verify that user-friendly error messages are displayed and the files are not uploaded.\n\n3.  **Status Display**: Manually update a breeder's status in the database to 'approved' and then to 'rejected'. Log in as that breeder each time and confirm the `/account/verification` page correctly displays the 'Verified' and 'Rejected' statuses respectively, without showing the application form.\n\n4.  **Role Gating**: Log in as a 'seeker' and attempt to access the `/account/verification` URL. Verify that access is denied or the user is redirected.",
         "status": "pending",
-        "dependencies": [
-          1,
-          2,
-          9
-        ],
+        "dependencies": [1, 2, 9],
         "priority": "medium",
         "subtasks": []
       },
@@ -802,11 +700,8 @@
         "details": "Develop a secure admin dashboard with multiple management sections. Include breeder verification panel to review and approve breeder applications, user management to oversee all platform users, listings management to monitor all litters and wanted ads, and analytics dashboard to track platform metrics and engagement. All sections should have proper role-based access control and comprehensive management interfaces.",
         "testStrategy": "Log in as an admin and verify access to all management panels. Test breeder verification workflow, user management capabilities, listings oversight, and analytics functionality. Verify that non-admin users are denied access to all admin sections.",
         "priority": "high",
-        "dependencies": [
-          1,
-          4
-        ],
-        "status": "pending",
+        "dependencies": [1, 4],
+        "status": "completed",
         "subtasks": [
           {
             "id": 1,
@@ -821,9 +716,7 @@
             "id": 2,
             "title": "Implement Breeder Verification Panel",
             "description": "Build comprehensive breeder verification interface to review and approve breeder applications.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Create verification panel that fetches breeders with `is_verified = false`. Display breeder information, submitted verification documents, and kennel details. Implement approve/reject functionality that updates both users.is_verified and breeder_profiles.verified_at fields. Include document viewer for verification_docs.",
             "status": "pending",
             "testStrategy": "As admin, view list of unverified breeders with their details and documents. Approve a breeder and verify their status changes to verified in both users and breeder_profiles tables."
@@ -832,9 +725,7 @@
             "id": 3,
             "title": "Implement User Management Panel",
             "description": "Create interface for admins to manage all platform users with search and filtering capabilities.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Build user management interface that displays all users with their roles, verification status, and activity information. Include search functionality, role filtering, and user detail views. Allow admins to update user roles and manage user accounts.",
             "status": "pending",
             "testStrategy": "As admin, browse all users, filter by role, search by name/email, and view detailed user information. Test user management capabilities."
@@ -843,9 +734,7 @@
             "id": 4,
             "title": "Implement Listings Management Panel",
             "description": "Create admin interface to oversee all platform listings (litters and wanted ads).",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Build listings management panel that displays all litters and wanted listings with filtering and moderation capabilities. Allow admins to view, edit, or remove inappropriate listings. Include status management and quality control features.",
             "status": "pending",
             "testStrategy": "As admin, view all listings, filter by status/type, moderate content, and manage listing visibility. Test listing management and moderation features."
@@ -854,9 +743,7 @@
             "id": 5,
             "title": "Implement Analytics Dashboard",
             "description": "Create comprehensive analytics dashboard for admins to monitor platform performance and metrics.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Build analytics interface that displays key platform metrics including user growth, listing activity, application success rates, and engagement statistics. Include charts, graphs, and exportable reports for data analysis.",
             "status": "pending",
             "testStrategy": "As admin, view platform analytics, check key metrics, and verify data accuracy. Test data visualization and reporting features."
@@ -865,9 +752,7 @@
             "id": 6,
             "title": "Implement Payout Management Panel",
             "description": "Create comprehensive payout management interface for admins to oversee breeder earnings and payout processing.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Build payout management panel that displays all breeder earnings, payout history, pending payouts, and payout processing. Include manual payout approval, payout scheduling, payout method management, and payout status tracking. Integrate with Paystack payout system for automated processing.",
             "status": "pending",
             "testStrategy": "As admin, view all breeder payouts, approve pending payouts, verify payout processing works correctly, and check payout history and status tracking."
@@ -876,10 +761,7 @@
             "id": 7,
             "title": "Implement Financial Reports & Revenue Analytics",
             "description": "Create detailed financial reporting system for platform revenue, commission tracking, and business metrics.",
-            "dependencies": [
-              5,
-              6
-            ],
+            "dependencies": [5, 6],
             "details": "Build financial reports dashboard with revenue breakdowns, commission earnings, payment method analytics, geographic revenue distribution, and exportable financial reports. Include profit/loss analysis and financial forecasting tools.",
             "status": "pending",
             "testStrategy": "As admin, view comprehensive financial reports, verify revenue calculations, test report exports, and validate financial analytics accuracy."
@@ -888,9 +770,7 @@
             "id": 8,
             "title": "Implement Dispute Resolution Panel",
             "description": "Create dispute management system for handling conflicts between breeders and seekers.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Build dispute resolution interface that allows admins to view reported disputes, mediate between parties, make binding decisions, and track dispute resolution outcomes. Include dispute categories, evidence management, and communication tools.",
             "status": "pending",
             "testStrategy": "As admin, view dispute queue, mediate sample disputes, verify decision enforcement, and test dispute tracking and resolution workflows."
@@ -899,9 +779,7 @@
             "id": 9,
             "title": "Implement Content Management System",
             "description": "Create CMS for managing platform content including blog posts, static pages, and promotional content.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Build content management interface for creating, editing, and publishing blog posts, managing static pages, and controlling promotional content. Include rich text editor, image management, SEO optimization, and content scheduling.",
             "status": "pending",
             "testStrategy": "As admin, create and publish blog posts, edit static pages, manage promotional content, and verify content appears correctly on the public site."
@@ -910,31 +788,25 @@
             "id": 10,
             "title": "Implement System Configuration & Settings",
             "description": "Create system-wide configuration panel for platform settings, feature flags, and operational parameters.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Build configuration management interface for platform settings including commission rates, payment settings, feature toggles, email templates, notification settings, and system maintenance controls.",
             "status": "pending",
             "testStrategy": "As admin, modify system settings, toggle features, update configuration parameters, and verify changes take effect across the platform."
           },
           {
             "id": 11,
-            "title": "Implement Support Ticket Management",
-            "description": "Create comprehensive support ticket system for handling user inquiries and technical issues.",
-            "dependencies": [
-              1
-            ],
-            "details": "Build support ticket management interface with ticket creation, assignment, status tracking, priority management, and resolution workflows. Include canned responses, ticket categories, and escalation procedures.",
+            "title": "Implement Content Management System",
+            "description": "Create CMS for managing platform content including blog posts, static pages, and promotional content.",
+            "dependencies": [1],
+            "details": "Build content management interface for creating, editing, and publishing blog posts, managing static pages, and controlling promotional content. Include rich text editor, image management, SEO optimization, and content scheduling.",
             "status": "pending",
-            "testStrategy": "As admin, manage support tickets, assign tickets to team members, track resolution progress, and verify ticket management workflows function correctly."
+            "testStrategy": "As admin, create and publish blog posts, edit static pages, manage promotional content, and verify content appears correctly on the public site."
           },
           {
             "id": 12,
             "title": "Implement Platform Announcements & Notifications",
             "description": "Create system for broadcasting platform-wide announcements and targeted notifications to users.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Build announcement management interface for creating, scheduling, and sending platform announcements. Include targeted notifications by user role, region, or segment. Support email notifications, in-app notifications, and push notifications.",
             "status": "pending",
             "testStrategy": "As admin, create and send announcements, target specific user groups, verify delivery across different notification channels, and track announcement engagement."
@@ -943,34 +815,28 @@
       },
       {
         "id": 15,
-        "title": "Implement Comprehensive Wishlist Functionality",
-        "description": "Build complete wishlist system enabling seekers to save listings and breeds, receive notifications for availability, and allow breeders to view matched seekers based on their wishlist preferences.",
-        "details": "Implement a fully-functional wishlist system using the existing database schema (wishlists table) and the useWishlist.ts hook. The implementation spans multiple pages and includes: (1) Connect existing 'Add to Wishlist' placeholder buttons across breed detail pages and listing pages to actual wishlist functionality with proper button state transitions, (2) Add wishlist icons with counts to navigation and listing cards, (3) Implement real-time notifications when wishlisted items become available, (4) Build breeder matches page showing seekers who have wishlisted their breeds/listings, (5) Toggle notification preferences per wishlist item. The wishlists table supports saving both listings (listing_id) and user_breeds (user_breed_id) with optional notification preferences (notify_when_available).",
-        "testStrategy": "Test complete wishlist flows: As a seeker, add items to wishlist from breed detail pages and listing pages, verify button transitions from 'Add to Wishlist' to 'Added to Wishlist', check wishlist count updates in navigation, view wishlist page showing all saved items, toggle notification settings, remove items. As a breeder, view matches page showing seekers who have wishlisted their breeds/listings. Verify notifications are created when wishlisted items become available.",
+        "title": "Implement Comprehensive Wishlist Functionality with Novu Topic-Based Notifications",
+        "description": "Build complete wishlist system enabling seekers to save listings and breeds, receive topic-based notifications for availability, and allow breeders to view matched seekers based on their wishlist preferences.",
+        "details": "Implement a fully-functional wishlist system using the existing database schema (wishlists table) and the useWishlist.ts hook. The implementation spans multiple pages and includes: (1) Connect existing 'Add to Wishlist' placeholder buttons across breed detail pages and listing pages to actual wishlist functionality with proper button state transitions, (2) Add wishlist icons with counts to navigation and listing cards, (3) Implement topic-based notifications when wishlisted breeds become available using Novu topics (breed-{breedId}-interested), (4) Build breeder matches page showing seekers who have wishlisted their breeds/listings, (5) Automatic topic subscriptions during onboarding for breed preferences. The wishlists table supports saving both listings (listing_id) and user_breeds (user_breed_id) with optional notification preferences (notify_when_available).",
+        "testStrategy": "Test complete wishlist flows: As a seeker, add items to wishlist from breed detail pages and listing pages, verify button transitions from 'Add to Wishlist' to 'Added to Wishlist', check wishlist count updates in navigation, view wishlist page showing all saved items, toggle notification settings, remove items. As a breeder, view matches page showing seekers who have wishlisted their breeds/listings. Verify topic-based notifications are sent when wishlisted breeds become available using NotificationService.sendBreedMatchNotification().",
         "priority": "high",
-        "dependencies": [
-          2,
-          6,
-          12
-        ],
+        "dependencies": [2, 6, 12],
         "status": "pending",
         "subtasks": [
           {
             "id": 1,
-            "title": "Enhance useWishlist Hook with User ID Filtering and Counts",
-            "description": "Update the useWishlist.ts hook to properly filter by authenticated user, add a useWishlistCount hook for navigation badge, and ensure the useIsInWishlist hook returns the wishlist item ID for removal.",
+            "title": "Enhance useWishlist Hook with User ID Filtering, Counts, and Automatic Topic Subscriptions",
+            "description": "Update the useWishlist.ts hook to properly filter by authenticated user, add a useWishlistCount hook for navigation badge, ensure the useIsInWishlist hook returns the wishlist item ID for removal, and implement automatic topic subscriptions based on wishlist item type.",
             "dependencies": [],
-            "details": "Modify src/lib/hooks/queries/useWishlist.ts to: (1) Add user_id filtering in useWishlist query to ensure users only see their own wishlist items, (2) Create useWishlistCount hook that returns total count for navigation badge display, (3) Enhance useIsInWishlist to return the wishlist item ID along with the boolean status so items can be removed directly, (4) Add breed_id support to useAddToWishlist for saving entire breeds (not just user_breeds or listings).",
+            "details": "Modify src/lib/hooks/queries/useWishlist.ts to: (1) Add user_id filtering in useWishlist query to ensure users only see their own wishlist items, (2) Create useWishlistCount hook that returns total count for navigation badge display, (3) Enhance useIsInWishlist to return the wishlist item ID along with the boolean status so items can be removed directly, (4) Add breed_id support to useAddToWishlist for saving entire breeds (not just user_breeds or listings), (5) Implement automatic topic subscriptions in useAddToWishlist: when adding a breed → subscribe to 'breed-{breedId}-interested' topic, when adding user_breed/listing → subscribe to 'breeder-{breederId}-subscribers' topic, (6) Implement automatic topic unsubscriptions in useRemoveFromWishlist when items are removed.",
             "status": "pending",
-            "testStrategy": "Test that useWishlist only returns current user's items. Verify useWishlistCount returns accurate total. Test useIsInWishlist returns both status and item ID for removal functionality."
+            "testStrategy": "Test that useWishlist only returns current user's items. Verify useWishlistCount returns accurate total. Test useIsInWishlist returns both status and item ID for removal functionality. Test automatic topic subscriptions: add breed to wishlist → verify 'breed-{breedId}-interested' subscription, add user_breed to wishlist → verify 'breeder-{breederId}-subscribers' subscription. Test automatic unsubscriptions when items are removed."
           },
           {
             "id": 2,
             "title": "Create Reusable AddToWishlistButton Component",
             "description": "Build a reusable button component that handles add/remove wishlist functionality with proper state transitions and loading states.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Create src/lib/components/ui/AddToWishlistButton.tsx that: (1) Accepts listing_id, user_breed_id, or breed_id as props, (2) Uses useIsInWishlist to determine current state, (3) Toggles between 'Add to Wishlist' (heart outline) and 'Added to Wishlist' (filled heart) states, (4) Shows loading spinner during add/remove operations, (5) Uses useAddToWishlist and useRemoveFromWishlist mutations, (6) Displays toast notifications on success/error, (7) Supports different sizes and variants for use in cards vs detail pages.",
             "status": "pending",
             "testStrategy": "Render AddToWishlistButton in isolation, verify state transitions work correctly, test loading states during mutations, verify toast notifications appear."
@@ -979,10 +845,8 @@
             "id": 3,
             "title": "Integrate Wishlist Button in PublicBreedDetailPage",
             "description": "Replace the placeholder onAddToWishlist toast function in PublicBreedDetailPage.tsx with actual AddToWishlistButton component functionality.",
-            "dependencies": [
-              2
-            ],
-            "details": "Update src/lib/components/pages/breeds/PublicBreedDetailPage.tsx to: (1) Replace the onAddToWishlist toast-only function with actual wishlist integration, (2) Use AddToWishlistButton in PageHeaderWithTwoButtons for the primary action, (3) Update empty state actions in ListingList and BreedersList to use the actual wishlist functionality, (4) Pass breed_id to save the breed to wishlist for notifications when new listings/breeders are added.",
+            "dependencies": [2],
+            "details": "Update src/lib/components/pages/breeds/PublicBreedDetailPage.tsx to: (1) Replace the onAddToWishlist toast-only function with actual wishlist integration, (2) Use AddToWishlistButton in PageHeaderWithTwoButtons for the primary action, (3) Update empty state actions in ListingList and BreedersList to use the actual wishlist functionality, (4) Pass breed_id to save the breed to wishlist for topic-based notifications when new listings/breeders are added.",
             "status": "pending",
             "testStrategy": "Navigate to a breed detail page, click Add to Wishlist, verify item appears in wishlist page, verify button state changes to 'Added to Wishlist', click again to remove, verify removal."
           },
@@ -990,9 +854,7 @@
             "id": 4,
             "title": "Integrate Wishlist Button in ExploreUserBreedDetailView",
             "description": "Replace the placeholder onAddToWishlist toast function in ExploreUserBreedDetailView.tsx with actual wishlist functionality.",
-            "dependencies": [
-              2
-            ],
+            "dependencies": [2],
             "details": "Update src/lib/components/pages/breeds/ExploreUserBreedDetailView.tsx to: (1) Replace onAddToWishlist toast function with AddToWishlistButton integration, (2) Add a header action button for adding the user_breed to wishlist, (3) Update empty state actions in ListingList and BreedersList to use actual wishlist functionality, (4) Pass user_breed_id to save for notifications when new listings become available from this breeder's breed.",
             "status": "pending",
             "testStrategy": "Navigate to a breeder's breed detail view, test add/remove wishlist functionality in header and empty states, verify wishlist page reflects changes."
@@ -1001,9 +863,7 @@
             "id": 5,
             "title": "Add Wishlist Button to Listing Detail and Listing Cards",
             "description": "Add AddToWishlistButton to listing detail pages and listing cards where seekers browse listings.",
-            "dependencies": [
-              2
-            ],
+            "dependencies": [2],
             "details": "Update listing-related components: (1) Add AddToWishlistButton to listing detail page (src/lib/pages/listings or similar), (2) Add wishlist heart icon button to ListingCard component, (3) Ensure listing_id is passed for saving specific listings, (4) Handle sold/unavailable listings gracefully (maybe disable wishlist for sold items).",
             "status": "pending",
             "testStrategy": "Browse listings as seeker, add listing to wishlist from card and detail page, verify persistence and button state transitions."
@@ -1012,31 +872,25 @@
             "id": 6,
             "title": "Add Wishlist Count Badge to Navigation",
             "description": "Display a badge showing the total wishlist item count in the navigation sidebar for seekers.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Update navigation components: (1) Use useWishlistCount hook in Sidebar or navigation component, (2) Display badge with count next to Wishlist nav item for seekers, (3) Update badge in real-time when items are added/removed, (4) Only show badge when count > 0, (5) Ensure badge styling matches existing navigation design.",
             "status": "pending",
             "testStrategy": "As seeker, verify wishlist navigation item shows badge with correct count, add/remove items and verify count updates in real-time."
           },
           {
             "id": 7,
-            "title": "Implement Wishlist Availability Notifications",
-            "description": "Create notification triggers when wishlisted items become available and integrate with existing notification system.",
-            "dependencies": [
-              1
-            ],
-            "details": "Implement wishlist-based notifications: (1) Create database trigger or edge function that fires when listings are created/updated matching wishlisted breeds, (2) Insert notifications to users who have notify_when_available = true for matching breeds, (3) Use notification type 'wishlist_available' with appropriate title/body, (4) Link notification to the new listing for navigation, (5) Integrate with existing useNotifications hook for display.",
+            "title": "Implement Notification Triggers in useListings and useUserBreeds Hooks",
+            "description": "Add notification triggers to useListings and useUserBreeds hooks to automatically send topic-based notifications when wishlisted breeds become available.",
+            "dependencies": [1, 12],
+            "details": "Update src/lib/hooks/queries/useListings.ts and src/lib/hooks/queries/useUserBreeds.ts: (1) When a new listing is created successfully, check if any seekers have wishlisted that breed, (2) Call NotificationService.sendBreedMatchNotification() with the breed_id, listing details, and breeder info, (3) Use the existing breed-{breedId}-interested topic system for automatic subscriber notification, (4) Include listing link and breed information in notification payload, (5) Ensure notifications are sent asynchronously without blocking the listing creation flow.",
             "status": "pending",
-            "testStrategy": "As seeker, add breed to wishlist with notifications enabled. As breeder, create new listing for that breed. Verify seeker receives notification about new listing."
+            "testStrategy": "As seeker, add breed to wishlist during onboarding. As breeder, create new listing for that breed using useListings hook. Verify NotificationService.sendBreedMatchNotification() is triggered and seeker receives topic-based notification with direct link to the new listing."
           },
           {
             "id": 8,
             "title": "Enhance Wishlist Page with Better UX",
             "description": "Improve the existing WishlistPage component with better organization, filtering, and actions.",
-            "dependencies": [
-              1
-            ],
+            "dependencies": [1],
             "details": "Enhance src/lib/components/pages/wishlist/index.tsx: (1) Add tabs or sections for Listings, Breeds, User Breeds, (2) Add bulk notification toggle (enable/disable all), (3) Add sorting options (recently added, availability), (4) Improve empty state with better CTAs, (5) Add quick links to browse more content, (6) Show breeder info for user_breeds listings, (7) Better handling of unavailable/sold items.",
             "status": "pending",
             "testStrategy": "Navigate to wishlist page, verify sections display correctly, test notification toggles, test sorting, verify sold items display appropriately."
@@ -1045,10 +899,7 @@
             "id": 9,
             "title": "Implement Breeder Matches Page Based on Wishlist Data",
             "description": "Build the matches page for breeders showing seekers who have wishlisted their breeds/listings, enabling outreach opportunities.",
-            "dependencies": [
-              1,
-              7
-            ],
+            "dependencies": [1, 7],
             "details": "Implement src/lib/components/pages/matches/matches.tsx: (1) Create useBreederMatches hook that queries wishlists table for items matching breeder's breeds/listings, (2) Join with users table to get seeker information (display_name, profile_photo, location), (3) Group matches by breed/listing for organization, (4) Show seeker contact preferences and profile summary, (5) Add 'Contact' CTA linking to messaging/inbox, (6) Show when seeker added to wishlist (created_at), (7) Display notification preference status, (8) Include filters for breed, recency, notification status.",
             "status": "pending",
             "testStrategy": "As seeker, wishlist a breeder's breed. As that breeder, navigate to Matches page, verify the seeker appears in matches with their profile info and contact options."
@@ -1057,12 +908,535 @@
             "id": 10,
             "title": "Add Wishlist Quick Actions to Breeder Profile Cards",
             "description": "Enable seekers to add entire breeder's breeds to wishlist directly from breeder cards in search/browse results.",
-            "dependencies": [
-              2
-            ],
-            "details": "Update breeder card components (BreederCard, BreederCard2, etc.): (1) Add wishlist icon button to save all of breeder's breeds, (2) On click, show modal to select which breeds to wishlist, or add all with single action, (3) Indicate wishlisted status on breeder cards, (4) Link to breeder detail page for more granular selection.",
+            "dependencies": [2],
+            "details": "Update breeder card components (BreederCard, BreederCard2, etc.): (1) Add wishlist icon button to save all of breeder's breeds, (2) Indicate wishlisted status on breeder cards, (3) Link to breeder detail page for more granular selection.",
             "status": "pending",
             "testStrategy": "Browse breeders as seeker, use quick wishlist action on breeder card, verify selected breeds appear in wishlist."
+          },
+          {
+            "id": 11,
+            "title": "Update BreederDetailPage Subscribe Button to Use Topic Subscriptions",
+            "description": "Replace placeholder subscribe functionality in BreederDetailPage with actual Novu topic subscription system.",
+            "dependencies": [12],
+            "details": "Update src/lib/components/pages/breeders/BreederDetailPage.tsx: (1) Replace handleSubscribeClick toast with NotificationService.subscribeToBreeder() call, (2) Subscribe user to breeder-{breederId}-subscribers topic for activity notifications, (3) Update button state to show subscribed/unsubscribed status, (4) Add unsubscribe functionality, (5) Show confirmation when subscription is successful.",
+            "status": "pending",
+            "testStrategy": "As seeker, click Subscribe on breeder profile, verify topic subscription occurs, test unsubscribe functionality, confirm breeder activity notifications are received."
+          }
+        ]
+      },
+      {
+        "id": 17,
+  "title": "Create Help and Support Page System with FAQs and Tickets",
+  "description": "Build comprehensive help and support system accessible from both @pages/support and @pages/dashboard/support with dynamic FAQ management and ticket creation functionality.",
+  "details": "Create a complete support ecosystem with: (1) Database schema for support_faqs, support_tickets, support_categories, support_ticket_comments, and support_ticket_attachments tables with proper RLS policies, (2) Reusable components for FAQ display, ticket forms, and support interfaces using Chakra UI and PageHeaderWithSearch, (3) Public support page at /pages/support with searchable FAQs for all users, (4) Dashboard support page at /pages/dashboard/support with ticket creation for logged-in users, (5) Role-based access (seekers can create tickets, breeders can view FAQs, admins can manage both), (6) Ticket status tracking with notifications, (7) File upload support for tickets, (8) Integration with existing notification system.",
+  "testStrategy": "Test complete support flows: public FAQ search and browsing, authenticated ticket creation, admin FAQ management, ticket status updates and notifications, role-based access controls, file uploads in tickets. Verify all functionality works across different user roles and both public and dashboard access points.",
+  "priority": "high",
+  "dependencies": [1, 2, 12],
+  "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Database Schema for Support System",
+            "description": "Add support_faqs, support_tickets, support_categories, support_ticket_comments, and support_ticket_attachments tables to schema.ts with proper RLS policies",
+            "dependencies": [],
+            "details": "Extend db/schema.ts with: support_faqs (dynamic FAQ storage with categories, search fields, view counts, helpful votes), support_tickets (user tickets with status, priority, category), support_categories (ticket and FAQ categories), support_ticket_comments (admin/user conversation threads), support_ticket_attachments (file uploads for tickets). Include proper RLS policies, indexes, and type exports.",
+            "status": "pending",
+            "testStrategy": "Run database migrations and verify all new tables are created with correct relationships, indexes, and RLS policies in Supabase."
+          },
+          {
+            "id": 2,
+            "title": "Create React Query Hooks for Support System",
+            "description": "Build comprehensive hooks for FAQ management, ticket creation/management, and search functionality",
+            "dependencies": [1],
+            "details": "Create useSupportFAQ.ts (CRUD operations, search, categories, view tracking, helpful votes), useSupportTickets.ts (ticket creation, status updates, comment threads, file attachments), useFAQSearch.ts (real-time search with debouncing), and useTicketCategories.ts. Follow existing hook patterns with proper error handling and query invalidation.",
+            "status": "pending",
+            "testStrategy": "Test each hook individually: FAQ CRUD operations, ticket creation and updates, search functionality, category filtering. Verify proper caching and error states."
+          },
+          {
+            "id": 3,
+            "title": "Build Reusable Support Components",
+            "description": "Create reusable components for FAQs, ticket forms, and support interfaces",
+            "dependencies": [2],
+            "details": "Build SupportFAQ.tsx (searchable FAQ display with categories), SupportTicketForm.tsx (comprehensive ticket creation with file upload), SupportTicketList.tsx (ticket management for dashboard), SupportTicketDetail.tsx (ticket conversation view), SupportFAQAdmin.tsx (admin FAQ management interface). Use existing Chakra UI patterns and PageHeaderWithSearch component.",
+            "status": "pending",
+            "testStrategy": "Test each component in isolation: FAQ display and search, ticket form validation and submission, ticket list filtering, admin FAQ management interface."
+          },
+          {
+            "id": 4,
+            "title": "Implement Public Support Page",
+            "description": "Create /pages/support/index.tsx with searchable FAQ interface for all users",
+            "dependencies": [3],
+            "details": "Build public support page with: PageHeaderWithSearch for FAQ search, category filtering, popular FAQs, view count tracking, helpful/unhelpful voting for logged-in users, contact information, and clear call-to-action for ticket creation (redirects to dashboard if not logged in).",
+            "status": "pending",
+            "testStrategy": "Navigate to /support as public user, test FAQ search and filtering, verify category organization, test view tracking, and check login prompts for voting/ticket creation."
+          },
+          {
+            "id": 5,
+            "title": "Implement Dashboard Support Page",
+            "description": "Create /pages/dashboard/support/index.tsx with ticket creation and management",
+            "dependencies": [3],
+            "details": "Build dashboard support page with: ticket creation form (for seekers), ticket list and status tracking, ticket detail view with admin comments, file attachment viewing, notification integration for status updates, and role-based content (seekers see ticket creation, breeders see FAQ access, admins see full management).",
+            "status": "pending",
+            "testStrategy": "Test as different user roles: seekers can create tickets, view their tickets, all roles can access FAQs. Verify ticket status updates trigger notifications."
+          },
+          {
+            "id": 6,
+            "title": "Add Support Navigation and Routing",
+            "description": "Update navigation configurations to include support sections",
+            "dependencies": [4, 5],
+            "details": "Add support navigation links to: public header/footer (link to /support), dashboard sidebar (seekers get 'Support Tickets', all roles get 'Help & FAQs'), admin sidebar (add support ticket management). Ensure proper role-based visibility and navigation states.",
+            "status": "pending",
+            "testStrategy": "Test navigation as different roles: public users see support link, seekers see ticket creation, breeders/admins see appropriate support sections, verify all routes work correctly."
+          },
+          {
+            "id": 7,
+            "title": "Implement Support Ticket Status Tracking",
+            "description": "Build comprehensive ticket status management with timeline and notifications",
+            "dependencies": [5],
+            "details": "Implement ticket status workflow (submitted → in_review → responded → resolved), admin comment system with timestamps, automatic notifications for status changes, ticket priority levels, and escalation procedures. Integrate with existing notification system.",
+            "status": "pending",
+            "testStrategy": "Test complete ticket lifecycle: creation, admin review, status updates, user notifications, comment threading, and resolution tracking."
+          },
+          {
+            "id": 8,
+            "title": "Add File Upload Support for Tickets",
+            "description": "Implement secure file upload functionality for support tickets",
+            "dependencies": [1, 7],
+            "details": "Create support-ticket-attachments Supabase storage bucket with RLS policies, build file upload component with drag-and-drop, file type validation, size limits, and progress indicators. Store file metadata in support_ticket_attachments table.",
+            "status": "pending",
+            "testStrategy": "Test file upload in ticket creation: drag-and-drop functionality, file type/size validation, upload progress, attachment display in ticket detail view."
+          },
+          {
+            "id": 9,
+            "title": "Create Admin Support Management Interface",
+            "description": "Build admin interface for managing support tickets and FAQs",
+            "dependencies": [5],
+            "details": "Extend admin dashboard with: FAQ management (create/edit/delete FAQs, category management, view analytics), ticket management (view all tickets, assign priorities, add admin comments, close tickets), support analytics (ticket volume, resolution times, common issues), and canned response system.",
+            "status": "pending",
+            "testStrategy": "Test admin support management: FAQ CRUD operations, ticket assignment and responses, analytics dashboard, canned responses, and bulk operations."
+          },
+          {
+            "id": 10,
+            "title": "Add Search and Analytics for Support System",
+            "description": "Implement advanced search and analytics for support content",
+            "dependencies": [9],
+            "details": "Add full-text search across FAQs and tickets, FAQ popularity tracking, ticket resolution analytics, user satisfaction ratings, and automated FAQ suggestions based on ticket content. Include admin analytics dashboard with charts and export functionality.",
+            "status": "pending",
+            "testStrategy": "Test search functionality across FAQs and tickets, verify analytics data accuracy, test FAQ suggestion system, and validate admin reporting features."
+          },
+          {
+            "id": 11,
+            "title": "Add Notification Integration for Support Tickets",
+            "description": "Implement comprehensive notification system for support tickets using existing NotificationService",
+            "dependencies": [1, 7],
+            "details": "Add support ticket notification types (TICKET_CREATED, TICKET_UPDATED, TICKET_RESOLVED, TICKET_COMMENT_ADDED) to NotificationService. Create methods for ticket notifications (sendTicketCreatedNotification, sendTicketStatusNotification, sendTicketCommentNotification). Integrate notifications into useCreateSupportTicket, useUpdateTicketStatus, and useAddTicketComment hooks. Add admin notifications for urgent/high-priority tickets. Implement topic-based notifications for ticket updates and status changes.",
+            "status": "completed",
+            "testStrategy": "Test ticket creation notifications, status change notifications, comment notifications, admin alerts for urgent tickets, and user notification preferences. Verify notifications are sent to correct recipients and display properly in notification system."
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Implement Terms of Service and Privacy Policy Pages",
+        "description": "Create comprehensive legal pages with Terms of Service and Privacy Policy for the Pethouse platform, accessible from both public and dashboard areas.",
+        "details": "Build dedicated legal compliance pages that are essential for platform operations. Include comprehensive terms covering user agreements, platform rules, liability disclaimers, and privacy policy explaining data collection, usage, cookies, and user rights. Make pages accessible from public footer and dashboard settings with proper SEO optimization and mobile responsiveness.",
+        "testStrategy": "Verify pages load correctly from public footer and dashboard settings, content is comprehensive and legally appropriate, pages are mobile-responsive, and proper navigation works. Test that pages are indexed properly for SEO.",
+        "priority": "high",
+        "dependencies": [1],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Terms of Service Page",
+            "description": "Build comprehensive Terms of Service page covering user agreements, platform rules, liability, and service terms",
+            "dependencies": [],
+            "details": "Create src/pages/terms/index.tsx with detailed terms covering: user eligibility, account responsibilities, prohibited activities, content ownership, payment terms, dispute resolution, liability limitations, and service termination policies. Use existing page structure and SEO optimization.",
+            "status": "pending",
+            "testStrategy": "Verify page loads, content is comprehensive, mobile responsive, and properly formatted."
+          },
+          {
+            "id": 2,
+            "title": "Create Privacy Policy Page",
+            "description": "Build detailed Privacy Policy explaining data collection, usage, and user rights",
+            "dependencies": [],
+            "details": "Create src/pages/privacy/index.tsx covering: data collection practices, cookie usage, information sharing, user rights, data security measures, children's privacy, and contact information for privacy inquiries. Include compliance with Kenyan data protection laws.",
+            "status": "pending",
+            "testStrategy": "Verify privacy policy covers all required data practices, is compliant with regulations, and user rights are clearly explained."
+          },
+          {
+            "id": 3,
+            "title": "Add Legal Page Navigation",
+            "description": "Integrate legal pages into public footer and dashboard navigation",
+            "dependencies": [1, 2],
+            "details": "Add Terms of Service and Privacy Policy links to public footer navigation and dashboard settings/legal section. Ensure proper routing and accessibility for all user roles.",
+            "status": "pending",
+            "testStrategy": "Test navigation from public footer and dashboard settings, verify links work for all user states (logged in/out)."
+          },
+          {
+            "id": 4,
+            "title": "Implement SEO and Accessibility",
+            "description": "Optimize legal pages for search engines and ensure accessibility compliance",
+            "dependencies": [1, 2, 3],
+            "details": "Add proper meta tags, structured data, and accessibility features (ARIA labels, keyboard navigation, screen reader support). Ensure pages are crawlable and properly indexed.",
+            "status": "pending",
+            "testStrategy": "Verify pages have proper SEO meta tags, accessibility compliance, and mobile responsiveness."
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Enhance Contact System with Multi-Channel Support",
+        "description": "Upgrade the existing contact system to support multiple communication channels and improve user experience based on PRD requirements.",
+        "details": "Expand the contact page to include WhatsApp integration, phone support, location information, and business hours. Add contact preferences to user profiles and integrate with the notification system for consistent communication preferences across the platform.",
+        "testStrategy": "Test all contact methods work correctly, WhatsApp integration functions properly, contact preferences are saved and respected, and the contact page is mobile-optimized.",
+        "priority": "medium",
+        "dependencies": [1, 2],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Admin User Management System",
+            "description": "Build comprehensive user management interface with search, filtering, role management, and user actions.",
+            "dependencies": [],
+            "details": "Implement useAdminUsers hook, AdminUsersPage component with full CRUD operations, user statistics, activity logs, and role-based access control.",
+            "status": "completed",
+            "testStrategy": "Test user search/filtering, role updates, account activation/deactivation, and user detail views."
+          },
+          {
+            "id": 2,
+            "title": "Implement Breeder Verification Workflow",
+            "description": "Create complete breeder verification system with document review and approval processes.",
+            "dependencies": [],
+            "details": "Build useAdminVerifications hook, AdminVerificationPage with document viewing, approval/rejection workflow, verification statistics, and history tracking.",
+            "status": "completed",
+            "testStrategy": "Test verification request review, document access, approval/rejection actions, and status tracking."
+          },
+          {
+            "id": 3,
+            "title": "Create Listings Moderation System",
+            "description": "Develop content moderation interface for managing platform listings.",
+            "dependencies": [],
+            "details": "Implement useAdminListings hook, AdminListingsPage with listing filtering, content flagging, approval/rejection, and moderation statistics.",
+            "status": "completed",
+            "testStrategy": "Test listing search/filtering, content moderation actions, flag management, and listing status updates."
+          },
+          {
+            "id": 4,
+            "title": "Build Analytics Dashboard",
+            "description": "Create comprehensive analytics interface with metrics, trends, and reporting.",
+            "dependencies": [],
+            "details": "Develop useAdminAnalytics hooks, AdminAnalyticsPage with user metrics, listing analytics, revenue tracking, geographic insights, and export functionality.",
+            "status": "completed",
+            "testStrategy": "Test analytics data accuracy, time range filtering, data visualization, and report export functionality."
+          },
+          {
+            "id": 5,
+            "title": "Implement Adoption Management Interface",
+            "description": "Build adoption oversight system with dispute resolution and admin interventions.",
+            "dependencies": [],
+            "details": "Create useAdminAdoptions hook, AdminAdoptionsPage with adoption monitoring, dispute resolution, status interventions, and adoption statistics.",
+            "status": "completed",
+            "testStrategy": "Test adoption filtering, dispute resolution workflow, admin interventions, and adoption status management."
+          },
+          {
+            "id": 6,
+            "title": "Add Admin Query Keys and Infrastructure",
+            "description": "Update query key system and add admin-specific infrastructure.",
+            "dependencies": [],
+            "details": "Extend queryKeys.ts with admin query keys, update hook exports, ensure proper caching and invalidation strategies.",
+            "status": "completed",
+            "testStrategy": "Verify admin query keys work correctly, caching functions properly, and data invalidation triggers correctly."
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "title": "Create About Page with Platform Story and Mission",
+        "description": "Build comprehensive About page showcasing Pethouse mission, team, and platform evolution from Doghouse to multi-pet adoption platform.",
+        "details": "Create engaging About page that tells the Pethouse story, explains the mission of connecting verified breeders with responsible pet seekers, showcases the team, and highlights the platform's growth from dog-focused to multi-pet adoption. Include compelling visuals, statistics, and call-to-actions.",
+        "testStrategy": "Verify page loads correctly, content is engaging and informative, visuals display properly, statistics are accurate, and page performs well on mobile devices.",
+        "priority": "medium",
+        "dependencies": [1],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design About Page Structure and Content",
+            "description": "Create comprehensive About page layout with mission, story, and platform information",
+            "dependencies": [],
+            "details": "Build src/pages/about/index.tsx with sections for: platform mission and values, evolution from Doghouse to Pethouse, team introduction, impact statistics, and call-to-action for user registration.",
+            "status": "pending",
+            "testStrategy": "Verify page structure is logical, content is compelling, and all sections load correctly."
+          },
+          {
+            "id": 2,
+            "title": "Add Platform Statistics and Impact Metrics",
+            "description": "Include key platform statistics and success metrics on About page",
+            "dependencies": [1],
+            "details": "Add dynamic statistics section showing: number of verified breeders, successful adoptions, pets rehomed, platform growth metrics. Connect to database queries for real-time statistics display.",
+            "status": "pending",
+            "testStrategy": "Verify statistics display correctly, numbers are accurate, and section updates with real data."
+          },
+          {
+            "id": 3,
+            "title": "Create Team Section with Member Profiles",
+            "description": "Add team member profiles and company information",
+            "dependencies": [1],
+            "details": "Include team member profiles with photos, roles, and backgrounds. Add company information, mission statement, and contact details for potential partners or team members.",
+            "status": "pending",
+            "testStrategy": "Verify team profiles display correctly, photos load properly, and information is up-to-date."
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "title": "Implement Reviews and Testimonials System",
+        "description": "Create comprehensive review system for breeders and testimonials for platform credibility, including post-adoption reviews, breeder profile reviews, and admin-managed testimonials.",
+        "details": "Build a complete reviews ecosystem with: (1) Database schema for reviews and testimonials tables, (2) Review collection after successful adoption in AdoptionTimeline, (3) Review display on breeder profiles (BreederDetailPage), (4) Admin management of testimonials for landing page (Testimonials component), (5) Rating system with stars, (6) Review moderation and analytics, (7) Integration with notification system for review requests.",
+        "testStrategy": "Test complete review flows: post-adoption review collection, breeder profile review display, admin testimonial management, rating calculations, review moderation, and notification integration. Verify all components work across different user roles and scenarios.",
+        "priority": "high",
+        "dependencies": [1, 2, 7],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Database Schema for Reviews and Testimonials",
+            "description": "Add reviews and testimonials tables to schema.ts with proper relationships and RLS policies",
+            "dependencies": [],
+            "details": "Extend db/schema.ts with: reviews table (adoption-based reviews with ratings, comments, for breeders), testimonials table (admin-managed featured testimonials for landing page), proper RLS policies allowing users to create reviews for completed adoptions, admins to manage testimonials, and public read access.",
+            "status": "pending",
+            "testStrategy": "Run database migrations and verify all new tables are created with correct relationships, indexes, and RLS policies in Supabase."
+          },
+          {
+            "id": 2,
+            "title": "Create React Query Hooks for Reviews System",
+            "description": "Build comprehensive hooks for review and testimonial management",
+            "dependencies": [1],
+            "details": "Create useReviews.ts (CRUD operations for adoption reviews, breeder rating calculations), useTestimonials.ts (admin management of landing page testimonials), useCreateReview.ts (post-adoption review submission), useBreederReviews.ts (display reviews on breeder profiles). Follow existing hook patterns with proper caching and invalidation.",
+            "status": "pending",
+            "testStrategy": "Test each hook individually: review CRUD operations, testimonial management, rating calculations, and breeder review aggregation. Verify proper caching and error states."
+          },
+          {
+            "id": 3,
+            "title": "Implement Post-Adoption Review Collection",
+            "description": "Add review collection to AdoptionTimeline component after successful adoption",
+            "dependencies": [1, 2],
+            "details": "Extend AdoptionTimeline.tsx to include review collection step after 'completed' status. Add star rating component, review text input, and submission logic. Trigger review request notification when adoption reaches completed status. Include conditional rendering based on whether review has been submitted.",
+            "status": "pending",
+            "testStrategy": "Complete adoption flow and verify review collection appears, test rating submission, review text input, and notification triggers. Verify review only shows once and is properly saved."
+          },
+          {
+            "id": 4,
+            "title": "Add Review Display to Breeder Profiles",
+            "description": "Integrate review display into BreederDetailPage component",
+            "dependencies": [1, 2],
+            "details": "Update BreederDetailPage.tsx Reviews tab to show actual reviews instead of empty state. Add review cards with ratings, comments, reviewer info, and dates. Include average rating calculation and display. Add pagination for multiple reviews and filtering options.",
+            "status": "pending",
+            "testStrategy": "Navigate to breeder profile reviews tab, verify reviews display correctly with ratings and comments, test pagination, and verify average rating calculations."
+          },
+          {
+            "id": 5,
+            "title": "Implement Rating Component and System",
+            "description": "Create reusable star rating component and rating calculation logic",
+            "dependencies": [],
+            "details": "Build Rating.tsx component with star display, rating input for reviews, and read-only display for profiles. Implement rating aggregation logic for breeder average ratings. Add rating validation and display formatting.",
+            "status": "pending",
+            "testStrategy": "Test rating component in different contexts: input mode for reviews, display mode for profiles. Verify star calculations, validation, and visual consistency."
+          },
+          {
+            "id": 6,
+            "title": "Create Admin Testimonials Management",
+            "description": "Build admin interface for managing landing page testimonials",
+            "dependencies": [1, 2],
+            "details": "Create admin testimonials management page with: add/edit/delete testimonials, featured testimonial selection, testimonial ordering, approval workflow. Integrate with existing Testimonials.tsx component to display admin-managed content.",
+            "status": "pending",
+            "testStrategy": "Test admin testimonial CRUD operations, featured selection, ordering changes, and verify testimonials appear correctly on landing page."
+          },
+          {
+            "id": 7,
+            "title": "Add Review Notification System",
+            "description": "Implement automated review request notifications",
+            "dependencies": [1, 3],
+            "details": "Create notification triggers when adoptions complete successfully, requesting reviews from seekers. Add review reminder emails/notifications if reviews aren't submitted within timeframe. Integrate with existing notification system.",
+            "status": "pending",
+            "testStrategy": "Complete adoption and verify review request notification is sent, test reminder notifications, and verify notification links navigate to review interface."
+          },
+          {
+            "id": 8,
+            "title": "Implement Review Moderation and Analytics",
+            "description": "Add admin review moderation and review analytics dashboard",
+            "dependencies": [1, 4],
+            "details": "Create admin interface for reviewing/moderating user-submitted reviews, hiding inappropriate content. Add review analytics showing average ratings, review volume trends, and response rates. Include bulk operations and reporting functionality.",
+            "status": "pending",
+            "testStrategy": "Test review moderation workflow, analytics data accuracy, bulk operations, and reporting functionality. Verify moderated reviews are properly hidden/displayed."
+          }
+        ]
+      },
+      {
+        "id": 22,
+        "title": "Add Pet Type Support to Breeder Forms and Handle Cross-Breeds",
+        "description": "Update breeder-related forms to capture pet types (dogs, cats, birds, etc.) and implement cross-breed support with automatic image synchronization to breed catalog.",
+        "details": "Add pet type selection to breeder onboarding and management forms, implement cross-breed handling (e.g., 'Golden Retriever Mix'), integrate PetTypePicker with existing filter/search systems, add pet type specialization to breeder profiles, and create automatic image sync from approved user_breeds to corresponding breed catalog entries.",
+        "testStrategy": "Test pet type selection in all breeder forms, verify cross-breed creation and display, ensure PetTypePicker filters work across breeds/user_breeds/listings, confirm breeder profile pet type specialization, and verify automatic image synchronization from user_breeds to breed catalog.",
+        "priority": "high",
+        "dependencies": [1, 2],
+        "status": "completed",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add Pet Type Selection to Breeder Onboarding",
+            "description": "Update breed-details.tsx to include pet type picker above breed selection",
+            "dependencies": [],
+            "details": "Add PetTypePicker component to src/lib/components/pages/onboarding/breeder/breed-details.tsx. Filter breed options based on selected pet type. Update form validation to require pet type selection. Modify breed lookup logic to include pet type context.",
+            "status": "completed",
+            "testStrategy": "Navigate through breeder onboarding, verify pet type picker appears and filters breed options correctly, ensure form validation requires pet type."
+          },
+          {
+            "id": 2,
+            "title": "Update Breed Management Form with Pet Types",
+            "description": "Add pet type support to BreedForm.tsx for new and existing breed management",
+            "dependencies": [],
+            "details": "Integrate PetTypePicker into src/lib/components/ui/BreedForm.tsx. Add pet type selection for new breeds. Update existing breed editing to display and modify pet types. Ensure pet type context is maintained throughout the form.",
+            "status": "completed",
+            "testStrategy": "Test breed creation with pet type selection, verify editing existing breeds shows correct pet type, ensure all CRUD operations maintain pet type information."
+          },
+          {
+            "id": 3,
+            "title": "Implement Cross-Breed Support",
+            "description": "Add cross-breed handling to breed forms with secondary breed selection",
+            "dependencies": [],
+            "details": "Add 'is_cross_breed' toggle and secondary breed picker to breed forms. Update schema if needed (add secondary_breed_id to user_breeds table). Implement display logic for cross-breed names (e.g., 'Golden Retriever Mix').",
+            "status": "completed",
+            "testStrategy": "Create cross-breed entries, verify secondary breed selection works, test display formatting for cross-breed names."
+          },
+          {
+            "id": 4,
+            "title": "Update Listing Form Components with Pet Types",
+            "description": "Add pet type context to all ListingForm step components",
+            "dependencies": [],
+            "details": "Update ListingForm components (basic-info.tsx, pet-details.tsx, parent-info.tsx, media.tsx, review.tsx) to maintain pet type context. Ensure pet type filters breed selections appropriately. Update review step to display pet type information.",
+            "status": "completed",
+            "testStrategy": "Create listings through all steps, verify pet type context is maintained, test breed filtering by pet type works correctly."
+          },
+          {
+            "id": 5,
+            "title": "Fix and Integrate PetTypePicker Component",
+            "description": "Fix the broken PetTypePicker.tsx and integrate it with Filter.tsx",
+            "dependencies": [],
+            "details": "Fix src/lib/components/ui/PetTypePicker.tsx with proper props interface and functionality. Integrate with src/lib/components/ui/Filter.tsx to enable pet type filtering for breeds, user_breeds, and listings. Ensure mobile and desktop filter implementations work.",
+            "status": "completed",
+            "testStrategy": "Test PetTypePicker component isolation, verify Filter.tsx integration works for all pet types, test mobile and desktop filtering functionality."
+          },
+          {
+            "id": 6,
+            "title": "Implement Automatic Breed Image Synchronization",
+            "description": "Create system to automatically update breed catalog images when user_breed images are approved",
+            "dependencies": [],
+            "details": "Add logic to update breeds.featured_image_url when user_breeds images are approved. Create useBreedImageSync hook or edge function. Ensure approved user_breed images populate the main breed catalog for better discoverability.",
+            "status": "completed",
+            "testStrategy": "Upload user_breed images, approve them, verify breed catalog automatically receives the images, test that breed catalog displays improved with real breeder photos."
+          },
+          {
+            "id": 7,
+            "title": "Add Pet Type Specialization to Breeder Profiles",
+            "description": "Add pet type specialization fields to breeder_profile table and forms",
+            "dependencies": [],
+            "details": "Add pet_types array field to breeder_profiles table schema. Update breeder profile forms to allow selection of specialized pet types (dogs, cats, birds, etc.). Ensure this information is used in breeder search and matching algorithms.",
+            "status": "completed",
+            "testStrategy": "Update breeder profile schema, test pet type selection in profile forms, verify specialization data is stored and used in search filtering."
+          },
+          {
+            "id": 8,
+            "title": "Update Breed Search and Filter Systems",
+            "description": "Integrate pet type filtering into breeder search functionality using profile specialization",
+            "dependencies": [5, 7],
+            "details": "Update searchService.ts and related components to support pet type filtering based on breeder profile specialization. Ensure breeder search pages properly filter by pet type and show relevant breeders. Update navigation and routing to maintain pet type context.",
+            "status": "completed",
+            "testStrategy": "Test breeder search with pet type filters based on profile specialization, verify navigation maintains context, ensure search results are filtered correctly by pet type and show appropriate breeders."
+          }
+        ]
+      },
+      {
+        "id": 23,
+        "title": "Implement Admin CRUD and Moderation System",
+        "description": "Build comprehensive CRUD operations and moderation actions for all admin management panels including reusable modals, bulk operations, and content moderation framework.",
+        "details": "Create standardized admin action modals, implement full CRUD operations for users, listings, breeds, verifications, and payouts. Add content moderation system, bulk operations, audit logging, and admin action frameworks. Ensure all admin panels have complete management capabilities with proper confirmations and notifications.",
+        "testStrategy": "Test all CRUD operations across admin panels, verify modal interactions work correctly, test bulk operations and content moderation, ensure audit logging captures all admin actions, validate notification systems for admin operations.",
+        "priority": "high",
+        "dependencies": [14],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Admin Action Modals Framework",
+            "description": "Build standardized modal system for admin actions including confirmations, forms, and notifications",
+            "details": "Implement AdminActionModal, AdminFormModal, AdminConfirmModal components. Add action result notifications, loading states, and consistent styling. Create reusable modal patterns for CRUD operations.",
+            "status": "pending",
+            "testStrategy": "Test modal interactions, form validations, action confirmations, and notification system across different admin operations."
+          },
+          {
+            "id": 2,
+            "title": "Implement User Management CRUD Actions",
+            "description": "Add full CRUD operations for user management (create admin users, update profiles, deactivate accounts, role management)",
+            "details": "Add user creation forms, profile editing modals, role change dialogs, account deactivation/activation actions. Include bulk user operations and status management.",
+            "status": "pending",
+            "testStrategy": "Test user creation, profile updates, role changes, account status toggles, and bulk operations functionality."
+          },
+          {
+            "id": 3,
+            "title": "Build Listings Moderation and Flagging System",
+            "description": "Implement content moderation for listings including flagging, approval/rejection, and content management",
+            "details": "Add listing approval/rejection modals, content flagging system, inappropriate content removal, listing status management. Include bulk moderation actions and content filtering.",
+            "status": "pending",
+            "testStrategy": "Test listing approval/rejection workflows, flagging system, bulk moderation, and content filtering capabilities."
+          },
+          {
+            "id": 4,
+            "title": "Implement Breeder Verification CRUD and Moderation",
+            "description": "Build comprehensive verification management with document review, approval/rejection workflows, and status tracking",
+            "details": "Create verification approval/rejection modals, document viewer, status change actions, bulk verification processing, and verification history tracking.",
+            "status": "pending",
+            "testStrategy": "Test verification approval/rejection, document viewing, status changes, bulk operations, and history tracking."
+          },
+          {
+            "id": 5,
+            "title": "Implement Breed Management CRUD Operations",
+            "description": "Add full CRUD for breed catalog management with image handling and breed characteristics",
+            "details": "Create breed creation/editing forms, image upload management, breed characteristic editing, breed status management, and bulk breed operations.",
+            "status": "pending",
+            "testStrategy": "Test breed creation/editing, image management, characteristic updates, status changes, and bulk operations."
+          },
+          {
+            "id": 6,
+            "title": "Build Payout Management CRUD System",
+            "description": "Implement payout processing, approval, and management system with financial controls",
+            "details": "Add payout approval/rejection modals, payout scheduling, payment method management, payout history tracking, and bulk payout processing.",
+            "status": "pending",
+            "testStrategy": "Test payout approval/rejection, scheduling, bulk processing, history tracking, and financial accuracy."
+          },
+          {
+            "id": 7,
+            "title": "Implement Content Moderation Framework",
+            "description": "Build comprehensive content moderation system for user-generated content across the platform",
+            "details": "Create moderation queues, content approval/rejection workflows, user reporting system, automated content filtering, and moderation analytics.",
+            "status": "pending",
+            "testStrategy": "Test content moderation workflows, user reporting, automated filtering, and moderation analytics."
+          },
+          {
+            "id": 8,
+            "title": "Add Admin Bulk Operations System",
+            "description": "Implement bulk CRUD operations for efficient admin management across multiple entities",
+            "details": "Create bulk selection interfaces, bulk action modals, progress indicators, and rollback capabilities for failed operations. Support bulk operations for users, listings, breeds, and verifications.",
+            "status": "pending",
+            "testStrategy": "Test bulk selection, bulk action execution, progress tracking, and rollback functionality across different admin entities."
+          },
+          {
+            "id": 9,
+            "title": "Implement Admin Audit Logging System",
+            "description": "Add comprehensive audit logging for all admin actions and changes",
+            "details": "Create audit log tables, implement logging for all CRUD operations, admin actions, and system changes. Add audit log viewer for admin oversight and compliance.",
+            "status": "pending",
+            "testStrategy": "Test audit logging captures all admin actions, verify audit log viewer displays correctly, and ensure compliance with logging requirements."
           }
         ]
       },

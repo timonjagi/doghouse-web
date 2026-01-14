@@ -14,9 +14,9 @@ export const DoghouseLogo: React.FC<LogoProps> = ({ color }) => {
     <Link href="/">
       <HStack align="center">
         <Image src={logo} height={8} fallbackSrc="images/logo_brand.png" />
-        <Text fontWeight="semibold" fontSize="20pt" color={useColorModeValue("gray.900", "white")}>
+        {/* <Text fontWeight="semibold" fontSize="20pt" color={useColorModeValue("gray.900", "white")}>
           pethouse
-        </Text>
+        </Text> */}
       </HStack>
     </Link>
   )
@@ -41,14 +41,14 @@ export const Logo: React.FC<LogoProps> = ({ color }) => {
           height={12}
           fallbackSrc={color === 'on-accent' ? "../../../../../images/pethouse-logo-icon-dark.png" : "../../../../../images/pethouse-logo-icon-light.png"}
         />
-        <Text
+        {/* <Text
           fontWeight="medium"
           fontSize="12pt"
           color={logoTextColor}
           fontStyle=""
         >
           PETHOUSE
-        </Text>
+        </Text> */}
       </HStack>
     </Link >
   )

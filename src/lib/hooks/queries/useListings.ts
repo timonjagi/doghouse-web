@@ -1,14 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../supabase/client';
-import { queryKeys } from '../../queryKeys';
-import { Listing } from '../../db/schema';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "../../supabase/client";
+import { queryKeys } from "../../queryKeys";
+import { Listing } from "../../db/schema";
+import { NotificationService } from "../../services/notificationService";
+import { AdoptionWithListing } from "./useAdoptions";
 
 interface CreateListingData {
   title: string;
   description?: string;
-  type: 'litter' | 'single_pet' | 'wanted';
+  type: "litter" | "single_pet" | "wanted";
   breed_id?: string;
   user_breed_id?: string;
+  pet_type?: string;
   birth_date?: string;
   available_date?: string;
   number_of_puppies?: number;
@@ -26,16 +29,17 @@ interface CreateListingData {
   health?: any;
   training?: any;
   requirements?: any;
-  status?: 'pending' | 'available' | 'reserved' | 'sold' | 'completed';
+  status?: "pending" | "available" | "reserved" | "sold" | "completed";
   is_featured?: boolean;
 }
 
 interface UpdateListingData {
   title?: string;
   description?: string;
-  type?: 'litter' | 'single_pet' | 'wanted';
+  type?: "litter" | "single_pet" | "wanted";
   breed_id?: string;
   user_breed_id?: string;
+  pet_type?: string;
   birth_date?: string;
   available_date?: string;
   number_of_puppies?: number;
@@ -44,7 +48,7 @@ interface UpdateListingData {
   pet_gender?: string;
   price?: number;
   reservation_fee?: number;
-  status?: 'pending' | 'available' | 'reserved' | 'sold' | 'completed';
+  status?: "pending" | "available" | "reserved" | "sold" | "completed";
   photos?: string[];
   location_text?: string;
   location_lat?: number;
@@ -70,6 +74,7 @@ export const useListings = (filters?: {
   price_min?: string;
   price_max?: string;
   location?: string;
+  pet_type?: string;
   sort?: string;
   page?: number;
   pageSize?: number;
@@ -80,66 +85,56 @@ export const useListings = (filters?: {
       // Store search term for client-side breed name filtering
       const searchTerm = filters?.search?.toLowerCase();
 
-      let query = supabase.from('listings').select(`
-        id,
-        title,
-        description,
-        type,
-        owner_id,
-        owner_type,
-        breed_id,
-        user_breed_id,
-        birth_date,
-        available_date,
-        number_of_puppies,
-        pet_name,
-        pet_age,
-        pet_gender,
-        price,
-        reservation_fee,
-        status,
-        photos,
-        location_text,
-        location_lat,
-        location_lng,
-        is_featured,
-        view_count,
-        tags,
-        created_at,
-        updated_at,
+      let query = supabase.from("listings").select(`
+        *,
         breeds (
           name
+        ),
+        users (
+          id,
+          display_name,
+          email,
+          profile_photo_url,
+          phone,
+          location_text
+        ),
+        user_breeds (
+          id,
+          notes,
+          images,
+          is_verified,
+          created_at
         )
-        `);
+      `);
 
       // Apply type filter
       if (filters?.type) {
-        query = query.eq('type', filters.type);
+        query = query.eq("type", filters.type);
       }
 
       // Apply status filter
       if (filters?.status) {
-        query = query.eq('status', filters.status);
+        query = query.eq("status", filters.status);
       }
 
       // Apply owner filter
       if (filters?.owner_id) {
-        query = query.eq('owner_id', filters.owner_id);
+        query = query.eq("owner_id", filters.owner_id);
       }
 
       // Apply breed filter (single breed)
       if (filters?.breed_id) {
-        query = query.eq('breed_id', filters.breed_id);
+        query = query.eq("breed_id", filters.breed_id);
       }
 
       // Apply breed filter (multiple breeds)
       if (filters?.breed_ids && filters.breed_ids.length > 0) {
-        query = query.in('breed_id', filters.breed_ids);
+        query = query.in("breed_id", filters.breed_ids);
       }
 
       // Apply owner type filter
       if (filters?.owner_type) {
-        query = query.eq('owner_type', filters.owner_type);
+        query = query.eq("owner_type", filters.owner_type);
       }
 
       // Apply search filter
@@ -149,42 +144,47 @@ export const useListings = (filters?: {
 
       // Apply size filter
       if (filters?.size) {
-        query = query.eq('size', filters.size);
+        query = query.eq("size", filters.size);
       }
 
       // Apply price range filters
       if (filters?.price_min) {
-        query = query.gte('price', parseFloat(filters.price_min));
+        query = query.gte("price", parseFloat(filters.price_min));
       }
       if (filters?.price_max) {
-        query = query.lte('price', parseFloat(filters.price_max));
+        query = query.lte("price", parseFloat(filters.price_max));
       }
 
       // Apply location filter
       if (filters?.location) {
-        query = query.ilike('location_text', `%${filters.location}%`);
+        query = query.ilike("location_text", `%${filters.location}%`);
+      }
+
+      // Apply pet type filter
+      if (filters?.pet_type) {
+        query = query.eq("pet_type", filters.pet_type);
       }
 
       // Apply sorting
       if (filters?.sort) {
         switch (filters.sort) {
-          case 'price_asc':
-            query = query.order('price', { ascending: true });
+          case "price_asc":
+            query = query.order("price", { ascending: true });
             break;
-          case 'price_desc':
-            query = query.order('price', { ascending: false });
+          case "price_desc":
+            query = query.order("price", { ascending: false });
             break;
-          case 'newest':
-            query = query.order('created_at', { ascending: false });
+          case "newest":
+            query = query.order("created_at", { ascending: false });
             break;
-          case 'oldest':
-            query = query.order('created_at', { ascending: true });
+          case "oldest":
+            query = query.order("created_at", { ascending: true });
             break;
           default:
-            query = query.order('created_at', { ascending: false });
+            query = query.order("created_at", { ascending: false });
         }
       } else {
-        query = query.order('created_at', { ascending: false });
+        query = query.order("created_at", { ascending: false });
       }
 
       // Apply pagination
@@ -202,8 +202,12 @@ export const useListings = (filters?: {
       if (searchTerm) {
         results = results.filter((listing: any) => {
           const titleMatch = listing.title?.toLowerCase().includes(searchTerm);
-          const descMatch = listing.description?.toLowerCase().includes(searchTerm);
-          const breedMatch = listing.breeds?.name?.toLowerCase().includes(searchTerm);
+          const descMatch = listing.description
+            ?.toLowerCase()
+            .includes(searchTerm);
+          const breedMatch = listing.breeds?.name
+            ?.toLowerCase()
+            .includes(searchTerm);
           return titleMatch || descMatch || breedMatch;
         });
       }
@@ -213,85 +217,70 @@ export const useListings = (filters?: {
   });
 };
 
-
-export const usePopularListings = (limit: number = 6) => {
+export const usePopularListings = (limit: number = 6, petType?: string) => {
   return useQuery({
-    queryKey: queryKeys.listings.popular(limit),
+    queryKey: queryKeys.listings.popular(limit, petType),
     queryFn: async (): Promise<any[]> => {
       // Get listings ordered by view_count (popularity) and recent activity
-      const { data, error } = await supabase
-        .from('listings')
-        .select(`
-          id,
-          title,
-          description,
-          type,
-          price,
-          reservation_fee,
-          photos,
-          location_text,
-          status,
-          view_count,
-          created_at,
-          updated_at,
-          breeds (
-            name
-          ),
-          users (
-            display_name,
-            profile_photo_url,
-            breeder_profiles (
-              kennel_name,
-              kennel_location
-            )
+      let query = supabase.from("listings").select(`
+        *,
+        breeds (
+          name
+        ),
+        users (
+          display_name,
+          profile_photo_url,
+          breeder_profiles (
+            kennel_name,
+            kennel_location
           )
-        `)
-        .order('view_count', { ascending: false })
-        .order('updated_at', { ascending: false })
+        )
+      `);
+      if (petType) {
+        query = query.eq("pet_type", petType);
+      }
+
+      const { data, error } = await query
+        .order("view_count", { ascending: false })
+        .order("updated_at", { ascending: false })
         .limit(limit);
 
       if (error) throw error;
 
-      console.log('Popular listings:', data);
+      console.log("Popular listings:", data);
       return data || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
-
-export const useNewListings = (limit: number = 6) => {
+export const useNewListings = (limit: number = 6, petType?: string) => {
   return useQuery({
-    queryKey: queryKeys.listings.new(limit),
+    queryKey: queryKeys.listings.new(limit, petType),
     queryFn: async (): Promise<any[]> => {
       // Get recently added listings
-      const { data, error } = await supabase
-        .from('listings')
-        .select(`
-          id,
-          title,
-          description,
-          type,
-          price,
-          reservation_fee,
-          photos,
-          location_text,
-          status,
-          created_at,
-          breeds (
-            name
-          ),
-          users (
-            display_name,
-            profile_photo_url,
-            breeder_profiles (
-              kennel_name,
-              kennel_location
-            )
+      let query = supabase.from("listings").select(`
+        *,
+        breeds (
+          name
+        ),
+        users (
+          display_name,
+          profile_photo_url,
+          breeder_profiles (
+            kennel_name,
+            kennel_location
           )
-        `)
+        )
+        `);
+
+      if (petType) {
+        query = query.eq("pet_type", petType);
+      }
+
+      const { data, error } = await query
         // .eq('status', 'available')
-        .order('created_at', { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(limit);
 
       if (error) throw error;
@@ -307,7 +296,7 @@ export const useListing = (id: string) => {
     queryKey: queryKeys.listings.detail(id),
     queryFn: async (): Promise<Listing | null> => {
       const { data, error } = await supabase
-        .from('listings')
+        .from("listings")
         .select(
           `
           id,
@@ -318,6 +307,7 @@ export const useListing = (id: string) => {
           user_breed_id,
           owner_id,
           owner_type,
+          pet_type,
           birth_date,
           available_date,
           number_of_puppies,
@@ -338,6 +328,9 @@ export const useListing = (id: string) => {
           is_featured,
           view_count,
           tags,
+          flagged,
+          flagged_reason,
+          flagged_at,
           created_at,
           updated_at,
           breeds (
@@ -363,7 +356,7 @@ export const useListing = (id: string) => {
           )
         `
         )
-        .eq('id', id)
+        .eq("id", id)
         .single();
 
       if (error) throw error;
@@ -395,14 +388,16 @@ export const useListingsByOwner = (ownerId: string) => {
     queryKey: queryKeys.listings.byOwner(ownerId),
     queryFn: async (): Promise<any> => {
       const { data, error } = await supabase
-        .from('listings')
-        .select(`
+        .from("listings")
+        .select(
+          `
           id,
           title,
           description,
           type,
           breed_id,
           owner_id,
+          pet_type,
           user_breed_id,
           birth_date,
           available_date,
@@ -414,15 +409,19 @@ export const useListingsByOwner = (ownerId: string) => {
           reservation_fee,
           status,
           photos,
+          flagged,
+          flagged_reason,
+          flagged_at,
           created_at,
           updated_at,
           breeds (
             id, 
             name
           )
-        `)
-        .eq('owner_id', ownerId)
-        .order('created_at', { ascending: false });
+        `
+        )
+        .eq("owner_id", ownerId)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data || [];
@@ -437,11 +436,11 @@ export const useFeaturedListings = () => {
     queryKey: queryKeys.listings.featured(),
     queryFn: async (): Promise<Listing[]> => {
       const { data, error } = await supabase
-        .from('listings')
-        .select('*')
-        .eq('is_featured', true)
-        .eq('status', 'available')
-        .order('created_at', { ascending: false })
+        .from("listings")
+        .select("*")
+        .eq("is_featured", true)
+        .eq("status", "available")
+        .order("created_at", { ascending: false })
         .limit(10);
 
       if (error) throw error;
@@ -455,8 +454,9 @@ export const useListingsForBreed = (breedId: string) => {
     queryKey: queryKeys.listings.byBreed(breedId),
     queryFn: async (): Promise<Partial<Listing>[]> => {
       const { data, error } = await supabase
-        .from('listings')
-        .select(`
+        .from("listings")
+        .select(
+          `
           id,
           title,
           description,
@@ -471,9 +471,10 @@ export const useListingsForBreed = (breedId: string) => {
             display_name,
             profile_photo_url
           )
-        `)
-        .eq('breed_id', breedId)
-        .eq('status', 'available');
+        `
+        )
+        .eq("breed_id", breedId)
+        .eq("status", "available");
 
       if (error) throw error;
       return data || [];
@@ -486,12 +487,15 @@ export const useListingsForUserBreed = (userBreedId: string) => {
   return useQuery({
     queryKey: queryKeys.listings.byBreed(userBreedId),
     queryFn: async (): Promise<Partial<Listing>[]> => {
-
-      if (!userBreedId) throw new Error('No user breed ID provided. Please provide a valid user');
-      console.log('Fetching listings for user breed ID:', userBreedId);
+      if (!userBreedId)
+        throw new Error(
+          "No user breed ID provided. Please provide a valid user"
+        );
+      console.log("Fetching listings for user breed ID:", userBreedId);
       const { data, error } = await supabase
-        .from('listings')
-        .select(`
+        .from("listings")
+        .select(
+          `
           id,
           title,
           type,
@@ -515,8 +519,9 @@ export const useListingsForUserBreed = (userBreedId: string) => {
           breeds (
             name
           )
-        `)
-        .eq('user_breed_id', userBreedId)
+        `
+        )
+        .eq("user_breed_id", userBreedId);
       //.eq('status', 'available');
 
       if (error) throw error;
@@ -526,18 +531,19 @@ export const useListingsForUserBreed = (userBreedId: string) => {
   });
 };
 
-
 // Mutation to create a new listing
 export const useCreateListing = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (listingData: CreateListingData): Promise<Listing> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No authenticated user');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("No authenticated user");
 
       const { data, error } = await supabase
-        .from('listings')
+        .from("listings")
         .insert({
           ...listingData,
           owner_id: user.id,
@@ -545,10 +551,28 @@ export const useCreateListing = () => {
         .select()
         .single();
 
-      if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      // Send notifications using the centralized breeder activity service
+      const { data: breeder } = await supabase
+        .from("users")
+        .select("display_name")
+        .eq("id", data.owner_id)
+        .single();
+
+      await NotificationService.sendBreederActivityNotification(
+        data.owner_id,
+        breeder?.display_name || "Breeder",
+        "listing",
+        {
+          title: data.title,
+          id: data.id,
+          breed_id: data.breed_id,
+          user_breed_id: data.user_breed_id,
+        }
+      );
+
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
     },
   });
@@ -559,14 +583,20 @@ export const useUpdateListing = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: UpdateListingData }): Promise<Listing> => {
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: UpdateListingData;
+    }): Promise<Listing> => {
       const { data, error } = await supabase
-        .from('listings')
+        .from("listings")
         .update({
           ...updates,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', id)
+        .eq("id", id)
         .select()
         .single();
 
@@ -574,7 +604,9 @@ export const useUpdateListing = () => {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.listings.detail(data.id) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.listings.detail(data.id),
+      });
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
     },
   });
@@ -588,26 +620,28 @@ export const useIncrementListingViews = () => {
     mutationFn: async (listingId: string) => {
       // First get current view count
       const { data: currentListing, error: fetchError } = await supabase
-        .from('listings')
-        .select('view_count')
-        .eq('id', listingId)
+        .from("listings")
+        .select("view_count")
+        .eq("id", listingId)
         .single();
 
       if (fetchError) throw fetchError;
 
       // Update with incremented count
       const { error } = await supabase
-        .from('listings')
+        .from("listings")
         .update({
           view_count: (currentListing.view_count || 0) + 1,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', listingId);
+        .eq("id", listingId);
 
       if (error) throw error;
     },
     onSuccess: (_, listingId) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.listings.detail(listingId) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.listings.detail(listingId),
+      });
     },
   });
 };
@@ -617,23 +651,30 @@ export const useUploadListingPhotos = ({ userId }: { userId: string }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ listingId, files }: { listingId: string; files: File[] | string[] }) => {
+    mutationFn: async ({
+      listingId,
+      files,
+    }: {
+      listingId: string;
+      files: File[] | string[];
+    }) => {
       const uploadPromises = files.map(async (file) => {
-
-        if (!listingId) throw new Error('Listing ID is required');
+        if (!listingId) throw new Error("Listing ID is required");
 
         if (file instanceof File) {
-          const fileExt = file.name.split('.').pop();
+          const fileExt = file.name.split(".").pop();
           const fileName = `${listingId}/${Date.now()}-${Math.random()}.${fileExt}`;
 
           const { error: uploadError } = await supabase.storage
-            .from('listing-images')
+            .from("listing-images")
             .upload(`user-${userId}/${fileName}`, file);
 
           if (uploadError) throw uploadError;
 
-          const { data: { publicUrl } } = supabase.storage
-            .from('listing-images')
+          const {
+            data: { publicUrl },
+          } = supabase.storage
+            .from("listing-images")
             .getPublicUrl(`user-${userId}/${fileName}`);
 
           return publicUrl;
@@ -644,7 +685,9 @@ export const useUploadListingPhotos = ({ userId }: { userId: string }) => {
       return photoUrls;
     },
     onSuccess: (_, { listingId }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.listings.detail(listingId) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.listings.detail(listingId),
+      });
     },
   });
 };
@@ -655,13 +698,13 @@ export const useDeleteListing = () => {
   return useMutation({
     mutationFn: async (listingId: string) => {
       const { error } = await supabase
-        .from('listings')
+        .from("listings")
         .delete()
-        .eq('id', listingId);
+        .eq("id", listingId);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.listings.all() });
     },
   });
-}
+};

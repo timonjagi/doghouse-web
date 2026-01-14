@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabase/client';
 import { queryKeys } from '../../queryKeys';
 import { Conversation, Message } from '../../db/schema';
+import { NotificationService } from '../../services/notificationService';
 
 // Query to get user conversations with context
 export const useConversations = (userId?: string) => {
@@ -32,34 +33,35 @@ export const useConversation = (conversationId: string) => {
   return useQuery({
     queryKey: queryKeys.conversations.detail(conversationId),
     queryFn: async (): Promise<Conversation & { messages: Message[] }> => {
-      // Get conversation
-      const { data: conversation, error: convError } = await supabase
+      const { data, error } = await supabase
         .from('conversations')
-        .select('*')
-        .eq('id', conversationId)
-        .single();
-
-      if (convError) throw convError;
-
-      // Get messages
-      const { data: messages, error: msgError } = await supabase
-        .from('messages')
         .select(`
           *,
-          users:sender_id (
+          messages (
             id,
-            display_name,
-            profile_photo_url
+            conversation_id,
+            sender_id,
+            content,
+            attachments,
+            read_by,
+            created_at,
+            updated_at,
+            users:sender_id (
+              id,
+              display_name,
+              profile_photo_url
+            )
           )
         `)
-        .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true });
+        .eq('id', conversationId)
+        .order('created_at', { foreignTable: 'messages', ascending: true })
+        .single();
 
-      if (msgError) throw msgError;
+      if (error) throw error;
 
       return {
-        ...conversation,
-        messages: messages || []
+        ...data,
+        messages: data.messages || []
       };
     },
     enabled: !!conversationId,
@@ -202,7 +204,7 @@ export const useSendMessage = () => {
       return message;
     },
     onSuccess: async (message, variables) => {
-      // Create notifications for other participants
+      // Send notifications to other participants using NotificationService (DB + Novu, no email)
       try {
         const { data: conversation } = await supabase
           .from('conversations')
@@ -215,31 +217,57 @@ export const useSendMessage = () => {
             p => p !== variables.senderId
           );
 
-          // Create notifications for each other participant
-          const notifications = otherParticipants.map(recipientId => ({
-            user_id: recipientId,
-            type: 'message_received',
-            title: `New message in ${conversation.title || 'conversation'}`,
-            body: message.content?.substring(0, 100) || 'New message received',
-            target_type: 'conversation',
-            target_id: variables.conversationId,
-            meta: {
-              conversationId: variables.conversationId,
-              contextType: conversation.context_type,
-              contextId: conversation.context_id,
-              senderId: variables.senderId,
-              messageId: message.id,
-            },
-          }));
+          // Get sender info for better notification content
+          const { data: sender } = await supabase
+            .from('users')
+            .select('display_name')
+            .eq('id', variables.senderId)
+            .single();
 
-          if (notifications.length > 0) {
-            await supabase
-              .from('notifications')
-              .insert(notifications);
-          }
+          const senderName = sender?.display_name || 'Someone';
+
+          // Send notifications to all other participants using NotificationService (DB + Novu in-app/push)
+          const notificationPromises = otherParticipants.map(recipientId =>
+            NotificationService.sendNotification(
+              {
+                userId: recipientId,
+                type: 'message_received',
+                title: `New message from ${senderName}`,
+                body: message.content?.substring(0, 100) || 'New message received',
+                targetType: 'conversation',
+                targetId: variables.conversationId,
+                meta: {
+                  conversationId: variables.conversationId,
+                  contextType: conversation.context_type,
+                  contextId: conversation.context_id,
+                  senderId: variables.senderId,
+                  senderName: senderName,
+                  messageId: message.id,
+                  conversationTitle: conversation.title,
+                },
+              },
+              {
+                workflowId: 'message-received', // Novu workflow for in-app and push notifications
+                to: { subscriberId: recipientId },
+                payload: {
+                  conversationId: variables.conversationId,
+                  conversationTitle: conversation.title || 'Conversation',
+                  senderId: variables.senderId,
+                  senderName: senderName,
+                  messageContent: message.content?.substring(0, 100) || 'New message',
+                  messageId: message.id,
+                  contextType: conversation.context_type,
+                  contextId: conversation.context_id,
+                },
+              }
+            )
+          );
+
+          // Execute all notification sends in parallel
+          await Promise.allSettled(notificationPromises);
         }
       } catch (notificationError) {
-        console.error('Failed to create message notifications:', notificationError);
+        console.error('Failed to send message notifications:', notificationError);
         // Don't fail the message send if notification creation fails
       }
 

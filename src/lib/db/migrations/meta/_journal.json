@@ -141,6 +141,48 @@
       "when": 1765619523366,
       "tag": "0019_serious_pyro",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1766507624589,
+      "tag": "0020_spotty_flatman",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1766647765603,
+      "tag": "0021_amazing_purifiers",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1767596629309,
+      "tag": "0022_lowly_champions",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1767778908744,
+      "tag": "0023_warm_switch",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1767779658629,
+      "tag": "0024_amusing_shockwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1768391629315,
+      "tag": "0025_woozy_nightmare",
+      "breakpoints": true
     }
   ]
 }

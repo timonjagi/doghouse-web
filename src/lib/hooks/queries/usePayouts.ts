@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PayoutService } from '../../services/payoutService';
 import { queryKeys } from '../../queryKeys';
+import { supabase } from '../../supabase/client';
+import { NotificationService } from '../../services/notificationService';
 
 export interface PayoutResult {
   success: boolean;
@@ -48,13 +50,20 @@ export const useProcessBreederPayout = () => {
         accountNumber?: string;
       };
     }) => PayoutService.processBreederPayout(breederId, payoutOptions),
-    onSuccess: (result, { breederId }) => {
+    onSuccess: async (result, { breederId }) => {
       if (result.success) {
         // Invalidate relevant queries
         queryClient.invalidateQueries({ queryKey: queryKeys.payouts.pending() });
         queryClient.invalidateQueries({ queryKey: queryKeys.payouts.calculation(breederId) });
         queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
         queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() });
+
+        // Send payout notification using the service
+        await NotificationService.sendPayoutNotification(
+          breederId,
+          result.amount,
+          result.transferReference
+        );
       }
     },
   });
@@ -68,12 +77,34 @@ export const useProcessAllPayouts = () => {
 
   return useMutation({
     mutationFn: () => PayoutService.processAllPendingPayouts(),
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       if (result.success || result.processed > 0) {
         // Invalidate all payout-related queries
         queryClient.invalidateQueries({ queryKey: queryKeys.payouts.all() });
         queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all() });
         queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() });
+
+        // Send admin notification using the service
+        await NotificationService.sendNotification(
+          {
+            userId: 'admin',
+            type: 'payout_batch_processed',
+            title: 'Payout Batch Processed',
+            body: `Processed ${result.processed} payouts successfully.`,
+            meta: {
+              processed: result.processed,
+              totalAmount: result.totalAmount,
+            },
+          },
+          {
+            workflowId: 'payout-batch-processed',
+            to: { subscriberId: 'admin' },
+            payload: {
+              processed: result.processed,
+              totalAmount: result.totalAmount,
+            },
+          }
+        );
       }
     },
   });
