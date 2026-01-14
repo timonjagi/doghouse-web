@@ -412,141 +412,6 @@ export const ADOPTION_ACTION_CONFIGS = {
     requiresPayment: false,
     disabled: false,
   },
-  edit: {
-  },
-  contact_support: {
-    label: "Contact Support",
-    buttonLabel: "Contact Support",
-    variant: "outline",
-    colorScheme: "blue",
-    icon: ChatIcon,
-    requiresPayment: false,
-    disabled: false,
-  },
-  leave_review: {
-    label: "Leave Review",
-    buttonLabel: "Leave Review",
-    variant: "solid",
-    colorScheme: "purple",
-    icon: StarIcon,
-    requiresPayment: false,
-    disabled: false,
-    label: "Edit Application",
-  },
-  contact_support: {
-    label: "Contact Support",
-    buttonLabel: "Contact Support",
-    variant: "outline",
-    colorScheme: "blue",
-    icon: ChatIcon,
-    requiresPayment: false,
-    disabled: false,
-  },
-  leave_review: {
-    label: "Leave Review",
-    buttonLabel: "Leave Review",
-    variant: "solid",
-    colorScheme: "purple",
-    icon: StarIcon,
-    requiresPayment: false,
-    disabled: false,
-    buttonLabel: "Edit Application",
-  },
-  contact_support: {
-    label: "Contact Support",
-    buttonLabel: "Contact Support",
-    variant: "outline",
-    colorScheme: "blue",
-    icon: ChatIcon,
-    requiresPayment: false,
-    disabled: false,
-  },
-  leave_review: {
-    label: "Leave Review",
-    buttonLabel: "Leave Review",
-    variant: "solid",
-    colorScheme: "purple",
-    icon: StarIcon,
-    requiresPayment: false,
-    disabled: false,
-    variant: "outline",
-  },
-  contact_support: {
-    label: "Contact Support",
-    buttonLabel: "Contact Support",
-    variant: "outline",
-    colorScheme: "blue",
-    icon: ChatIcon,
-    requiresPayment: false,
-    disabled: false,
-  },
-  leave_review: {
-    label: "Leave Review",
-    buttonLabel: "Leave Review",
-    variant: "solid",
-    colorScheme: "purple",
-    icon: StarIcon,
-    requiresPayment: false,
-    disabled: false,
-    colorScheme: "gray",
-  },
-  contact_support: {
-    label: "Contact Support",
-    buttonLabel: "Contact Support",
-    variant: "outline",
-    colorScheme: "blue",
-    icon: ChatIcon,
-    requiresPayment: false,
-    disabled: false,
-  },
-  leave_review: {
-    label: "Leave Review",
-    buttonLabel: "Leave Review",
-    variant: "solid",
-    colorScheme: "purple",
-    icon: StarIcon,
-    requiresPayment: false,
-    disabled: false,
-    icon: EditIcon,
-  },
-  contact_support: {
-    label: "Contact Support",
-    buttonLabel: "Contact Support",
-    variant: "outline",
-    colorScheme: "blue",
-    icon: ChatIcon,
-    requiresPayment: false,
-    disabled: false,
-  },
-  leave_review: {
-    label: "Leave Review",
-    buttonLabel: "Leave Review",
-    variant: "solid",
-    colorScheme: "purple",
-    icon: StarIcon,
-    requiresPayment: false,
-    disabled: false,
-    requiresPayment: false,
-  },
-  contact_support: {
-    label: "Contact Support",
-    buttonLabel: "Contact Support",
-    variant: "outline",
-    colorScheme: "blue",
-    icon: ChatIcon,
-    requiresPayment: false,
-    disabled: false,
-  },
-  leave_review: {
-    label: "Leave Review",
-    buttonLabel: "Leave Review",
-    variant: "solid",
-    colorScheme: "purple",
-    icon: StarIcon,
-    requiresPayment: false,
-    disabled: false,
-    disabled: false,
-  },
   contact_support: {
     label: "Contact Support",
     buttonLabel: "Contact Support",
@@ -565,6 +430,9 @@ export const ADOPTION_ACTION_CONFIGS = {
     requiresPayment: false,
     disabled: false,
   },
+
+
+
 } as const;
 
 // Hook for adoption timeline logic
@@ -644,8 +512,6 @@ export const useAdoptionTimelineLogic = ({
       },
     ];
 
-    }
-
     return steps;
   }
 
@@ -675,21 +541,23 @@ export const getAvailableAdoptionActions = (
   if (isSeeker) {
     switch (adoption.status) {
       case "submitted":
-        actions.push("withdraw", "message");
+        actions.push("withdraw", "contact_support");
         break;
       case "approved":
         if (!adoption.reservation_paid) {
-          actions.push("reserve");
+          actions.push("reserve", "contact_support");
         }
-        actions.push("message", "withdraw");
+        actions.push("message", "contact_support");
         break;
       case "pending":
-        actions.push("message", "withdraw");
+        actions.push("withdraw", "contact_support");
         break;
       case "rejected":
-        actions.push("message");
+        actions.push("message", "contact_support");
         break;
       case "completed":
+        actions.push("leave_review", "contact_support");
+        break;
     }
   }
 
@@ -697,26 +565,28 @@ export const getAvailableAdoptionActions = (
     switch (adoption.status) {
       case "submitted":
       case "pending":
-        actions.push("approve", "reject", "message");
+        actions.push("approve", "reject");
         break;
       case "approved":
-        actions.push("message");
+        actions.push("message", "contact_support");
         if (
           adoption.reservation_paid &&
           adoption.contract_signed &&
           !adoption.payment_completed
         ) {
-          actions.push("complete");
+          actions.push("complete", "contact_support");
         }
         break;
       case "completed":
+        actions.push("leave_review", "contact_support");
+        break;
     }
   }
 
   return actions
     .map((action) => ({
       ...ADOPTION_ACTION_CONFIGS[
-        action as keyof typeof ADOPTION_ACTION_CONFIGS
+      action as keyof typeof ADOPTION_ACTION_CONFIGS
       ],
       action,
     }))
