@@ -8,30 +8,29 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { BsShieldShaded } from "react-icons/bs";
-import { GiFamilyHouse } from "react-icons/gi";
-import { MdApartment, MdSick } from "react-icons/md";
+import { FaDog, FaCat, FaDove } from "react-icons/fa";
+import { GiRabbit } from "react-icons/gi";
 
 const features = [
   {
-    name: "Apartment Pets",
-    description: "Perfect for apartment living with calm temperaments and low space requirements.",
-    icon: MdApartment,
+    name: "Dogs",
+    description: "Loyal companions for all lifestyles, from active protectors to gentle family friends.",
+    icon: FaDog,
   },
   {
-    name: "Family Pets",
-    description: "Gentle and patient companions ideal for households with children.",
-    icon: GiFamilyHouse,
+    name: "Cats",
+    description: "Independent yet affectionate friends, perfect for apartment living and cozy homes.",
+    icon: FaCat,
   },
   {
-    name: "Protective Pets",
-    description: "Naturally vigilant and protective, great for security and companionship.",
-    icon: BsShieldShaded,
+    name: "Rodents",
+    description: "Small, low-maintenance pets highlighting unique personalities and gentle temperaments.",
+    icon: GiRabbit,
   },
   {
-    name: "Hypoallergenic Pets",
-    description: "Low-shedding or hairless breeds perfect for people with allergies.",
-    icon: MdSick,
+    name: "Birds",
+    description: "Intelligent and vibrant companions that bring melody and charm to your home.",
+    icon: FaDove,
   },
 ];
 

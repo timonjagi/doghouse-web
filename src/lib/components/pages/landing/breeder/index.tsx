@@ -7,7 +7,7 @@ import { Blog } from "./Blog";
 import BreedTraits from "./BreedTraits";
 import Hero from "./Hero";
 import { Process } from "./OurProcess";
-import { OurBreeds } from "./Breeds";
+import { OurPets } from "./Breeds";
 import { Stats } from "./Stats";
 import { Testimonials } from "./Testimonials";
 import WhyDoghouse from "./WhyDoghouse";
@@ -27,7 +27,7 @@ const Home = () => {
 
         <BreedTraits />
 
-        <OurBreeds />
+        <OurPets />
 
         <Process />
 

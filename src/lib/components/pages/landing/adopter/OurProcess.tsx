@@ -7,13 +7,13 @@ import {
   Icon,
   Center,
   useBreakpointValue,
+  Image,
 } from "@chakra-ui/react";
 import * as React from "react";
-import { useState, useEffect } from "react";
-import { BsBookmarkHeartFill, BsCheckCircleFill } from "react-icons/bs";
+import { useState } from "react";
+import { BsBookmarkHeartFill } from "react-icons/bs";
 import { ImProfile } from "react-icons/im";
 import { FaSearch } from "react-icons/fa";
-import { GalleryWithVerticalCarousel } from "../../../ui/GalleryWithVerticalCarousel/GalleryWithVerticalCarousel";
 
 export const steps = [
   {
@@ -21,37 +21,21 @@ export const steps = [
     description:
       "Tell us about your lifestyle, preferences, and what breed you're looking for to help us understand your unique needs",
     icon: ImProfile,
+    image: "images/mockup.png",
   },
   {
     name: "Explore tailored matches.",
     description:
       "Discover a curated selection of pets from trusted breeders and shelters that align with your unique lifestyle and preferences. We'll help you find the perfect companion for you and your family",
     icon: FaSearch,
+    image: "images/mockup.png",
   },
   {
     name: "Reserve your pet",
     description:
       "Secure your pet with a reservation fee to ensure both your commitment and the breeder's dedication to providing a loving home",
     icon: BsBookmarkHeartFill,
-  },
-];
-
-// Process step images for carousel
-const processImages = [
-  {
-    id: "01",
-    src: "images/mockup.png",
-    alt: "Profile creation interface",
-  },
-  {
-    id: "02",
-    src: "images/mockup.png",
-    alt: "Pet matching results",
-  },
-  {
-    id: "03",
-    src: "images/mockup.png",
-    alt: "Pet reservation process",
+    image: "images/mockup.png",
   },
 ];
 
@@ -68,7 +52,8 @@ const ProcessStep = (props: any) => {
       cursor="pointer"
       onClick={onClick}
       transition="all 0.2s"
-      _hover={{ opacity: 0.8 }}
+      opacity={isActive ? 1 : 0.6}
+      _hover={{ opacity: 1 }}
       {...stackProps}
     >
       <Center
@@ -99,11 +84,12 @@ const ProcessStep = (props: any) => {
             base: "lg",
             lg: "xl",
           }}
+          color={isActive ? "brand.600" : "inherit"}
           fontWeight="semibold"
         >
           {step.name}
         </Text>
-        <Text color="muted">{step.description}</Text>
+        <Text color="muted" noOfLines={isActive ? undefined : 2}>{step.description}</Text>
       </Stack>
     </Stack>
   );
@@ -111,15 +97,6 @@ const ProcessStep = (props: any) => {
 
 export const Process = () => {
   const [activeStep, setActiveStep] = useState(0);
-
-  // Auto-advance carousel every 4 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveStep((prev) => (prev + 1) % steps.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <Box as="section" maxW="6xl">
@@ -170,7 +147,7 @@ export const Process = () => {
 
           <Stack
             direction={{
-              base: "column",
+              base: "column-reverse",
               lg: "row",
             }}
             spacing={{
@@ -178,13 +155,14 @@ export const Process = () => {
               lg: "24",
             }}
             w="full"
+            align="center"
           >
             <Stack
               spacing={{
-                base: "4",
-                md: "8",
+                base: "6",
+                md: "10",
               }}
-              justify="center"
+              flex="1"
             >
               {steps.map((step, id) => (
                 <ProcessStep
@@ -196,13 +174,13 @@ export const Process = () => {
               ))}
             </Stack>
 
-            <Box width="full" overflow="hidden">
-              <GalleryWithVerticalCarousel
-                images={processImages}
-                rootProps={{
-                  spacing: { base: "4", md: "6" },
-                  direction: { base: "column-reverse", md: "row" },
-                }}
+            <Box flex="1" width="full" borderRadius="2xl" overflow="hidden" boxShadow="2xl">
+              <Image
+                src={steps[activeStep].image}
+                alt={steps[activeStep].name}
+                w="full"
+                h="auto"
+                transition="all 0.3s"
               />
             </Box>
           </Stack>

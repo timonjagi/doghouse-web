@@ -67,7 +67,7 @@ export const Hero = () => {
           </LightMode>
         </Stack>
 
-        <Box
+        {/* <Box
           className="group"
           cursor="pointer"
           position="relative"
@@ -98,7 +98,7 @@ export const Hero = () => {
             <VisuallyHidden>Play demo video</VisuallyHidden>
             <FaPlay />
           </Circle>
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   )

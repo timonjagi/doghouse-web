@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 
-export const OurBreeds = () => {
+export const OurPets = () => {
   const pets = [
     {
       name: "Golden Retriever",
@@ -27,20 +27,20 @@ export const OurBreeds = () => {
     {
       name: "Persian Cat",
       category: "Cats",
-      image: "images/breeds/doghousekenya_golden_retriever_1.webp", // Placeholder - would need actual cat image
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
       exploreUrl: "/explore?category=cats",
     },
     {
       name: "Holland Lop Rabbit",
-      category: "Rabbits",
-      image: "images/breeds/doghousekenya_golden_retriever_1.webp", // Placeholder - would need actual rabbit image
-      exploreUrl: "/explore?category=rabbits",
+      category: "Rodents",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=rodents",
     },
     {
-      name: "Syrian Hamster",
-      category: "Hamsters",
-      image: "images/breeds/doghousekenya_golden_retriever_1.webp", // Placeholder - would need actual hamster image
-      exploreUrl: "/explore?category=hamsters",
+      name: "African Grey Parrot",
+      category: "Birds",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=birds",
     },
     {
       name: "Siberian Husky",
@@ -49,22 +49,22 @@ export const OurBreeds = () => {
       exploreUrl: "/explore?category=dogs",
     },
     {
-      name: "African Grey Parrot",
-      category: "Parrots",
-      image: "images/breeds/doghousekenya_golden_retriever_1.webp", // Placeholder - would need actual parrot image
-      exploreUrl: "/explore?category=parrots",
+      name: "Maine Coon",
+      category: "Cats",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=cats",
     },
     {
-      name: "Guinea Pig",
-      category: "Guinea Pigs",
-      image: "images/breeds/doghousekenya_golden_retriever_1.webp", // Placeholder - would need actual guinea pig image
-      exploreUrl: "/explore?category=guinea_pigs",
+      name: "Syrian Hamster",
+      category: "Rodents",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=rodents",
     },
     {
-      name: "Maltese",
-      category: "Dogs",
-      image: "images/breeds/doghousekenya_maltese_1.jpg",
-      exploreUrl: "/explore?category=dogs",
+      name: "Cockatiel",
+      category: "Birds",
+      image: "images/breeds/doghousekenya_golden_retriever_1.webp",
+      exploreUrl: "/explore?category=birds",
     },
   ];
 
